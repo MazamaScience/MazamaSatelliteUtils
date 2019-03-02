@@ -1,0 +1,34 @@
+Type: Package
+Package: MazamaSatelliteUtils
+Version: 0.1.0
+Title: Utilities for Working with Model and Satellite Data as Rasters
+Authors@R: c(
+    person("Jonathan", "Callahan", email="jonathan.s.callahan@gmail.com", role=c("aut","cre")),
+    person("Helen", "Miller", email="helen@ohana.org", role=c("aut")),
+    person("Rex", "Thompson", email="rexs.thompson@gmail.com", role=c("aut"))
+    )
+Author: Jonathan Callahan [aut, cre],
+    Helen Miller [aut],
+    Rex Thompson [aut]
+Maintainer: Jonathan Callahan <jonathan@mazamascience.com>
+Depends:
+    R (>= 3.1.0),
+    raster
+Imports:
+    tibble,
+    lubridate,
+    magrittr,
+    ncdf4,
+    sp,
+    stringr,
+    xml2
+Suggests:
+    knitr,
+    rmarkdown
+Description: A suite of utility functions providing functionality commonly 
+    needed for download of satellite products and conversion to Raster objects.
+License: GPL-3
+VignetteBuilder: knitr
+Repository: CRAN
+LazyData: true
+RoxygenNote: 6.1.1
