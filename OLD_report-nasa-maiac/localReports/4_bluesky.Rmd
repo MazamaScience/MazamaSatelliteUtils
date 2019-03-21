@@ -1,0 +1,145 @@
+---
+title: "Bluesky Data Comparison"
+author: "Helen Miller"
+date: "7/5/2018"
+output: html_document
+params:
+  spatialDataDir: "~/Data/Spatial"
+  blueskyPath: "~/data/bluesky/napa_column_integrated.nc"
+---
+In this notebook, we explore Bluesky column-integrated values during the Napa fires and compare them with AOD values at the same times, using the example of one satellite image from October 12. Similar plots for Oct 8-12 can be found in `localNotebooks/maiac_0702_blusky_column_integrated.Rmd`. 
+
+*Note: To knit this document you must have the bluesky data .nc file downloaded locally. It can be found at https://smoke.airfire.org/bluesky-daily/output/temp_susan/BSF_201710_CA/   When knitting, indicate the path where it is located as the parameter bluskyPath*
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, fig.path = 'bluesky_figures/', fig.keep = 'high')
+# Load packages
+library(AirfireNasaMaiac)
+library(PWFSLSmoke)
+library(PWFSLSmokeModeling)
+logger.setup()
+
+# Pull out parameters
+setSpatialDataDir(params$spatialDataDir)
+blueskyPath <- params$blueskyPath
+
+# load spatial data
+loadSpatialData("USCensusStates")
+
+load("../localData/napa_TERRA_12.Rdata")
+bluesky_grid <- bluesky_load(file = blueskyPath)
+
+# Function for converting bluesky average column pm2.5 to AOD
+toAOD <- function(pm25) {
+  bext <- 2.5 * 10^(-6) * pm25
+  aod <- bext * 10000
+  return(aod)
+}
+```
+
+
+```{r bluskyloadfun, echo = FALSE}
+# Function for loading a blusky raster of a certain hour with smoothing from grid
+
+createBlueskyRasterSlice <- function(grid, time, xlim = c(-125.52, -117.03), ylim = c(36.52, 41.78)){
+  time <-parseDatetime(time)
+  timem1 <- time - lubridate::hours(1)
+  timep1 <- time + lubridate::hours(1)
+  
+  # Convert bluesky grid from the correct time as a raster, and the hours before and after
+  raster <- convertGridToRaster(grid, time = time)
+  rasterp1 <- convertGridToRaster(grid, time = timep1)
+  rasterm1 <- convertGridToRaster(grid, time = timem1)
+  
+  # Take the mean of the three hours
+  rastermean <- mean(raster, rasterp1, rasterm1)
+  
+  # Spatial smoothing: take the mean of the surrounding 3x3 square for each point
+  rastersmooth <- focal(rastermean, w = matrix(1, 3, 3), fun = mean, na.rm = TRUE)
+  
+  # Crop the raster and return the product
+  if (!is.null(xlim) & !is.null(ylim)) {
+   return(crop(rastersmooth, raster::extent(xlim[1], xlim[2], ylim[1], ylim[2]))) 
+  } else {
+    return(rastersmooth)
+  }
+}
+
+```
+
+```{r loadBluesky}
+bluesky <- createBlueskyRasterSlice(bluesky_grid, 2017101219)
+values(bluesky) <- toAOD(values(bluesky))
+```
+
+```{r resampleMAIAC}
+# use the raster package to resample maiac to match bluesky grid
+maiac <- resample(TERRA_12$corrected, bluesky)
+```
+
+These plots use data from the Bluesky column-integrated run for the Napa valley fires. For comparing with AOD, several transformations are performed. First, the data is smoothed temporally by taking the surrounding 3-hour mean value at each grid cell, then spatially by taking the mean of the surrounding 3x3 square for each grid cell. The funciton `createBlueskyRasterSlice()` automatically performs these actions.
+
+Next, AOD values are derived from the Bluesky average PM2.5 values using the equation below, which assumes the following: 
+
+1. dry atmosphere   
+2. PM2.5 is only from fire  
+3. 80% PM2.5 is organic carbon  
+4. 20% PM2.5 is elemental carbon  
+5. sulfate/nitrate/unspecified/coursePM/sea salt are negligible  
+
+$$
+AOD = b_{ext}*10000 \\\text{where}\\
+b_{ext} = 0.0052\cdot{PM2.5} 
+$$
+
+Next, MAIAC AOD is loaded. In this example, we use data from the Terra satellite on October 12, which is from about 12pm local time (19:00 UTC). This is the data file created using the `createNapaFiresData()` function. This raster is resampled (regridded) using bilinear interpolation to match the bluesky raster so that values can be compared directly. 
+
+## Scatterplot of values
+
+```{r scatterplot, fig.height=8}
+par(pty = "s")
+plot(values(bluesky)~values(maiac), xlab = "MAIAC", ylab = "Bluesky", main = paste0("Oct 12, 2pm"), xlim = c(0, 4), ylim = c(0, 4))
+```
+
+## Maps
+
+```{r maps}
+# automatically-generated color palatte
+colors <- colorRampPalette(c("white", "orange", "red"))(9)
+
+# define breaks for colors
+breaks <- c(0, 0.03, 0.1, 0.2, 0.3, 0.5, 0.8, 4)
+
+difcolors <- colorRampPalette(c("blue", "white", "red"))(9)
+difbreaks <- c(-5, -1, -.5, -.25, -.1, .1, .25, .5, 1, 5)
+
+par(mfcol = c(1,2))
+
+# Map bluesky image
+plot(bluesky, breaks = breaks, col = colors, colNA = "gray90", alpha = .8, main = "Bluesky", legend = FALSE)
+plot(USCensusStates, add = TRUE)
+
+# Map satellite image
+plot(maiac, breaks = breaks, col = colors, colNA = "gray90", alpha = .8, main = "MAIAC (Terra)", legend = FALSE)
+plot(USCensusStates, add = TRUE)
+
+par(mfcol=c(1,1))
+
+# Map the difference
+plot(bluesky-maiac, breaks = difbreaks, col = difcolors, colNA = "gray90", main = "Difference in AOD bluesky to MAIAC", legend = FALSE)
+plot(USCensusStates, add = TRUE)
+
+# Manually add a legend to the right side
+usr <- par("usr")
+  legendbrks <- seq(usr[3], usr[4], length = length(difbreaks))
+  lx <- usr[2] + .6
+  rx <- usr[2] + .75
+  rect(lx,
+       head(legendbrks, -1),
+       rx,
+       tail(legendbrks, -1),
+       col = difcolors,
+       xpd = NA)
+  axis(4, at = legendbrks, labels = difbreaks, pos = rx, las = 2)
+  mtext("Bluesky - MAIAC (AOD)", 4, line = 0.2)
+```

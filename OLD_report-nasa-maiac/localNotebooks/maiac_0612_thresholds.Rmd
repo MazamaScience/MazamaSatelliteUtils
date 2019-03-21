@@ -1,0 +1,319 @@
+---
+title: "maiac_0612_thresholds"
+author: "Helen MIller"
+date: "June 12, 2018"
+output: html_document
+params:
+  spatialDataDir: "~/Data/Spatial"
+  maiacDataDir: "~/Data/maiac"
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+spatialDataDir <- params$spatialDataDir
+maiacDataDir <- params$maiacDataDir
+# Load packages
+library(AirfireNasaMaiac)
+library(PWFSLSmoke)
+library(PWFSLSmokeModeling)
+library(raster)
+logger.setup()
+setMaiacDataDir(params$maiacDataDir)
+
+# load spatial data
+setSpatialDataDir(spatialDataDir)
+loadSpatialData("USCensusStates")
+```
+
+```{r loadingData, message=FALSE, cache=TRUE}
+oct08Afull <- maiac_loadRaster("h01v04", 20171008, 2105, converterPath = "../executables/h4toncff_nc4") 
+oct08A <- projectRaster(oct08Afull, crs = CRS("+proj=longlat +ellps=GRS80 +datum=NAD83 +no_defs +towgs84=0,0,0")) %>%
+  crop(raster::extent(-125.52, -117.03, 36.52, 41.78)) 
+oct08T <- maiac_loadRaster("h01v04", 20171008, 1930, product = "MAIACTAOT", converterPath = "../executables/h4toncff_nc4") %>% 
+  projectRaster(crs = CRS("+proj=longlat +ellps=GRS80 +datum=NAD83 +no_defs +towgs84=0,0,0")) %>% 
+  crop(raster::extent(-125.52, -117.03, 36.52, 41.78))
+oct09A <- maiac_loadRaster("h01v04", 20171009, 2150, converterPath = "../executables/h4toncff_nc4") %>%
+  projectRaster(crs = CRS("+proj=longlat +ellps=GRS80 +datum=NAD83 +no_defs +towgs84=0,0,0")) %>% 
+  crop(raster::extent(-125.52, -117.03, 36.52, 41.78)) 
+oct09Tpre <- maiac_loadRaster("h01v04", 20171009, product = "MAIACTAOT", converterPath = "../executables/h4toncff_nc4") %>%
+  projectRaster(crs = CRS("+proj=longlat +ellps=GRS80 +datum=NAD83 +no_defs +towgs84=0,0,0"))
+oct09T <- crop(oct09Tpre, raster::extent(-125.52, -117.03, 36.52, 41.78))
+oct10A <- maiac_loadRaster("h01v04", 20171010, converterPath = "../executables/h4toncff_nc4") %>%
+  projectRaster(crs = CRS("+proj=longlat +ellps=GRS80 +datum=NAD83 +no_defs +towgs84=0,0,0")) %>% 
+  crop(raster::extent(-125.52, -117.03, 36.52, 41.78))
+oct10T <- maiac_loadRaster("h01v04", 20171010, 1915, product = "MAIACTAOT", converterPath = "../executables/h4toncff_nc4") %>%
+  projectRaster(crs = CRS("+proj=longlat +ellps=GRS80 +datum=NAD83 +no_defs +towgs84=0,0,0")) %>% 
+  crop(raster::extent(-125.52, -117.03, 36.52, 41.78))
+oct11A <- maiac_loadRaster("h01v04", 20171011, 2135, converterPath = "../executables/h4toncff_nc4") %>%
+  projectRaster(crs = CRS("+proj=longlat +ellps=GRS80 +datum=NAD83 +no_defs +towgs84=0,0,0")) %>% 
+  crop(raster::extent(-125.52, -117.03, 36.52, 41.78))
+oct11T <- maiac_loadRaster("h01v04", 20171011, 1820, product = "MAIACTAOT", converterPath = "../executables/h4toncff_nc4") %>%
+  projectRaster(crs = CRS("+proj=longlat +ellps=GRS80 +datum=NAD83 +no_defs +towgs84=0,0,0")) %>% 
+  crop(raster::extent(-125.52, -117.03, 36.52, 41.78)) 
+oct12A <- maiac_loadRaster("h01v04", 20171012, 2040, converterPath = "../executables/h4toncff_nc4") %>%
+  projectRaster(crs = CRS("+proj=longlat +ellps=GRS80 +datum=NAD83 +no_defs +towgs84=0,0,0")) %>% 
+  crop(raster::extent(-125.52, -117.03, 36.52, 41.78)) 
+oct12T <- maiac_loadRaster("h01v04", 20171012, product = "MAIACTAOT", converterPath = "../executables/h4toncff_nc4") %>%
+  projectRaster(crs = CRS("+proj=longlat +ellps=GRS80 +datum=NAD83 +no_defs +towgs84=0,0,0")) %>% 
+  crop(raster::extent(-125.52, -117.03, 36.52, 41.78))
+oct13A <- maiac_loadRaster("h01v04", 20171013, converterPath = "../executables/h4toncff_nc4") %>%
+  projectRaster(crs = CRS("+proj=longlat +ellps=GRS80 +datum=NAD83 +no_defs +towgs84=0,0,0")) %>% 
+  crop(raster::extent(-125.52, -117.03, 36.52, 41.78))
+oct13T <- maiac_loadRaster("h01v04", 20171013, 1945, product = "MAIACTAOT", converterPath = "../executables/h4toncff_nc4") %>%
+  projectRaster(crs = CRS("+proj=longlat +ellps=GRS80 +datum=NAD83 +no_defs +towgs84=0,0,0")) %>% 
+  crop(raster::extent(-125.52, -117.03, 36.52, 41.78))
+```
+
+```{r loadingMonitoringData, cache = TRUE, include = FALSE}
+airnow <- airnow_load(2017)
+wrcc <- wrcc_load(2017)
+airsis <- airsis_load(2017)
+all_monitors <- monitor_combine(list(airnow, wrcc, airsis))
+monitors <- monitor_subset(all_monitors, xlim = c(-125.52, -117.03), ylim = c(36.52, 41.78))
+fireMonitors <- monitor_subset(monitors, tlim = c(20171008, 20171014))
+```
+
+```{r buildDataSet, cache = TRUE, include = FALSE}
+# define blank datafram to insert data into
+dfa <- data_frame(monitorID = vector("character"),
+                         monitor = vector("numeric"),
+                         satellite = vector("numeric"))
+dft <- dfa
+monitorCount <- nrow(fireMonitors$meta)
+
+rasterList <- list(oct08A, oct08T, oct09A, oct09T, oct10A, oct10T, oct11A, oct11T, oct12A, oct12T, oct13A, oct13T)
+
+# Get the data for each day
+for (i in 1:6) {
+  
+  # Select the correct rasters
+  AQUA <- rasterList[[i*2 - 1]]
+  TERRA <- rasterList[[i*2]]
+  
+  # Get the day of month as a zero-padded string
+  day <- stringr::str_pad(i+7, 2, "left", "0")
+  
+  # Make blank dataframes for this day
+  aquadf <- data_frame(monitorID = fireMonitors$meta$monitorID, 
+                 monitor = vector("numeric", monitorCount),
+                 satellite = vector("numeric", monitorCount))
+  terradf <- aquadf
+  
+  # Get the the index for the correct day and time
+  timeIndexA <- which(fireMonitors$data$datetime == lubridate::ymd_h(paste0("201710", day, "21")) )
+  timeIndexT <- which(fireMonitors$data$datetime == lubridate::ymd_h(paste0("201710", day, "19")) )
+  
+  # Add monitor and satellite data for each monitor
+  for (i in 1:monitorCount) {
+    monitorInfo <- fireMonitors$meta[i,]
+    aquadf[i,'monitor'] <- fireMonitors$data[timeIndexA, monitorInfo$monitorID]
+    aquadf[i, 'satellite'] <- getValue(AQUA, monitorInfo$longitude, monitorInfo$latitude)
+    aquadf[i, 'datetime'] <- lubridate::ymd_h(paste0("201710", day, "21"))
+    terradf[i,'monitor'] <- fireMonitors$data[timeIndexT, monitorInfo$monitorID]
+    terradf[i, 'satellite'] <- getValue(TERRA, monitorInfo$longitude, monitorInfo$latitude)
+    terradf[i, 'datetime'] <- lubridate::ymd_h(paste0("201710", day, "19")) 
+  }
+  
+  # Add that day's worth of data to full data frame
+  dfa <- add_row(dfa, monitorID = aquadf$monitorID, satellite = aquadf$satellite, monitor = aquadf$monitor)
+  dft <- add_row(dft, monitorID = terradf$monitorID, satellite = terradf$satellite, monitor = terradf$monitor)
+}
+
+# Get data frame with data from both satellites
+dfall <- add_row(dft, monitorID = dfa$monitorID, satellite = dfa$satellite, monitor = dfa$monitor)
+```
+
+## Determining AQI thresholds for AOT
+
+https://www.analyticsvidhya.com/blog/2015/11/beginners-guide-on-logistic-regression-in-r/
+
+Here, we perform a linear regression at each AQI threshold, with AOT as the continuous predictor. The response is binary: true when the monitoring PM25 3-hour rolling mean is greather than the AQI threshold, false when it is less. 
+
+The best-fit logistic regression returns a slope and intercept for a linear equation which predicts the log-odds of the probability (*p*) of PM25 being over the threshold, based on the AOT value. I calculate AOT thresholds corresponding to AQI thresholds by solving for *p* = 0.5, that is, I find the AOT value at which the model predicts that the probability of PM25 being over the AQI threshold is 0.5. AQI and AOT thresholds are plotted below. 
+
+### Calculating AOT threshold from logistic model
+
+R gives us $\beta_0$ and $\beta_1$ for the logistic equation of the form:
+$$
+\log\left(\frac{p}{1-p}\right) = \beta_0 + \beta_1 x
+$$
+
+where $p$ is the probability of the monitoring value exceeding the threshold, and *x* is AOT. 
+
+Solving for $p = .5$, we get: 
+
+$$
+x = -\frac{\beta_0}{\beta_1}
+$$
+We can also calculate $p$ from $x$: 
+
+$$
+p = \frac{e^{\beta_0 + \beta_1 x}}{1+e^{\beta_1 \beta_1 x}}
+$$
+
+
+
+## Evaluating the models
+https://www.r-bloggers.com/evaluating-logistic-regression-models/
+
+Use McFadden’s R2 as a method of assessing model. It is defined as 1−[ln(LM)/ln(L0)] where log(LM) is the log-likelihood value for the fitted model, and lm(L0) is the log-likelihood value for the null model where the slope equals 0. It ranges from 0 to 1, with higher values indicating a better fit. The intercept can be interpreted as the predicted odds (1/(1-p)) of the PM25 value being over the threshold when AOT is 0, and the odds are predicted to increase by a factor of the slope value for one unit increase in AOT. 
+
+```{r}
+dfall$moderate <- ifelse(dfall$monitor > 12, TRUE, FALSE)
+dfall$usg <- ifelse(dfall$monitor > 35.5, TRUE, FALSE)
+dfall$unhealthy <- ifelse(dfall$monitor > 55.5, TRUE, FALSE)
+dfall$veryunhealthy <- ifelse(dfall$monitor > 150.5, TRUE, FALSE)
+dfall$hazardous <- ifelse(dfall$monitor > 250.5, TRUE, FALSE)
+
+moderateglm <- glm(moderate~satellite, data = dfall, family = binomial)
+moderateThreshold <- -(moderateglm$coefficients[1]/moderateglm$coefficients[2])
+
+usgglm <- glm(usg~satellite, data = dfall, family = binomial)
+usgThreshold <- -(usgglm$coefficients[1]/usgglm$coefficients[2])
+
+unhealthyglm <- glm(unhealthy~satellite, data = dfall, family = binomial)
+unhealthyThreshold <- -(unhealthyglm$coefficients[1]/unhealthyglm$coefficients[2])
+
+veryunhealthyglm <- glm(veryunhealthy ~ satellite, data = dfall, family = binomial)
+veryunhealthyThreshold <- -(veryunhealthyglm$coefficients[1]/veryunhealthyglm$coefficients[2])
+
+hazardousglm <- glm(hazardous ~ satellite , data = dfall, family = binomial)
+hazardousThreshold <- -(hazardousglm$coefficients[1]/hazardousglm$coefficients[2])
+
+thresholds <- c(moderateThreshold, usgThreshold, unhealthyThreshold, veryunhealthyThreshold, hazardousThreshold)
+
+
+intercepts <- exp(c(moderateglm$coefficients[1], usgglm$coefficients[1], unhealthyglm$coefficients[1], veryunhealthyglm$coefficients[1], hazardousglm$coefficients[1]))
+slopes <- exp(c(moderateglm$coefficients[2], usgglm$coefficients[2], unhealthyglm$coefficients[2], veryunhealthyglm$coefficients[2], hazardousglm$coefficients[2]))
+mcfadden <- c(pscl::pR2(moderateglm)[4], pscl::pR2(usgglm)[4], pscl::pR2(unhealthyglm)[4], pscl::pR2(veryunhealthyglm)[4], pscl::pR2(hazardousglm)[4])
+
+knitr::kable(data.frame(AQI = AQI$names[-1], pm25 = AQI$breaks_24[2:6], AOT_threshold = thresholds, intercept = intercepts, slope = slopes, McFadden_R2 = mcfadden))
+```
+
+
+```{r}
+
+plot(dfall$satellite, dfall$monitor, main = "Oct 08-13 AQUA and TERRA", ylab = "monitoring data (PM2.5 ug/m3)", xlab = "satellite data (AOT)", xlim = c(0,2.5), ylim = c(0,325))
+abline(lm(dfall$monitor~dfall$satellite))
+points(AQI$breaks_24[2:6]~ thresholds, col = AQI$colors[-1], pch = 16)
+abline(h = AQI$breaks_24[-1], col = adjustcolor(AQI$colors[-1], alpha.f = .6), lwd = 2)
+abline(v = thresholds, col = adjustcolor(AQI$colors[-1], alpha.f = .6), lwd = 2)
+
+```
+
+## Threshold Plots
+
+These plots show how AOT is related to the AQI threshold. On the x axis, we have AOT. The y-axis is binary, with points on top at 1 or TRUE when the monitor PM25 value exceeded the threshold, or at 0 or FALSE when it did not. They also include a line showing the predicted probability that the monitor PM25 value will exceed the threshold given a value for AOT.
+
+```{r thresholdplots}
+par(mar = c(5,4,4,3))
+plot(dfall$satellite, dfall$moderate, xlab = "AOT", ylab = "Moderate or worse", yaxt = 'n', main = "Moderate (12)")
+axis(2, at = c(0, 1), labels = c("FALSE", "TRUE"))
+axis(4, at = c(0, .5,  1), labels = c("0", "0.5", "1"))
+mtext("Probability of exceeding Moderate", 4, 2)
+curve(exp(moderateglm$coefficients[1] + moderateglm$coefficients[2] * x)/(1 + exp(moderateglm$coefficients[1] + moderateglm$coefficients[2] * x)), add = TRUE)
+
+plot(dfall$satellite, dfall$usg, xlab = "AOT", ylab = "USG or worse", yaxt = 'n', main = "Unsafe for Sensitive Groups (35)")
+axis(2, at = c(0, 1), labels = c("FALSE", "TRUE"))
+axis(4, at = c(0, .5,  1), labels = c("0", "0.5", "1"))
+mtext("Probability of exceeding USG", 4, 2)
+curve(exp(usgglm$coefficients[1] + usgglm$coefficients[2] * x)/(1 + exp(usgglm$coefficients[1] + usgglm$coefficients[2] * x)), add = TRUE)
+
+plot(dfall$satellite, dfall$unhealthy, xlab = "AOT", ylab = "Unhealthy or worse", yaxt = 'n', main = "Unhealthy (55)")
+axis(2, at = c(0, 1), labels = c("FALSE", "TRUE"))
+axis(4, at = c(0, .5,  1), labels = c("0", "0.5", "1"))
+mtext("Probability of exceeding Unhealthy", 4, 2)
+curve(exp(unhealthyglm$coefficients[1] + unhealthyglm$coefficients[2] * x)/(1 + exp(unhealthyglm$coefficients[1] + unhealthyglm$coefficients[2] * x)), add = TRUE)
+
+plot(dfall$satellite, dfall$veryunhealthy, xlab = "AOT", ylab = "Very Unhealthy or worse", yaxt = 'n', main = "Very Unhealthy (150)")
+axis(2, at = c(0, 1), labels = c("FALSE", "TRUE"))
+axis(4, at = c(0, .5,  1), labels = c("0", "0.5", "1"))
+mtext("Probability of exceeding Very Unhealthy", 4, 2)
+curve(exp(veryunhealthyglm$coefficients[1] + veryunhealthyglm$coefficients[2] * x)/(1 + exp(veryunhealthyglm$coefficients[1] + veryunhealthyglm$coefficients[2] * x)), add = TRUE)
+
+plot(dfall$satellite, dfall$hazardous, xlab = "AOT", ylab = "Hazardous or worse", yaxt = 'n', main = "Hazardous (250)")
+axis(2, at = c(0, 1), labels = c("FALSE", "TRUE"))
+axis(4, at = c(0, .5,  1), labels = c("0", "0.5", "1"))
+mtext("Probability of exceeding Hazardous", 4, 2)
+curve(exp(hazardousglm$coefficients[1] + hazardousglm$coefficients[2] * x)/(1 + exp(hazardousglm$coefficients[1] + hazardousglm$coefficients[2] * x)), add = TRUE)
+
+```
+
+## Skill Metrics
+
+Several skill meterics are reported here. The first is the confusion matrix for each threshold. It follows this form: 
+
+
+$$
+\begin{array}
+{r|r|r|}
+  & \text{no} & \text{yes}\\\hline
+\text{no} & \text{TN} & \text{FP} \\\hline
+\text{yes} & \text{FN} & \text{TP} \\\hline
+\end{array}
+$$
+
+The skill metrics reported here are: 
+ #### Prevalence
+ This is the proportion of observed values that were true. Calculated: (FN + TP)/total
+ 
+ ### Accuracy
+ This is the proportion of predictions that were correct. (TP + TN)/total
+ 
+ ### True Positive Rate (TPR)
+ This tells us how often the model was right out of all the true positives. TP/(TP + FN)
+ 
+ ### False Positive Rate (FPR)
+ This tells us how often the model was wrong when the actual value was False. FP/(FP + TN)
+ 
+ ### Specificity (or True Negative Rate)
+ This tells us how often the model was right when the true value is False. TN/(FP + TN)
+ 
+ ### Precision (or False Alarm Ratio)
+ This tells us how often the model was correct when it predicted True. TP/(TP + FP)
+ 
+```{r skill}
+moderateskill <- skill_confusionMatrix(dfall$satellite > moderateThreshold, dfall$moderate)
+usgskill <- skill_confusionMatrix(dfall$satellite > usgThreshold, dfall$usg)
+unhealthyskill <- skill_confusionMatrix(dfall$satellite > unhealthyThreshold, dfall$unhealthy)
+veryunhealthyskill <- skill_confusionMatrix(dfall$satellite > veryunhealthyThreshold, dfall$veryunhealthy)
+hazardousskill <- skill_confusionMatrix(dfall$satellite > hazardousThreshold, dfall$hazardous)
+
+moderateskill$table
+usgskill$table
+unhealthyskill$table
+veryunhealthyskill$table
+hazardousskill$table
+
+skillInfo <- data.frame(AQI = AQI$names[-1], PM25 = AQI$breaks_24[2:6], AOT = thresholds, 
+                        prevalence = c(moderateskill$prevalence, usgskill$prevalence, unhealthyskill$prevalence, 
+                                       veryunhealthyskill$prevalence, hazardousskill$prevalence),
+                        accuracy = c(moderateskill$accuracy, usgskill$accuracy, unhealthyskill$accuracy, 
+                                     veryunhealthyskill$accuracy, hazardousskill$accuracy),
+                        TPR = c(moderateskill$TPRate, usgskill$TPRate, unhealthyskill$TPRate, 
+                                veryunhealthyskill$TPRate, hazardousskill$TPRate),
+                        FPR = c(moderateskill$FPRate, usgskill$FPRate, unhealthyskill$FPRate, 
+                                veryunhealthyskill$FPRate, hazardousskill$FPRate),
+                        specificity = c(moderateskill$specificity, usgskill$specificity, unhealthyskill$specificity, 
+                                        veryunhealthyskill$specificity, hazardousskill$specificity),
+                        precision = c(moderateskill$precision, usgskill$precision, unhealthyskill$precision, 
+                                      veryunhealthyskill$precision, veryunhealthyskill$precision))
+
+knitr::kable(skillInfo)
+```
+
+
+```{r thresholdmap}
+plot(oct12A, breaks = c(0,thresholds, 3), col = adjustcolor(AQI$colors, alpha.f = .3), colNA = "gray90")
+plot(USCensusStates, add = TRUE)
+monitor_subset(fireMonitors, tlim = c(2017101221, 2017101222) ) %>% 
+    monitorMap(add = TRUE)
+plot(oct09A, breaks = c(0, thresholds, 3), col = adjustcolor(AQI$colors, alpha.f = .3), colNA = "gray90")
+plot(USCensusStates, add = TRUE)
+monitor_subset(fireMonitors, tlim = c(2017100921, 2017100922) ) %>% 
+    monitorMap(add = TRUE)
+plot(oct09T, breaks = c(0, thresholds, 3), col = adjustcolor(AQI$colors, alpha.f = .3), colNA = "gray90")
+plot(USCensusStates, add = TRUE)
+monitor_subset(fireMonitors, tlim = c(2017100919, 2017100920) ) %>% 
+    monitorMap(add = TRUE)
+```
+

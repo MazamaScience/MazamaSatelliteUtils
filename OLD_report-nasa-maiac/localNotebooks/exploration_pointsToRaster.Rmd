@@ -1,0 +1,194 @@
+---
+title: "Exploration: MAIAC points to raster"
+output:
+  html_document: default
+---
+
+```{r, echo=FALSE}
+knitr::opts_chunk$set(fig.width=8)
+```
+
+This notebook documents the process of figuring out how to get MAIAC swath data points into raster for comparison against BlueSky model output.
+
+## Setup and Data Import
+
+```{r setup, message=FALSE}
+library(raster)
+library(PWFSLSmokeModeling)
+```
+
+```{r}
+baseDir <- '~/Projects/Mazama/airfire-nasa-maiac/'
+source(paste0(baseDir, 'R/convertGridToRaster.R'))
+source(paste0(baseDir, 'R/convertRasterToGrid.R'))
+source(paste0(baseDir, 'R/convertSwathToRaster.R'))
+source(paste0(baseDir, 'R/loadRawMaiac.R'))
+```
+
+Let's load the necessary data: two bluesky models (which will be converted to rasters), and a single MAIAC swath. We'll also throw in some monitor data in case we get around to using that.
+
+```{r load_data}
+load(paste0(baseDir, 'localData/Sand_bluesky_CANSAC_6km.RData'))
+load(paste0(baseDir, 'localData/Sand_bluesky_CANSAC_2km.RData'))
+load(paste0(baseDir, 'localData/Sand_monitors.RData'))
+maiac <- loadRawMaiac(paste0(baseDir, 'localData/maiac_sands_AQUA_20160721.nc'))
+```
+
+Let's rename the bluesky model run ws_grid objects, then convert them to rasters as that's what we plan to use for analysis.
+
+```{r}
+ws_grid_6km <- Sand_bluesky_CANSAC_6km
+ws_grid_2km <- Sand_bluesky_CANSAC_2km
+ws_raster_6km <- convertGridToRaster(ws_grid_6km)
+ws_raster_2km <- convertGridToRaster(ws_grid_2km)
+```
+
+Set colors for use in upcoming plots...
+
+```{r breaks_and_colors, include=FALSE}
+breaks_bs <- c(-10000,1,5,10,20,40,90,140,350,525,10000)
+red_bs <- c(255,255,255,255,255,255,255,200,150)/255
+green_bs <- c(225,195,165,135,105,75,46,2,3)/255
+blue_bs <- c(225,195,165,135,105,75,45,3,3)/255
+colors_bs <- c('transparent',grDevices::rgb(red=red_bs, green=green_bs, blue=blue_bs))
+
+breaks_maiac <- seq(0, .225, length.out = 10)
+colors_maiac <- RColorBrewer::brewer.pal(9,'YlOrRd')
+colorIndex <- .bincode(maiac$aot, breaks_maiac, include.lowest=TRUE)
+
+# breaks <- c(-1,.001,.005,.010,.020,.040,.090,.140,.350,.525,1)
+# colors <- colorRampPalette(RColorBrewer::brewer.pal(11, "RdBu"))(diff(range(maiac$aot)))
+
+# colors2 <- brewer.pal(11, "PuOr")
+# colors50 <- colorRampPalette(colors2)(50)
+```
+
+Let's plot a single bluesky slice, and then crop the rasterBrick to the bounding box of the MAIAC swath...
+
+```{r}
+# plots for reference
+plot(ws_raster_2km[[35]], col=colors_bs, breaks=breaks_bs, legend=FALSE)
+map(database="state", add=TRUE)
+
+# crop 2km grid to MAIAC swath bounding box
+ext <- extent(c(range(maiac$longitude), range(maiac$latitude)))
+ws_raster_2km_cropped <- crop(ws_raster_2km, ext)
+
+# demonstrate cropping abilities
+plot(ws_raster_2km_cropped[[35]], col=colors_bs, breaks=breaks_bs, legend=FALSE)
+map(database="state", add=TRUE)
+```
+
+Now let's look at converting the swath data into a raster object.
+
+First we plot the data as points on a map.
+
+```{r}
+map('state','california', xlim=range(maiac$longitude), ylim=range(maiac$latitude))
+points(maiac$longitude, maiac$latitude, cex=0.5, pch=17, col=colors_maiac[colorIndex])
+```
+
+Then we rasterize the swath data onto the (cropped) 2km grid; then plot the result, and compare to previous result -- same!
+
+```{r}
+maiacGrid <- rasterize(x=maiac[c("longitude","latitude")], y=ws_raster_2km_cropped, field=maiac$aot)
+plot(maiacGrid, col=colors_maiac, breaks=breaks_maiac)
+```
+
+This is good. This means that we can easily map swath data onto a grid for easy comparison to bluesky model runs!
+
+### Investigation of Subset
+
+Let's take a closer look at the swath data to see if we can gain some confidence in how well the `rasterize()` function works.
+
+```{r fig.height=5}
+# zoom in further
+sub_extent <- extent(c(-117.07, -116.35, 33.95, 34.43))
+sub <- raster::crop(maiacGrid, sub_extent)
+plot(sub, breaks=breaks_maiac, col=colors_maiac, legend=FALSE)
+```
+
+Now duplicate, but put actual maiac values on top in the same color scheme:
+
+```{r}
+plot(sub, breaks=breaks_maiac, col=colors_maiac, legend=TRUE)
+points(maiac$longitude, maiac$latitude, cex=0.5, pch=17, col=colors_maiac[colorIndex])
+```
+
+As we can see, most of the triangles do not appear, so it looks like the rasterization has captured the shapes well. However, we see a few areas where some cells have a lot of visible triangles in them, which suggests that maybe the gridding wasn't done in the most representative way.
+
+Upon further investigation, it appears there are multiple ways to handle multiple points in a single cell.
+
+See the "convertSwathToRaster.R" function for code to incorporate into this notebook, taking advantage of the different options for the `fun=` argument in the `rasterize` function.
+
+
+Let's look at a few different options.
+
+##  
+
+
+```{r}
+
+color_counts <- RColorBrewer::brewer.pal(6, "GnBu")
+
+# let's see how many points per cell...
+maiacGrid_counts <- convertSwathToRaster(maiac, sub, fun='count')
+plot(maiacGrid_counts, col=color_counts, main="number of counts per cell")
+points(maiac$longitude, maiac$latitude, cex=0.25, pch=17, col="gray50")
+
+# For the number of unique values per grid cell:
+maiacGrid_unique <- convertSwathToRaster(maiac, sub, fun=function(x, ...){ length(unique(na.omit(x)))})
+plot(maiacGrid_unique, col=color_counts, main="number of unique values per cell")
+points(maiac$longitude, maiac$latitude, cex=0.25, pch=17, col="gray50")
+
+# min
+maiacGrid_min <- convertSwathToRaster(maiac, sub, fun='min')
+plot(maiacGrid_min, col=colors_maiac, breaks=breaks_maiac, main="min value per cell")
+points(maiac$longitude, maiac$latitude, cex=0.5, pch=17, col=colors_maiac[colorIndex])
+
+# last
+maiacGrid <- convertSwathToRaster(maiac, sub)
+plot(maiacGrid, col=colors_maiac, breaks=breaks_maiac, main="last value per cell")
+points(maiac$longitude, maiac$latitude, cex=0.5, pch=17, col=colors_maiac[colorIndex])
+
+# max
+maiacGrid_max <- convertSwathToRaster(maiac, sub, fun='max')
+plot(maiacGrid_max, col=colors_maiac, breaks=breaks_maiac, main="max value per cell")
+points(maiac$longitude, maiac$latitude, cex=0.5, pch=17, col=colors_maiac[colorIndex])
+
+# range
+maiacGrid_range <- maiacGrid_max-maiacGrid_min
+plot(maiacGrid_range, col=colors_maiac, main="range per cell")
+
+# sd
+maiacGrid_sd <- convertSwathToRaster(maiac, sub, fun=function(x, ...) sd(x))
+plot(maiacGrid_sd, col=colors_maiac, main="sd per cell")
+```
+
+
+
+
+
+
+## Model-MAIAC comparisons
+
+Now let's take a look at the MAIAC data against the bluesky CANSAC 2-km data.
+
+To be developed...
+
+
+## Monitors to Raster
+
+```{r}
+xlim <- range(maiac$longitude)
+ylim <- range(maiac$latitude)
+ws_monitor_slice <- monitor_subset(Sand_monitors, xlim=xlim, ylim=ylim, tlim=c(Sand_monitors$data$datetime[5],Sand_monitors$data$datetime[5]))
+ws_monitor_raster <- rasterize(x=ws_monitor_slice$meta[c("longitude","latitude")], ws_raster_2km_cropped)
+
+plot(ws_monitor_raster, col=colors_maiac)
+# plot(ws_monitor_raster, col=AQI$colors, breaks=breaks_AQI)
+map(database="state", add=TRUE)
+
+monitorMap(Sand_monitors, xlim=xlim, ylim=ylim)
+```
+

@@ -1,0 +1,134 @@
+---
+title: "AQUA and TERRA"
+output: html_document
+params:
+  baseDir: '~/Projects/airfire-nasa-maiac'
+  spatialDataDir: '~/Data/Spatial'
+  maiacDataDir: '~/Data/maiac'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(AirfireNasaMaiac)
+library(PWFSLSmoke)
+library(PWFSLSmokeModeling)
+logger.setup()
+baseDir <- params$baseDir
+spatialDataDir <- params$spatialDataDir
+maiacDataDir <- params$maiacDataDir
+setSpatialDataDir(spatialDataDir)
+setMaiacDataDir(maiacDataDir)
+loadSpatialData("USCensusStates")
+# aeaStates <- spTransform(USCensusStates, CRS("+proj=aea +lat_1=20 +lat_2=60 +lon_0=-96 +lat_0=23 +datum=WGS84 +ellps=WGS84"))
+```
+
+# Two satellites
+So far, I have only been looking at data from the AQUA satellite. MAIAC AOT data comes from two different satellites: AQUA and TERRA. The quality of the data should be pretty much equivalent, but the time that data is collected is staggered by a few hours so comparing data from AQUA and TERRA should give us an idea of the rate at which conditions change. This will also help us determine how representative a measurement at a particular time might be. 
+
+```{r, cache = TRUE}
+oct08A <- maiac_loadRaster("h01v04", 20171008, 2105, converterPath = "../executables/h4toncff_nc4") %>% 
+  projectRaster(crs = CRS("+proj=longlat +ellps=GRS80 +datum=NAD83 +no_defs +towgs84=0,0,0")) %>% 
+  crop(raster::extent(-125.52, -117.03, 36.52, 41.78))
+oct08T <- maiac_loadRaster("h01v04", 20171008, 1930, product = "MAIACTAOT", converterPath = "../executables/h4toncff_nc4") %>% 
+  projectRaster(crs = CRS("+proj=longlat +ellps=GRS80 +datum=NAD83 +no_defs +towgs84=0,0,0")) %>% 
+  crop(raster::extent(-125.52, -117.03, 36.52, 41.78))
+oct09A <- maiac_loadRaster("h01v04", 20171009, 2150, converterPath = "../executables/h4toncff_nc4") %>%
+  projectRaster(crs = CRS("+proj=longlat +ellps=GRS80 +datum=NAD83 +no_defs +towgs84=0,0,0")) %>% 
+  crop(raster::extent(-125.52, -117.03, 36.52, 41.78))
+oct09T <- maiac_loadRaster("h01v04", 20171009, product = "MAIACTAOT", converterPath = "../executables/h4toncff_nc4") %>%
+  projectRaster(crs = CRS("+proj=longlat +ellps=GRS80 +datum=NAD83 +no_defs +towgs84=0,0,0")) %>% 
+  crop(raster::extent(-125.52, -117.03, 36.52, 41.78))
+oct10A <- maiac_loadRaster("h01v04", 20171010, converterPath = "../executables/h4toncff_nc4") %>%
+  projectRaster(crs = CRS("+proj=longlat +ellps=GRS80 +datum=NAD83 +no_defs +towgs84=0,0,0")) %>% 
+  crop(raster::extent(-125.52, -117.03, 36.52, 41.78))
+oct10T <- maiac_loadRaster("h01v04", 20171010, 1915, product = "MAIACTAOT", converterPath = "../executables/h4toncff_nc4") %>%
+  projectRaster(crs = CRS("+proj=longlat +ellps=GRS80 +datum=NAD83 +no_defs +towgs84=0,0,0")) %>% 
+  crop(raster::extent(-125.52, -117.03, 36.52, 41.78))
+oct11A <- maiac_loadRaster("h01v04", 20171011, 2135, converterPath = "../executables/h4toncff_nc4") %>%
+  projectRaster(crs = CRS("+proj=longlat +ellps=GRS80 +datum=NAD83 +no_defs +towgs84=0,0,0")) %>% 
+  crop(raster::extent(-125.52, -117.03, 36.52, 41.78))
+oct11T <- maiac_loadRaster("h01v04", 20171011, 1820, product = "MAIACTAOT", converterPath = "../executables/h4toncff_nc4") %>%
+  projectRaster(crs = CRS("+proj=longlat +ellps=GRS80 +datum=NAD83 +no_defs +towgs84=0,0,0")) %>% 
+  crop(raster::extent(-125.52, -117.03, 36.52, 41.78))
+oct12A <- maiac_loadRaster("h01v04", 20171012, 2040, converterPath = "../executables/h4toncff_nc4") %>%
+  projectRaster(crs = CRS("+proj=longlat +ellps=GRS80 +datum=NAD83 +no_defs +towgs84=0,0,0")) %>% 
+  crop(raster::extent(-125.52, -117.03, 36.52, 41.78))
+oct12T <- maiac_loadRaster("h01v04", 20171012, product = "MAIACTAOT", converterPath = "../executables/h4toncff_nc4") %>%
+  projectRaster(crs = CRS("+proj=longlat +ellps=GRS80 +datum=NAD83 +no_defs +towgs84=0,0,0")) %>% 
+  crop(raster::extent(-125.52, -117.03, 36.52, 41.78))
+oct13A <- maiac_loadRaster("h01v04", 20171013, converterPath = "../executables/h4toncff_nc4") %>%
+  projectRaster(crs = CRS("+proj=longlat +ellps=GRS80 +datum=NAD83 +no_defs +towgs84=0,0,0")) %>% 
+  crop(raster::extent(-125.52, -117.03, 36.52, 41.78))
+oct13T <- maiac_loadRaster("h01v04", 20171013, 1945, product = "MAIACTAOT", converterPath = "../executables/h4toncff_nc4") %>%
+  projectRaster(crs = CRS("+proj=longlat +ellps=GRS80 +datum=NAD83 +no_defs +towgs84=0,0,0")) %>% 
+  crop(raster::extent(-125.52, -117.03, 36.52, 41.78))
+```
+
+# Side-by-side
+
+```{r}
+colors <- colorRampPalette(c("white", "orange", "red"))(9)
+breaks <- c(0, 0.03, 0.1, 0.2, 0.3, 0.5, 0.8, 10)
+rasterList <- list(oct08A, oct08T, oct09A, oct09T, oct10A, oct10T, oct11A, oct11T, oct12A, oct12T, oct13A, oct13T)
+par(mfcol = c(1,2))
+for ( i in 1:6 ) {
+  AQUA <- rasterList[[i*2 - 1]]
+  TERRA <- rasterList[[i*2]]
+  day <- stringr::str_pad(i+7, 2, "left", "0")
+  plot(AQUA, breaks = breaks, col = colors, colNA = "gray90", alpha = .8, main = paste0("Oct ", day), legend = FALSE)
+  plot(USCensusStates, add = TRUE)
+  plot(TERRA, breaks = breaks, col = colors, colNA = "gray90", alpha = .8, main = paste0("Oct ", day))
+  plot(USCensusStates, add = TRUE)
+}
+```
+
+
+# Difference
+
+How does it change from TERRA (which is generally earlier) to AQUA?
+
+```{r}
+colors <- colorRampPalette(c("blue", "white", "red"))(13)
+pow <- c(-2, -1.5, -1, -.5, 0, .5, 1)
+breaks <- c(-10^rev(pow), 10^pow)
+par(mar = c(3.1, 3.1, 4.1, 4.1))
+for ( i in 1:6 ) {
+  AQUA <- rasterList[[i*2 - 1]]
+  TERRA <- rasterList[[i*2]]
+  day <- stringr::str_pad(i+7, 2, "left", "0")
+  plot(AQUA-TERRA, col = colors, breaks = breaks, colNA = "gray90", alpha = .8, main = paste0("Oct ", day), legend = FALSE)
+  plot(USCensusStates, add = TRUE)
+  usr <- par("usr")
+  legendbrks <- seq(usr[3], usr[4], length = length(breaks))
+  lx <- usr[2] + .5
+  rx <- usr[2] + .75
+  rect(lx,
+       head(legendbrks, -1),
+       rx,
+       tail(legendbrks, -1),
+       col = colors,
+       xpd = NA)
+  axis(4, at = legendbrks, labels = c(paste0("-10^", rev(pow)), paste0("10^", pow)), pos = rx, las = 2)
+  
+  
+}
+```
+
+Would it make sense to combine them somehow to fill in missing values? Here are some possible methods:
+
+```{r}
+colors <- colorRampPalette(c("white", "orange", "red"))(9)
+breaks <- c(0, 0.03, 0.1, 0.2, 0.3, 0.5, 0.8, 3)
+AQUA <- oct10A
+TERRA <- oct10T
+plot(max(AQUA, TERRA, na.rm = TRUE), breaks = breaks, col = colors, colNA = "gray90", main = "Oct 10: max values")
+plot(USCensusStates, add = TRUE)
+plot(mean(AQUA, TERRA, na.rm = TRUE), breaks = breaks, col = colors, colNA = "gray90", main = "Oct 10: mean values")
+plot(USCensusStates, add = TRUE)
+plot(AQUA, breaks = breaks, col = colors, colNA = "gray90", main = "Oct 10: TERRA over AQUA")
+plot(TERRA, breaks = breaks, col = colors, add = TRUE)
+plot(USCensusStates, add =TRUE)
+plot(TERRA, breaks = breaks, col = colors, colNA = "gray90", main = "Oct 10: AQUA over TERRA")
+plot(AQUA, breaks = breaks, col = colors, add = TRUE)
+plot(USCensusStates, add = TRUE)
+```

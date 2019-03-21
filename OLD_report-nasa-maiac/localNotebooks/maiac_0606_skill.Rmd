@@ -1,0 +1,102 @@
+---
+title: "Calculating Skill"
+author: "Helen Miller"
+date: "6/6/2018"
+output: html_document
+params:
+  spatialDataDir: "~/Data/Spatial"
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+spatialDataDir <- params$spatialDataDir
+library(AirfireNasaMaiac)
+library(PWFSLSmoke)
+library(PWFSLSmokeModeling)
+library(raster)
+logger.setup()
+
+
+napaFiles <- list.files("../localData", pattern = "napa_*", full.names = TRUE)
+for (file in napaFiles) {
+  load(file)
+}
+
+# load spatial data
+setSpatialDataDir(spatialDataDir)
+loadSpatialData("USCensusStates")
+
+```
+
+
+```{r loadingMonitoringData}
+airnow <- airnow_load(2017)
+wrcc <- wrcc_load(2017)
+airsis <- airsis_load(2017)
+mon <- monitor_combine(list(airnow, wrcc, airsis))
+canv <- monitor_subset(mon, tlim = c(20171008, 20171016), xlim = c(-125.52, -117.03), ylim = c(36.52, 41.78))
+```
+
+
+```{r buildComparison}
+monitorCount <- length(canv$meta$monitorID)
+rasterList <- list(AQUA_08, AQUA_09, AQUA_10, AQUA_11, AQUA_12, AQUA_13)
+df <- data_frame(monitorID = vector("character"),
+                         monitor = vector("numeric"),
+                         satellite = vector("numeric"))
+for (i in 1:6) {
+  newdf <- data_frame(monitorID = canv$meta$monitorID, 
+                 monitor = vector("numeric", monitorCount),
+                 satellite = vector("numeric", monitorCount))
+  raster <- rasterList[[i]]
+  day <- stringr::str_pad(i+7, 2, "left", "0")
+  timeIndex <- which(canv$data$datetime == lubridate::ymd_h(paste0("201710", day, "21")) )
+  for (i in 1:monitorCount) {
+    monitorInfo <- canv$meta[i,]
+    newdf[i,'monitor'] <- canv$data[timeIndex, monitorInfo$monitorID]
+    newdf[i, 'satellite'] <- getValue(raster, monitorInfo$longitude, monitorInfo$latitude)
+  }
+  df <- add_row(df, monitorID = newdf$monitorID, satellite = newdf$satellite, monitor = newdf$monitor)
+}
+
+plot(df$satellite, df$monitor,  main = "Oct 8-13 21:00 UTC", ylab = "monitoring data (PM25)", xlab = "satellite data (AOT)")
+aotlm <- lm(df$monitor~df$satellite)
+abline(aotlm)
+text(.45, 300, paste0("y = ", round(aotlm$coefficients[1], 3), " + ", round(aotlm$coefficients[2], 3) , "x"), pos = 3)
+text(.45, 300, paste0("adjusted r-squared = 0.6906"), pos = 1)
+```
+
+
+```{r ROC}
+# skill_ROCPlot(df$satellite, df$monitor, c(0, 1), seq(10, 100, 10))
+skill_ROC(df$satellite, df$monitor, t1Range = c(0,1), t2 = 35)
+skill_ROCPlot(df$satellite, df$monitor, c(0, 1), 35)
+observed <- df$monitor >= 35
+predicted <- df$satellite >= 0.26
+skill <- skill_confusionMatrix(predicted, observed)
+skill$table
+plot(df$monitor~df$satellite, main = "Oct 8-13 21:00 UTC", ylab = "monitoring data (PM2.5 ug/m3)", xlab = "satellite data (AOT)")
+abline(35, 0)
+abline(v=.26)
+```
+
+Do the same thing, but only with monitors near the fire. Exclude other monitors not affected by the fire. 
+
+```{r}
+fireMonitors <- monitor_subsetByDistance(canv, -122.267, 38.220, 60)
+firedf <- df[which(df$monitorID %in% fireMonitors$meta$monitorID),]
+plot(firedf$monitor~firedf$satellite, main = "Oct 12 21:00 UTC", ylab = "monitoring data (PM2.5 ug/m3)", xlab = "satellite data (AOT)")
+
+# skill_ROCPlot(firedf$satellite, firedf$monitor, c(0, 1), seq(10, 100, 10))
+observed <- firedf$monitor >= 35
+predicted <- firedf$satellite >= 0.26
+skill <- skill_confusionMatrix(predicted, observed)
+str(skill)
+skill$table
+plot(firedf$monitor~firedf$satellite, main = "Oct 8-13 21:00 UTC", ylab = "monitoring data (PM2.5 ug/m3)", xlab = "satellite data (AOT)")
+abline(35, 0)
+abline(v=.26)
+```
+
+

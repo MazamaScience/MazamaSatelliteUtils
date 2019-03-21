@@ -1,0 +1,140 @@
+---
+title: "Injection Height"
+author: "Helen Miller"
+date: "6/26/2018"
+output: html_document
+params:
+  spatialDataDir: "~/Data/Spatial"
+  maiacDataDir: "~/Data/maiac"
+---
+In this notebook, we explore the MAIAC variable "injection height" to see if it may be useful in our analysis. 
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# Get Params
+spatialDataDir <- params$spatialDataDir
+maiacDataDir <- params$maiacDataDir
+
+# Load packages
+library(AirfireNasaMaiac)
+library(PWFSLSmoke)
+library(PWFSLSmokeModeling)
+library(raster)
+logger.setup()
+setMaiacDataDir(maiacDataDir)
+
+# load spatial data
+setSpatialDataDir(spatialDataDir)
+loadSpatialData("USCensusStates")
+load("../localData/napa_maiac_dataframe.RData")
+```
+
+```{r loadingMonitoringData, cache = TRUE, include = FALSE}
+airnow <- airnow_load(2017)
+wrcc <- wrcc_load(2017)
+airsis <- airsis_load(2017)
+all_monitors <- monitor_combine(list(airnow, wrcc, airsis))
+monitors <- monitor_subset(all_monitors, xlim = c(-125.52, -117.03), ylim = c(36.52, 41.78))
+fireMonitors <- monitor_subset(monitors, tlim = c(20171008, 20171014))
+monitorSlice <- monitor_subset(fireMonitors, tlim = c(2017100919, 2017100920))
+```
+
+```{r loadingData, message=FALSE, cache=TRUE}
+aod <- maiac_loadRaster("h01v04", 20171009, product = "MAIACTAOT", converterPath = "../executables/h4toncff_nc4") 
+height <- maiac_loadRaster("h01v04", 20171009, product = "MAIACTAOT", converterPath = "../executables/h4toncff_nc4",
+                           param = "Injection_Height") 
+hist(values(height), 100)
+sum(is.na(values(height)))
+sum(!is.na(values(height)))
+hist(values(aod), 100, xlim = c(0, 2.5))
+hist(values(aod)[!is.na(values(height))], 100,  xlim = c(0,2.5))
+plot(height)
+plot(aod)
+plot(values(aod), values(height))
+
+aod_geo <- projectRaster(aod, crs = CRS("+proj=longlat +ellps=GRS80 +datum=NAD83 +no_defs +towgs84=0,0,0"))%>% 
+  crop(raster::extent(-125.52, -117.03, 36.52, 41.78)) 
+height_geo <- projectRaster(height, crs = CRS("+proj=longlat +ellps=GRS80 +datum=NAD83 +no_defs +towgs84=0,0,0"))%>% 
+  crop(raster::extent(-125.52, -117.03, 36.52, 41.78)) 
+
+plot(aod_geo)
+plot(USCensusStates, add = TRUE)
+monitorMap(monitorSlice, add = TRUE)
+
+plot(height_geo)
+plot(USCensusStates, add = TRUE)
+monitorMap(monitorSlice, add = TRUE)
+```
+
+Injection_Height is almost completely comprised of "na" values, so may be unhelpful. Let's take a look at some of the other days/ times to see if that is consistent.
+
+```{r}
+height2 <- maiac_loadRaster("h01v04", 20171009, 2150, product = "MAIACAAOT", converterPath = "../executables/h4toncff_nc4",
+                           param = "Injection_Height") 
+plot(height2)
+
+height3 <- maiac_loadRaster("h01v04", 20171010, 1915, product = "MAIACTAOT", converterPath = "../executables/h4toncff_nc4",
+                           param = "Injection_Height")
+aod3 <- maiac_loadRaster("h01v04", 20171010, 1915, product = "MAIACTAOT", converterPath = "../executables/h4toncff_nc4")
+
+plot(height3)
+plot(aod3)
+
+height4 <- maiac_loadRaster("h01v04", 20171010, product = "MAIACAAOT", converterPath = "../executables/h4toncff_nc4",
+                           param = "Injection_Height")
+aod4 <- maiac_loadRaster("h01v04", 20171010, product = "MAIACAAOT", converterPath = "../executables/h4toncff_nc4")
+
+plot(height4)
+plot(aod4)
+
+height5 <- maiac_loadRaster("h01v04", 20171013, product = "MAIACAAOT", converterPath = "../executables/h4toncff_nc4",
+                           param = "Injection_Height")
+aod5 <- maiac_loadRaster("h01v04", 20171013, product = "MAIACAAOT", converterPath = "../executables/h4toncff_nc4")
+
+plot(height5)
+plot(aod5)
+
+```
+
+It is always missing a lot. Let's see if it improves our model at all.
+
+```{r, heightModels}
+mod1 <- lm(monitor~satellite, data = dfall)
+mod2 <- lm(monitor~satellite + height, data = dfall)
+mod3 <- lm(monitor~satellite + height + height:satellite, data = dfall)
+mod4 <- lm(monitor~satellite + height:satellite, data = dfall)
+
+# Model 1: just AOD as a predictor
+summary(mod1)
+
+# Model 2: AOD and injection height as predictors
+summary(mod2)
+
+# Model 3: AOD and injection height and interaction between AOD and injection height
+summary(mod3)
+
+# Model 4: AOD and interaction between AOD and injection height
+summary(mod4)
+
+# Does adding a term for height improve the model?
+anova(mod1, mod2)
+
+# Does adding an interaction term for height improve the model?
+anova(mod2, mod3)
+
+# Does taking out the height term (but not the interaction term) make the model worse?
+anova(mod3, mod4)
+
+# Does adding an interaction term for height (but no term just for height) improve the model? 
+anova(mod1, mod4)
+```
+
+It looks like adding injection height as an interaction term with AOD improves the model. However, we only have 72 values out of 1272 for 'height'.  The model looks like this: 
+
+$$
+PM_{2.5} =  1.2 + 135.55 \cdot AOD - 0.038\cdot AOD\cdot Injection\_height + \epsilon_i
+$$
+
+This says that, when injection height is 0, for each unit increase in AOD, we can expect PM2.5 to increase by $135.55 \frac{\mu g}{m^3}$. As injection height increases, this relationship decreases. Thus, for a given AOD value, we would expect the ground PM2.5 value to be lower when injection height is high than when injection height is low or nonexistant. 
+

@@ -1,0 +1,144 @@
+---
+title: "Bluesky with MAIAC"
+author: "Helen Miller"
+date: "6/15/2018"
+output: html_document
+params:
+  spatialDataDir: "~/Data/Spatial"
+  modelDataDir: "~/Data/Bluesky"
+  maiacDataDir: "~/data/maiac"
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# Get params
+spatialDataDir <- params$spatialDataDir
+modelDataDir <- params$modelDataDir
+maiacDataDir <- params$maiacDataDir
+
+# Load packages
+library(AirfireNasaMaiac)
+library(PWFSLSmoke)
+library(PWFSLSmokeModeling)
+library(raster)
+logger.setup()
+setModelDataDir(modelDataDir)
+setMaiacDataDir(maiacDataDir)
+
+# load spatial data
+setSpatialDataDir(spatialDataDir)
+loadSpatialData("USCensusStates")
+
+# Load maiac data from AQUA Oct 13
+load("../localData/napa_AQUA_13.Rdata")
+load("../localData/napa_AQUA_08.Rdata")
+```
+
+This notebook explores some options for loading bluesky data, and comparing it to MAIAC AOT satellite data. It uses the case of October 13, using bluesky CANSAC 2k modeling data, and AQUA satellite data. 
+
+## Loading data
+
+Bluesky CANSAC-2km data is loaded for Oct 13, 2017. It is cropped to the area of interest in Northern California. Temporal smoothing is applies by calculating the mean of the three hours (20:00-22:00) surrounding 21:00 UTC, and spatial smoothing is applied by calculating the mean of the surrounding 3x3 square for each grid cell.
+
+MAIAC data from the AQUA satellite is loaded for Oct 13, 2017. It is projected into a lat/long coordinate system, smoothed spatially by calculating the mean of the surrounding 3x3 square for each grid cell, 
+
+```{r loading_data, cache = TRUE}
+# load bluesky data for Oct 13, 2017
+bs_full <- bluesky_aggregate("CANSAC-2km", 2017101300, 2017101400, subDir = "forecast")
+
+# rasterize bluesky data for the three hours surrounding 21:00 UTC and crop to area of interest
+bsoct1020 <- convertGridToRaster(bs_full, time = "2017101320") %>% 
+  crop(raster::extent(-125.52, -117.03, 36.52, 41.78))
+bsoct1021 <- convertGridToRaster(bs_full, time = "2017101321") %>%
+  crop(raster::extent(-125.52, -117.03, 36.52, 41.78))
+bsoct1022 <- convertGridToRaster(bs_full, time = "2017101322") %>%
+  crop(raster::extent(-125.52, -117.03, 36.52, 41.78))
+
+# Calculate the mean of these three hours and then smooth spatially by using the mean of the surrounding 3x3 square for each grid cell
+bs <- brick(list(oct20 = bsoct1020$pm25_100_2017101320, oct21 = bsoct1021$pm25_100_2017101321, oct22 = bsoct1022$pm25_100_2017101322))
+bs_mean_1 <- mean(bs) 
+bs_mean <- focal(bs_mean_1, w=matrix(1,3,3), fun=mean, na.rm=TRUE)
+bs_focal <- focal(bsoct1021$pm25_100_2017101321, w=matrix(1,3,3), fun=mean, na.rm=TRUE)
+
+```
+
+```{r plot}
+colors <- colorRampPalette(c("white", "orange", "red"))(9)
+bsbreaks <- c(0, 1, 20, 40, 80, 160, 320, 3500)
+maiacbreaks <- c(0, 0.1, 0.2, 0.4, 0.8, 1.6, 3.2, 10)
+
+plot(AQUA_13$corrected, breaks = maiacbreaks, col = colors, main = "MAIAC")
+plot(USCensusStates, add = TRUE)
+plot(bs_mean, breaks= bsbreaks, col = colors, main = "Bluesky")
+plot(USCensusStates, add = TRUE)
+```
+
+
+
+Compare MAIAC and bluesky data. 
+
+```{r}
+# Regrid MAIAC onto raster that matches Bluesky
+maiac_matching <- resample(AQUA_13$corrected, bs_mean)
+
+# Fit a linear model mapping MAIACT AOT to buesky PM2.5 (each grid cell is one datum)
+bs_lm <- lm(values(bs_mean)~values(maiac_matching))
+summary(bs_lm)
+
+plot(values(maiac_matching), values(bs_mean), xlab = "MAIAC AOT", ylab = "Bluesky (PM2.5)")
+abline(bs_lm)
+hist(log(values(maiac_matching)), 1000, main = "MAIAC")
+hist(log(values(bs_mean)), 1000, main = "Bluesky")
+
+# Create another raster where the values are the predicted PM2.5 values based on AOT 
+# ie. plug AOT values into the model to get PM2.5 values
+values_sat2bs <- values(maiac_matching)
+values_sat2bs[which(!is.na(values_sat2bs) & !is.na(values(bs_mean)))] <- bs_lm$fitted.values
+sat <- maiac_matching
+values(sat) <- values_sat2bs
+
+plot(sat, breaks = bsbreaks, col = colors, main = "MAIAC - predicted PM2.5 values")
+plot(USCensusStates, add = TRUE)
+plot(bs_mean, breaks = bsbreaks, col = colors, main = "Bluesky")
+plot(USCensusStates, add = TRUE)
+
+# Examine the difference between predicted PM2.5 values and Bluesky 
+hist(values(bs_mean-sat), 1000, xlim = c(-50, 50), main = "Difference from MAIAC (predicted) to Bluesky")
+
+difcolors <- colorRampPalette(c("blue", "white", "red"))(9)
+difbreaks <- c(-2000, -100, -50, -20, -5, 5, 20, 50, 100, 2000)
+
+# Map the differences
+par(mar = c(3.1, 3.1, 4.1, 4.1))
+plot(bs_mean-sat, breaks = difbreaks, col = difcolors, legend = FALSE, main = "Difference from MAIAC (predicted PM2.5) to Bluesky")
+# Make the legend
+usr <- par("usr")
+  legendbrks <- seq(usr[3], usr[4], length = length(difbreaks))
+  lx <- usr[2] + .6
+  rx <- usr[2] + .75
+  rect(lx,
+       head(legendbrks, -1),
+       rx,
+       tail(legendbrks, -1),
+       col = difcolors,
+       xpd = NA)
+  axis(4, at = legendbrks, labels = difbreaks, pos = rx, las = 2)
+plot(USCensusStates, add = TRUE)
+```
+
+
+Bluesky over Oct 08 Aqua (as baseline PM2.5)
+
+```{r}
+# Regrid Oct 08 Aqua to bluesky rster
+baseline_matching <- resample(AQUA_08$corrected, bs_mean)
+
+newdata <- data.frame(satellite = values(maiac_matching))
+maiac_matching_predicted <- maiac_matching
+values(maiac_matching_predicted) <- predict(bs_lm, newdata)
+
+bs_with_baseline <- baseline_matching + bs_mean
+plot(bs_with_baseline-maiac_matching_predicted, breaks = difbreaks, col = difcolors, legend = FALSE)
+plot(bs_mean - maiac_matching_predicted, breaks = difbreaks, col = difcolors, legend = FALSE)
+plot(values(maiac_matching), values(bs_with_baseline), xlab = "Satellite data (AOD)", ylab = "Bluesky (PM2.5)", main = "BS: 3-hour mean")
+plot(values(maiac_matching), values(bsoct1021), xlab = "Satellite data (AOD)", ylab = "Bluesky (PM2.5)", main = "BS: 21:00 UTC")
+```
