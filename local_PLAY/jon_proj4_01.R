@@ -13,6 +13,8 @@ library(rgdal)
 file_path <- file.path('../local_data','OR_ABI-L2-AODC-M3_G16_s20190781512186_e20190781514559_c20190781516459.nc')
 nc <- ncdf4::nc_open(file_path)
 
+variable_names <- names(nc$var)
+
 # print(nc) yields:
 #
 # short AOD[x,y]   (Chunking: [226,226])  (Compression: level 1)
@@ -39,7 +41,11 @@ nc <- ncdf4::nc_open(file_path)
 
 # So, if we ignore defining the ellipsoid and use the default GRS80, perhaps:
 
-proj4_goes <- "+proj=geos +h=35786023 +lon_0=-75 +sweep=x +ellps=GRS80"
+proj4_geos <- "+proj=geos +h=35786023 +lon_0=-75 +sweep=x +ellps=GRS80"
+
+# Another discussion:
+#   https://groups.google.com/forum/#!topic/pytroll/EIl0voQDqiI
+proj4_geos <- "+proj=geos +lon_0=-75 +h=35786023.0 +ellps=GRS80 +units=m +sweep=x +no_defs"
 
 # Let's try
 
@@ -50,6 +56,10 @@ ymx <- lat_lon_extent$geospatial_northbound_latitude
 xmn <- lat_lon_extent$geospatial_westbound_longitude
 xmx <- lat_lon_extent$geospatial_eastbound_longitude
 
+# get the image extent info
+y_image_bounds <- ncvar_get(nc, "y_image_bounds")
+x_image_bounds <- ncvar_get(nc, "x_image_bounds")
+
 # create AOD raster
 aod <- ncvar_get(nc, "AOD")
 aod_native_raster <- raster(t(aod),
@@ -57,15 +67,14 @@ aod_native_raster <- raster(t(aod),
                             xmx = xmx, 
                             ymn = ymn, 
                             ymx = ymx,
-                            crs = (proj4_goes))
+                            crs = crs(proj4_geos))
 
 # These blog post point in the right direction:
 #   https://www.neonscience.org/dc-reproject-raster-data-r
 
 # We need to reproject this raster onto "regular" lon-lat coordiantes
 # Trying:
-proj4_default <- "+proj=longlat +ellps=GRS80 +datum=NAD83 +no_defs +towgs84=0,0,0"
-proj4_default <- "+proj=longlat +datum=WGS84"
+proj4_default <- "+proj=longlat +ellps=GRS80"
 
 aod_raster <- projectRaster(aod_native_raster, crs = crs(proj4_default))
 
@@ -74,10 +83,10 @@ aod_raster <- projectRaster(aod_native_raster, crs = crs(proj4_default))
 # Maybe we need to projectExtent() as described here:
 #   https://www.rdocumentation.org/packages/raster/versions/2.8-19/topics/projectRaster
 
-aod_extent <- projectExtent(aod_native_raster, crs = crs(proj4_default))
-# Adjust the cell size 
-res(aod_extent) <- 1 # ??? Not sure of units
-aod_raster <- projectRaster(aod_native_raster, aod_extent)
+# aod_extent <- projectExtent(aod_native_raster, crs = crs(proj4_default))
+# # Adjust the cell size
+# res(aod_extent) <- 0.1 # ??? Not sure of units
+# aod_raster <- projectRaster(aod_native_raster, aod_extent)
 
 # Nope.
 
@@ -88,10 +97,15 @@ aod_raster <- projectRaster(aod_native_raster, aod_extent)
 # And this:
 #   https://www.neonscience.org/raster-data-r
 
+# And this:
+#   https://github.com/AustralianAntarcticDivision/sospatial/issues/2
 
 
+# https://stackoverflow.com/questions/52883594/projecting-goes-16-geostationary-data-into-plate-carree-cartopy
 
+# https://engineersportal.com/blog/2018/11/25/goes-r-satellite-latitude-and-longitude-grid-projection-algorithm
 
+# http://edc.occ-data.org/goes16/gdal/ -- docker image and gdal commands
 
 
 
