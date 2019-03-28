@@ -46,6 +46,7 @@ proj4_geos <- "+proj=geos +h=35786023 +lon_0=-75 +sweep=x +ellps=GRS80"
 # Another discussion:
 #   https://groups.google.com/forum/#!topic/pytroll/EIl0voQDqiI
 proj4_geos <- "+proj=geos +lon_0=-75 +h=35786023.0 +ellps=GRS80 +units=m +sweep=x +no_defs"
+proj4_geos_radians <- "+proj=geos +lon_0=-1.309 +h=35786023.0 +ellps=GRS80 +units=m +sweep=x +no_defs"
 
 # Let's try
 
@@ -69,6 +70,13 @@ aod_native_raster <- raster(t(aod),
                             ymx = ymx,
                             crs = crs(proj4_geos))
 
+aod_radians_raster <- raster(t(aod),
+                             xmn = pi * (xmn/180), 
+                             xmx = pi * (xmx/180),
+                             ymn = pi * (ymn/180),
+                             ymx = pi * (ymx/180),
+                             crs = crs(proj4_geos_radians))
+
 # These blog post point in the right direction:
 #   https://www.neonscience.org/dc-reproject-raster-data-r
 
@@ -77,8 +85,10 @@ aod_native_raster <- raster(t(aod),
 proj4_default <- "+proj=longlat +ellps=GRS80"
 
 aod_raster <- projectRaster(aod_native_raster, crs = crs(proj4_default))
-
 # Hmmm doesn't seem to do what I expected
+
+aod_raster <- projectRaster(aod_radians_raster, crs = crs(proj4_default))
+#Neither did this
 
 # Maybe we need to projectExtent() as described here:
 #   https://www.rdocumentation.org/packages/raster/versions/2.8-19/topics/projectRaster
@@ -106,6 +116,13 @@ aod_raster <- projectRaster(aod_native_raster, crs = crs(proj4_default))
 # https://engineersportal.com/blog/2018/11/25/goes-r-satellite-latitude-and-longitude-grid-projection-algorithm
 
 # http://edc.occ-data.org/goes16/gdal/ -- docker image and gdal commands
+
+# Python code to convert GOES L2B to lat-lon
+#   https://github.com/blaylockbk/pyBKB_v2/blob/master/BB_GOES16/get_GOES16.py
+# Same guy asking questions
+#   https://github.com/pyproj4/pyproj/issues/124
+
+# https://www.nceas.ucsb.edu/~frazier/RSpatialGuides/OverviewCoordinateReferenceSystems.pdf
 
 
 
