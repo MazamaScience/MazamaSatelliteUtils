@@ -51,7 +51,7 @@
 
 library(ncdf4)
 
-filePath <- file.path('../data','OR_ABI-L2-AODC-M3_G16_s20190580907135_e20190580909508_c20190580910238.nc')
+filePath <- file.path('../local_data','OR_ABI-L2-AODC-M3_G16_s20190580907135_e20190580909508_c20190580910238.nc')
 nc <- ncdf4::nc_open(filePath)
 
 # x(x), y(y)
