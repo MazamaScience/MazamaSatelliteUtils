@@ -246,3 +246,4 @@ aod_raster <- rasterize(x=lat_lon, y=aod_raster, field=aod)
 # getting an error...
 # Error in .local(x, values, ...) : 
 #   values must be numeric, integer or logical.
+
