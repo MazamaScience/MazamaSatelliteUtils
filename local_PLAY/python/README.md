@@ -15,7 +15,7 @@ $ conda activate goes16-env
 Then launch jupyter notebooks
 
 ```
-(goes16aod) $ jupyter notebook
+(goes16-env) $ jupyter notebook
 ```
 
 

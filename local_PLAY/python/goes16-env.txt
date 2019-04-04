@@ -104,6 +104,7 @@ https://conda.anaconda.org/conda-forge/noarch/jinja2-2.10-py_1.tar.bz2
 https://conda.anaconda.org/conda-forge/noarch/jupyter_core-4.4.0-py_0.tar.bz2
 https://conda.anaconda.org/anaconda/osx-64/matplotlib-3.0.0-py35h54f8f79_0.tar.bz2
 https://conda.anaconda.org/conda-forge/osx-64/netcdf4-1.4.1-py35hac939d9_0.tar.bz2
+https://conda.anaconda.org/conda-forge/osx-64/pandas-0.23.4-py35hf8a1672_0.tar.bz2
 https://conda.anaconda.org/conda-forge/noarch/pygments-2.3.1-py_0.tar.bz2
 https://conda.anaconda.org/conda-forge/osx-64/wheel-0.32.0-py35_1000.tar.bz2
 https://conda.anaconda.org/conda-forge/noarch/jupyter_client-5.2.4-py_3.tar.bz2
@@ -111,6 +112,7 @@ https://conda.anaconda.org/conda-forge/noarch/nbformat-4.4.0-py_1.tar.bz2
 https://conda.anaconda.org/conda-forge/osx-64/pip-18.0-py35_1001.tar.bz2
 https://conda.anaconda.org/conda-forge/noarch/prompt_toolkit-2.0.9-py_0.tar.bz2
 https://conda.anaconda.org/conda-forge/osx-64/pyopenssl-18.0.0-py35_0.tar.bz2
+https://conda.anaconda.org/conda-forge/noarch/xarray-0.12.0-py_0.tar.bz2
 https://conda.anaconda.org/conda-forge/osx-64/ipython-7.0.1-py35h24bf2e0_0.tar.bz2
 https://conda.anaconda.org/conda-forge/noarch/nbconvert-5.4.1-py_2.tar.bz2
 https://conda.anaconda.org/conda-forge/osx-64/urllib3-1.23-py35_1.tar.bz2
