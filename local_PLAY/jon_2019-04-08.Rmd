@@ -1,0 +1,49 @@
+---
+title: "GOES Grids"
+author: "Jonathan Callahan"
+date: "4/8/2019"
+output: html_document
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      fig.width = 7,
+                      fig.height = 5)
+```
+
+Starting from 2019-04-03:
+
+```{r load_data}
+library(MazamaSpatialUtils)
+library(ncdf4)
+library(raster)
+library(rgdal)
+library(dplyr)
+library(tidyr)
+library(purrr)
+
+source("../R/utils-goes.R")
+
+# load .nc file
+file_path <- file.path('../local_data','OR_ABI-L2-AODC-M3_G16_s20190781512186_e20190781514559_c20190781516459.nc')
+nc <- ncdf4::nc_open(file_path)
+```
+
+Let's tery using the code we imported from Sean Raffuse
+
+```{r raffuse_code}
+df <- extract_aod(file_path)
+dim(df)
+names(df)
+```
+
+Let's try plotting point locations:
+
+```{r point_locations}
+sub <- sample_n(df, 5e4)
+plot(sub$lon, sub$lat, pch='.')
+data(SimpleCountries)
+plot(SimpleCountries, add = TRUE, border = 'red')
+```
+
+So far so good!

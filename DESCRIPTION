@@ -5,20 +5,22 @@ Title: Utilities for Working with Model and Satellite Data as Rasters
 Authors@R: c(
     person("Jonathan", "Callahan", email="jonathan.s.callahan@gmail.com", role=c("aut","cre")),
     person("Helen", "Miller", email="helen@ohana.org", role=c("aut")),
+    person("Raffuse", "Sean", email="sraffuse@ucdavis.edu", role=c("aut")),
     person("Rex", "Thompson", email="rexs.thompson@gmail.com", role=c("aut"))
     )
 Author: Jonathan Callahan [aut, cre],
     Helen Miller [aut],
+    Sean Raffuse [aut],
     Rex Thompson [aut]
 Maintainer: Jonathan Callahan <jonathan@mazamascience.com>
 Depends:
-    R (>= 3.1.0),
-    raster
+    R (>= 3.1.0)
 Imports:
     tibble,
     lubridate,
     magrittr,
     ncdf4,
+    raster,
     sp,
     stringr,
     xml2
