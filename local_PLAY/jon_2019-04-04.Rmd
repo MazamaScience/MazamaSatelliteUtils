@@ -1,0 +1,95 @@
+---
+title: "X and Y Grids 2"
+author: "Jonathan Callahan"
+date: "4/3/2019"
+output: html_document
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      fig.width = 7,
+                      fig.height = 5)
+```
+
+Starting from yesterday's endpoint:
+
+```{r load_data}
+library(MazamaSpatialUtils)
+library(ncdf4)
+library(raster)
+library(rgdal)
+
+# load .nc file
+file_path <- file.path('../local_data','OR_ABI-L2-AODC-M3_G16_s20190781512186_e20190781514559_c20190781516459.nc')
+nc <- ncdf4::nc_open(file_path)
+
+variable_names <- names(nc$var)
+variable_names[1:16]
+
+# get geospatial lat lon extent info
+lat_lon_extent <- ncatt_get(nc, "geospatial_lat_lon_extent")
+ymn <- lat_lon_extent$geospatial_southbound_latitude
+ymx <- lat_lon_extent$geospatial_northbound_latitude
+xmn <- lat_lon_extent$geospatial_westbound_longitude
+xmx <- lat_lon_extent$geospatial_eastbound_longitude
+
+# get the image extent info
+y_image_bounds <- ncvar_get(nc, "y_image_bounds")
+x_image_bounds <- ncvar_get(nc, "x_image_bounds")
+```
+
+Here are those values:
+
+ * xmn = `r xmn`
+ * xmx = `r xmx`
+ * ymn = `r ymn`
+ * ymx = `r ymx`
+ * y_image_bounds = `r y_image_bounds`
+ * x_image_bounds = `r x_image_bounds`
+ 
+Let's get some satellite imagery!
+
+```{r aod_plot}
+# Create the projection with info from goes_imager_projection variable
+str(ncatt_get(nc, "goes_imager_projection"))
+
+proj4_geos <- "+proj=geos +h=35786023 +lon_0=-75  +sweep=x +ellps=GRS80"
+
+# create AOD raster
+aod <- ncvar_get(nc, "AOD")
+aod_raster <- raster(t(aod),
+                     xmn = xmn, xmx = xmx, ymn = ymn, ymx = ymx,
+                     crs = sp::CRS(proj4_geos))
+
+plot(aod_raster)
+```
+
+Now for the US state outlines.
+
+```{r states_projected}
+setSpatialDataDir("~/Data/Spatial")
+loadSpatialData("USCensusStates")
+
+# NOTE: We have to omit Hawaii and Alaska which are in the danger zone of this projection
+states_CONUS <- subset(USCensusStates, stateCode %in% CONUS)
+states_CONUS_projected <- sp::spTransform(states_CONUS, proj4_geos)
+plot(states_CONUS_projected)
+axis(1)
+axis(2)
+box()
+```
+
+Let's look at the bounding boxes of these two guys supposedly sharing the same
+projection.
+
+```{r aod_states_bbox}
+# Using raster::extent()
+extent(states_CONUS)
+extent(states_CONUS_projected)
+extent(aod_raster)
+```
+
+This is where we left off.
+
+
+
