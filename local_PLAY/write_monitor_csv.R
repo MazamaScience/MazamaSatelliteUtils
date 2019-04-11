@@ -9,16 +9,30 @@
 # 2019-03-19 15:12:18.600000
 
 library(PWFSLSmoke)
+library(lubridate)
 
-datetime = 2019031915
+datetime <- "201903191512"
 
-monitor <- monitor_load(datetime, datetime)
+aod_datetime <- as_datetime(datetime,
+                            format="%Y%m%d%H%M")
 
-data <- tibble(
+# Retrieve data for 3 days preceding the time that the AOD data was collected
+# to apply nowcast algorithm
+monitor <- monitor_load(aod_datetime - days(3), aod_datetime)
+
+# apply nowcast algorithm and retrieve the hour associated with AOD data
+monitor_data <-
+  monitor_nowcast(monitor) %>%
+  monitor_extractData() %>%
+  dplyr::filter(datetime == floor_date(aod_datetime, unit = "hours")) %>%
+  dplyr::select(-datetime) %>%
+  as.numeric()
+
+tbl <- tibble(
   latitude = monitor$meta$latitude,
   longitude = monitor$meta$longitude,
-  value = monitor$data[,2:length(monitor$data)] %>% as.numeric()
+  value = monitor_data
 )
 
-readr::write_csv(data, sprintf("monitors_%d.csv", datetime))
+readr::write_csv(tbl, sprintf("monitors_%s.csv", datetime))
 
