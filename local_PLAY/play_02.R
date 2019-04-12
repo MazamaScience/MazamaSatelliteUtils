@@ -1,6 +1,7 @@
 # GOESAOD documentation: https://data.nodc.noaa.gov/cgi-bin/iso?id=gov.noaa.ncdc:C01511
 # https://tools-1.airfire.org/Satellite/GOES-16/AODC/
 
+# Possibly useful link to R proj4 interface: https://cran.r-project.org/web/packages/proj4/proj4.pdf
 
 # exerpt from print(nc):
 # 
@@ -23,7 +24,7 @@ library(raster)
 library(MazamaSpatialUtils)
 
 # load .nc file
-file_path <- file.path('../local_data','OR_ABI-L2-AODC-M3_G16_s20190781512186_e20190781514559_c20190781516459.nc')
+file_path <- file.path('./local_data','OR_ABI-L2-AODC-M3_G16_s20190781512186_e20190781514559_c20190781516459.nc')
 nc <- ncdf4::nc_open(file_path)
 
 # get geospatial lat lon extent info

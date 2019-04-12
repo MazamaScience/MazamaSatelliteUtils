@@ -1,0 +1,66 @@
+---
+title: "tom_2019-04-11"
+author: "Thomas Bergamaschi"
+date: "4/11/2019"
+output: html_document
+params:
+  spatialDataDir: "~/Data/Spatial"
+  goesDataDir: "../local_data"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# get params
+spatialDataDir <- params$spatialDataDir
+goesDataDir <- params$goesDataDir
+
+# load spatial data
+setSpatialDataDir(spatialDataDir)
+loadSpatialData("USCensusStates")
+```
+
+Starting from jon_2019-04-08, lets try to filter the GOES-16 AOD dataframe to include
+data from only Texas.
+
+```{r import_libraries, results='hide'}
+library(MazamaSpatialUtils)
+library(ncdf4)
+library(raster)
+library(rgdal)
+library(dplyr)
+library(tidyr)
+library(purrr)
+
+source("../R/utils-goes.R")
+
+# load .nc file
+file_path <- file.path('../local_data','OR_ABI-L2-AODC-M3_G16_s20190781512186_e20190781514559_c20190781516459.nc')
+nc <- ncdf4::nc_open(file_path)
+```
+
+Load AOD data and filter to include only data in Texas
+
+```{r filter_texas}
+# bbox for texas
+lon0 <- -107.841797 
+lat0 <- 26.194877
+lon1 <- -92.329102
+lat1 <- 37.125286
+
+df_filtered <- 
+  extract_aod(file_path) %>%
+  dplyr::filter(lon > lon0 & lon < lon1,
+                lat > lat0 & lat < lat1)
+
+dim(df_filtered)
+names(df_filtered)
+```
+
+Plot filtered data
+
+```{r plot_texas}
+sub <- sample_n(df_filtered, 5e4)
+plot(sub$lon, sub$lat, pch='.')
+plot(USCensusStates, add = TRUE, border = "red")
+```
