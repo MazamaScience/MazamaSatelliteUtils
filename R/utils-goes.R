@@ -10,8 +10,6 @@
 #'
 #' @return A named list with x1, x2, y1, and y2.
 #'
-#' @examples
-#' 
 goes_getCoordBounds <- function(nc) {
   
   x_bounds <- ncvar_get(nc, "x_image_bounds")
@@ -91,9 +89,6 @@ goes_getCoordGrid <- function(nc) {
 #'
 #' @return a named list with lon and lat values
 #'
-#' @examples 
-#' coords <- goes_lonLat(x_rad, y_rad, r_eq, r_pol, H, lambda0)
-#' 
 goes_lonLat <- function(x, y, r_eq, r_pol, H, lambda0) {
   
   # Calculate distnace from satellite to point of interest
