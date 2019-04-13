@@ -1,0 +1,202 @@
+---
+title: "tom_2019-04-12"
+author: "Tom Bergamaschi"
+date: "4/12/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Recreate progress from jon_2019-04-11
+
+Start by loading AOD data
+
+```{r load_data}
+library(MazamaSpatialUtils)
+library(ncdf4)
+library(raster)
+library(rgdal)
+library(dplyr)
+library(tidyr)
+library(purrr)
+
+source("../R/utils-goes.R")
+
+setSpatialDataDir('~/Data/Spatial')
+
+# load .nc file
+file_path <- file.path('../local_data','OR_ABI-L2-AODC-M3_G16_s20190781512186_e20190781514559_c20190781516459.nc')
+nc <- ncdf4::nc_open(file_path)
+```
+
+Use raffuse code to extract AOD with `extract_aod()`. This produces a dataframe
+containing only valid data.
+
+```{r raffuse_code}
+df <- extract_aod(file_path)
+dim(df)
+names(df)
+```
+
+Randomly sample 50,000 points from the dataframe generated above and plot them.
+
+```{r point_locations}
+sub <- sample_n(df, 5e4)
+plot(sub$lon, sub$lat, pch='.')
+data(SimpleCountries)
+plot(SimpleCountries, add = TRUE, border = 'red')
+```
+
+Now subset for Texas 
+
+```{r texas}
+loadSpatialData('USCensusStates')
+Texas <- subset(USCensusStates, stateCode == "TX")
+bb_tx <- bbox(Texas)
+# Subset the data
+df_tx <-
+  df %>%
+  filter(lon >= bb_tx['x','min']) %>%
+  filter(lon <= bb_tx['x','max']) %>%
+  filter(lat >= bb_tx['y','min']) %>%
+  filter(lat <= bb_tx['y','max'])
+# Now plot all of the points  
+plot(df_tx$lon, df_tx$lat, type = 'p', pch='.')
+# We can also add counties from the maps package
+library(maps)
+map('county', 'texas', add = TRUE, col = "dodgerblue")
+# Put the USCensusStates outline on top
+plot(Texas, add = TRUE, border = "red")
+```
+
+Use Raffuse code to extract the GOES-16 coordinate grid, including _all_ values.
+
+```{r goes_getCoordGrid}
+# Get AOD (ncvar_get applies scaling factor)
+aod <- ncvar_get(nc, "AOD")
+dim(aod)
+
+# Don't want to hear the whining about "NaNs produced"
+suppressWarnings({
+  goes_grid <- goes_getCoordGrid(nc)
+})
+
+names(goes_grid)
+dim(goes_grid)
+
+# goes_grid has "unraveled" the grid
+nrow(aod) * ncol(aod)
+```
+
+
+AOD is 2D while goes_grid is a 1D list of lats, lons, and values. We first want
+to get lon and lat into a matrix, making sure to "re-ravel" using the correct
+value for `byrow`.
+
+```{r ravel_lon_lat}
+# we know to use byrow=FALSE to reravel the latitudes and longitudes
+lon <- matrix(goes_grid$lon, nrow = 2500, ncol = 1500, byrow = FALSE)
+lat <- matrix(goes_grid$lat, nrow = 2500, ncol = 1500, byrow = FALSE)
+```
+
+We can check to make sure that we used the correct value for `by_row` by plotting 
+each grid cell as a pixel colored by its value. (this takes a little while to run)
+
+```{r check_ravel}
+image(lon, col=terrain.colors(11))
+image(lat, col=terrain.colors(11))
+image(aod, col=terrain.colors(11))
+```
+
+We can see that we used the that `FALSE` was the correct value for `by_row`
+because longitude progresses from lower (green) values on the left to higher
+(white) values on the right.
+
+We would expect latitude to progress from low values on the bottom to high values
+on the top. However, it does the opposite. But, so does AOD. The distictive curve
+that was in the bottom right corner in the first plot is in the top right corner
+here. And all we need is consistancy in the way that lat, lon and aod are gridded,
+so we are ready to continue.
+
+Next we subset and use as.numeric to unravel.
+
+```{r}
+# now that AOD, lon and lat are all gridded consistantly, subset and unravel them again
+vector_lon <- as.numeric(lon[800:1000, 600:800])
+vector_lat <- as.numeric(lat[800:1000, 600:800])
+vector_aod <- as.numeric(aod[800:1000, 600:800])
+
+# And of course we need to plot them to see where they are
+map('state', col = 'red')
+points(vector_lon, vector_lat, pch='.')
+
+# What is the range of aod?
+hist(vector_aod, n = 50)
+
+# Set up some fake colors
+
+color_indices <- round(vector_aod * 3)
+color_indices[color_indices < 1] <- 1
+vector_col <- topo.colors(7)[color_indices]
+map('county', c('texas','louisiana'), col = 'black')
+points(vector_lon, vector_lat, col = vector_col, pch=18, cex=0.2)
+```
+
+## Create a raster object
+
+Following instructions from [this][U_of_O_tutorial] tutorial to create raster
+object from the subset above.
+
+[U_of_O_tutorial]: http://geog.uoregon.edu/bartlein/courses/geog490/week06-geospatial.html#gridding-or-rasterizing-point-data
+
+Convert AOD data to a `SpatialPointsDataFrame`
+
+```{r convert_to_spdf}
+aod_coords <- cbind(vector_lon, vector_lat)
+aod_pts <- SpatialPointsDataFrame(coords=aod_coords, data=data.frame(vector_aod))
+```
+
+Now create an empty raster to add the AOD data to. The following creates two empty
+rasters with a resolution defined by `cell_size`.
+
+```{r make_raster}
+cell_size = 0.1  # resolution in degrees
+lon_min <- min(vector_lon); lon_max <- max(vector_lon)
+lat_min <- min(vector_lat); lat_max <- max(vector_lat)
+ncols <- ((lon_max - lon_min)/cell_size)+1 
+nrows <- ((lat_max - lat_min)/cell_size)+1
+
+aod_raster_count <- raster(nrows=nrows, ncols=ncols, 
+                           xmn=lon_min, xmx=lon_max, 
+                           ymn=lat_min, ymx=lat_max, 
+                           res=cell_size, 
+                           crs="+proj=longlat +datum=WGS84")
+
+aod_raster_mean <- raster(nrows=nrows, ncols=ncols, 
+                           xmn=lon_min, xmx=lon_max, 
+                           ymn=lat_min, ymx=lat_max, 
+                           res=cell_size, 
+                           crs="+proj=longlat +datum=WGS84")
+```
+
+Now we rasterize the AOD data, using count and mean functions respectively.
+
+```{r rasterize}
+aod_raster_count <- rasterize(aod_coords, aod_raster_count, fun="count")
+aod_raster_mean <- rasterize(aod_pts, aod_raster_mean, fun=mean)
+aod_raster
+```
+
+Now we plot them!
+
+```{r plot_raster}
+plot(aod_raster_count)
+map('county', c('texas','louisiana'), col = 'black', add=TRUE)
+
+map('county', c('texas','louisiana'), col = 'black')
+plot(aod_raster_mean$vector_aod, add=TRUE)
+points(vector_lon, vector_lat, pch=".")
+```
+
