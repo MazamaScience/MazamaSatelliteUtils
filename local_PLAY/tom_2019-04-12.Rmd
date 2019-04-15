@@ -7,13 +7,7 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-```
 
-## Recreate progress from jon_2019-04-11
-
-Start by loading AOD data
-
-```{r load_data}
 library(MazamaSpatialUtils)
 library(ncdf4)
 library(raster)
@@ -21,9 +15,14 @@ library(rgdal)
 library(dplyr)
 library(tidyr)
 library(purrr)
-
 source("../R/utils-goes.R")
+```
 
+## Recreate progress from jon_2019-04-11
+
+Start by loading AOD data
+
+```{r load_data}
 setSpatialDataDir('~/Data/Spatial')
 
 # load .nc file
@@ -186,7 +185,7 @@ Now we rasterize the AOD data, using count and mean functions respectively.
 ```{r rasterize}
 aod_raster_count <- rasterize(aod_coords, aod_raster_count, fun="count")
 aod_raster_mean <- rasterize(aod_pts, aod_raster_mean, fun=mean)
-aod_raster
+aod_raster_count
 ```
 
 Now we plot them!
@@ -197,6 +196,5 @@ map('county', c('texas','louisiana'), col = 'black', add=TRUE)
 
 map('county', c('texas','louisiana'), col = 'black')
 plot(aod_raster_mean$vector_aod, add=TRUE)
-points(vector_lon, vector_lat, pch=".")
 ```
 
