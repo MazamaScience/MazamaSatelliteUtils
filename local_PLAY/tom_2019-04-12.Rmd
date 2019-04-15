@@ -186,7 +186,6 @@ Now we rasterize the AOD data, using count and mean functions respectively.
 ```{r rasterize}
 aod_raster_count <- rasterize(aod_coords, aod_raster_count, fun="count")
 aod_raster_mean <- rasterize(aod_pts, aod_raster_mean, fun=mean)
-aod_raster
 ```
 
 Now we plot them!
