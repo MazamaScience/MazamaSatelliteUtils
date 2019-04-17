@@ -1,0 +1,245 @@
+---
+title: "Tom_2019-04-15"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(MazamaSpatialUtils)
+library(ncdf4)
+library(raster)
+library(rgdal)
+library(dplyr)
+library(tidyr)
+library(purrr)
+library(maps)
+source("../R/utils-goes.R")
+
+setSpatialDataDir("~/Data/Spatial")
+```
+
+The GOES 16 satellite is geostationary and therefore the coordinate grid on which
+it's variables are defined should not change. So, instead of calculating it every
+time, it would be faster to just save the latitudes and longitudes as matrices
+in a `.rda` file and load that into memory instead of calculating the latitude
+and longitude grids every time.
+
+To do this, let's first load a GOES 16 AOD file and calculate the latitude and
+longitudes using the projection information in the file.
+
+```{r load_nc}
+# load .nc file
+file_path <- file.path('../local_data','OR_ABI-L2-AODC-M3_G16_s20190781512186_e20190781514559_c20190781516459.nc')
+nc <- ncdf4::nc_open(file_path)
+```
+
+
+Next, let's compute the coordinate grid for the file.
+
+```{r get_coords}
+suppressWarnings({
+  df <- goes_getCoordGrid(nc)
+})
+
+names(df)
+```
+
+Now, store latitude and longitude in matrices. We know the correct parameters to 
+use here from the previous notebook (`tom_2019-04-12`).
+
+```{r store_matrices}
+lon <- matrix(df$lon, nrow = 2500, ncol = 1500, byrow = F)
+lat <- matrix(df$lat, nrow = 2500, ncol = 1500, byrow = F)
+```
+
+Ok, we are ready to store our latitude and longitude matrices, along with the
+projection information from this .nc file so that we can compare it to future
+.nc files and ensure that our assumption that the grids will be the same is
+correct.
+
+_Note_:
+I will save the data as `goesEastGrid.rda` as apposed to `goes16Grid.rda` because 
+the projection information is specific to the satellite location, not the satellite
+itself. 
+
+```{r save_data}
+proj_info <- ncatt_get(nc, "goes_imager_projection")
+
+goesEastGrid <- list(longitude = lon, latitude = lat, projection = proj_info)
+setwd("../local_data")
+save(goesEastGrid, file = "goesEastGrid.rda")
+```
+
+Now lets try using the file we just saved. 
+
+```{r load_data}
+# remove variables we will load from the environment
+rm(goesEastGrid, lat, lon)
+
+load("../local_data/goesEastGrid.rda")
+
+dim(goesEastGrid$longitude)
+```
+
+```{r subset_data}
+aod <- ncvar_get(nc, "AOD")
+
+# select a subset of the loaded latitudes/longitudes the aod from the .nc file,
+# and flatten them.
+vector_lon <- as.numeric(goesEastGrid$longitude[300:700, 400:800])
+vector_lat <- as.numeric(goesEastGrid$latitude[300:700, 400:800])
+vector_aod <- as.numeric(aod[300:700, 400:800])
+
+# plot the subset to see what we selected
+map("state", col="red")
+points(vector_lon, vector_lat, pch='.')
+```
+
+Looks like we got an area over Nevada, Utah, Colorado, Arizona, New Mexico, and 
+Texas. Ok, lets rasterize this using the methods from last notebook.
+
+Note that I am adding 
+
+```{r rasterize}
+aod_coords <- cbind(vector_lon, vector_lat)
+aod_pts <- SpatialPointsDataFrame(coords=aod_coords, data=data.frame(vector_aod))
+
+cell_size = 0.1  # resolution in degrees
+lon_min <- min(vector_lon); lon_max <- max(vector_lon)
+lat_min <- min(vector_lat); lat_max <- max(vector_lat)
+ncols <- ((lon_max - lon_min)/cell_size)+1 
+nrows <- ((lat_max - lat_min)/cell_size)+1
+
+aod_raster_mean <- raster(nrows=nrows, ncols=ncols, 
+                           xmn=lon_min, xmx=lon_max, 
+                           ymn=lat_min, ymx=lat_max, 
+                           res=cell_size,
+                           crs="+proj=longlat +datum=WGS84 +ellps=GRS80")
+
+aod_raster_mean <- rasterize(aod_pts, aod_raster_mean, fun=mean)
+aod_raster_mean
+```
+
+And now plot it...
+
+```{r plot_raster}
+plot(aod_raster_mean$vector_aod)
+map("state", col="red", add=T)
+```
+
+Cool! Looks like loading the coordinate grid from a `.rda` works well!
+
+Now I want to see if we can modify the rasterizing method above to rasterize the
+whole dataset. This is challenging because NAs exist within the longitude and
+latitude matrices where the imager points into space.
+
+We need to get rid of these invalid latitudes and longitudes, and their
+corresponding AOD values, before we rasterize.
+
+```{r rasterize_all}
+# flatten lon, lat, aod
+lon <- as.numeric(goesEastGrid$longitude)
+lat <- as.numeric(goesEastGrid$latitude)
+aod <- as.numeric(aod)
+
+# drop all data with invalid latitudes and longitudes
+mask <- !is.na(lon) & !is.na(lat)
+valid_lon <- lon[mask]
+valid_lat <- lat[mask]
+valid_aod <- aod[mask]
+
+# convert to SpatialPointsDataFrame
+aod_coords <- cbind(valid_lon, valid_lat)
+aod_pts <- SpatialPointsDataFrame(coords=aod_coords, data=data.frame(valid_aod))
+
+cell_size = 0.1  # resolution in degrees
+lon_min <- min(valid_lon); lon_max <- max(valid_lon)
+lat_min <- min(valid_lat); lat_max <- max(valid_lat)
+ncols <- ((lon_max - lon_min)/cell_size)+1 
+nrows <- ((lat_max - lat_min)/cell_size)+1
+
+aod_raster_count <- raster(nrows=nrows, ncols=ncols, 
+                           xmn=lon_min, xmx=lon_max, 
+                           ymn=lat_min, ymx=lat_max, 
+                           res=cell_size,
+                           crs="+proj=longlat +datum=WGS84 +ellps=GRS80")
+
+aod_raster_mean <- raster(nrows=nrows, ncols=ncols, 
+                           xmn=lon_min, xmx=lon_max, 
+                           ymn=lat_min, ymx=lat_max, 
+                           res=cell_size,
+                           crs="+proj=longlat +datum=WGS84 +ellps=GRS80")
+
+aod_raster_count <- rasterize(aod_pts, aod_raster_count, fun="count")
+aod_raster_mean <- rasterize(aod_pts, aod_raster_mean, fun=mean)
+aod_raster_mean
+```
+
+It worked! Horay! Lets plot it!
+
+```{r plot_all_data}
+plot(aod_raster_mean$valid_aod)
+data(SimpleCountries)
+plot(SimpleCountries, add = TRUE, border = 'red')
+
+plot(aod_raster_count)
+data(SimpleCountries)
+plot(SimpleCountries, add = TRUE, border = 'red')
+```
+
+IT WORKS!
+
+Now lets try this process with a netCDF from today!
+
+```{r new_nc}
+file_path <- file.path('../local_data','OR_ABI-L2-AODC-M6_G16_s20191051911178_e20191051913551_c20191051916434.nc')
+nc <- ncdf4::nc_open(file_path)
+
+aod <- ncvar_get(nc, "AOD")
+
+
+# flatten lon, lat, aod
+lon <- as.numeric(goesEastGrid$longitude)
+lat <- as.numeric(goesEastGrid$latitude)
+aod <- as.numeric(aod)
+
+# drop all data with invalid latitudes and longitudes
+mask <- !is.na(lon) & !is.na(lat)
+valid_lon <- lon[mask]
+valid_lat <- lat[mask]
+valid_aod <- aod[mask]
+
+# convert to SpatialPointsDataFrame
+aod_coords <- cbind(valid_lon, valid_lat)
+aod_pts <- SpatialPointsDataFrame(coords=aod_coords, data=data.frame(valid_aod))
+
+cell_size = 0.1  # resolution in degrees
+lon_min <- min(valid_lon); lon_max <- max(valid_lon)
+lat_min <- min(valid_lat); lat_max <- max(valid_lat)
+ncols <- ((lon_max - lon_min)/cell_size)+1 
+nrows <- ((lat_max - lat_min)/cell_size)+1
+
+aod_raster_count <- raster(nrows=nrows, ncols=ncols, 
+                           xmn=lon_min, xmx=lon_max, 
+                           ymn=lat_min, ymx=lat_max, 
+                           res=cell_size,
+                           crs="+proj=longlat +datum=WGS84 +ellps=GRS80")
+
+aod_raster_mean <- raster(nrows=nrows, ncols=ncols, 
+                           xmn=lon_min, xmx=lon_max, 
+                           ymn=lat_min, ymx=lat_max, 
+                           res=cell_size,
+                           crs="+proj=longlat +datum=WGS84 +ellps=GRS80")
+
+aod_raster_count <- rasterize(aod_pts, aod_raster_count, fun="count")
+aod_raster_mean <- rasterize(aod_pts, aod_raster_mean, fun=mean)
+aod_raster_mean
+```
+
+```{r plot_new}
+plot(aod_raster_mean$valid_aod)
+data(SimpleCountries)
+plot(SimpleCountries, add = TRUE, border = 'red')
+```
+
+COOL!
