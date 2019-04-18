@@ -1,6 +1,23 @@
 #' @import raster
 #' @importFrom magrittr '%>%'
 
+# ----- Example datasets ------------------------------------------------------
+
+#'
+#' @docType data
+#' @keywords datasets
+#' @name goesEastGrid
+#' @title GOES East Grid
+#' @format A list with three elements
+#' @description
+#' This dataset is the latitude/longitude grid that GOES-16 ABI data is defined
+#' on, computed from ABI scan angles provided in the netCDF and the projection
+#' parameters found in \code{goesEastGrid$projection}. Because GOES-16 is a
+#' geostationary satellite, the projection information should not change from
+#' scan to scan. Using this dataset saves us from repeating the computationally
+#' expensive task of converting scan angles to latitude/longitude. 
+NULL
+
 # ----- Internal Package State -------------------------------------------------
 
 MazamaSatelliteUtilsEnv <- new.env(parent = emptyenv())
@@ -79,3 +96,6 @@ getValue <- function(raster, x, y) {
   value <- raster::getValues(raster)[raster::cellFromXY(raster, c(x, y))]
   return(value)
 }
+
+
+ 

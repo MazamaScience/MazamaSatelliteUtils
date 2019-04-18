@@ -1,26 +1,14 @@
 #' @export
-#' @title download GOES 16 AOD data
+#' @title Download GOES 16 AOD data
 #' @param date desired date (integer, character representing YYYYMMDD or datetime object)
 #' @param hour UTC hour for data (HH)
 #' @param julianDate desired date on Julian calendar (YYYYDDD). Ignored if 'date' is specified.
 #' @param product desired data product. Currently, only 'AODC' is supported.
 #' @param baseUrl base URL for data queries
-#' @return 0 if successful
+#' @description Download all GOES 16 .nc files for the given date and hour
+#' @return list of paths to downloaded files
 #' 
 
-# for testing
-if (FALSE) {
-  date = 20190415
-  hour = 11
-  julianDate = 2019105
-  product = "AODC"
-  baseUrl = "https://tools-1.airfire.org/Satellite/GOES-16"
-  downloadedFiles <- goes_downloadAOD(date = date, 
-                                      julianDate = julianDate, 
-                                      hour = hour, 
-                                      product = product)
-  downloadedFiles
-}
 
 goes_downloadAOD <- function(
   date = NULL,
@@ -46,7 +34,7 @@ goes_downloadAOD <- function(
     stop(paste0("'hour' must be of the format HH"))
   }
   
-  if (is.POSIXct(date)) {
+  if (lubridate::is.POSIXct(date)) {
     date <- format(date, "%Y%m%d")
   } else {
     date <- as.character(date)
@@ -116,4 +104,19 @@ goes_downloadAOD <- function(
   }
   
   return(invisible(downloadedFiles))
+}
+
+
+# for testing
+if (FALSE) {
+  date = 20190415
+  hour = 11
+  julianDate = 2019105
+  product = "AODC"
+  baseUrl = "https://tools-1.airfire.org/Satellite/GOES-16"
+  downloadedFiles <- goes_downloadAOD(date = date, 
+                                      julianDate = julianDate, 
+                                      hour = hour, 
+                                      product = product)
+  downloadedFiles
 }

@@ -10,6 +10,8 @@
 
 # Ignore all directories beginning with "local"
 ^local*
+^OLD*
+^executables
 
 # Ignore pkgdown input and output files
 ^docs$
