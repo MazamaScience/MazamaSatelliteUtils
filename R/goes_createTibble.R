@@ -44,4 +44,13 @@ if (FALSE) {
   filePath <- "/Users/tom/Projects/MazamaSatelliteUtils/local_data/OR_ABI-L2-AODC-M3_G16_s20190781512186_e20190781514559_c20190781516459.nc"
   nc <- nc_open(filePath)
   tbl <- goes_createTibble(nc)
+  # NOTE: The DQF column of the returned tibble contains NAs. However, it looks
+  # NOTE: like the rows with NA for DQF also have NA for AOD, so I am going to
+  # NOTE: assume that dropping rows with NA DQF is ok downstream. I checked this
+  # NOTE: with:
+  # NOTE: 
+  # NOTE: mask <- is.na(tbl$DQF)
+  # NOTE: summary(tbl$AOD[mask])
+  # NOTE: Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+  # NOTE: NA      NA      NA     NaN      NA      NA   24840
 }
