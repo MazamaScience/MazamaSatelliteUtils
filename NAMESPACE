@@ -3,6 +3,7 @@
 export("%>%")
 export(getSatelliteDataDir)
 export(getValue)
+export(goes_createTibble)
 export(goes_downloadAOD)
 export(goes_getCoordBounds)
 export(goes_getCoordGrid)

@@ -6,15 +6,19 @@
 # still persists.
 
 if (FALSE) {
-  filePath = "/Users/tom/Projects/MazamaSatelliteUtils/local_data/OR_ABI-L2-AODC-M3_G16_s20190781512186_e20190781514559_c20190781516459.nc"
-  raster <- goes_createRaster(filePath)
+  filePath <- "/Users/tom/Projects/MazamaSatelliteUtils/local_data/OR_ABI-L2-AODC-M3_G16_s20190781512186_e20190781514559_c20190781516459.nc"
+  raster <- goes_createRaster(filePath, xmn = 500, xmx = 800, ymn = 500, ymx = 800)
 }
 
 goes_createRaster <- function(
   filePath,
   var = "AOD",
   reso = 0.1,
-  fun = "last"
+  fun = mean,
+  xmn = NULL,
+  xmx = NULL,
+  ymn = NULL,
+  ymx = NULL
 ) {
   
   # sanity check
@@ -33,10 +37,16 @@ goes_createRaster <- function(
   # extract AOD
   variable <- ncdf4::ncvar_get(nc, var)
   
-  # flatten lon, lat, aod
-  lon <- as.numeric(goesEastGrid$longitude)
-  lat <- as.numeric(goesEastGrid$latitude)
-  variable <- as.numeric(variable)
+  # set min/max variables for subsetting
+  if (is.null(xmn)) {xmn = 0} 
+  if (is.null(xmx)) {xmx = dim(goesEastGrid$longitude)[1]} 
+  if (is.null(ymn)) {ymn = 0} 
+  if (is.null(ymx)) {ymx = dim(goesEastGrid$longitude)[2]}
+  
+  # flatten lon, lat, aod, and subset
+  lon <- as.numeric(goesEastGrid$longitude[xmn:xmx, ymn:ymx])
+  lat <- as.numeric(goesEastGrid$latitude[xmn:xmx, ymn:ymx])
+  variable <- as.numeric(variable[xmn:xmx, ymn:ymx])
 
   # drop all data with invalid latitudes and longitudes
   mask <- !is.na(lon) & !is.na(lat)
@@ -62,6 +72,7 @@ goes_createRaster <- function(
                            crs="+proj=longlat +datum=WGS84 +ellps=GRS80")
 
   raster <- raster::rasterize(variable_pts, raster, fun=fun)
+  names(raster)[2] <- var
 
   return(raster)
 }
