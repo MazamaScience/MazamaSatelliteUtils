@@ -16,12 +16,12 @@ xlim <- bbox[1,]
 yliml <- bbox[2,]
 
 # Create an hourly average raster object for Washington
-aod_wa <- goes_rasterize("AOD", 
-                         "2019042311",
-                         xlim = xlim,
-                         ylim = ylim,
-                         resolution = 0.05, 
-                         stat = "mean")
+aod_wa <- goes_createRaster("AOD", 
+                            "2019042311",
+                            xlim = xlim,
+                            ylim = ylim,
+                            resolution = 0.05, 
+                            stat = "mean")
 
 goes_map(aod_wa)
 
