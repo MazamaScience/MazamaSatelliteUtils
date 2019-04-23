@@ -26,8 +26,3 @@ a named list with lon and lat values
 \description{
 Converts GOES xy radian coordinates to latitude and longitude pairs
 }
-\examples{
-\dontrun{
-coords <- goes_lonLat(x_rad, y_rad, r_eq, r_pol, H, lambda0)
-}
-}

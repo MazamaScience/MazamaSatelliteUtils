@@ -15,6 +15,3 @@ A named list with x1, x2, y1, and y2.
 \description{
 Determines the x and y bounds (in radians) for a given netcdf handle
 }
-\examples{
-
-}
