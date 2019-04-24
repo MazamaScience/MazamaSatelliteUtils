@@ -137,5 +137,5 @@ isGoesProjection <- function(
   nc
 ) {
   projection <- goes_getProjection(nc)
-  return(all(unlist(projection) == unlist(goesEastGrid$projection)))
+  return(all(unlist(projection) == unlist(MazamaSatelliteUtils::goesEastGrid$projection)))
 }

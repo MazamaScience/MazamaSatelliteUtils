@@ -12,8 +12,9 @@ goes_createTibble(nc, vars = c("AOD", "DQF"))
 \item{vars}{list of variables}
 }
 \value{
-tibble
+Tibble (dataframe) with NetCDF variables and associated locations.
 }
 \description{
-Create a tibble with columns: AOD, DQF, lon, and lat
+Create a tibble with columns: AOD, DQF, longitude and latitude.
+This information is sufficient to plot as points or create a raster object.
 }

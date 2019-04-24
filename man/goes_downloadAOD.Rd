@@ -9,19 +9,23 @@ goes_downloadAOD(date = NULL, hour = NULL, julianDate = NULL,
   baseUrl = "https://tools-1.airfire.org/Satellite/GOES-16")
 }
 \arguments{
-\item{date}{desired date (integer, character representing YYYYMMDD or datetime object)}
+\item{date}{desired date (integer, character representing YYYYMMDD or \code{POSIXct})}
 
 \item{hour}{UTC hour for data (HH)}
 
-\item{julianDate}{desired date on Julian calendar (YYYYDDD). Ignored if 'date' is specified.}
+\item{julianDate}{desired date on Julian calendar (YYYYDDD). Ignored if \code{date} is specified.}
 
 \item{product}{desired data product. Currently, only 'AODC' is supported.}
 
 \item{baseUrl}{base URL for data queries}
 }
 \value{
-list of paths to downloaded files
+Vectoe of downloaded filepaths.
 }
 \description{
-Download all GOES 16 .nc files for the given date and hour
+Download all GOES 16 .nc files for the given date and hour to
+the directory specfied by \code{setSatelliteDataDir()}.
+}
+\seealso{
+\code{\link{setSatelliteDataDir}}
 }

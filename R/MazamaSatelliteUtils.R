@@ -81,21 +81,3 @@ setSatelliteDataDir <- function(dataDir) {
   return(invisible(old))
 }
 
-# ----- Other utility functions ------------------------------------------------
-
-#' @keywords utils
-#' @export
-#' @title Get raster value at a point
-#' @param raster raster layer
-#' @param x x (longitude) value
-#' @param y y (latitude) value
-#' @description Get raster value at a point
-#' @return value of raster cell covering the point
-
-getValue <- function(raster, x, y) {
-  value <- raster::getValues(raster)[raster::cellFromXY(raster, c(x, y))]
-  return(value)
-}
-
-
- 

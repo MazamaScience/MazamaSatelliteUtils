@@ -1,13 +1,19 @@
 #' @export
+#' 
 #' @title Download GOES 16 AOD data
-#' @param date desired date (integer, character representing YYYYMMDD or datetime object)
+#' 
+#' @param date desired date (integer, character representing YYYYMMDD or \code{POSIXct})
 #' @param hour UTC hour for data (HH)
-#' @param julianDate desired date on Julian calendar (YYYYDDD). Ignored if 'date' is specified.
+#' @param julianDate desired date on Julian calendar (YYYYDDD). Ignored if \code{date} is specified.
 #' @param product desired data product. Currently, only 'AODC' is supported.
 #' @param baseUrl base URL for data queries
-#' @description Download all GOES 16 .nc files for the given date and hour
-#' @return list of paths to downloaded files
 #' 
+#' @description Download all GOES 16 .nc files for the given date and hour to
+#' the directory specfied by \code{setSatelliteDataDir()}.
+#' 
+#' @return Vectoe of downloaded filepaths.
+#' 
+#' @seealso \code{\link{setSatelliteDataDir}}
 
 
 goes_downloadAOD <- function(
@@ -17,15 +23,16 @@ goes_downloadAOD <- function(
   product = "AODC",
   baseUrl = "https://tools-1.airfire.org/Satellite/GOES-16"
 ) {
-  # ----- input validation -----------------------------------------------------
+  
+  # ----- Validate Parameters --------------------------------------------------
   
   # required parameters are provided
-  if (is.null(date) & is.null(julianDate)) {
-    stop(paste0("'date' or 'julianDate' is required"))
+  if ( is.null(date) && is.null(julianDate) ) {
+    stop("Required parameter 'date' or 'julianDate' is missing")
   }
   
-  if (is.null(hour)) {
-    stop(paste0("'hour' is required"))
+  if ( is.null(hour) ) {
+    stop(paste0("Required parameter 'hour' is missing"))
   }
   
   # parameters are of correct format
@@ -51,15 +58,15 @@ goes_downloadAOD <- function(
   }
   
   validProducts <- c("AODC")
-  if (!(product %in% validProducts)) {
+  if ( !(product %in% validProducts) ) {
     stop(paste0("Invalid value for 'product' parameter. Please choose from the following: ",
                 paste0(validProducts, collapse = ", ")))
   }
   
-  # ----- Download data --------------------------------------------------------
+  # ----- Download Data --------------------------------------------------------
   
   # Parse date and time
-  if (!is.null(date)) {
+  if ( !is.null(date) ) {
     orders <- c("YmdH")
     datetime <- lubridate::parse_date_time(paste0(date, hour), orders=orders, tz="UTC")
   } else {
@@ -86,29 +93,34 @@ goes_downloadAOD <- function(
   
   # Download matches
   downloadedFiles <- NULL
-  for (file in matchingFiles) {
+  for ( file in matchingFiles ) {
     filePath <- paste0(satelliteDataDir,"/", file)
-    if (!file.exists(filePath)) { # don't download if file exists locally
+    # don't download if file exists locally
+    if ( !file.exists(filePath) ) {
       fileUrl <- paste0(url, "/", file)
       
       result <- try({
         utils::download.file(fileUrl, destfile = filePath)
         downloadedFiles <- c(downloadedFiles, filePath)
-        }, silent=FALSE)
+      }, silent=FALSE)
       
-      if ("try-error" %in% class(result)) {
+      if ( "try-error" %in% class(result) ) {
         errMsg <- geterrmessage()
-        stop(errMsg)
+        # TODO:  logger.warn(errMsg)
+        # Start work on the next file ###stop(errMsg)
       }
     }
   }
   
   return(invisible(downloadedFiles))
+  
 }
 
 
-# for testing
+# ===== DEBUGGING ==============================================================
+
 if (FALSE) {
+  
   date = 20190415
   hour = 11
   julianDate = 2019105
@@ -118,5 +130,7 @@ if (FALSE) {
                                       julianDate = julianDate, 
                                       hour = hour, 
                                       product = product)
-  downloadedFiles
+  
+  print(downloadedFiles)
+  
 }
