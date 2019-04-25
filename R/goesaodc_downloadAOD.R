@@ -5,7 +5,6 @@
 #' @param date desired date (integer, character representing YYYYMMDD or \code{POSIXct})
 #' @param hour UTC hour for data (HH)
 #' @param julianDate desired date on Julian calendar (YYYYDDD). Ignored if \code{date} is specified.
-#' @param product desired data product. Currently, only 'AODC' is supported.
 #' @param baseUrl base URL for data queries
 #' 
 #' @description Download all GOES 16 .nc files for the given date and hour to
@@ -16,12 +15,11 @@
 #' @seealso \code{\link{setSatelliteDataDir}}
 
 
-goes_downloadAOD <- function(
+goesaodc_downloadAOD <- function(
   date = NULL,
   hour = NULL,
   julianDate = NULL,
-  product = "AODC",
-  baseUrl = "https://tools-1.airfire.org/Satellite/GOES-16"
+  baseUrl = "https://tools-1.airfire.org/Satellite/GOES-16/AODC"
 ) {
   
   # ----- Validate Parameters --------------------------------------------------
@@ -75,11 +73,10 @@ goes_downloadAOD <- function(
   }
   
   # Create URL
-  url <- paste(baseUrl, product, sep="/")
-  
+
   # Get list of available files for specified date
   links <- 
-    xml2::read_html(url) %>%
+    xml2::read_html(baseUrl) %>%
     xml2::xml_child("body") %>% 
     xml2::xml_child("table") %>%
     xml2::xml_find_all("//a") %>%
@@ -97,7 +94,7 @@ goes_downloadAOD <- function(
     filePath <- paste0(satelliteDataDir,"/", file)
     # don't download if file exists locally
     if ( !file.exists(filePath) ) {
-      fileUrl <- paste0(url, "/", file)
+      fileUrl <- paste0(baseUrl, "/", file)
       
       result <- try({
         utils::download.file(fileUrl, destfile = filePath)
@@ -121,15 +118,12 @@ goes_downloadAOD <- function(
 
 if (FALSE) {
   
-  date = 20190415
-  hour = 11
-  julianDate = 2019105
-  product = "AODC"
-  baseUrl = "https://tools-1.airfire.org/Satellite/GOES-16"
-  downloadedFiles <- goes_downloadAOD(date = date, 
+  date <- 20190415
+  hour <- "09"
+  julianDate <- 2019105
+  downloadedFiles <- goesaodc_downloadAOD(date = date, 
                                       julianDate = julianDate, 
-                                      hour = hour, 
-                                      product = product)
+                                      hour = hour)
   
   print(downloadedFiles)
   

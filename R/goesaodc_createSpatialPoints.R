@@ -21,7 +21,7 @@
 #' 
 #' @return SpatialPointsDataFrame
 
-goes_createSpatialPoints <- function(
+goesaodc_createSpatialPoints <- function(
   nc,
   xmn = NULL,
   xmx = NULL,
@@ -41,7 +41,7 @@ goes_createSpatialPoints <- function(
   # ----- Filter Data ----------------------------------------------------------
   
   # create tibble
-  tbl <- goes_createTibble(nc)
+  tbl <- goesaodc_createTibble(nc)
 
   # filter tibble
   if (!is.null(xmn)) {
@@ -73,5 +73,5 @@ goes_createSpatialPoints <- function(
 if (FALSE) {
   filePath <- "/Users/tom/Projects/MazamaSatelliteUtils/local_data/OR_ABI-L2-AODC-M3_G16_s20190781512186_e20190781514559_c20190781516459.nc"
   nc <- nc_open(filePath)
-  pts <- goes_createSpatialPoints(nc)
+  pts <- goesaodc_createSpatialPoints(nc)
 }

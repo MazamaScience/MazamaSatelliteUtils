@@ -10,7 +10,7 @@
 #'
 #' @return A named list with x1, x2, y1, and y2.
 #'
-goes_getCoordBounds <- function(nc) {
+goesaodc_getCoordBounds <- function(nc) {
   
   x_bounds <- ncvar_get(nc, "x_image_bounds")
   y_bounds <- ncvar_get(nc, "y_image_bounds")
@@ -35,7 +35,7 @@ goes_getCoordBounds <- function(nc) {
 #'
 #' @return Dataframe.
 #' 
-goes_getCoordGrid <- function(nc) {
+goesaodc_getCoordGrid <- function(nc) {
   
   # Get the x and y variables
   x <- ncvar_get(nc, varid = "x")
@@ -56,18 +56,18 @@ goes_getCoordGrid <- function(nc) {
                   y_rad = y * y_scale + y_offset)
   
   # Get the parameters needed for geolocation
-  r_eq <- ncatt_get(nc, "goes_imager_projection", "semi_major_axis")$value
-  r_pol <- ncatt_get(nc, "goes_imager_projection", "semi_minor_axis")$value
-  perspective_point <- ncatt_get(nc, "goes_imager_projection",
+  r_eq <- ncatt_get(nc, "goesaodc_imager_projection", "semi_major_axis")$value
+  r_pol <- ncatt_get(nc, "goesaodc_imager_projection", "semi_minor_axis")$value
+  perspective_point <- ncatt_get(nc, "goesaodc_imager_projection",
                                  "perspective_point_height")$value
   H <- perspective_point + r_eq
-  lambda0 <- ncatt_get(nc, "goes_imager_projection",
+  lambda0 <- ncatt_get(nc, "goesaodc_imager_projection",
                        "longitude_of_projection_origin")$value * (pi / 180)
   
   # geolocate
   df <- dplyr::bind_cols(df, 
                          purrr::map2_dfr(df$x_rad, df$y_rad,        # variables
-                                         goes_lonLat,               # function
+                                         goesaodc_lonLat,               # function
                                          r_eq, r_pol, H, lambda0))  # constants
   
   return(df)
@@ -89,7 +89,7 @@ goes_getCoordGrid <- function(nc) {
 #'
 #' @return a named list with lon and lat values
 #'
-goes_lonLat <- function(x, y, r_eq, r_pol, H, lambda0) {
+goesaodc_lonLat <- function(x, y, r_eq, r_pol, H, lambda0) {
   
   # Calculate distnace from satellite to point of interest
   a <- sin(x)^2 + cos(x)^2 * (cos(y)^2 + (r_eq^2 / r_pol^2) * sin(y)^2)
@@ -117,7 +117,7 @@ goes_lonLat <- function(x, y, r_eq, r_pol, H, lambda0) {
 #' @description Return the projection information of `nc`
 #' @return list of metadata
 #' 
-goes_getProjection <- function(
+goesaodc_getProjection <- function(
   nc
 ) {
   projection <- ncdf4::ncatt_get(nc, "goes_imager_projection")
@@ -136,6 +136,6 @@ goes_getProjection <- function(
 isGoesProjection <- function(
   nc
 ) {
-  projection <- goes_getProjection(nc)
+  projection <- goesaodc_getProjection(nc)
   return(all(unlist(projection) == unlist(MazamaSatelliteUtils::goesEastGrid$projection)))
 }

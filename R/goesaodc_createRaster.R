@@ -22,7 +22,7 @@
 #' 
 #' @return RasterBrick
 
-goes_createRaster <- function(
+goesaodc_createRaster <- function(
   nc,
   res = 0.1,
   fun = mean,
@@ -35,7 +35,7 @@ goes_createRaster <- function(
   
   # ----- Create SpatialPointsDataFrame ----------------------------------------
   
-  pts <- goes_createSpatialPoints(nc = nc,
+  pts <- goesaodc_createSpatialPoints(nc = nc,
                                   xmn = xmn, xmx = xmx,
                                   ymn = ymn, ymx = ymx,
                                   dqfLevel = dqfLevel)
@@ -60,10 +60,12 @@ goes_createRaster <- function(
   return(raster)
 }
 
+# ===== Debugging ==============================================================
+
 if (FALSE) {
   filePath <- "/Users/tom/Projects/MazamaSatelliteUtils/local_data/OR_ABI-L2-AODC-M3_G16_s20190781512186_e20190781514559_c20190781516459.nc"
   nc <- nc_open(filePath)
-  raster <- goes_createRaster(nc)
+  raster <- goesaodc_createRaster(nc)
   
   # plot data
   loadSpatialData('USCensusStates')
@@ -74,7 +76,7 @@ if (FALSE) {
   # plot just Pennsylvania
   pa <- subset(USCensusStates, stateCode == "PA")
   bb_pa <- bbox(pa)
-  raster <- goes_createRaster(nc, 
+  raster <- goesaodc_createRaster(nc, 
                               xmn = bb_pa['x','min'], 
                               xmx = bb_pa['x','max'], 
                               ymn = bb_pa['y','min'], 
