@@ -3,6 +3,8 @@
 export("%>%")
 export(getSatelliteDataDir)
 export(getValue)
+export(goes_createRaster)
+export(goes_createSpatialPoints)
 export(goes_createTibble)
 export(goes_downloadAOD)
 export(goes_getCoordBounds)
