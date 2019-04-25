@@ -11,7 +11,7 @@
 #' @description Download all GOES 16 .nc files for the given date and hour to
 #' the directory specfied by \code{setSatelliteDataDir()}.
 #' 
-#' @return Vectoe of downloaded filepaths.
+#' @return Vector of downloaded filepaths.
 #' 
 #' @seealso \code{\link{setSatelliteDataDir}}
 

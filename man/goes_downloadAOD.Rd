@@ -20,7 +20,7 @@ goes_downloadAOD(date = NULL, hour = NULL, julianDate = NULL,
 \item{baseUrl}{base URL for data queries}
 }
 \value{
-Vectoe of downloaded filepaths.
+Vector of downloaded filepaths.
 }
 \description{
 Download all GOES 16 .nc files for the given date and hour to
