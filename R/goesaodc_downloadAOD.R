@@ -55,12 +55,6 @@ goesaodc_downloadAOD <- function(
     }
   }
   
-  validProducts <- c("AODC")
-  if ( !(product %in% validProducts) ) {
-    stop(paste0("Invalid value for 'product' parameter. Please choose from the following: ",
-                paste0(validProducts, collapse = ", ")))
-  }
-  
   # ----- Download Data --------------------------------------------------------
   
   # Parse date and time
@@ -83,7 +77,21 @@ goesaodc_downloadAOD <- function(
     xml2::xml_attr("href")
   
   availableFiles <- links[-(1:5)]
-  matchingFiles <- stringr::str_subset(availableFiles, format(datetime, "%Y%j%H"))
+  
+  # retrieve the scan start time from the file name
+  getStartTime <- function(file) {
+    stringr::str_split(file, "_") %>% 
+      unlist() %>% 
+      dplyr::nth(-3) %>% 
+      stringr::str_sub(2, -1)
+  }
+  
+  # get the scan start times from files found at baseUrl
+  startTimes <- purrr::map_chr(availableFiles, getStartTime)
+  
+  # select matching files
+  mask <- stringr::str_detect(startTimes, format(datetime, "%Y%j%H"))
+  matchingFiles <- availableFiles[mask]
   
   # Get satelliteDataDir
   satelliteDataDir <- getSatelliteDataDir()
@@ -118,11 +126,9 @@ goesaodc_downloadAOD <- function(
 
 if (FALSE) {
   
-  date <- 20190415
+  date <- 20190422
   hour <- "09"
-  julianDate <- 2019105
   downloadedFiles <- goesaodc_downloadAOD(date = date, 
-                                      julianDate = julianDate, 
                                       hour = hour)
   
   print(downloadedFiles)
