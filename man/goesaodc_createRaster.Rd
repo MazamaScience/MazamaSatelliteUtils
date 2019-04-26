@@ -28,9 +28,9 @@ goesaodc_createRaster(nc, res = 0.1, fun = mean, xmn = NULL,
 RasterBrick
 }
 \description{
-Create a raster of GOES AOD data including data points
-with the specified resolution, within the specified extent and data quality 
-flag level. Data quality level can take a value of:
+Create a RasterBrick of GOES AOD data including data points
+with the specified resolution and function, and within the specified extent 
+and data quality flag level. Data quality level can take a value of:
 
 0: High quality retrieval flag
 1: Medium quality retrieval flag

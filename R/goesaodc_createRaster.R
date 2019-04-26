@@ -11,9 +11,9 @@
 #' @param ymx upper latitude extent
 #' @param dqfLevel data quality flag level
 #' 
-#' @description Create a raster of GOES AOD data including data points
-#' with the specified resolution, within the specified extent and data quality 
-#' flag level. Data quality level can take a value of:
+#' @description Create a RasterBrick of GOES AOD data including data points
+#' with the specified resolution and function, and within the specified extent 
+#' and data quality flag level. Data quality level can take a value of:
 #' 
 #' 0: High quality retrieval flag
 #' 1: Medium quality retrieval flag
