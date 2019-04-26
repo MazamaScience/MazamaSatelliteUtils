@@ -141,16 +141,3 @@ goesaodc_isGoesProjection <- function(
   return(all(unlist(projection) == unlist(MazamaSatelliteUtils::goesEastGrid$projection)))
 }
 
-#' 
-#' @title Get GOES AOD scan start time
-#' @param file GOES AOD file name
-#' @description Retrieve scan start time from a GOES AOD file name
-#' 
-#' @return
-#'
-# getStartTime <- function(file) {
-#   stringr::str_split(file, "_") %>% 
-#     unlist() %>% 
-#     dplyr::nth(-3) %>% 
-#     stringr::str_sub(2, -1)
-# }
