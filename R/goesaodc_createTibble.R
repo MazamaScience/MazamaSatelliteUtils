@@ -16,7 +16,7 @@ goesaodc_createTibble <- function(
   # ----- Validate Parameters --------------------------------------------------
   
   # Check that nc has GOES projection
-  if ( !isGoesProjection(nc) ) {
+  if ( !goesaodc_isGoesProjection(nc) ) {
     stop("Parameter 'nc' does not have standard GOES-16 projection information.")
   }
   
