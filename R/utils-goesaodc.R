@@ -141,3 +141,52 @@ goesaodc_isGoesProjection <- function(
   return(all(unlist(projection) == unlist(MazamaSatelliteUtils::goesEastGrid$projection)))
 }
 
+#' @export
+#' 
+#' @title Create a quick plot of a GOES AOD SpatialPointsDataFrame
+#' @param pts SpatialPointsDataFrame
+#' @param var Variable to plot
+#' @param n Sample size
+#' @param colBins number of color bins
+#' @param breaks vector of color breaks
+#' @param pch plot character
+#' @param cex plot symbol scale factor
+#' @param palleteName RColorBrewer pallete name
+#' 
+#' @description Quickly subsample and plot points in a GOES AOD 
+#' spatialPointsDataFrame
+
+goesaodc_plotSpatialPoints <- function(
+  pts,
+  var = "AOD",
+  n = 1e5,
+  colBins = 5,
+  breaks = NULL,
+  pch = 15,
+  cex = 0.5,
+  paletteName = "YlOrRd"
+) {
+  
+  # Subsample points
+  indices <- sample(seq_len(nrow(pts)), n)
+  ptsSub <- pts[indices,]
+  
+  # Make breaks for specifed number of equally sized color bins
+  # TODO: Use quantiles
+  if (is.null(breaks)) {
+    mn <- min(ptsSub[[var]])
+    mx <- max(ptsSub[[var]])
+    range <- mx - mn
+    
+    breaks <- c(mn)
+    for (i in 1:colBins) {
+      breaks <- c(breaks, mn + i*(range/colBins))
+    }
+  }
+  
+  cols <- RColorBrewer::brewer.pal(length(breaks)-1, "YlOrRd")
+  col_i <- .bincode(ptsSub[[var]], breaks)
+  col_v <- cols[col_i]
+  plot(ptsSub, pch=pch, col=col_v, cex=cex)
+}
+
