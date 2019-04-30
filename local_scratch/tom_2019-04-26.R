@@ -1,8 +1,8 @@
 # 04/26/2019 Scratch
 
 # ----- get scan start time ----------------------------------------------------
-
-dataFiles <- list.files(getSatelliteDataDir())[13:51]
+regex <- "OR_ABI-L2-AODC-M6_G16_s[0-9]+_e[0-9]+_c[0-9]+\\.nc"
+dataFiles <- list.files(getSatelliteDataDir(), pattern = regex)
 
 getStartTime <- function(file) {
   stringr::str_split(file, "_") %>% 

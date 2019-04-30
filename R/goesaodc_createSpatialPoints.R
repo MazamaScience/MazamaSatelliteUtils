@@ -62,6 +62,8 @@ goesaodc_createSpatialPoints <- function(
     tbl <- dplyr::filter(tbl, .data$DQF <= dqfLevel)
   }
   
+  # TODO: check if tibble is empty and if so stop
+  
   # ----- Create SpatialPointsDataFrame ----------------------------------------
   
   spatialPoints <- sp::SpatialPointsDataFrame(
