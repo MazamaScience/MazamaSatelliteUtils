@@ -1,4 +1,5 @@
 #' @export
+#' @importFrom rlang .data
 #' 
 #' @title Create a SpatialPointsDataFrame of GOES data
 #' 
@@ -23,16 +24,17 @@
 
 goesaodc_createSpatialPoints <- function(
   nc,
-  xmn = NULL,
-  xmx = NULL,
-  ymn = NULL,
-  ymx = NULL,
+  # TODO: add bbox
+  xmn = NULL, # TODO: change to lonLo
+  xmx = NULL, # TODO: change to lonHi
+  ymn = NULL, # TODO: change to latLo
+  ymx = NULL, # TODO: change to latHi
   dqfLevel = NULL
 ) {
   
   # ----- Validate Parameters --------------------------------------------------
   
-  if (!is.null(dqfLevel)) {
+  if ( !is.null(dqfLevel) ) {
     if (!(dqfLevel %in% c(0, 1, 2, 3))) {
       stop(paste0("dqfLevel must be NULL, 0, 1, 2, or 3"))
     }
@@ -42,30 +44,32 @@ goesaodc_createSpatialPoints <- function(
   
   # create tibble
   tbl <- goesaodc_createTibble(nc)
-
+  
   # filter tibble
   if (!is.null(xmn)) {
-    tbl <- dplyr::filter(tbl, lon >= xmn)
+    tbl <- dplyr::filter(tbl, .data$lon >= xmn)
   }
   if (!is.null(xmx)) {
-    tbl <- dplyr::filter(tbl, lon <= xmx)
+    tbl <- dplyr::filter(tbl, .data$lon <= xmx)
   }
   if (!is.null(ymn)) {
-    tbl <- dplyr::filter(tbl, lat >= ymn)
+    tbl <- dplyr::filter(tbl, .data$lat >= ymn)
   }
   if (!is.null(ymx)) {
-    tbl <- dplyr::filter(tbl, lat <= ymx)
+    tbl <- dplyr::filter(tbl, .data$lat <= ymx)
   }
   if (!is.null(dqfLevel)) {
-    tbl <- dplyr::filter(tbl, DQF <= dqfLevel)
+    tbl <- dplyr::filter(tbl, .data$DQF <= dqfLevel)
   }
   
   # ----- Create SpatialPointsDataFrame ----------------------------------------
   
-  pts <- sp::SpatialPointsDataFrame(coords = dplyr::select(tbl, c(lon, lat)),
-                                    data = dplyr::select(tbl, -c(lon, lat)))
+  spatialPoints <- sp::SpatialPointsDataFrame(
+    coords = dplyr::select(tbl, c(lon, lat)),
+    data = dplyr::select(tbl, -c(lon, lat))
+  )
   
-  return(pts)
+  return(spatialPoints)
 }
 
 # ===== Debugging ==============================================================
@@ -73,5 +77,5 @@ goesaodc_createSpatialPoints <- function(
 if (FALSE) {
   filePath <- "/Users/tom/Projects/MazamaSatelliteUtils/local_data/OR_ABI-L2-AODC-M3_G16_s20190781512186_e20190781514559_c20190781516459.nc"
   nc <- nc_open(filePath)
-  pts <- goesaodc_createSpatialPoints(nc)
+  spatialPoints <- goesaodc_createSpatialPoints(nc)
 }

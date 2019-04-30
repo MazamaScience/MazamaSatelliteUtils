@@ -14,6 +14,5 @@ goesaodc_getCoordGrid(nc)
 Dataframe.
 }
 \description{
-Creates a data frame of decimal degree lon/lat pairs for a given
-netcdf handle
+Code borrowed from https://github.com/raffscallion/goesfire/blob/master/R/utils.R
 }

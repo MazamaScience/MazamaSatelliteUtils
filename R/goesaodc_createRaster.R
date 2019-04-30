@@ -35,14 +35,14 @@ goesaodc_createRaster <- function(
   
   # ----- Create SpatialPointsDataFrame ----------------------------------------
   
-  pts <- goesaodc_createSpatialPoints(nc = nc,
+  spatialPoints <- goesaodc_createSpatialPoints(nc = nc,
                                   xmn = xmn, xmx = xmx,
                                   ymn = ymn, ymx = ymx,
                                   dqfLevel = dqfLevel)
   
   # ----- Create Raster --------------------------------------------------------
   
-  extent <- raster::extent(pts)
+  extent <- raster::extent(spatialPoints)
   
   lon_min <- extent@xmin; lon_max <- extent@xmax
   lat_min <- extent@ymin; lat_max <- extent@ymax
@@ -55,9 +55,9 @@ goesaodc_createRaster <- function(
                            res=res,
                            crs="+proj=longlat +datum=WGS84 +ellps=GRS80")
   
-  raster <- raster::rasterize(pts, raster, fun=fun)
+  rasterBrick <- raster::rasterize(spatialPoints, raster, fun=fun)
   
-  return(raster)
+  return(rasterBrick)
 }
 
 # ===== Debugging ==============================================================

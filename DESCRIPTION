@@ -22,6 +22,7 @@ Imports:
     ncdf4,
     purrr,
     raster,
+    RColorBrewer,
     rlang,
     sp,
     stringr,
