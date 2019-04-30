@@ -212,3 +212,18 @@ goesaodc_plotSpatialPoints <- function(
   plot(spatialPointsSub, pch=pch, col=col_v, cex=cex)
 }
 
+
+#' @export
+#' 
+#' @title get the scan start time from a GOES AOD netCDF file name
+#' @param file GOES AOD netCDF file name
+#' 
+#' @return scan start time 
+
+goesaodc_getStartTime <- function(file) {
+  stringr::str_split(file, "_") %>% 
+    unlist() %>% 
+    dplyr::nth(-3) %>% 
+    stringr::str_sub(2, -1)
+}
+

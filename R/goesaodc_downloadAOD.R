@@ -66,8 +66,6 @@ goesaodc_downloadAOD <- function(
     datetime <- lubridate::parse_date_time(paste0(julianDate, hour), orders=order, tz="UTC")
   }
   
-  # Create URL
-
   # Get list of available files for specified date
   links <- 
     xml2::read_html(baseUrl) %>%
@@ -78,16 +76,8 @@ goesaodc_downloadAOD <- function(
   
   availableFiles <- links[-(1:5)]
   
-  # retrieve the scan start time from the file name
-  getStartTime <- function(file) {
-    stringr::str_split(file, "_") %>% 
-      unlist() %>% 
-      dplyr::nth(-3) %>% 
-      stringr::str_sub(2, -1)
-  }
-  
   # get the scan start times from files found at baseUrl
-  startTimes <- purrr::map_chr(availableFiles, getStartTime)
+  startTimes <- purrr::map_chr(availableFiles, goesaodc_getStartTime)
   
   # select matching files
   mask <- stringr::str_detect(startTimes, format(datetime, "%Y%j%H"))
