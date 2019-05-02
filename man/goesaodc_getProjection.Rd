@@ -2,29 +2,14 @@
 % Please edit documentation in R/utils-goesaodc.R
 \name{goesaodc_getProjection}
 \alias{goesaodc_getProjection}
-\title{Converts GOES xy radian coordinates to latitude and longitude pairs}
+\title{Get projection metadata from GOES-R ABI ncdf4 object}
 \usage{
 goesaodc_getProjection(nc)
 }
 \arguments{
 \item{nc}{ncdf4 object}
-
-\item{x}{x value from the netcdf in radians (scale and offset already applied)}
-
-\item{y}{y value from the netcdf in radians (scale and offset already applied)}
-
-\item{r_eq}{semi_major_axis}
-
-\item{r_pol}{semi_minor_axis}
-
-\item{H}{satellite height from center of earth = perspective_point_height +
-semi_major_axis}
-
-\item{lambda0}{longitude_of_projection_origin (converted to radians)}
 }
 \value{
-a named list with lon and lat values
-
 list of metadata
 }
 \description{

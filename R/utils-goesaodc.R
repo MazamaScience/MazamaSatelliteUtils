@@ -116,22 +116,6 @@ goesaodc_getCoordGrid <- function(nc) {
 
 
 #' @export
-#'
-#' @title Converts GOES xy radian coordinates to latitude and longitude pairs
-#'
-#' @param x x value from the netcdf in radians (scale and offset already applied)
-#' @param y y value from the netcdf in radians (scale and offset already applied)
-#' @param r_eq semi_major_axis
-#' @param r_pol semi_minor_axis
-#' @param H satellite height from center of earth = perspective_point_height +
-#'   semi_major_axis
-#' @param lambda0 longitude_of_projection_origin (converted to radians)
-#'
-#' @return a named list with lon and lat values
-#'
-
-
-#' @export
 #' 
 #' @title Get projection metadata from GOES-R ABI ncdf4 object
 #' @param nc ncdf4 object
