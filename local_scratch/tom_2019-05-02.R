@@ -46,3 +46,24 @@ goesaodc_listFiles <- function(
   return(matchingFiles)
 }
 
+# ----- goesaodc_listFiles and goesaodc_openFile example -----------------------
+
+date <- 20190502
+hour <- 12
+
+# make sure files are downloaded
+goesaodc_downloadAOD(date, hour)
+
+nc <- goesaodc_listFiles(date, hour)[1] %>% goesaodc_openFile()
+
+# create quick plot of SpatialPoints
+goesaodc_createSpatialPoints(nc) %>%
+  goesaodc_plotSpatialPoints()
+
+maps::map("state", add=T)
+
+# plot raster
+raster <- goesaodc_createRaster(nc)
+plot(raster$AOD)
+
+maps::map("state", add=T)
