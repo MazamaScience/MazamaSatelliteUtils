@@ -157,6 +157,7 @@ goesaodc_isGoesProjection <- function(
 #' @param pch plot character
 #' @param cex plot symbol scale factor
 #' @param paletteName RColorBrewer palette name
+#' @param add logical to add points to current plot
 #' 
 #' @description Quickly subsample and plot points in a GOES AOD 
 #' spatialPointsDataFrame
@@ -169,8 +170,8 @@ goesaodc_plotSpatialPoints <- function(
   breaks = NULL,
   pch = 15,
   cex = 0.5,
-  paletteName = "YlOrRd"
-  # TODO: color reverse?
+  paletteName = "YlOrRd",
+  add = FALSE
 ) {
   
   # Subsample points
@@ -190,10 +191,10 @@ goesaodc_plotSpatialPoints <- function(
     }
   }
   
-  cols <- RColorBrewer::brewer.pal(length(breaks)-1, "YlOrRd")
+  cols <- RColorBrewer::brewer.pal(length(breaks)-1, paletteName)
   col_i <- .bincode(spatialPointsSub[[var]], breaks)
   col_v <- cols[col_i]
-  plot(spatialPointsSub, pch=pch, col=col_v, cex=cex)
+  plot(spatialPointsSub, pch=pch, col=col_v, cex=cex, add=add)
 }
 
 

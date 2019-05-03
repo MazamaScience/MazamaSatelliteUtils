@@ -6,7 +6,7 @@
 \usage{
 goesaodc_plotSpatialPoints(spatialPoints, var = "AOD", n = 1e+05,
   colBins = 5, breaks = NULL, pch = 15, cex = 0.5,
-  paletteName = "YlOrRd")
+  paletteName = "YlOrRd", add = FALSE)
 }
 \arguments{
 \item{spatialPoints}{SpatialPointsDataFrame}
@@ -24,6 +24,8 @@ goesaodc_plotSpatialPoints(spatialPoints, var = "AOD", n = 1e+05,
 \item{cex}{plot symbol scale factor}
 
 \item{paletteName}{RColorBrewer palette name}
+
+\item{add}{logical to add points to current plot}
 }
 \description{
 Quickly subsample and plot points in a GOES AOD 
