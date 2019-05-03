@@ -78,8 +78,8 @@ goesaodc_createSpatialPoints <- function(
   # ----- Create SpatialPointsDataFrame ----------------------------------------
   
   spatialPoints <- sp::SpatialPointsDataFrame(
-    coords = dplyr::select(tbl, c(lon, lat)),
-    data = dplyr::select(tbl, -c(lon, lat))
+    coords = dplyr::select(tbl, c(.data$lon, .data$lat)),
+    data = dplyr::select(tbl, -c(.data$lon, .data$lat))
   )
   
   return(spatialPoints)
