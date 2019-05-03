@@ -5,8 +5,8 @@
 \title{Create a quick plot of a GOES AOD SpatialPointsDataFrame}
 \usage{
 goesaodc_plotSpatialPoints(spatialPoints, var = "AOD", n = 1e+05,
-  colBins = 5, breaks = NULL, pch = 15, cex = 0.5,
-  paletteName = "YlOrRd", add = FALSE)
+  breaks = NULL, pch = 15, cex = 0.5, paletteName = "YlOrRd",
+  add = FALSE)
 }
 \arguments{
 \item{spatialPoints}{SpatialPointsDataFrame}
@@ -14,8 +14,6 @@ goesaodc_plotSpatialPoints(spatialPoints, var = "AOD", n = 1e+05,
 \item{var}{Variable to plot}
 
 \item{n}{Sample size}
-
-\item{colBins}{number of color bins}
 
 \item{breaks}{vector of color breaks}
 

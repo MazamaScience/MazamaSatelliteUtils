@@ -152,7 +152,6 @@ goesaodc_isGoesProjection <- function(
 #' @param spatialPoints SpatialPointsDataFrame
 #' @param var Variable to plot
 #' @param n Sample size
-#' @param colBins number of color bins
 #' @param breaks vector of color breaks
 #' @param pch plot character
 #' @param cex plot symbol scale factor
@@ -166,7 +165,6 @@ goesaodc_plotSpatialPoints <- function(
   spatialPoints,
   var = "AOD",
   n = 1e5,
-  colBins = 5,
   breaks = NULL,
   pch = 15,
   cex = 0.5,
@@ -181,14 +179,7 @@ goesaodc_plotSpatialPoints <- function(
   # Make breaks for specifed number of equally sized color bins
   # TODO: Use quantiles
   if (is.null(breaks)) {
-    mn <- min(spatialPointsSub[[var]])
-    mx <- max(spatialPointsSub[[var]])
-    range <- mx - mn
-    
-    breaks <- c(mn)
-    for (i in 1:colBins) {
-      breaks <- c(breaks, mn + i*(range/colBins))
-    }
+    breaks <- quantile(spatialPointsSub[[var]])
   }
   
   cols <- RColorBrewer::brewer.pal(length(breaks)-1, paletteName)
