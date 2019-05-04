@@ -29,7 +29,7 @@ goesaodc_plotSpatialPoints <- function(
 ) {
   
   # Subsample points
-  if ( n < nrow(sp) ) {
+  if ( n < nrow(spatialPoints) ) {
     indices <- sample(seq_len(nrow(spatialPoints)), n)
     spatialPointsSub <- spatialPoints[indices,]
   } else {

@@ -15,6 +15,8 @@ goesaodc_plotSpatialPoints(spatialPoints, var = "AOD", n = 1e+05,
 
 \item{n}{Sample size}
 
+\item{colBins}{number of color bins}
+
 \item{breaks}{vector of color breaks}
 
 \item{pch}{plot character}
