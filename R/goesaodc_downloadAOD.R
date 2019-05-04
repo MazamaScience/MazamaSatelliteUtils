@@ -77,7 +77,7 @@ goesaodc_downloadAOD <- function(
   availableFiles <- links[-(1:5)]
   
   # get the scan start times from files found at baseUrl
-  startTimes <- purrr::map_chr(availableFiles, goesaodc_getStartTime)
+  startTimes <- purrr::map_chr(availableFiles, goesaodc_getStartString)
   
   # select matching files
   mask <- stringr::str_detect(startTimes, format(datetime, "%Y%j%H"))

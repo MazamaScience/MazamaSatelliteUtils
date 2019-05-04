@@ -146,65 +146,15 @@ goesaodc_isGoesProjection <- function(
   return(all(unlist(projection) == unlist(MazamaSatelliteUtils::goesEastGrid$projection)))
 }
 
-#' @export
-#' 
-#' @title Create a quick plot of a GOES AOD SpatialPointsDataFrame
-#' @param spatialPoints SpatialPointsDataFrame
-#' @param var Variable to plot
-#' @param n Sample size
-#' @param colBins number of color bins
-#' @param breaks vector of color breaks
-#' @param pch plot character
-#' @param cex plot symbol scale factor
-#' @param paletteName RColorBrewer palette name
-#' 
-#' @description Quickly subsample and plot points in a GOES AOD 
-#' spatialPointsDataFrame
-
-goesaodc_plotSpatialPoints <- function(
-  spatialPoints,
-  var = "AOD",
-  n = 1e5,
-  colBins = 5,
-  breaks = NULL,
-  pch = 15,
-  cex = 0.5,
-  paletteName = "YlOrRd"
-  # TODO: color reverse?
-) {
-  
-  # Subsample points
-  indices <- sample(seq_len(nrow(spatialPoints)), n)
-  spatialPointsSub <- spatialPoints[indices,]
-  
-  # Make breaks for specifed number of equally sized color bins
-  # TODO: Use quantiles
-  if (is.null(breaks)) {
-    mn <- min(spatialPointsSub[[var]])
-    mx <- max(spatialPointsSub[[var]])
-    range <- mx - mn
-    
-    breaks <- c(mn)
-    for (i in 1:colBins) {
-      breaks <- c(breaks, mn + i*(range/colBins))
-    }
-  }
-  
-  cols <- RColorBrewer::brewer.pal(length(breaks)-1, "YlOrRd")
-  col_i <- .bincode(spatialPointsSub[[var]], breaks)
-  col_v <- cols[col_i]
-  plot(spatialPointsSub, pch=pch, col=col_v, cex=cex)
-}
-
 
 #' @export
 #' 
-#' @title get the scan start time from a GOES AOD netCDF file name
+#' @title Get the scan start time string from a GOES AODC netCDF file name
 #' @param file GOES AOD netCDF file name
 #' 
-#' @return scan start time 
+#' @return The scan start time string in Julian days.
 
-goesaodc_getStartTime <- function(file) {
+goesaodc_getStartString <- function(file) {
   stringr::str_split(file, "_") %>% 
     unlist() %>% 
     dplyr::nth(-3) %>% 

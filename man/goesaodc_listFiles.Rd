@@ -4,17 +4,22 @@
 \alias{goesaodc_listFiles}
 \title{List downloaded GOES AOD files for a specified date and hour}
 \usage{
-goesaodc_listFiles(date, hour = NULL)
+goesaodc_listFiles(startdate = NULL, jdate = NULL)
 }
 \arguments{
-\item{date}{desired date (integer, characer representing YYYYMMDD)}
+\item{startdate}{desired date in any Y-m-d [H] format or \code{POSIXct}}
 
-\item{hour}{desired hour (integer, character representing HH)}
+\item{jdate}{desired date in as a Julian date string, i.e. as seen in the
+netcdf filenames}
 }
 \value{
-Vector of matching files
+Vector of filenames.
 }
 \description{
 Retrieve a list of GOES AOD files available in the
-satelliteDataDir for a specified date and hour
+\code{satelliteDataDir} for a specified date and hour.
+
+Note that all files for a particular hour will be returned even if the
+incoming \code{startdate} or \code{jdate} is specified to the minute or
+second.
 }
