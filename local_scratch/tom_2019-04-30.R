@@ -54,7 +54,7 @@ goesaodc_open <- function(
   
   regex <- "OR_ABI-L2-AODC-M6_G16_s[0-9]+_e[0-9]+_c[0-9]+\\.nc"
   dataFiles <- list.files(getSatelliteDataDir(), pattern = regex)
-  startTimes <- purrr::map_chr(dataFiles, goesaodc_getStartTime)
+  startTimes <- purrr::map_chr(dataFiles, goesaodc_getStartString)
   
   # First, convert startTime to POSIXct
   startTime <- lubridate::as_datetime(startTime)
