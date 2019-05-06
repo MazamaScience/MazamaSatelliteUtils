@@ -88,7 +88,7 @@ goesaodc_createSpatialPoints <- function(
 # ===== Debugging ==============================================================
 
 if (FALSE) {
-  projectDir <- "~/Code/Mazama/MazamaSatelliteUtils"
+  projectDir <- "~/Projects/MazamaSatelliteUtils"
   
   # open file
   filePath <- paste0(projectDir, "/local_data/OR_ABI-L2-AODC-M3_G16_s20190781512186_e20190781514559_c20190781516459.nc")

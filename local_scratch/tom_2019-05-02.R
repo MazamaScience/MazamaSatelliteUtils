@@ -1,4 +1,5 @@
-# Tom's scratch file for 5/2/2019
+# Tom's scratch file
+# 5/2/2019
 
 # ----- goesaodc_listFiles draft -----------------------------------------------
 

@@ -1,4 +1,5 @@
-# 04/26/2019 Scratch
+# Tom's scratch file
+# 04/26/2019
 
 # ----- get scan start time ----------------------------------------------------
 regex <- "OR_ABI-L2-AODC-M6_G16_s[0-9]+_e[0-9]+_c[0-9]+\\.nc"
