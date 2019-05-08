@@ -19,6 +19,7 @@ Imports:
     dplyr,
     lubridate,
     magrittr,
+    maptools,
     ncdf4,
     purrr,
     raster,
