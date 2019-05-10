@@ -158,6 +158,6 @@ goesaodc_getStartString <- function(file) {
   stringr::str_split(file, "_") %>% 
     unlist() %>% 
     dplyr::nth(-3) %>% 
-    stringr::str_sub(2, -1)
+    stringr::str_sub(2, -2)
 }
 
