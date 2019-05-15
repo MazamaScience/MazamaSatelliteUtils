@@ -138,7 +138,7 @@ goesaodc_getProjection <- function(
 #' information.
 #' 
 #' @return logical
-
+#' 
 goesaodc_isGoesProjection <- function(
   nc
 ) {
@@ -152,9 +152,13 @@ goesaodc_isGoesProjection <- function(
 #' @title Get the scan start time string from a GOES AODC netCDF file name
 #' @param file GOES AOD netCDF file name
 #' 
+#' @description Get the scan start time string from a GOES AODC netCDF file name
+#' 
 #' @return The scan start time string in Julian days.
-
-goesaodc_getStartString <- function(file) {
+#' 
+goesaodc_getStartString <- function(
+  file
+) {
   stringr::str_split(file, "_") %>% 
     unlist() %>% 
     dplyr::nth(-3) %>% 

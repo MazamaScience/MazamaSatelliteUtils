@@ -17,7 +17,7 @@
 
 goesaodc_listFiles <- function(
   startdate = NULL,
-  jdate = NULL
+  jdate = NULL 
 ) {
   
   # ----- Parse incoming date --------------------------------------------------
@@ -87,7 +87,7 @@ goesaodc_listFiles <- function(
 
   # ----- Get Matching Files ---------------------------------------------------
   
-  regex <- "OR_ABI-L2-AODC-M6_G16_s[0-9]+_e[0-9]+_c[0-9]+\\.nc"
+  regex <- "OR_ABI-L2-AODC-M[0-9]_G16_s[0-9]+_e[0-9]+_c[0-9]+\\.nc"
   dataFiles <- list.files(getSatelliteDataDir(), pattern = regex)
   startStrings <- purrr::map_chr(dataFiles, goesaodc_getStartString)
   

@@ -57,7 +57,7 @@ goesaodc_createHourlyRasterStack <- function(
   # ----- Download GOES AOD Files ----------------------------------------------
   
   # make sure that files are downloaded
-  date <- format(dt, "%Y%d%m")
+  date <- format(dt, "%Y%m%d")
   hour <- format(dt, "%H")
   
   goesaodc_downloadAOD(date = date, hour = hour)
