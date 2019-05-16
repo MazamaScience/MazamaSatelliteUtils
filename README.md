@@ -30,5 +30,5 @@ Install the latest version from GitHub with:
 ----
 
 This project is supported by Mazama Science with partial funding from the
-United States Forest Servicd.
+United States Forest Service.
 

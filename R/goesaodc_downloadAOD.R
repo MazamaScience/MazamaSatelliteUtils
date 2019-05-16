@@ -8,7 +8,7 @@
 #' @param baseUrl base URL for data queries
 #' 
 #' @description Download all GOES 16 .nc files for the given date and hour to
-#' the directory specfied by \code{setSatelliteDataDir()}.
+#' the directory specified by \code{setSatelliteDataDir()}.
 #' 
 #' @return Vector of downloaded filepaths.
 #' 

@@ -13,7 +13,7 @@ what file to read from.}
 \item{varid}{The variable whose attribute is to be read. Can be a character 
 string with the variable's name or an object of class ncvar4. As a special 
 case, if \code{varid == 0}, then a global (file) attribute will be read 
-rather than aparticular variable's attribute.}
+rather than a particular variable's attribute.}
 
 \item{print}{Logical specifying whether human readable output should be
 printed to the console.}
@@ -22,5 +22,5 @@ printed to the console.}
 A named list of netCDF attributes is returned invisibly.
 }
 \description{
-
+Returns attributes from a netCDF files
 }
