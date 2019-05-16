@@ -1,8 +1,8 @@
 #' @export
 #' 
-#' @title Create a RasterStack of all files from the specified hour
+#' @title Create a RasterStack for a specified hour
 #' 
-#' @param datetime datetime, specified to the hour, in any Y-m-d H format or
+#' @param startdate startdate, specified to the hour, in any Y-m-d H format or
 #' \code{POSIXct}
 #' @param var variable ("AOD, "DQF" or "ID")
 #' @param res resolution of raster in degrees
@@ -16,20 +16,30 @@
 #' @param latHi upper latitude extent
 #' @param dqfLevel data quality flag level, numeric (0, 1, 2, or 3)
 #' 
-#' @description Create a RasterStack of GOES AOD data of all files for a
-#' specified hour. 
+#' @description Create a \code{RasterStack} from GOES AOD data files for the date 
+#' and hour specified by \code{startdate}. Each \code{RasterLayer} contains data
+#' from one Advanced Baseline Imager (ABI) scan during the specifed time period.
 #' 
-#' Data quality level can take a value of:
+#' If data for the specified time period is not found in the directory specified 
+#' by \code{setSatelliteDataDir()}, it will be downloaded in order to create the
+#' \code{RasterStack}.
 #' 
-#' 0: High quality retrieval flag
-#' 1: Medium quality retrieval flag
-#' 2: Low quality retrieval flag
-#' 3: No retrieval quality flag
+#' The Z axis of the \code{RasterStack} is a character vector where each element
+#' is the time stamp of the scan and has the format YYYYMMDDHHMMSS. This can be 
+#' accessed using the \code{raster::getZ()} function. Names of the \code{RasterStack}
+#' are also time stamps of the scan, of the format XHH.MM.SS.
+#' 
+#' \code{dqfLevel} can take a value of:
+#' 
+#' 0: High quality retrieval flag  
+#' 1: Medium quality retrieval flag  
+#' 2: Low quality retrieval flag  
+#' 3: No retrieval quality flag  
 #' 
 #' @return RasterStack
 
 goesaodc_createHourlyRasterStack <- function(
-  datetime = NULL,
+  startdate = NULL,
   var = "AOD",
   res = 0.1,
   fun = mean,
@@ -43,24 +53,21 @@ goesaodc_createHourlyRasterStack <- function(
   
   # ----- Validate Input -------------------------------------------------------
   
-  if (!is.null(datetime)) {
+  if (!is.null(startdate)) {
     suppressWarnings({
-      dt <- lubridate::parse_date_time(datetime, "YmdH", tz = "UTC")
+      dt <- lubridate::parse_date_time(startdate, "YmdH", tz = "UTC")
     })
     if (is.na(dt)) {
-      stop("Parameter 'datetime' must be specified to the hour")
+      stop("Parameter 'startdate' must be specified to the hour")
     }
   } else {
-    stop("Parameter 'datetime' is required")
+    stop("Parameter 'startdate' is required")
   }
   
   # ----- Download GOES AOD Files ----------------------------------------------
   
   # make sure that files are downloaded
-  date <- format(dt, "%Y%m%d")
-  hour <- format(dt, "%H")
-  
-  goesaodc_downloadAOD(date = date, hour = hour)
+  goesaodc_downloadAOD(dt)
   
   # ----- Create List of RasterLayers ------------------------------------------
   
@@ -81,14 +88,14 @@ goesaodc_createHourlyRasterStack <- function(
   # Extents won't match exactly and raster::stack() needs them to, so
   # find the largest extent necessary to encompass all RasterLayers in the
   # list, and apply that new extent to each of the RasterLayers.
-  lonLo <- min(purrr::map_dbl(rasterList, function(rst) extent(rst)@xmin))
-  lonHi <- max(purrr::map_dbl(rasterList, function(rst) extent(rst)@xmax))
-  latLo <- min(purrr::map_dbl(rasterList, function(rst) extent(rst)@ymin))
-  latHi <- max(purrr::map_dbl(rasterList, function(rst) extent(rst)@ymax))
+  lonLo <- min(purrr::map_dbl(rasterList, function(rst) raster::extent(rst)@xmin))
+  lonHi <- max(purrr::map_dbl(rasterList, function(rst) raster::extent(rst)@xmax))
+  latLo <- min(purrr::map_dbl(rasterList, function(rst) raster::extent(rst)@ymin))
+  latHi <- max(purrr::map_dbl(rasterList, function(rst) raster::extent(rst)@ymax))
   
-  ext <- extent(c(lonLo, lonHi, latLo, latHi))
+  ext <- raster::extent(c(lonLo, lonHi, latLo, latHi))
   
-  rasterList <- purrr::map(rasterList, function(rst) setExtent(rst, ext))
+  rasterList <- purrr::map(rasterList, function(rst) raster::setExtent(rst, ext))
   
   # now create the stack
   rasterStack <- raster::stack(rasterList)
@@ -99,9 +106,12 @@ goesaodc_createHourlyRasterStack <- function(
     purrr::map_chr(goesaodc_getStartString) %>%
     purrr::map(lubridate::parse_date_time, orders = ("YjHMS"))
   
-  rasterStack <- raster::setZ(rasterStack, times)
+  Z <- purrr::map(times, strftime, format = "%Y%m%d%H%M%S", tz = "UTC")
+  
+  rasterStack <- raster::setZ(rasterStack, Z)
   # NOTE: Why does this prepend "X" to the names?
-  names(rasterStack) <- purrr::map_chr(times, function(t) format(t, "%Hh%Mm"))
+  names <- purrr::map(times, strftime, format = "%H:%M:%S", tz = "UTC")
+  names(rasterStack) <- names
   
   return(rasterStack)
 }
@@ -119,14 +129,14 @@ if (FALSE) {
   bb_pa <- bbox(pa)
   
   # Set parameters
-  datetime = "2019050912"
+  startdate = "2019050912"
   var = "AOD"
   res = 0.1
   bbox = bb_pa
   
   # Create RasterStack
   rasterStack <- goesaodc_createHourlyRasterStack(
-    datetime = datetime, var = var, res = res,  bbox = bbox)
+    startdate = startdate, var = var, res = res,  bbox = bbox)
   
   # Visualize!
   rasterVis::levelplot(rasterStack)

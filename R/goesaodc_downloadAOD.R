@@ -7,8 +7,11 @@
 #'   netcdf filenames
 #' @param baseUrl base URL for data queries
 #' 
-#' @description Download all GOES 16 .nc files for the given date and hour to
-#' the directory specified by \code{setSatelliteDataDir()}.
+#' @description Download all GOES 16 .nc files for the given \code{startdate} to
+#' the directory specified by \code{setSatelliteDataDir()}. If \code{startdate}
+#' is specified to the hour, only files for that hour will be downloaded. If
+#' \code{startdate} is specified only to the day, all files for that day will
+#' be downloaded.
 #' 
 #' @return Vector of downloaded filepaths.
 #' 
@@ -140,10 +143,13 @@ goesaodc_downloadAOD <- function(
 
 if (FALSE) {
   
+  setSatelliteDataDir("~/Data/Satellite")
+  
   # Hour where startdate is numeric
   startdate <- 2019051616
   downloadedFiles <- goesaodc_downloadAOD(startdate)
   
-  print(downloadedFiles)
-  
+  # Full day where startdate is POSIXct
+  startdate <- lubridate::parse_date_time("20190516", "Ymd", tz = "UTC")
+  downloadedFiles <- goesaodc_downloadAOD(startdate)
 }

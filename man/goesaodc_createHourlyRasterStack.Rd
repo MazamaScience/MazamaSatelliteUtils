@@ -2,14 +2,14 @@
 % Please edit documentation in R/goesaodc_createHourlyRasterStack.R
 \name{goesaodc_createHourlyRasterStack}
 \alias{goesaodc_createHourlyRasterStack}
-\title{Create a RasterStack of all files from the specified hour}
+\title{Create a RasterStack for a specified hour}
 \usage{
-goesaodc_createHourlyRasterStack(datetime = NULL, var = "AOD",
+goesaodc_createHourlyRasterStack(startdate = NULL, var = "AOD",
   res = 0.1, fun = mean, bbox = NULL, lonLo = NULL, lonHi = NULL,
   latLo = NULL, latHi = NULL, dqfLevel = NULL)
 }
 \arguments{
-\item{datetime}{datetime, specified to the hour, in any Y-m-d H format or
+\item{startdate}{startdate, specified to the hour, in any Y-m-d H format or
 \code{POSIXct}}
 
 \item{var}{variable ("AOD, "DQF" or "ID")}
@@ -36,13 +36,23 @@ latLo, latHi if provided}
 RasterStack
 }
 \description{
-Create a RasterStack of GOES AOD data of all files for a
-specified hour. 
+Create a \code{RasterStack} from GOES AOD data files for the date 
+and hour specified by \code{startdate}. Each \code{RasterLayer} contains data
+from one Advanced Baseline Imager (ABI) scan during the specifed time period.
 
-Data quality level can take a value of:
+If data for the specified time period is not found in the directory specified 
+by \code{setSatelliteDataDir()}, it will be downloaded in order to create the
+\code{RasterStack}.
 
-0: High quality retrieval flag
-1: Medium quality retrieval flag
-2: Low quality retrieval flag
+The Z axis of the \code{RasterStack} is a character vector where each element
+is the time stamp of the scan and has the format YYYYMMDDHHMMSS. This can be 
+accessed using the \code{raster::getZ()} function. Names of the \code{RasterStack}
+are also time stamps of the scan, of the format XHH.MM.SS.
+
+\code{dqfLevel} can take a value of:
+
+0: High quality retrieval flag  
+1: Medium quality retrieval flag  
+2: Low quality retrieval flag  
 3: No retrieval quality flag
 }

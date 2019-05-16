@@ -4,15 +4,14 @@
 \alias{goesaodc_downloadAOD}
 \title{Download GOES 16 AOD data}
 \usage{
-goesaodc_downloadAOD(date = NULL, hour = NULL, julianDate = NULL,
+goesaodc_downloadAOD(startdate = NULL, jdate = NULL,
   baseUrl = "https://tools-1.airfire.org/Satellite/GOES-16/AODC")
 }
 \arguments{
-\item{date}{desired date (integer, character representing YYYYMMDD or \code{POSIXct})}
+\item{startdate}{desired date in any Y-m-d [H] format or \code{POSIXct}}
 
-\item{hour}{UTC hour for data (HH)}
-
-\item{julianDate}{desired date on Julian calendar (YYYYDDD). Ignored if \code{date} is specified.}
+\item{jdate}{desired date in as a Julian date string, i.e. as seen in the
+netcdf filenames}
 
 \item{baseUrl}{base URL for data queries}
 }
@@ -20,8 +19,11 @@ goesaodc_downloadAOD(date = NULL, hour = NULL, julianDate = NULL,
 Vector of downloaded filepaths.
 }
 \description{
-Download all GOES 16 .nc files for the given date and hour to
-the directory specified by \code{setSatelliteDataDir()}.
+Download all GOES 16 .nc files for the given \code{startdate} to
+the directory specified by \code{setSatelliteDataDir()}. If \code{startdate}
+is specified to the hour, only files for that hour will be downloaded. If
+\code{startdate} is specified only to the day, all files for that day will
+be downloaded.
 }
 \seealso{
 \code{\link{setSatelliteDataDir}}
