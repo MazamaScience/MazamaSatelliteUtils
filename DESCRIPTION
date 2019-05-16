@@ -34,7 +34,8 @@ Imports:
     xml2
 Suggests:
     knitr,
-    rmarkdown
+    rmarkdown,
+    testthat
 Description: A suite of utility functions providing functionality commonly 
     needed for download of satellite products and conversion to Raster objects.
 License: GPL-3

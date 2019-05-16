@@ -5,7 +5,8 @@
 \title{Download GOES 16 AOD data}
 \usage{
 goesaodc_downloadAOD(startdate = NULL, jdate = NULL,
-  baseUrl = "https://tools-1.airfire.org/Satellite/GOES-16/AODC")
+  baseUrl = "https://tools-1.airfire.org/Satellite/GOES-16/AODC",
+  quiet = FALSE)
 }
 \arguments{
 \item{startdate}{desired date in any Y-m-d [H] format or \code{POSIXct}}
@@ -14,6 +15,8 @@ goesaodc_downloadAOD(startdate = NULL, jdate = NULL,
 netcdf filenames}
 
 \item{baseUrl}{base URL for data queries}
+
+\item{quiet}{if TRUE, suppress status messages and progress bar}
 }
 \value{
 Vector of downloaded filepaths.

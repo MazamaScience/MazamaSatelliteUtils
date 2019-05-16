@@ -6,6 +6,7 @@
 #' @param jdate desired date in as a Julian date string, i.e. as seen in the
 #'   netcdf filenames
 #' @param baseUrl base URL for data queries
+#' @param quiet if TRUE, suppress status messages and progress bar
 #' 
 #' @description Download all GOES 16 .nc files for the given \code{startdate} to
 #' the directory specified by \code{setSatelliteDataDir()}. If \code{startdate}
@@ -21,7 +22,8 @@
 goesaodc_downloadAOD <- function(
   startdate = NULL,
   jdate = NULL,
-  baseUrl = "https://tools-1.airfire.org/Satellite/GOES-16/AODC"
+  baseUrl = "https://tools-1.airfire.org/Satellite/GOES-16/AODC",
+  quiet = FALSE
 ) {
   
   # ----- Validate Parameters --------------------------------------------------
@@ -122,7 +124,7 @@ goesaodc_downloadAOD <- function(
       fileUrl <- paste0(baseUrl, "/", file)
       
       result <- try({
-        utils::download.file(fileUrl, destfile = filePath)
+        utils::download.file(fileUrl, destfile = filePath, quiet = quiet)
         downloadedFiles <- c(downloadedFiles, filePath)
       }, silent=FALSE)
       
