@@ -2,9 +2,9 @@
 #' 
 #' @title Download GOES 16 AOD data
 #' 
-#' @param date desired date (integer, character representing YYYYMMDD or \code{POSIXct})
-#' @param hour UTC hour for data (HH)
-#' @param julianDate desired date on Julian calendar (YYYYDDD). Ignored if \code{date} is specified.
+#' @param startdate desired date in any Y-m-d [H] format or \code{POSIXct}
+#' @param jdate desired date in as a Julian date string, i.e. as seen in the
+#'   netcdf filenames
 #' @param baseUrl base URL for data queries
 #' 
 #' @description Download all GOES 16 .nc files for the given date and hour to
@@ -16,55 +16,79 @@
 
 
 goesaodc_downloadAOD <- function(
-  date = NULL,
-  hour = NULL,
-  julianDate = NULL,
+  startdate = NULL,
+  jdate = NULL,
   baseUrl = "https://tools-1.airfire.org/Satellite/GOES-16/AODC"
 ) {
   
   # ----- Validate Parameters --------------------------------------------------
   
-  # required parameters are provided
-  if ( is.null(date) && is.null(julianDate) ) {
-    stop("Required parameter 'date' or 'julianDate' is missing")
-  }
-  
-  if ( is.null(hour) ) {
-    stop(paste0("Required parameter 'hour' is missing"))
-  }
-  
-  # parameters are of correct format
-  time <- as.character(hour)
-  if (stringr::str_length(hour) != 2) {
-    stop(paste0("'hour' must be of the format HH"))
-  }
-  
-  if (lubridate::is.POSIXct(date)) {
-    date <- format(date, "%Y%m%d")
+  if ( !is.null(startdate) ) {
+    
+    # Is it a full day?
+    suppressWarnings({
+      starttime <- lubridate::parse_date_time(startdate, "Ymd", tz = "UTC") 
+    })
+    if ( !is.na(starttime) ) {
+      fullDay <- TRUE
+    } else {
+      orders <- c("YmdH","YmdHM","YmdHMS")
+      suppressWarnings({
+        starttime <- lubridate::parse_date_time(startdate, orders, tz = "UTC")
+      })
+      if ( is.na(starttime) ) {
+        stop("Parameter 'startdate' cannot be interpreted. Is it a 'jdate'?")
+      }
+      fullDay <- FALSE
+    }
+    
+  } else if ( !is.null(jdate) ) {
+    
+    # Check for operator error
+    if ( !is.numeric(jdate) && !is.character(jdate) ) {
+      jdate_class <- paste(class(jdate), sep = ", ")
+      stop(paste0("Parameter 'jdate' cannot be of class '", jdate_class, "'"), call. = FALSE)
+    }
+    
+    jdate <- as.character(jdate)
+    
+    # Check for operator error
+    if ( stringr::str_detect(jdate, "[^0-9]") ) {
+      stop(paste0("'", jdate, "' is not a Julian date string."), call. = FALSE)
+    }
+    
+    if ( stringr::str_count(jdate) == 5 ) {
+      starttime <- strptime(jdate, "%Y%j", tz = "UTC")
+      fullDay <- TRUE
+    } else if ( stringr::str_count(jdate) == 7 ) {
+      starttime <- strptime(jdate, "%Y%j%H", tz = "UTC")
+      fullDay <- FALSE
+    } else if ( stringr::str_count(jdate) == 9 ) {
+      starttime <- strptime(jdate, "%Y%j%H", tz = "UTC")
+      fullDay <- FALSE
+    } else {
+      # strip the string down to the YjH level
+      jdate <- stringr::str_sub(jdate, end = 9)
+      starttime <- strptime(jdate, "%Y%j%H", tz = "UTC")
+      fullDay <- FALSE
+    }
+    
   } else {
-    date <- as.character(date)
-    if (stringr::str_length(date) != 8) {
-      stop(paste0("'date' must be of the format YYYYMMDD"))
-    }
+    
+    stop("Either 'startdate' or 'jdate' must be defined.", call. = FALSE)
+    
   }
   
-  if (!is.null(julianDate)) {
-    julianDate <- as.character(julianDate)
-    if (stringr::str_length(julianDate) != 7) {
-      stop(paste0("'julianDate' must be of the format YYYYDDD"))
-    }
+  # Julian string for comparison with file names
+  if ( fullDay ) {
+    startString <- strftime(starttime, "%Y%j", tz = "UTC")
+  } else {
+    startString <- strftime(starttime, "%Y%j%H", tz = "UTC")
   }
   
   # ----- Download Data --------------------------------------------------------
   
-  # Parse date and time
-  if ( !is.null(date) ) {
-    orders <- c("YmdH")
-    datetime <- lubridate::parse_date_time(paste0(date, hour), orders=orders, tz="UTC")
-  } else {
-    orders <- c("YjH")
-    datetime <- lubridate::parse_date_time(paste0(julianDate, hour), orders=order, tz="UTC")
-  }
+  # DELETE ME: POSIXct called "datetime" by here
   
   # Get list of available files for specified date
   links <- 
@@ -80,7 +104,7 @@ goesaodc_downloadAOD <- function(
   startTimes <- purrr::map_chr(availableFiles, goesaodc_getStartString)
   
   # select matching files
-  mask <- stringr::str_detect(startTimes, format(datetime, "%Y%j%H"))
+  mask <- stringr::str_detect(startTimes, startString)
   matchingFiles <- availableFiles[mask]
   
   # Get satelliteDataDir
@@ -116,10 +140,9 @@ goesaodc_downloadAOD <- function(
 
 if (FALSE) {
   
-  date <- 20190422
-  hour <- "09"
-  downloadedFiles <- goesaodc_downloadAOD(date = date, 
-                                      hour = hour)
+  # Hour where startdate is numeric
+  startdate <- 2019051616
+  downloadedFiles <- goesaodc_downloadAOD(startdate)
   
   print(downloadedFiles)
   
