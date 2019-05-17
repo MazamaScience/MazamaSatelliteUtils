@@ -32,8 +32,11 @@
 
 <meta property="og:title" content="Download GOES 16 AOD data — goesaodc_downloadAOD" />
 
-<meta property="og:description" content="Download all GOES 16 .nc files for the given date and hour to
-the directory specified by setSatelliteDataDir()." />
+<meta property="og:description" content="Download all GOES 16 .nc files for the given startdate to
+the directory specified by setSatelliteDataDir(). If startdate
+is specified to the hour, only files for that hour will be downloaded. If
+startdate is specified only to the day, all files for that day will
+be downloaded." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -64,7 +67,7 @@ the directory specified by setSatelliteDataDir()." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MazamaSatelliteUtils</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
       </span>
     </div>
 
@@ -105,32 +108,37 @@ the directory specified by setSatelliteDataDir()." />
 
     <div class="ref-description">
     
-    <p>Download all GOES 16 .nc files for the given date and hour to
-the directory specified by <code><a href='setSatelliteDataDir.html'>setSatelliteDataDir()</a></code>.</p>
+    <p>Download all GOES 16 .nc files for the given <code>startdate</code> to
+the directory specified by <code><a href='setSatelliteDataDir.html'>setSatelliteDataDir()</a></code>. If <code>startdate</code>
+is specified to the hour, only files for that hour will be downloaded. If
+<code>startdate</code> is specified only to the day, all files for that day will
+be downloaded.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>goesaodc_downloadAOD</span>(<span class='kw'>date</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>hour</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>julianDate</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>baseUrl</span> <span class='kw'>=</span> <span class='st'>"https://tools-1.airfire.org/Satellite/GOES-16/AODC"</span>)</pre>
+    <pre class="usage"><span class='fu'>goesaodc_downloadAOD</span>(<span class='kw'>startdate</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>jdate</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>baseUrl</span> <span class='kw'>=</span> <span class='st'>"https://tools-1.airfire.org/Satellite/GOES-16/AODC"</span>,
+  <span class='kw'>quiet</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>date</th>
-      <td><p>desired date (integer, character representing YYYYMMDD or <code>POSIXct</code>)</p></td>
+      <th>startdate</th>
+      <td><p>desired date in any Y-m-d [H] format or <code>POSIXct</code></p></td>
     </tr>
     <tr>
-      <th>hour</th>
-      <td><p>UTC hour for data (HH)</p></td>
-    </tr>
-    <tr>
-      <th>julianDate</th>
-      <td><p>desired date on Julian calendar (YYYYDDD). Ignored if <code>date</code> is specified.</p></td>
+      <th>jdate</th>
+      <td><p>desired date in as a Julian date string, i.e. as seen in the
+netcdf filenames</p></td>
     </tr>
     <tr>
       <th>baseUrl</th>
       <td><p>base URL for data queries</p></td>
+    </tr>
+    <tr>
+      <th>quiet</th>
+      <td><p>if TRUE, suppress status messages and progress bar</p></td>
     </tr>
     </table>
     

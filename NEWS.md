@@ -1,3 +1,10 @@
+# MazamaSatelliteUtils 0.1.2
+
+  Standardized time-related parameters to all be "starttime", which emphesizes
+  that times refer to ABI scan start times.
+  
+  Added unit testing.
+
 # MazamaSatelliteUtils 0.1.1
 
   New functions to download and work with GOES AOD data

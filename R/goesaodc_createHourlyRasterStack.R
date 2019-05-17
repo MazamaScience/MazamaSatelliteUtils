@@ -18,7 +18,7 @@
 #' 
 #' @description Create a \code{RasterStack} from GOES AOD data files for the date 
 #' and hour specified by \code{startdate}. Each \code{RasterLayer} contains data
-#' from one Advanced Baseline Imager (ABI) scan during the specifed time period.
+#' from one Advanced Baseline Imager (ABI) scan during the specified time period.
 #' 
 #' If data for the specified time period is not found in the directory specified 
 #' by \code{setSatelliteDataDir()}, it will be downloaded in order to create the
