@@ -46,10 +46,17 @@ goesaodc_createRaster <- function(
   
   # ----- Create Raster --------------------------------------------------------
   
-  extent <- raster::extent(spatialPoints)
+  # set extent
+  if (!is.null(bbox)) {
+    lon_min <- bbox[1, 1]; lon_max <- bbox[1, 2]
+    lat_min <- bbox[2, 1]; lat_max <- bbox[2, 2]
+  } else {
+    lon_min <- min(goesEastGrid$longitude, na.rm = TRUE)
+    lon_max <- max(goesEastGrid$longitude, na.rm = TRUE)
+    lat_min <- min(goesEastGrid$latitude, na.rm = TRUE)
+    lat_max <- max(goesEastGrid$latitude, na.rm = TRUE)
+  }
   
-  lon_min <- extent@xmin; lon_max <- extent@xmax
-  lat_min <- extent@ymin; lat_max <- extent@ymax
   ncols <- ((lon_max - lon_min)/res)+1
   nrows <- ((lat_max - lat_min)/res)+1
   
