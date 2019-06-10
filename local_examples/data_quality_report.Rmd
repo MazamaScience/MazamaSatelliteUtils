@@ -1,0 +1,85 @@
+---
+title: "GOES AODC Data Quality"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(MazamaSatelliteUtils)
+
+setSatelliteDataDir("~/Data/Satellite")
+```
+
+Data Quality Questions:
+
+* How much data is there in a typical file?
+  + As a function of latitude/longitude?
+* How of the data is high/medium/low quality, how much is NA?
+  + Why are there so many NaN values?
+  + Could answer with barplot or facet plot w/ 4 quadrants
+* What is the optimal raster resolution?
+* If we aggregate temporally (over an hour), how many values can we expect to be
+a part of the aggregation? (Reword)
+
+## What is the proportion of high, medium, and low quality data?
+
+
+```{r}
+# Arbitrary date
+startdate <- 2019050211
+
+# Download files if necessary
+goesaodc_downloadAOD(startdate)
+
+nc <- 
+  goesaodc_listFiles(startdate)[1] %>%
+  goesaodc_openFile()
+
+AOD <- ncdf4::ncvar_get(nc, "AOD")
+DQF <- ncdf4::ncvar_get(nc, "DQF")
+
+# Check number of NAs in AOD and DQF
+sum(is.na(as.numeric(AOD)))
+# [1] 3009019
+sum(is.na(as.numeric(DQF)))
+# [1] 2012590
+
+# AOD has more missing values than DQF. Because a missing value in AOD is useless
+# to us regardless of it's corresponding data quality flag, I will
+# consider any
+```
+
+# Introduction
+
+## Problem Statement
+
+Observation of air quality using remote sensing data has the potential to complement traditional methods of air quality monitoring by providing information on a much larger geographic area. This report explores the viability of applying the Aerosol Optical Depth (AOD) data product, generated from remote sensing data gathered by [NOAA's GOES-R 16 geostationary satellite](https://www.goes-r.gov/), to the problem of air quality monitoring in the continental United States.
+
+## The AOD Data Product
+
+AOD is measure of the extinction of light due to aerosols in the atmosphere, where high AOD values correspond to high levels of aerosol in the atmosphere and vice versa. The product is produced at 2 km resolution at 5 minute intervals. Due to limitations in the [AOD retrieval algorithm](https://www.star.nesdis.noaa.gov/goesr/docs/ATBD/AOD.pdf), AOD is only produced under the following conditions:
+
+* daytime
+* clear sky
+* dark (low albedo) surfaces
+
+## What we'd like to do
+ 
+The US Forest Service Pacific Wildland Fire Sciences Laboratory (PWFSL) is 
+ 
+## Issues with 
+
+Moreover, the AOD product uses both ABI sensor data and several ancillary datasets.
+Having these upstream dependencies, as well as the limiting conditions under
+which the AOD product is produced, means that there are many missing values
+in the dataset.
+
+
+* Proposed pipeline
+  + ncdf -> geolocated point data -> raster (spatial aggregation) -> 
+    temporal aggregation (over an hour)
+  + Potetial problems with the proposed pipeline
+  + TODO:
+    + [ ] Read theoretical basis document from the GOES website. Why are there so 
+          many missing values?
+  
