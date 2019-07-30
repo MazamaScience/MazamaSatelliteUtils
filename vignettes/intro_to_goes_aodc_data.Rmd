@@ -1,0 +1,67 @@
+---
+title: "Intro to GOES AODC Data"
+author: "Mazama Science"
+date: "7/30/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+This vignette will cover the basics of working with (what is AODC??) aerosol
+optical depth (AOD) data from the Geostationary Opertational Environmental 
+Satellite 16 (GOES-16).
+
+## Package Setup and Dependencies
+
+Due to the size of the spatial mapping and aerosol reading datasets, we must
+first set which directories will hold this information.
+
+```{r setup_dependencies}
+library(MazamaSpatialUtils)
+library(MazamaSatelliteUtils)
+
+setSpatialDataDir("~/Data/Spatial")
+setSatelliteDataDir("~/Data/Satellite")
+```
+
+## Downloading Data and Creating netCDF Handles
+
+GOES data is stored as individual netCDF files for each sample time. Downloading
+these netCDF files does not load them as objects in the R environment, but 
+instead saves them to the Satellite Data Directory where they can be opened 
+individually through their netCDF handles. In this example, let's take a look at
+the data from 16:00 UTC on May 16, 2019:
+
+```{r download_data}
+date <- lubridate::parse_date_time("2019-05-16 16", "Ymd H", tz = "UTC")
+downloadedFiles <- goesaodc_downloadAOD(date)
+```
+
+We can see which files are now availible by calling `goesaodc_listFiles()` on 
+the date we defined.
+
+```{r display_downloaded_files}
+dateFiles <- goesaodc_listFiles(date)
+print(dateFiles)
+```
+
+And finally we can load the netCDF handle by calling `goesaodc_openFile()` on
+one of the files we just downloaded. Let's just pick the first one:
+"`r dateFiles[1]`".
+
+```{r load_handle}
+nc <- goesaodc_openFile(filename = dateFiles[1])
+```
+
+## netCDF Handle Functions
+
+Now that we have a handle to a netCDF file we can start exploring how this
+data format is structured.
+
+## Working With Data as a Tibble
+
+## Working With Data as SpatialPoints
+
+## Working With Data as a Raster
