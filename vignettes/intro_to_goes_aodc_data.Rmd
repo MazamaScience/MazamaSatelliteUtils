@@ -4,7 +4,7 @@ author: "Mazama Science"
 date: "7/30/2019"
 output: html_document
 vignette: >
-  %\VignetteIndexEntry{Intro to GIES AODC Data}
+  %\VignetteIndexEntry{Intro to GOES AODC Data}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -14,18 +14,16 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 This vignette will cover the basics of working with aerosol optical depth (AOD) 
-data from the GOES-16 Geostationary Opertational Environmental Satellite. 
-(Enumerate the goals of the package?)
+readings from the GOES-16 Geostationary Opertational Environmental Satellite. 
 
-AOD itself is a measure of the amount of particles in a given vertical column 
-of the atmosphere. The measurement is unitless, but values closer to 0 
-correspond to a very clean atmosphere while higher values correspond to hazy 
-conditions (an average AOD for the U.S. would be around 0.15). By scanning the 
-disk of the Earth beneath it, the GOES satellite can observe these depths across
-the United States once about every ?? minutes. The actual AOD value is 
-calculated using the scattering and absorbition of certain wavelengths of 
-sunlight on cloud-free regions of the sky. More on the
-process can be found 
+Aerosol optical depth is a measure of the amount of particles in a vertical 
+column of the atmosphere. The measurement is unitless, but values closer to 0.00 
+correspond to fewer particles (a cleaner atmosphere) while higher values 
+correspond to hazy conditions. An average AOD for the U.S. would usually lie 
+between 0.1 and 0.15. The value itself is related to the scattering and 
+absorbition of certain light waves on the atmosphere, measured by the Advanced 
+Baseline Imager ([ABI](https://www.goes-r.gov/spacesegment/abi.html)) on board 
+the GOES-16 satellite. More on this process can be found 
 [here](https://www.star.nesdis.noaa.gov/goesr/product_aero_aod.php).
 
 [More on GOES AOD](https://www.goes-r.gov/products/docs/PUG-L2+-vol5.pdf) p. 272.
@@ -35,32 +33,29 @@ process can be found
 Due to the size of the spatial mapping and aerosol reading datasets, we must
 first set which directories will hold this information.
 
-```{r setup_dependencies, results='hide', message=FALSE}
-library(maps)
-library(MazamaSpatialUtils)
+```{r setup_dependencies, message=FALSE}
 library(MazamaSatelliteUtils)
-
-setSpatialDataDir("~/Data/Spatial")
 setSatelliteDataDir("~/Data/Satellite")
 ```
 
 ## Downloading Data and Creating netCDF Handles
 
-GOES data is stored as individual netCDF files for each sample time. Downloading
-these netCDF files does not load them as objects in the R environment, but 
-instead saves them to the Satellite Data Directory where they can be opened 
+GOES data is stored as an individual netCDF file for each time sample. 
+Downloading these files does not load them as objects in the R environment, but
+instead saves them to the `SatelliteDataDir` directory where they can be opened 
 individually through their netCDF handles. In this example, let's take a look at 
-data from 16:00 hours UTC on May 16, 2019:
+data read throughout hour 16:00 UTC on May 16, 2019:
 
 ```{r download_data}
 date <- lubridate::ymd_h("2019-05-16 16", tz = "UTC")
 downloadedFiles <- goesaodc_downloadAOD(date)
 ```
 
-The `goesaodc_downloadAOD()` function also returns a vector of paths to each
-downloaded file. However, if the files already exist in the Data Directory then
-they will not be downloaded again and the vector will be `NULL`. We can see
-which which files are now availible to read by calling `goesaodc_listFiles()` on 
+If an hour is not specified, then every file generated over the given day will
+be downloaded. The `goesaodc_downloadAOD()` function also returns a vector of
+paths to each downloaded file. However, if a file already exists in the 
+`SatelliteDataDir` directory then it will not be downloaded again. We can see 
+which which files are now availible to read by calling `goesaodc_listFiles()` on
 the date we defined.
 
 ```{r display_downloaded_files}
@@ -90,28 +85,38 @@ names(nc)
 Here is a brief rundown of the various top level elements in these ncdf4 
 objects:
 
-1. filename - A character string containing the name of the file.
-2. writeable - Logical stating whether or not the file can be written to. This 
+1. `filename` - A character string containing the name of the file.
+2. `writeable` - Logical stating whether or not the file can be written to. This 
 will always be `FALSE` when the file is loaded through `goesaodc_openFile()`.
-3. ndims - The number of dimensions in the file.
-4. nvars - The number of variables in the file that are not dimensional
+3. `ndims` - The number of dimensions in the file.
+4. `nvars` - The number of variables in the file that are not dimensional
 variables.
-5. natts - The number of global attributes.
-6. unlimdimid - The unlimited dimension id. -1 if there is none.
+5. `natts` - The number of global attributes.
+6. `unlimdimid` - The unlimited dimension id. -1 if there is none.
+
+At this point we can freely access any of the `r nc$nvars` variables in the 
+dataset (listed by `names(nc$var)`) using the `ncvar_get()` 
+function from `ncdf4`.
+
+```{r ncdf4_retrival}
+readings_aod <- as.numeric(ncdf4::ncvar_get(nc, "AOD"))
+print(length(readings_aod))
+print(range(readings_aod, na.rm = TRUE))
+```
 
 ## Working With Data as a Tibble
 
-We can access varible readings now, but for our purposes we can consolidate
-relevant data (longitude, latitude, and DOA value) into a simple tibble with
-the function `goesaodc_createTibble()`.
-Another varible we'll include is DQF, described as "ABI L2+ Aerosol Optical 
-Depth at 550 nm data quality flags", which can identify off-Earth pixels.
+For our purpose of mapping DOA values, we can consolidate all the data we 
+need (longitude, latitude, and DOA) and make it easy to access by forming it 
+into a tibble with the function `goesaodc_createTibble()`. The "DQF" variable is
+included as well, as it represents the data quality flag for each reading. This
+flag can take one of the four following values 
+([source p.295](https://www.goes-r.gov/products/docs/PUG-L2+-vol5.pdf)):
 
-Retrieval Quality Flags (DQF) p.295
-0 high_quality_retrieval_qf
-1 medium_quality_retrieval_qf
-2 low_ quality_retrieval_qf
-3 no_retrieval_qf
+* 0 - High quality retrieval QF
+* 1 - Medium quality retrieval QF
+* 2 - Low quality retrieval QF
+* 3 - No retrieval QF
 
 ```{r create_tibble}
 tb <- goesaodc_createTibble(nc)
@@ -120,16 +125,19 @@ knitr::kable(head(tb))
 
 ## Working With Data as SpatialPoints
 
-The next step is actaully visualizing this information on geographic maps. 
+The next step is actaully visualizing this information on geographic maps by
+creating spatialPoints from the DOA readings:
 
 ```{r spatialPlot_world}
-sp <- goesaodc_createSpatialPoints(nc)
+library(maps)
 map("world")
+
+sp <- goesaodc_createSpatialPoints(nc)
 goesaodc_plotSpatialPoints(sp, add = TRUE, cex = 0.2)
 ```
 
-We can zoom in using `maps`' regular `xlim` and `ylim` parameters or by setting
-the `database`:
+We can zoom in using the `xlim` and/or `ylim` parameters for `map()` or by 
+setting the `database`:
 
 ```{r spatialPlot_usa}
 map(database = "state")
@@ -138,7 +146,8 @@ goesaodc_plotSpatialPoints(sp, add = TRUE, cex = 0.2)
 
 The quality level of the data can also be specified when creating the spatial 
 points. This includes all points that are *at and below* the specified level. 
-Let's look at all of the points at level 0--flagged for the highest quality:
+Let's look at all of the points at level 0, the ones flagged for the highest 
+quality:
 
 ```{r spatialPlot_high_quality}
 sp_dqf0 <- goesaodc_createSpatialPoints(nc, dqfLevel = 0)
@@ -146,8 +155,8 @@ map("state")
 goesaodc_plotSpatialPoints(sp_dqf0, add = TRUE, cex = 0.2)
 ```
 
-Quite a bit of data has been removed now since a good portion of it was marked
-only medium or low quality.
+Quite a bit of data has been removed since a good portion of it was marked only
+as medium or low quality.
 
 ## Working With Data as a Raster
 
@@ -163,7 +172,7 @@ map("state", add = TRUE)
 The resolution of these rasters can be set with the `res` parameter. Values
 closer to zero increase the image resolution while larger values decrease it and
 produce more 'blocky' pictures (but are faster to generate). The resolution is 
-set to 0.1 by default, but let's try something a bit higher:
+set to 0.1 by default, but let's try a slightly higher value:
 
 ```{r create_raster_lowdef}
 raster <- goesaodc_createRaster(nc, res = 0.5)

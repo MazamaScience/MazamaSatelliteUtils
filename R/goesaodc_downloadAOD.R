@@ -8,11 +8,11 @@
 #' @param baseUrl base URL for data queries
 #' @param quiet if TRUE, suppress status messages and progress bar
 #' 
-#' @description Download all GOES 16 .nc files for the given \code{startdate} to
-#' the directory specified by \code{setSatelliteDataDir()}. If \code{startdate}
-#' is specified to the hour, only files for that hour will be downloaded. If
-#' \code{startdate} is specified only to the day, all files for that day will
-#' be downloaded.
+#' @description Download all GOES 16 NetCDF files for the given \code{startdate} 
+#' to the directory specified by \code{setSatelliteDataDir()}. If 
+#' \code{startdate} is specified to the hour, only files for that hour will be 
+#' downloaded. If \code{startdate} is specified only to the day, all files for 
+#' that day will be downloaded.
 #' 
 #' @return Vector of downloaded filepaths.
 #' 

@@ -21,7 +21,6 @@
 #' 2: Low quality retrieval flag
 #' 3: No retrieval quality flag
 #' 
-#' 
 #' @return SpatialPointsDataFrame
 
 goesaodc_createSpatialPoints <- function(

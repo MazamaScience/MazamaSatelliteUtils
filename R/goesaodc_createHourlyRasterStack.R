@@ -29,12 +29,12 @@
 #' accessed using the \code{raster::getZ()} function. Names of the \code{RasterStack}
 #' are also time stamps of the scan, of the format XHH.MM.SS.
 #' 
-#' \code{dqfLevel} can take a value of:
+#' Data quality level `dqfLevel` can take a value of:
 #' 
-#' 0: High quality retrieval flag  
-#' 1: Medium quality retrieval flag  
-#' 2: Low quality retrieval flag  
-#' 3: No retrieval quality flag  
+#' 0: High quality retrieval flag
+#' 1: Medium quality retrieval flag
+#' 2: Low quality retrieval flag
+#' 3: No retrieval quality flag
 #' 
 #' @return RasterStack
 

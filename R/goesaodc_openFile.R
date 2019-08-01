@@ -5,7 +5,7 @@
 #' @param filename file name of GOES AOD file
 #' @param dataDir data directory containing \code{filename}
 #' 
-#' @description Uses \code{ncdf4::nc_open()} to open a netcdf file and returns
+#' @description Uses \code{ncdf4::nc_open()} to open a NetCDF file and returns
 #' the \code{nc} handle. By default, the directory specified with 
 #' \code{setSatelliteDataDir()} is searched for the file.
 #' 
