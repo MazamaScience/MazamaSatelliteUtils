@@ -36,9 +36,10 @@ latLo, latHi if provided}
 RasterStack
 }
 \description{
-Create a \code{RasterStack} from GOES AOD data files for the date 
-and hour specified by \code{startdate}. Each \code{RasterLayer} contains data
-from one Advanced Baseline Imager (ABI) scan during the specified time period.
+Create a \code{RasterStack} from GOES AOD data files for the 
+date and hour specified by \code{startdate}. Each \code{RasterLayer} contains
+data from one Advanced Baseline Imager (ABI) scan during the specified time 
+period.
 
 If data for the specified time period is not found in the directory specified 
 by \code{setSatelliteDataDir()}, it will be downloaded in order to create the
@@ -46,8 +47,8 @@ by \code{setSatelliteDataDir()}, it will be downloaded in order to create the
 
 The Z axis of the \code{RasterStack} is a character vector where each element
 is the time stamp of the scan and has the format YYYYMMDDHHMMSS. This can be 
-accessed using the \code{raster::getZ()} function. Names of the \code{RasterStack}
-are also time stamps of the scan, of the format XHH.MM.SS.
+accessed using the \code{raster::getZ()} function. Names of the 
+\code{RasterStack} are also time stamps of the scan, of the format XHH.MM.SS.
 
 Data quality level `dqfLevel` can take a value of:
 

@@ -14,24 +14,28 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 This vignette will cover the basics of working with aerosol optical depth (AOD) 
-readings from the GOES-16 Geostationary Opertational Environmental Satellite. 
+readings from the GOES-16 Geostationary Operational Environmental Satellite. 
 
 Aerosol optical depth is a measure of the amount of particles in a vertical 
-column of the atmosphere. The measurement is unitless, but values closer to 0.00 
-correspond to fewer particles (a cleaner atmosphere) while higher values 
-correspond to hazy conditions. An average AOD for the U.S. would usually lie 
-between 0.1 and 0.15. The value itself is related to the scattering and 
-absorbition of certain light waves on the atmosphere, measured by the Advanced 
+column of the atmosphere. The value itself is related to the scattering and 
+absorbition of certain light waves on the atmosphere measured by the Advanced 
 Baseline Imager ([ABI](https://www.goes-r.gov/spacesegment/abi.html)) on board 
-the GOES-16 satellite. More on this process can be found 
+the GOES-16 satellite. AOD is unitless, but values closer to 0.0 correspond to 
+a cleaner atmosphere while higher values correspond to hazy conditions. An 
+average AOD for the U.S. would usually lie between 0.1 and 0.15. More on the 
+measurement process can be found 
 [here](https://www.star.nesdis.noaa.gov/goesr/product_aero_aod.php).
-
-[More on GOES AOD on page 272](https://www.goes-r.gov/products/docs/PUG-L2+-vol5.pdf)
 
 ## Package Setup and Dependencies
 
-Due to the size of the spatial mapping and aerosol reading datasets, we must
-first set which directories will hold this information.
+Aerosol optical depth data is stored along with many other kinds of measurements
+taken by the GOES-16 satellite in large netCDF "Common Data Form" files. These 
+files are structured for efficient access of multidimentional array-oriented 
+data which suits atmospheric readings very well. 
+
+Our first step when using the `MazamaSatelliteUtils` package is to provide a 
+`SatelliteDataDir`: A directory where our netCDF files will be stored to and 
+read from:
 
 ```{r setup_dependencies, message=FALSE}
 library(MazamaSatelliteUtils)
@@ -40,11 +44,13 @@ setSatelliteDataDir("~/Data/Satellite")
 
 ## Downloading Data and Creating netCDF Handles
 
-GOES data is stored as an individual netCDF file for each time sample. 
-Downloading these files does not load them as objects in the R environment, but
-instead saves them to the `SatelliteDataDir` directory where they can be opened 
-individually through their netCDF handles. In this example, let's take a look at 
-data read throughout hour 16:00 UTC on May 16, 2019:
+A netCDF file is generated for each time sample--usually resulting in about a 
+dozen files per hour. Downloading these files does not load them as objects in 
+the R environment, but instead saves them to the `SatelliteDataDir` directory 
+where they can be opened individually through their netCDF handles.
+
+For this walkthrough, let's take a look at data read throughout hour 16:00 UTC 
+on May 16, 2019:
 
 ```{r download_data}
 date <- lubridate::ymd_h("2019-05-16 16", tz = "UTC")
@@ -54,9 +60,9 @@ downloadedFiles <- goesaodc_downloadAOD(date)
 If an hour is not specified, then every file generated over the given day will
 be downloaded. The `goesaodc_downloadAOD()` function also returns a vector of
 paths to each downloaded file. However, if a file already exists in the 
-`SatelliteDataDir` directory then it will not be downloaded again. We can see 
-which which files are now availible to read by calling `goesaodc_listFiles()` on
-the date we defined.
+`SatelliteDataDir` directory then it will not be downloaded again (and will not
+be included in the returned vector). We can see which which files are now 
+availible to read by calling `goesaodc_listFiles()` on the date we defined:
 
 ```{r display_downloaded_files}
 dateFiles <- goesaodc_listFiles(date)
@@ -75,14 +81,14 @@ nc <- goesaodc_openFile(filename = dateFiles[1])
 
 ## netCDF Handle Functions
 
-Now that we have a handle (class 'ncdf4') to a netCDF file we can start 
-exploring how this data format is structured.
+Now that we have a handle (class `ncdf4`) to a netCDF file we can start 
+exploring how this dataset is structured.
 
 ```{r handle_elements}
 names(nc)
 ```
 
-Here is a brief rundown of the various top level elements in these ncdf4 
+Here is a brief rundown of the various top level elements in these `ncdf4` 
 objects:
 
 1. `filename` - A character string containing the name of the file.
@@ -104,19 +110,19 @@ print(length(readings_aod))
 print(range(readings_aod, na.rm = TRUE))
 ```
 
-## Working With Data as a Tibble
+## AOD Data as a Tibble
 
-For our purpose of mapping DOA values, we can consolidate all the data we 
-need (longitude, latitude, and DOA) and make it easy to access by forming it 
+For our purposes of mapping AOD values, we can consolidate all the data we 
+need (longitude, latitude, and AOD) and make it easy to access by forming it 
 into a tibble with the function `goesaodc_createTibble()`. The "DQF" variable is
-included as well, as it represents the data quality flag for each reading. This
+included as well, which represents the data quality flag for each reading. This
 flag can take one of the four following values 
 ([source p.295](https://www.goes-r.gov/products/docs/PUG-L2+-vol5.pdf)):
 
-* 0 - High quality retrieval QF
-* 1 - Medium quality retrieval QF
-* 2 - Low quality retrieval QF
-* 3 - No retrieval QF
+* 0 - High quality
+* 1 - Medium quality
+* 2 - Low quality
+* 3 - No retrieval flag
 
 ```{r create_tibble}
 tb <- goesaodc_createTibble(nc)
@@ -126,7 +132,7 @@ knitr::kable(head(tb))
 ## Working With Data as SpatialPoints
 
 The next step is actaully visualizing this information on geographic maps by
-creating spatialPoints from the DOA readings:
+creating spatial points from the AOD readings:
 
 ```{r spatialPlot_world}
 maps::map("world")
@@ -145,16 +151,16 @@ goesaodc_plotSpatialPoints(sp, add = TRUE, cex = 0.2)
 
 The quality level of the data can also be specified when creating the spatial 
 points. This includes all points that are *at and below* the specified level. 
-Let's look at all of the points at level 0, the ones flagged for the highest 
-quality:
+Let's look at all of the points at level 0 (highest quality):
 
 ```{r spatialPlot_high_quality}
-sp_dqf0 <- goesaodc_createSpatialPoints(nc, dqfLevel = 0)
 maps::map("state")
+
+sp_dqf0 <- goesaodc_createSpatialPoints(nc, dqfLevel = 0)
 goesaodc_plotSpatialPoints(sp_dqf0, add = TRUE, cex = 0.2)
 ```
 
-Quite a bit of data has been removed since a good portion of it was marked only
+Quite a bit of data has been removed since a good portion of it was only marked
 as medium or low quality.
 
 ## Working With Data as a Raster
@@ -163,8 +169,8 @@ Lastly, we can generate raster objects for each netCDF file. These can be
 plotted and mapped over.
 
 ```{r create_raster_highdef}
-raster <- goesaodc_createRaster(nc)
-raster::plot(raster, "AOD")
+rstr <- goesaodc_createRaster(nc)
+raster::plot(rstr, "AOD")
 maps::map("state", add = TRUE)
 ```
 
@@ -174,7 +180,14 @@ produce more 'blocky' pictures (but are faster to generate). The resolution is
 set to 0.1 by default, but let's try a slightly higher value:
 
 ```{r create_raster_lowdef}
-raster <- goesaodc_createRaster(nc, res = 0.5)
-raster::plot(raster, "AOD")
+rstr <- goesaodc_createRaster(nc, res = 0.5)
+raster::plot(rstr, "AOD")
 maps::map("state", add = TRUE)
+```
+
+A stack of rasters can also be generated for a specified hour:
+
+```{r, create_rasterStack}
+#rstrStack <- goesaodc_createHourlyRasterStack(startdate = date, res = 1.0)
+#rasterVis::levelplot(rstrStack)
 ```
