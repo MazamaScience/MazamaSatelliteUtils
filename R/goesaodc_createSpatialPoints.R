@@ -22,6 +22,13 @@
 #' 3: No retrieval quality flag
 #' 
 #' @return SpatialPointsDataFrame
+#' 
+#' @examples 
+#' \donttest{
+#' setSatelliteDataDir("~/Data/Satellite")
+#' nc <- goesaodc_openFile("OR_ABI-L2-AODC-M6_G16_s20191291201274_e20191291204047_c20191291210009.nc")
+#' sp <- goesaodc_createSpatialPoints(nc, dqfLevel = 1)
+#' }
 
 goesaodc_createSpatialPoints <- function(
   nc,
@@ -82,26 +89,5 @@ goesaodc_createSpatialPoints <- function(
   )
   
   return(spatialPoints)
-}
-
-# ===== Debugging ==============================================================
-
-if (FALSE) {
-  projectDir <- "~/Projects/MazamaSatelliteUtils"
   
-  # open file
-  filePath <- paste0(projectDir, "/local_data/OR_ABI-L2-AODC-M3_G16_s20190781512186_e20190781514559_c20190781516459.nc")
-  nc <- ncdf4::nc_open(filePath)
-  
-  # get bbox for Texas
-  loadSpatialData("USCensusStates")
-  tx <- subset(USCensusStates, stateCode == "TX")
-  bb_tx <- sp::bbox(tx)
-  
-  # create SpatialPointsDataFrame
-  spatialPoints <- goesaodc_createSpatialPoints(nc, bb_tx)
-  
-  # plot
-  goesaodc_plotSpatialPoints(spatialPoints, n=1e4)
-  plot(tx, add=T)
 }

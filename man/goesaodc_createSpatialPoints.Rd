@@ -36,3 +36,10 @@ can take a value of:
 2: Low quality retrieval flag
 3: No retrieval quality flag
 }
+\examples{
+\donttest{
+setSatelliteDataDir("~/Data/Satellite")
+nc <- goesaodc_openFile("OR_ABI-L2-AODC-M6_G16_s20191291201274_e20191291204047_c20191291210009.nc")
+sp <- goesaodc_createSpatialPoints(nc, dqfLevel = 1)
+}
+}

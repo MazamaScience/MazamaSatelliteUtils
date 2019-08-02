@@ -17,7 +17,19 @@
 #' @return Vector of downloaded filepaths.
 #' 
 #' @seealso \code{\link{setSatelliteDataDir}}
-
+#' 
+#' @examples 
+#' \donttest{
+#' setSatelliteDataDir("~/Data/Satellite")
+#' 
+#' date <- lubridate::ymd_h("2019-05-16 16", tz = "UTC")
+#' files <- goesaodc_downloadAOD(date)
+#' print(files)
+#' 
+#' date <- 2019051616
+#' files <- goesaodc_downloadAOD(date)
+#' print(files)
+#' }
 
 goesaodc_downloadAOD <- function(
   startdate = NULL,

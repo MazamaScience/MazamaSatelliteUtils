@@ -14,6 +14,15 @@
 #' second.
 #' 
 #' @return Vector of filenames.
+#' 
+#' @examples 
+#' \donttest{
+#' setSatelliteDataDir("~/Data/Satellite")
+#' 
+#' date <- lubridate::ymd_h("2019-05-16 16", tz = "UTC")
+#' files <- goesaodc_listFiles(date)
+#' print(files)
+#' }
 
 goesaodc_listFiles <- function(
   startdate = NULL,
@@ -98,4 +107,3 @@ goesaodc_listFiles <- function(
   return(matchingFiles)
   
 }
-

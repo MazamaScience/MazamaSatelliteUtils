@@ -23,3 +23,12 @@ Note that all files for a particular hour will be returned even if the
 incoming \code{startdate} or \code{jdate} is specified to the minute or
 second.
 }
+\examples{
+\donttest{
+setSatelliteDataDir("~/Data/Satellite")
+
+date <- lubridate::ymd_h("2019-05-16 16", tz = "UTC")
+files <- goesaodc_listFiles(date)
+print(files)
+}
+}

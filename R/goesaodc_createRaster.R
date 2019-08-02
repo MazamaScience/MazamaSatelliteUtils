@@ -23,6 +23,16 @@
 #' 3: No retrieval quality flag
 #' 
 #' @return RasterBrick
+#' 
+#' @examples 
+#' \donttest{
+#' setSatelliteDataDir("~/Data/Satellite")
+#' nc <- goesaodc_openFile("OR_ABI-L2-AODC-M6_G16_s20191291201274_e20191291204047_c20191291210009.nc")
+#' 
+#' rstr <- goesaodc_createRaster(nc, res = 0.25, dqfLevel = 2) 
+#' raster::plot(rstr, "AOD")
+#' maps::map("state", add = TRUE)
+#' }
 
 goesaodc_createRaster <- function(
   nc,
@@ -69,29 +79,5 @@ goesaodc_createRaster <- function(
   rasterBrick <- raster::rasterize(spatialPoints, raster, fun=fun)
   
   return(rasterBrick)
-}
-
-# ===== Debugging ==============================================================
-
-if (FALSE) {
-  filePath <- "/Users/tom/Projects/MazamaSatelliteUtils/local_data/OR_ABI-L2-AODC-M3_G16_s20190781512186_e20190781514559_c20190781516459.nc"
-  nc <- nc_open(filePath)
-  raster <- goesaodc_createRaster(nc)
   
-  # plot data
-  loadSpatialData('USCensusStates')
-  plot(raster$AOD)
-  map("state", add=T)
-  plot(SimpleCountries, add=TRUE)
-
-  # plot just Pennsylvania
-  pa <- subset(USCensusStates, stateCode == "PA")
-  bb_pa <- bbox(pa)
-  raster <- goesaodc_createRaster(nc, 
-                              xmn = bb_pa['x','min'], 
-                              xmx = bb_pa['x','max'], 
-                              ymn = bb_pa['y','min'], 
-                              ymx = bb_pa['y','max'])
-  plot(raster$AOD)
-  map("state", add=T)
 }

@@ -22,11 +22,24 @@ netcdf filenames}
 Vector of downloaded filepaths.
 }
 \description{
-Download all GOES 16 .nc files for the given \code{startdate} to
-the directory specified by \code{setSatelliteDataDir()}. If \code{startdate}
-is specified to the hour, only files for that hour will be downloaded. If
-\code{startdate} is specified only to the day, all files for that day will
-be downloaded.
+Download all GOES 16 NetCDF files for the given \code{startdate} 
+to the directory specified by \code{setSatelliteDataDir()}. If 
+\code{startdate} is specified to the hour, only files for that hour will be 
+downloaded. If \code{startdate} is specified only to the day, all files for 
+that day will be downloaded.
+}
+\examples{
+\donttest{
+setSatelliteDataDir("~/Data/Satellite")
+
+date <- lubridate::ymd_h("2019-05-16 16", tz = "UTC")
+files <- goesaodc_downloadAOD(date)
+print(files)
+
+date <- 2019051616
+files <- goesaodc_downloadAOD(date)
+print(files)
+}
 }
 \seealso{
 \code{\link{setSatelliteDataDir}}

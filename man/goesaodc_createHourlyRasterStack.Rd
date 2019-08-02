@@ -49,10 +49,18 @@ is the time stamp of the scan and has the format YYYYMMDDHHMMSS. This can be
 accessed using the \code{raster::getZ()} function. Names of the \code{RasterStack}
 are also time stamps of the scan, of the format XHH.MM.SS.
 
-\code{dqfLevel} can take a value of:
+Data quality level `dqfLevel` can take a value of:
 
-0: High quality retrieval flag  
-1: Medium quality retrieval flag  
-2: Low quality retrieval flag  
+0: High quality retrieval flag
+1: Medium quality retrieval flag
+2: Low quality retrieval flag
 3: No retrieval quality flag
+}
+\examples{
+\donttest{
+setSatelliteDataDir("~/Data/Satellite")
+date <- lubridate::ymd_h("2019-05-16 16", tz = "UTC")
+rstrStack <- goesaodc_createHourlyRasterStack(startdate = date, res = 0.5)
+rasterVis::levelplot(rstrStack)
+}
 }

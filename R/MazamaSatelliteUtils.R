@@ -5,15 +5,6 @@
 
 #' @docType data
 #' @keywords datasets
-#' @name example_nc
-#' @title Example NC
-#' @format An NCDF4 dataset
-#' @description
-#' This dataset holds a small sample of satellite data from November 15th, 2018. 
-NULL
-
-#' @docType data
-#' @keywords datasets
 #' @name goesEastGrid
 #' @title GOES East Grid
 #' @format A list with three elements

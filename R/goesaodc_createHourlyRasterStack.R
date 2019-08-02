@@ -37,6 +37,14 @@
 #' 3: No retrieval quality flag
 #' 
 #' @return RasterStack
+#' 
+#' @examples
+#' \donttest{
+#' setSatelliteDataDir("~/Data/Satellite")
+#' date <- lubridate::ymd_h("2019-05-16 16", tz = "UTC")
+#' rstrStack <- goesaodc_createHourlyRasterStack(startdate = date, res = 0.5)
+#' rasterVis::levelplot(rstrStack)
+#' }
 
 goesaodc_createHourlyRasterStack <- function(
   startdate = NULL,
@@ -55,7 +63,8 @@ goesaodc_createHourlyRasterStack <- function(
   
   if (!is.null(startdate)) {
     suppressWarnings({
-      dt <- lubridate::parse_date_time(startdate, "YmdH", tz = "UTC")
+      #dt <- lubridate::parse_date_time(startdate, "YmdH", tz = "UTC")
+      dt <- lubridate::parse_date_time(startdate, "Ymd HMS", tz = "UTC")
     })
     if (is.na(dt)) {
       stop("Parameter 'startdate' must be specified to the hour")
@@ -115,30 +124,3 @@ goesaodc_createHourlyRasterStack <- function(
   
   return(rasterStack)
 }
-
-# ===== DEBUGGING ==============================================================
-
-if (FALSE) {
-  
-  setSpatialDataDir("~/Data/Spatial")
-  setSatelliteDataDir("~/Data/Satellite")
-  
-  # get bounding box for Pennsylvania
-  loadSpatialData("USCensusStates")
-  pa <- subset(USCensusStates, stateCode == "PA")
-  bb_pa <- bbox(pa)
-  
-  # Set parameters
-  startdate = "2019050912"
-  var = "AOD"
-  res = 0.1
-  bbox = bb_pa
-  
-  # Create RasterStack
-  rasterStack <- goesaodc_createHourlyRasterStack(
-    startdate = startdate, var = var, res = res,  bbox = bbox)
-  
-  # Visualize!
-  rasterVis::levelplot(rasterStack)
-}
-

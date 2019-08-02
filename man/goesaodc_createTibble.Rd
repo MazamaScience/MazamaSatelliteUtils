@@ -16,3 +16,12 @@ Tibble (dataframe) with NetCDF variables and associated locations.
 Create a tibble with columns: AOD, DQF, lon and lat.
 This information is sufficient to plot as points or create a raster object.
 }
+\examples{
+\donttest{
+setSatelliteDataDir("~/Data/Satellite")
+nc <- goesaodc_openFile("OR_ABI-L2-AODC-M6_G16_s20191291201274_e20191291204047_c20191291210009.nc")
+
+tbl <- goesaodc_createTibble(nc)
+head(tbl)
+}
+}

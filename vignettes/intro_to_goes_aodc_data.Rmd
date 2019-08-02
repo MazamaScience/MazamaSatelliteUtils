@@ -26,7 +26,7 @@ Baseline Imager ([ABI](https://www.goes-r.gov/spacesegment/abi.html)) on board
 the GOES-16 satellite. More on this process can be found 
 [here](https://www.star.nesdis.noaa.gov/goesr/product_aero_aod.php).
 
-[More on GOES AOD](https://www.goes-r.gov/products/docs/PUG-L2+-vol5.pdf) p. 272.
+[More on GOES AOD on page 272](https://www.goes-r.gov/products/docs/PUG-L2+-vol5.pdf)
 
 ## Package Setup and Dependencies
 
@@ -129,8 +129,7 @@ The next step is actaully visualizing this information on geographic maps by
 creating spatialPoints from the DOA readings:
 
 ```{r spatialPlot_world}
-library(maps)
-map("world")
+maps::map("world")
 
 sp <- goesaodc_createSpatialPoints(nc)
 goesaodc_plotSpatialPoints(sp, add = TRUE, cex = 0.2)
@@ -140,7 +139,7 @@ We can zoom in using the `xlim` and/or `ylim` parameters for `map()` or by
 setting the `database`:
 
 ```{r spatialPlot_usa}
-map(database = "state")
+maps::map(database = "state")
 goesaodc_plotSpatialPoints(sp, add = TRUE, cex = 0.2)
 ```
 
@@ -151,7 +150,7 @@ quality:
 
 ```{r spatialPlot_high_quality}
 sp_dqf0 <- goesaodc_createSpatialPoints(nc, dqfLevel = 0)
-map("state")
+maps::map("state")
 goesaodc_plotSpatialPoints(sp_dqf0, add = TRUE, cex = 0.2)
 ```
 
@@ -166,7 +165,7 @@ plotted and mapped over.
 ```{r create_raster_highdef}
 raster <- goesaodc_createRaster(nc)
 raster::plot(raster, "AOD")
-map("state", add = TRUE)
+maps::map("state", add = TRUE)
 ```
 
 The resolution of these rasters can be set with the `res` parameter. Values
@@ -177,5 +176,5 @@ set to 0.1 by default, but let's try a slightly higher value:
 ```{r create_raster_lowdef}
 raster <- goesaodc_createRaster(nc, res = 0.5)
 raster::plot(raster, "AOD")
-map("state", add = TRUE)
+maps::map("state", add = TRUE)
 ```
