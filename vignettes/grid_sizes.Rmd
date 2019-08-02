@@ -44,27 +44,37 @@ plot(tx, add = TRUE)
 }
 ```
 
-```{r, fig.width=12, fig.height=8 }
-nc <- goesaodc_openFile("OR_ABI-L2-AODC-M6_G16_s20191291201274_e20191291204047_c20191291210009.nc")
+```{r, fig.width=10, fig.height=7, fig.align='center', echo=FALSE}
 tb <- goesaodc_createTibble(nc)
+
+# Subset for the east coast of Texas where there is a lot of dense data
 bb_tx_dense <- c(-97, -96, 27, 28)
 tb_tx_dense <- dplyr::filter(tb, 
                              lon > bb_tx_dense[1], lon < bb_tx_dense[2], 
                              lat > bb_tx_dense[3], lat < bb_tx_dense[4])
-pal_aod <- colorRampPalette(c("khaki", "orangered"))
-
 rstr <- goesaodc_createRaster(nc, 
                               lonLo = bb_tx_dense[1], lonHi = bb_tx_dense[2], 
                               latLo = bb_tx_dense[3], latHi = bb_tx_dense[4], 
-                              res = 0.08,
-                              fun = mean)
+                              res = 0.1, fun = mean)
 
+# Define the AOD color palette
+pal_aod <- colorRampPalette(c("khaki", "orangered"))
 
+# Plot the raster colored with the AOD palette and draw all sample point locations
+raster::plot(rstr, "AOD", col = pal_aod(25), xlim = bb_tx_dense[1:2], ylim = bb_tx_dense[3:4])
+plot(tx, add = TRUE)
+points(tb_tx_dense$lon, tb_tx_dense$lat, pch = 16, cex = 0.6, col = "black")
+```
+
+Drawing the sample points now with the same palette shows how the raster 
+generalizes AOD readings for each tile:
+
+```{r, fig.width=10, fig.height=7, fig.align='center', echo=FALSE}
+# Assign each reading its own color based on the AOD palette
 tb_tx_dense$col <- pal_aod(25)[as.numeric(cut(tb_tx_dense$AOD, breaks = 25))]
 
-
-
-raster::plot(rstr, "AOD", col = pal_aod(25), xlim = c(-97, -96), ylim = c(27, 28))
+# Plot the raster and points, both now with the same AOD palette
+raster::plot(rstr, "AOD", col = pal_aod(25), xlim = bb_tx_dense[1:2], ylim = bb_tx_dense[3:4])
 plot(tx, add = TRUE)
-points(tb_tx_dense$lon, tb_tx_dense$lat, pch = 16, cex = 0.5, col = tb_tx_dense$col)
+points(tb_tx_dense$lon, tb_tx_dense$lat, pch = 16, cex = 0.6, col = tb_tx_dense$col)
 ```
