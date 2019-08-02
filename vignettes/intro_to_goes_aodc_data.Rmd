@@ -188,6 +188,6 @@ maps::map("state", add = TRUE)
 A stack of rasters can also be generated for a specified hour:
 
 ```{r, create_rasterStack}
-#rstrStack <- goesaodc_createHourlyRasterStack(startdate = date, res = 1.0)
-#rasterVis::levelplot(rstrStack)
+rstrStack <- goesaodc_createHourlyRasterStack(startdate = date, res = 1.25)
+rasterVis::levelplot(rstrStack)
 ```
