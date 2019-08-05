@@ -9,11 +9,9 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, message=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-```
 
-```{r}
 library(MazamaSatelliteUtils)
 library(MazamaSpatialUtils)
 
@@ -27,26 +25,60 @@ bb_tx <- sp::bbox(tx)
 
 nc <- goesaodc_openFile("OR_ABI-L2-AODC-M6_G16_s20191291201274_e20191291204047_c20191291210009.nc")
 pal <- colorRampPalette(c("khaki", "orangered"))
-
-#par(mfrow=c(1, 3))
-rstr <- goesaodc_createRaster(nc, bbox = bb_tx, res = 0.1)
-raster::plot(rstr, "AOD", col = pal(100))
-plot(tx, add = TRUE)
-
-if(FALSE){
-rstr <- goesaodc_createRaster(nc, bbox = bb_tx, res = 0.3)
-raster::plot(rstr, "AOD", col = pal(100))
-plot(tx, add = TRUE)
-
-rstr <- goesaodc_createRaster(nc, bbox = bb_tx, res = 1.0)
-raster::plot(rstr, "AOD", col = pal(100))
-plot(tx, add = TRUE)
-}
 ```
 
-```{r, fig.width=10, fig.height=7, fig.align='center', echo=FALSE}
-tb <- goesaodc_createTibble(nc)
+Creating a raster image divides geographic space into uniform tiles or pixels.
+The resolution of the raster image defines how much world space each tile 
+accounts for, so larger tiles cover a larger area and (usually) more data 
+points. A whole new tile will be created for an area whether there is just one 
+or several hundred points. This raises raises two issues:
 
+1. When a large area is sparsely populated, the entire tile will be defined 
+by just those few values which might not accurately represent the whole area.
+
+2. When a large area is densly populated, the tile will have to 
+summarize all of the values in order to determine its single color. This may not
+accurately depict potential disparities in AOD throughout the area.
+
+In this vignette we will be analyzing raster grids for these different 
+scenarios. A good place to find areas of both types is Texas on ?????, where the 
+sea just off the east coast is dense with data points as opposed to the more 
+sparse western half of the state:
+
+```{r plot_texas_points, echo=FALSE}
+tb <- goesaodc_createTibble(nc)
+bbox_tx <- c(-107, -93, 26, 37)
+data_tx <- dplyr::filter(tb, lon > bbox_tx[1], lon < bbox_tx[2], 
+                         lat > bbox_tx[3], lat < bbox_tx[4])
+
+plot(tx)
+points(data_tx$lon, data_tx$lat, pch = 16, cex = 0.1)
+```
+
+To display the differences in resolutions, here are three rasters with 
+resolutions 0.1, 0.3, and 1.0 respectively:
+
+```{r display_different_resolutions, echo=FALSE}
+par(mfrow=c(1, 3))
+rstr <- goesaodc_createRaster(nc, bbox = bb_tx, res = 0.1)
+raster::plot(rstr, "AOD Res. 0.1", col = pal(100), legend = FALSE)
+plot(tx, add = TRUE)
+
+rstr <- goesaodc_createRaster(nc, bbox = bb_tx, res = 0.3)
+raster::plot(rstr, "AOD Res. 0.3", col = pal(100), legend = FALSE)
+plot(tx, add = TRUE)
+  
+rstr <- goesaodc_createRaster(nc, bbox = bb_tx, res = 1.0)
+raster::plot(rstr, "AOD Res. 1.0", col = pal(100), legend = FALSE)
+plot(tx, add = TRUE)
+```
+
+As the tiles increase in size they become more and more inaccurate in summarizing
+the true AOD values over the area they cover. Let's start analyzing the two 
+cases from earlier though, starting with the very dense cloud of points off the
+east coast, near Corpus Christi:
+
+```{r plot_dense_area, fig.width=10, fig.height=7, fig.align='center', echo=FALSE}
 # Subset for the east coast of Texas where there is a lot of dense data
 bb_tx_dense <- c(-97, -96, 27, 28)
 tb_tx_dense <- dplyr::filter(tb, 
