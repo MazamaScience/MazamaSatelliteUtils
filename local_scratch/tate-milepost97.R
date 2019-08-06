@@ -28,8 +28,9 @@ for (i in c(1:length(files))) {
                            lat > bbox_or["y", "min"], lat < bbox_or["y", "max"])
   
   rstr <- goesaodc_createRaster(nc, bbox = bbox_or, res = 0.08)
-  raster::plot(rstr$AOD, main = paste("Milepost 97 AOD", i), 
-               col = pal_aod(10), breaks = seq(-1.5, 2.5, by=0.4))
+  #raster::plot(rstr$AOD, main = paste("Milepost 97 AOD", i), 
+  #             col = pal_aod(10), breaks = seq(-1.5, 2.5, by=0.4))
+  raster::plot(rstr$AOD, main = paste("Milepost 97 AOD", i))
   plot(or, add = TRUE)
   points(x = c(-123.296895), y = c(42.858787), col = "red", cex = 3.0)
 }
