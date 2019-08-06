@@ -35,6 +35,7 @@ Imports:
 Suggests:
     knitr,
     maps,
+    MazamaSpatialUtils,
     rasterVis,
     rmarkdown,
     testthat

@@ -21,92 +21,190 @@ setSpatialDataDir("~/Data/Spatial")
 # get bbox for Texas
 loadSpatialData("USCensusStates")
 tx <- subset(USCensusStates, stateCode == "TX")
-bb_tx <- sp::bbox(tx)
+bbox_tx <- sp::bbox(tx)
 
 nc <- goesaodc_openFile("OR_ABI-L2-AODC-M6_G16_s20191291201274_e20191291204047_c20191291210009.nc")
-pal <- colorRampPalette(c("khaki", "orangered"))
+pal_aod <- colorRampPalette(c("lightgoldenrod1", "red3"))
+pal_count <- colorRampPalette(c("aliceblue", "dodgerblue4"))
+pal_sd <- colorRampPalette(c("lightpink", "darkred"))
 ```
 
-Creating a raster image divides geographic space into uniform tiles or pixels.
-The resolution of the raster image defines how much world space each tile 
-accounts for, so larger tiles cover a larger area and (usually) more data 
-points. A whole new tile will be created for an area whether there is just one 
-or several hundred points. This raises raises two issues:
+Creating a raster image divides geographic space into uniform pixels or "cells".
+The resolution of the image defines how much world space each cell represents, 
+so larger cells cover a larger area and (usually) more data points. A single 
+cell is created for a region whether it contains hundreds of data points or just
+one. This raises two issues:
 
-1. When a large area is sparsely populated, the entire tile will be defined 
-by just those few values which might not accurately represent the whole area.
+1. When a cell is sparsely populated, it will define the entire region it covers
+by only a few values. This will not accurately represent the whole area.
 
-2. When a large area is densly populated, the tile will have to 
-summarize all of the values in order to determine its single color. This may not
-accurately depict potential disparities in AOD throughout the area.
+2. When a cell is densly populated, the it will have to generalize all of the 
+data in order to determine its single color value. This may not correctly depict
+potential disparities in AOD throughout the area.
 
 In this vignette we will be analyzing raster grids for these different 
 scenarios. A good place to find areas of both types is Texas on ?????, where the 
 sea just off the east coast is dense with data points as opposed to the more 
-sparse western half of the state:
+sparse center of the state:
 
-```{r plot_texas_points, echo=FALSE}
+```{r plot_texas_points, fig.width=5, fig.height=5, fig.align='center', echo=FALSE}
 tb <- goesaodc_createTibble(nc)
-bbox_tx <- c(-107, -93, 26, 37)
-data_tx <- dplyr::filter(tb, lon > bbox_tx[1], lon < bbox_tx[2], 
-                         lat > bbox_tx[3], lat < bbox_tx[4])
+data_tx <- dplyr::filter(tb, 
+                         lon > bbox_tx["x", "min"], lon < bbox_tx["x", "max"], 
+                         lat > bbox_tx["y", "min"], lat < bbox_tx["y", "max"])
 
-plot(tx)
-points(data_tx$lon, data_tx$lat, pch = 16, cex = 0.1)
-```
+sp <- goesaodc_createSpatialPoints(nc, bbox = bbox_tx)
 
-To display the differences in resolutions, here are three rasters with 
-resolutions 0.1, 0.3, and 1.0 respectively:
-
-```{r display_different_resolutions, echo=FALSE}
-par(mfrow=c(1, 3))
-rstr <- goesaodc_createRaster(nc, bbox = bb_tx, res = 0.1)
-raster::plot(rstr, "AOD Res. 0.1", col = pal(100), legend = FALSE)
-plot(tx, add = TRUE)
-
-rstr <- goesaodc_createRaster(nc, bbox = bb_tx, res = 0.3)
-raster::plot(rstr, "AOD Res. 0.3", col = pal(100), legend = FALSE)
-plot(tx, add = TRUE)
-  
-rstr <- goesaodc_createRaster(nc, bbox = bb_tx, res = 1.0)
-raster::plot(rstr, "AOD Res. 1.0", col = pal(100), legend = FALSE)
+par(mar=c(0, 0, 2, 0))
+plot(tx, main = "Texas AOD")
+goesaodc_plotSpatialPoints(sp, var = "AOD", cex = 0.25, add = TRUE)
 plot(tx, add = TRUE)
 ```
 
-As the tiles increase in size they become more and more inaccurate in summarizing
-the true AOD values over the area they cover. Let's start analyzing the two 
-cases from earlier though, starting with the very dense cloud of points off the
-east coast, near Corpus Christi:
+Here are three rasters with different resolutions. Notice how the lower 
+resolution grids suggest there is data for areas where no AOD values were even 
+measured:
 
-```{r plot_dense_area, fig.width=10, fig.height=7, fig.align='center', echo=FALSE}
+```{r texas_resolution_plots, fig.width=10, fig.height=4, fig.align='center', echo=FALSE}
+par(mfrow=c(1, 3), mar=c(2, 1, 2, 1))
+rstr <- goesaodc_createRaster(nc, bbox = bbox_tx, res = 0.1)
+raster::plot(rstr$AOD, main = "AOD Res. 0.1", col = pal_aod(100), legend = FALSE)
+plot(tx, add = TRUE)
+
+rstr <- goesaodc_createRaster(nc, bbox = bbox_tx, res = 0.3)
+raster::plot(rstr$AOD, main = "AOD Res. 0.3", col = pal_aod(100), legend = FALSE)
+plot(tx, add = TRUE)
+
+rstr <- goesaodc_createRaster(nc, bbox = bbox_tx, res = 1.0)
+raster::plot(rstr$AOD, main = "AOD Res. 1.0", col = pal_aod(100), legend = FALSE)
+plot(tx, add = TRUE)
+```
+
+As the tiles increase in size they become more and more inaccurate in 
+summarizing the true aerosol depth over the area they cover. Let's start 
+analyzing the two cases from earlier though, starting with the very dense cloud 
+of points off the southeastern coast near Corpus Christi:
+
+```{r dense_plot, fig.width=8, fig.height=6, fig.align='center', echo=FALSE}
 # Subset for the east coast of Texas where there is a lot of dense data
 bb_tx_dense <- c(-97, -96, 27, 28)
 tb_tx_dense <- dplyr::filter(tb, 
                              lon > bb_tx_dense[1], lon < bb_tx_dense[2], 
                              lat > bb_tx_dense[3], lat < bb_tx_dense[4])
-rstr <- goesaodc_createRaster(nc, 
+rstr_mean <- goesaodc_createRaster(nc, 
                               lonLo = bb_tx_dense[1], lonHi = bb_tx_dense[2], 
                               latLo = bb_tx_dense[3], latHi = bb_tx_dense[4], 
                               res = 0.1, fun = mean)
 
-# Define the AOD color palette
-pal_aod <- colorRampPalette(c("khaki", "orangered"))
-
 # Plot the raster colored with the AOD palette and draw all sample point locations
-raster::plot(rstr, "AOD", col = pal_aod(25), xlim = bb_tx_dense[1:2], ylim = bb_tx_dense[3:4])
+raster::plot(rstr_mean$AOD, main = "AOD", col = pal_aod(25), xlim = bb_tx_dense[1:2], ylim = bb_tx_dense[3:4])
 plot(tx, add = TRUE)
-points(tb_tx_dense$lon, tb_tx_dense$lat, pch = 16, cex = 0.6, col = "black")
+points(tb_tx_dense$lon, tb_tx_dense$lat, pch = 16, cex = 0.4)
 ```
 
-Drawing the sample points now with the same palette shows how the raster 
-generalizes AOD readings for each tile:
+This plot helps illustrate how the GOES 16 satellite arranges its sample
+locations. Even in this dense area though there are still gaps and holes in the
+readings. The cell colors in this plot are given by the mean AOD value of all
+the points within the area they cover. In the more uniform regions this may 
+average around twenty points, but in the more spotty regions in the upper-left
+we can see that some tiles are defined by less than five values.
 
-```{r, fig.width=10, fig.height=7, fig.align='center', echo=FALSE}
+Drawing the sample points with the same palette shows how the raster
+generalizes the actual AOD readings within each cell. Let's compare how 
+different our results are when using either the mean or median: 
+
+```{r dense_average_plots, fig.width=10, fig.height=4, fig.align='center', echo=FALSE}
 # Assign each reading its own color based on the AOD palette
 tb_tx_dense$col <- pal_aod(25)[as.numeric(cut(tb_tx_dense$AOD, breaks = 25))]
 
-# Plot the raster and points, both now with the same AOD palette
-raster::plot(rstr, "AOD", col = pal_aod(25), xlim = bb_tx_dense[1:2], ylim = bb_tx_dense[3:4])
+# Generate the median raster
+rstr_median <- goesaodc_createRaster(nc, 
+                              lonLo = bb_tx_dense[1], lonHi = bb_tx_dense[2], 
+                              latLo = bb_tx_dense[3], latHi = bb_tx_dense[4], 
+                              res = 0.1, fun = median)
+
+par(mfrow = c(1, 2), mar = c(2, 4.5, 2, 4.5))
+
+# Plot the mean raster
+raster::plot(rstr_mean$AOD, main = "Mean AOD", col = pal_aod(25), 
+             xlim = bb_tx_dense[1:2], ylim = bb_tx_dense[3:4])
 plot(tx, add = TRUE)
-points(tb_tx_dense$lon, tb_tx_dense$lat, pch = 16, cex = 0.6, col = tb_tx_dense$col)
+points(tb_tx_dense$lon, tb_tx_dense$lat, 
+       pch = 16, cex = 0.5, col = tb_tx_dense$col)
+
+# Plot the median raster
+raster::plot(rstr_median$AOD, main = "Median AOD", col = pal_aod(25), 
+             xlim = bb_tx_dense[1:2], ylim = bb_tx_dense[3:4])
+plot(tx, add = TRUE)
+points(tb_tx_dense$lon, tb_tx_dense$lat, 
+       pch = 16, cex = 0.5, col = tb_tx_dense$col)
+```
+
+The two raster images turn out to be pretty similar. One could argue though that
+using the median is a better representation though since the cells of that map
+match the colors of their points more unformly so you can't even tell where they
+are.
+
+We can color the cells using different summarizing statistics besides the
+mean and median. Rasters can be generated based on the minimum data value in a 
+cell, the maximum value, the first or last, the total number of values, the 
+standard deviation, and several others. Let's try out the count and standard 
+deviation options:
+
+```{r dense_extra_plots, fig.width=10, fig.height=4, fig.align='center', echo=FALSE}
+rstr_count <- goesaodc_createRaster(nc, 
+                              lonLo = bb_tx_dense[1], lonHi = bb_tx_dense[2], 
+                              latLo = bb_tx_dense[3], latHi = bb_tx_dense[4], 
+                              res = 0.1, fun = "count")
+
+rstr_sd <- goesaodc_createRaster(nc, 
+                              lonLo = bb_tx_dense[1], lonHi = bb_tx_dense[2], 
+                              latLo = bb_tx_dense[3], latHi = bb_tx_dense[4], 
+                              res = 0.1, fun = sd)
+
+par(mfrow = c(1, 2), mar = c(2, 4.5, 2, 4.5))
+raster::plot(rstr_count$AOD, main = "Point Count", col = pal_count(25), 
+             xlim = bb_tx_dense[1:2], ylim = bb_tx_dense[3:4])
+plot(tx, add = TRUE)
+points(tb_tx_dense$lon, tb_tx_dense$lat, pch = 16, cex = 0.3)
+
+
+raster::plot(rstr_sd$AOD, main = "AOD Standard Deviation", col = pal_sd(25), 
+             xlim = bb_tx_dense[1:2], ylim = bb_tx_dense[3:4])
+plot(tx, add = TRUE, main = "AOD Standard Deviation")
+points(tb_tx_dense$lon, tb_tx_dense$lat, pch = 16, cex = 0.3)
+```
+
+Now that we know what is going on in a small area, let's zoom back out to the 
+state overview and see how various resolutions influence the apparent point
+counts and standard deviations:
+
+```{r texas_count_plots, fig.width=10, fig.height=4, fig.align='center', echo=FALSE}
+par(mfrow=c(1, 3), mar=c(2, 1, 2, 1))
+rstr <- goesaodc_createRaster(nc, bbox = bbox_tx, res = 0.1, fun = "count")
+raster::plot(rstr$AOD, main = "Point Count Res: 0.1", col = pal_count(100), legend = FALSE)
+plot(tx, add = TRUE)
+
+rstr <- goesaodc_createRaster(nc, bbox = bbox_tx, res = 0.3, fun = "count")
+raster::plot(rstr$AOD, main = "Point Count Res: 0.3", col = pal_count(100), legend = FALSE)
+plot(tx, add = TRUE)
+  
+rstr <- goesaodc_createRaster(nc, bbox = bbox_tx, res = 1.0, fun = "count")
+raster::plot(rstr$AOD, main = "Point Count Res: 1.0", col = pal_count(100), legend = FALSE)
+plot(tx, add = TRUE)
+```
+
+```{r texas_sd_plots, fig.width=10, fig.height=4, fig.align='center', echo=FALSE}
+par(mfrow=c(1, 3), mar=c(2, 1, 2, 1))
+rstr <- goesaodc_createRaster(nc, bbox = bbox_tx, res = 0.1, fun = sd)
+raster::plot(rstr$AOD, main = "AOD SD Res: 0.1", col = pal_sd(100), legend = FALSE)
+plot(tx, add = TRUE)
+
+rstr <- goesaodc_createRaster(nc, bbox = bbox_tx, res = 0.3, fun = sd)
+raster::plot(rstr$AOD, main = "AOD SD Res: 0.3", col = pal_sd(100), legend = FALSE)
+plot(tx, add = TRUE)
+  
+rstr <- goesaodc_createRaster(nc, bbox = bbox_tx, res = 1.0, fun = sd)
+raster::plot(rstr$AOD, main = "AOD SD Res: 1.0", col = pal_sd(100), legend = FALSE)
+plot(tx, add = TRUE)
 ```
