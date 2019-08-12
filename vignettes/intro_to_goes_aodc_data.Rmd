@@ -23,19 +23,21 @@ Baseline Imager ([ABI](https://www.goes-r.gov/spacesegment/abi.html)) on board
 the GOES-16 satellite. AOD is unitless, but values closer to 0.0 correspond to 
 a cleaner atmosphere while higher values correspond to hazy conditions. An 
 average AOD for the U.S. would usually lie between 0.1 and 0.15. More on the 
-measurement process can be found 
-[here](https://www.star.nesdis.noaa.gov/goesr/product_aero_aod.php).
+measurement process can be found in the 
+[GOES-R aerosol optical depth overview](https://www.star.nesdis.noaa.gov/goesr/product_aero_aod.php)
+and the
+[ABI AOD algorithm theoretical basis document](https://www.star.nesdis.noaa.gov/goesr/docs/ATBD/AOD.pdf).
 
 ## Package Setup and Dependencies
 
-Aerosol optical depth data is stored along with many other kinds of measurements
+Aerosol optical depth is stored along with many other kinds of measurements
 taken by the GOES-16 satellite in large netCDF "Common Data Form" files. These 
-files are structured for efficient access of multidimentional array-oriented 
-data which suits atmospheric readings very well. 
+files are structured for the efficient access of multidimentional array-oriented
+data like atmospheric readings. 
 
 Our first step when using the `MazamaSatelliteUtils` package is to provide a 
-`SatelliteDataDir`: A directory where our netCDF files will be stored to and 
-read from:
+`SatelliteDataDir`: A directory where all our working netCDF files will be 
+stored to and read from:
 
 ```{r setup_dependencies, message=FALSE}
 library(MazamaSatelliteUtils)
@@ -44,10 +46,11 @@ setSatelliteDataDir("~/Data/Satellite")
 
 ## Downloading Data and Creating netCDF Handles
 
-A netCDF file is generated for each time sample--usually resulting in about a 
-dozen files per hour. Downloading these files does not load them as objects in 
-the R environment, but instead saves them to the `SatelliteDataDir` directory 
-where they can be opened individually through their netCDF handles.
+A new netCDF file is generated about every five minutes, meaning that a single
+hour is typically made up of around a dozen files. Downloading these files does 
+not load them as objects in the R environment, but instead saves them to the 
+`SatelliteDataDir` directory where they can be opened individually through their
+netCDF handles.
 
 For this walkthrough, let's take a look at data read throughout hour 16:00 UTC 
 on May 16, 2019:
@@ -61,8 +64,8 @@ If an hour is not specified, then every file generated over the given day will
 be downloaded. The `goesaodc_downloadAOD()` function also returns a vector of
 paths to each downloaded file. However, if a file already exists in the 
 `SatelliteDataDir` directory then it will not be downloaded again (and will not
-be included in the returned vector). We can see which which files are now 
-availible to read by calling `goesaodc_listFiles()` on the date we defined:
+be included in the returned vector). We can see which files are now availible to
+read by calling `goesaodc_listFiles()` on the date we specified:
 
 ```{r display_downloaded_files}
 dateFiles <- goesaodc_listFiles(date)
@@ -71,9 +74,7 @@ print(dateFiles)
 
 To read one of these netCDF datasets we need a handle to access it by. This 
 can be done by calling `goesaodc_openFile()` on one of the filenames, so let's
-open the first one in our time range `dateFiles[1]`:
-
-"`r dateFiles[1]`"
+open the first one in our downloaded time range `dateFiles[1]`:
 
 ```{r load_handle}
 nc <- goesaodc_openFile(filename = dateFiles[1])
@@ -102,7 +103,7 @@ variables.
 
 At this point we can freely access any of the `r nc$nvars` variables in the 
 dataset (listed by `names(nc$var)`) using the `ncvar_get()` 
-function from `ncdf4`.
+function provided through `ncdf4`.
 
 ```{r ncdf4_retrival}
 readings_aod <- as.numeric(ncdf4::ncvar_get(nc, "AOD"))
@@ -113,10 +114,10 @@ print(range(readings_aod, na.rm = TRUE))
 ## AOD Data as a Tibble
 
 For our purposes of mapping AOD values, we can consolidate all the data we 
-need (longitude, latitude, and AOD) and make it easy to access by forming it 
-into a tibble with the function `goesaodc_createTibble()`. The "DQF" variable is
-included as well, which represents the data quality flag for each reading. This
-flag can take one of the four following values 
+need (longitude, latitude, and AOD) and make it even easier to access by forming
+it into a tibble with the function `goesaodc_createTibble()`. The "DQF" variable
+is included as well, which represents the data quality flag for each reading. 
+This flag can take one of the four following values 
 ([source p.295](https://www.goes-r.gov/products/docs/PUG-L2+-vol5.pdf)):
 
 * 0 - High quality
@@ -131,37 +132,38 @@ knitr::kable(head(tb))
 
 ## Working With Data as SpatialPoints
 
-The next step is actaully visualizing this information on geographic maps by
-creating spatial points from the AOD readings:
+The next step is actaully visualizing this data on geographic maps by creating 
+and plotting spatial points from the AOD readings:
 
 ```{r spatialPlot_world}
-maps::map("world")
-
 sp <- goesaodc_createSpatialPoints(nc)
+
+maps::map("world")
 goesaodc_plotSpatialPoints(sp, add = TRUE, cex = 0.2)
 ```
 
-We can zoom in using the `xlim` and/or `ylim` parameters for `map()` or by 
-setting the `database`:
+Since the GOES-16 satellite is geosynchrous, it can only provide scans over a 
+portion of the Americas. Let's zoom in to just the U.S. readings by defining the 
+`database` for the underlying map:
 
 ```{r spatialPlot_usa}
 maps::map(database = "state")
 goesaodc_plotSpatialPoints(sp, add = TRUE, cex = 0.2)
 ```
 
-The quality level of the data can also be specified when creating the spatial 
-points. This includes all points that are *at and below* the specified level. 
-Let's look at all of the points at level 0 (highest quality):
+The desired quality of the data can also be specified when creating the spatial 
+points. Defining the `dqfLevel` includes all points that are *at and below* 
+the given level. Let's look at all of the points at level 0 (highest quality):
 
 ```{r spatialPlot_high_quality}
-maps::map("state")
-
 sp_dqf0 <- goesaodc_createSpatialPoints(nc, dqfLevel = 0)
+
+maps::map("state")
 goesaodc_plotSpatialPoints(sp_dqf0, add = TRUE, cex = 0.2)
 ```
 
-Quite a bit of data has been removed since a good portion of it was only marked
-as medium or low quality.
+As you can see, quite a bit of data has been removed since a good portion of it 
+was marked as only medium or low quality.
 
 ## Working With Data as a Raster
 
@@ -170,6 +172,7 @@ plotted and mapped over.
 
 ```{r create_raster_highdef}
 rstr <- goesaodc_createRaster(nc)
+
 raster::plot(rstr, "AOD")
 maps::map("state", add = TRUE)
 ```
@@ -180,14 +183,18 @@ produce more 'blocky' pictures (but are faster to generate). The resolution is
 set to 0.1 by default, but let's try a slightly higher value:
 
 ```{r create_raster_lowdef}
-rstr <- goesaodc_createRaster(nc, res = 0.5)
-raster::plot(rstr, "AOD")
+rstr_lowdef <- goesaodc_createRaster(nc, res = 0.5)
+
+raster::plot(rstr_lowdef, "AOD")
 maps::map("state", add = TRUE)
 ```
 
-A stack of rasters can also be generated for a specified hour:
+## Rasters Over a Timeframe
 
-```{r, create_rasterStack}
-rstrStack <- goesaodc_createHourlyRasterStack(startdate = date, res = 1.25)
-rasterVis::levelplot(rstrStack)
-```
+So far we have created plots for AOD points from just one netCDF file at a 
+time, however, the `MazamaSatelliteUtils` package also provides functions to 
+visualize readings between multiple netCDFs over a given hour. The first of 
+these is the `goesaodc_createRasterStack` function, which can be used to 
+generate a stack of RasterBricks to be plotted together. The second is the 
+`goesaodc_createHourlyAverageRaster` function, which can be used to visualize 
+the "average" AOD for a state over a given hour.

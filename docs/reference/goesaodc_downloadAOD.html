@@ -32,11 +32,11 @@
 
 <meta property="og:title" content="Download GOES 16 AOD data — goesaodc_downloadAOD" />
 
-<meta property="og:description" content="Download all GOES 16 .nc files for the given startdate to
-the directory specified by setSatelliteDataDir(). If startdate
-is specified to the hour, only files for that hour will be downloaded. If
-startdate is specified only to the day, all files for that day will
-be downloaded." />
+<meta property="og:description" content="Download all GOES 16 NetCDF files for the given startdate 
+to the directory specified by setSatelliteDataDir(). If 
+startdate is specified to the hour, only files for that hour will be 
+downloaded. If startdate is specified only to the day, all files for 
+that day will be downloaded." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -82,6 +82,21 @@ be downloaded." />
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/grid_sizes.html">Grid Sizes</a>
+    </li>
+    <li>
+      <a href="../articles/intro_to_goes_aodc_data.html">Intro to GOES AODC Data</a>
+    </li>
+  </ul>
+</li>
 <li>
   <a href="../news/index.html">Changelog</a>
 </li>
@@ -108,11 +123,11 @@ be downloaded." />
 
     <div class="ref-description">
     
-    <p>Download all GOES 16 .nc files for the given <code>startdate</code> to
-the directory specified by <code><a href='setSatelliteDataDir.html'>setSatelliteDataDir()</a></code>. If <code>startdate</code>
-is specified to the hour, only files for that hour will be downloaded. If
-<code>startdate</code> is specified only to the day, all files for that day will
-be downloaded.</p>
+    <p>Download all GOES 16 NetCDF files for the given <code>startdate</code> 
+to the directory specified by <code><a href='setSatelliteDataDir.html'>setSatelliteDataDir()</a></code>. If 
+<code>startdate</code> is specified to the hour, only files for that hour will be 
+downloaded. If <code>startdate</code> is specified only to the day, all files for 
+that day will be downloaded.</p>
     
     </div>
 
@@ -151,6 +166,15 @@ netcdf filenames</p></td>
     <div class='dont-index'><p><code><a href='setSatelliteDataDir.html'>setSatelliteDataDir</a></code></p></div>
     
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='fu'><a href='setSatelliteDataDir.html'>setSatelliteDataDir</a></span>(<span class='st'>"~/Data/Satellite"</span>)
+
+<span class='no'>date</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>lubridate</span><span class='kw ns'>::</span><span class='fu'><a href='https://www.rdocumentation.org/packages/lubridate/topics/ymd_hms'>ymd_h</a></span>(<span class='st'>"2019-05-16 16"</span>, <span class='kw'>tz</span> <span class='kw'>=</span> <span class='st'>"UTC"</span>)
+<span class='no'>files</span> <span class='kw'>&lt;-</span> <span class='fu'>goesaodc_downloadAOD</span>(<span class='no'>date</span>)
+<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/print'>print</a></span>(<span class='no'>files</span>)</div><div class='output co'>#&gt; NULL</div><div class='input'>
+<span class='no'>date</span> <span class='kw'>&lt;-</span> <span class='fl'>2019051616</span>
+<span class='no'>files</span> <span class='kw'>&lt;-</span> <span class='fu'>goesaodc_downloadAOD</span>(<span class='no'>date</span>)
+<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/print'>print</a></span>(<span class='no'>files</span>)</div><div class='output co'>#&gt; NULL</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -160,7 +184,9 @@ netcdf filenames</p></td>
       <li><a href="#value">Value</a></li>
 
       <li><a href="#see-also">See also</a></li>
-          </ul>
+      
+      <li><a href="#examples">Examples</a></li>
+    </ul>
 
   </div>
 </div>

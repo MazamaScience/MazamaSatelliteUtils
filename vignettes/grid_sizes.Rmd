@@ -25,13 +25,13 @@ bbox_tx <- sp::bbox(tx)
 
 nc <- goesaodc_openFile("OR_ABI-L2-AODC-M6_G16_s20191291201274_e20191291204047_c20191291210009.nc")
 pal_aod <- colorRampPalette(c("lightgoldenrod1", "red3"))
-pal_count <- colorRampPalette(c("aliceblue", "dodgerblue4"))
+pal_count <- colorRampPalette(c("powderblue", "dodgerblue4"))
 pal_sd <- colorRampPalette(c("lightpink", "darkred"))
 ```
 
 A raster image divides geographic space into uniform pixels or "cells".
-The uniform size of these cells is determined by the resolution of the raster so that
-higher resolutions reduce cell area and increases the detail and accuracy of
+The uniform size of these cells is determined by the resolution of the raster so
+that higher resolutions reduce cell area and increase the detail and accuracy of
 the final image. The `goesaodc_createRaster()` function defines a colored 
 cell for each grid space with at least one data point, which raises two issues:
 
@@ -44,10 +44,10 @@ lot of data values in order to determine its final color. If there is a
 large disparity in AOD throughout the region, this will not be visible if the
 cell color is based on the average or median reading level.
 
-In this vignette we will be analyzing raster grids for both
-scenarios. A good place to find areas of both types is Texas on ?????, where the 
-sea just off the east coast is dense with data points as opposed to the more 
-sparse center of the state:
+In this short vignette we will explore the effects of different raster grid 
+sizes on collections of spatial points. A good place to find areas 
+is Texas on May 9th, 2019, where the sea just off the east coast is dense with 
+data points:
 
 ```{r plot_texas_points, fig.width=5, fig.height=5, fig.align='center', echo=FALSE}
 tb <- goesaodc_createTibble(nc)
@@ -105,14 +105,15 @@ plot(tx, add = TRUE)
 points(tb_tx_dense$lon, tb_tx_dense$lat, pch = 16, cex = 0.4)
 ```
 
-Here we can see how the GOES-16 satellite takes its sample measurements in a
-non-orthogonal grid. Even in this uniform arrangement though there are still 
-holes and gaps left in the readings. The cell colors in this plot are given by 
-the mean AOD value of all the points within the area they cover. In the dense 
-spaces of the grid this may end up averaging around twenty points while the more
-more sparse regions to the upper-left may only use five or fewer values.
+Here we can see how the Advanced Baseline Imager (ABI) aboard the GOES-16 
+satellite takes its sample measurements in a non-orthogonal grid. Even in this 
+uniform arrangement though there are still holes and gaps left in the readings. 
+The cell colors in this plot are determined by the mean AOD value of all the 
+points within the area they cover. In the dense spaces of the grid this may end 
+up averaging around twenty points while the more more sparse regions to the 
+upper-left may only use five or fewer values.
 
-Now drawing the sample points with the same AOD palette shows how the raster
+Drawing the sample points with the same AOD palette shows how the raster
 generalizes the individual readings within each cell. Let's compare how 
 different our results are when using either the mean or median: 
 
@@ -150,8 +151,8 @@ with the colors of all their points for some regions.
 It's possible to use different summarizing statistics besides the mean and 
 median to color cells. Rasters can be generated based on the minimum data value in a 
 cell, the maximum value, the first or last, the total number of values, the 
-standard deviation, and several other ways. Let's try out the count and standard 
-deviation options:
+standard deviation, and several other statistics. Let's try out the count and
+standard deviation options:
 
 ```{r dense_extra_plots, fig.width=10, fig.height=4, fig.align='center', echo=FALSE}
 rstr_count <- goesaodc_createRaster(nc, 
@@ -184,7 +185,7 @@ values that differ greatly.
 
 Now that we know what is going on in a small area, let's zoom back out to the 
 state overview and see how various resolutions influence the apparent point
-counts and standard deviations:
+counts and standard deviations of Texas:
 
 ```{r texas_count_plots, fig.width=10, fig.height=4, fig.align='center', echo=FALSE}
 par(mfrow=c(1, 3), mar=c(2, 1, 2, 1))

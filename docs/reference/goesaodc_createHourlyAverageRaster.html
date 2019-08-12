@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Create a RasterStack for a specified hour — goesaodc_createHourlyRasterStack • MazamaSatelliteUtils</title>
+<title>Create a RasterBrick Average for a specified hour — goesaodc_createHourlyAverageRaster • MazamaSatelliteUtils</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,19 +30,9 @@
 
 
 
-<meta property="og:title" content="Create a RasterStack for a specified hour — goesaodc_createHourlyRasterStack" />
+<meta property="og:title" content="Create a RasterBrick Average for a specified hour — goesaodc_createHourlyAverageRaster" />
 
-<meta property="og:description" content="Create a RasterStack from GOES AOD data files for the 
-date and hour specified by startdate. Each RasterLayer contains
-data from one Advanced Baseline Imager (ABI) scan during the specified time 
-period.
-If data for the specified time period is not found in the directory specified 
-by setSatelliteDataDir(), it will be downloaded in order to create the
-RasterStack.
-The Z axis of the RasterStack is a character vector where each element
-is the time stamp of the scan and has the format YYYYMMDDHHMMSS. This can be 
-accessed using the raster::getZ() function. Names of the 
-RasterStack are also time stamps of the scan, of the format XHH.MM.SS.
+<meta property="og:description" content="Creates a RasterBrick of a state's average AOD for a given hour.
 Data quality level `dqfLevel` can take a value of:
 0: High quality retrieval flag
 1: Medium quality retrieval flag
@@ -127,24 +117,14 @@ Data quality level `dqfLevel` can take a value of:
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Create a RasterStack for a specified hour</h1>
+    <h1>Create a RasterBrick Average for a specified hour</h1>
     
-    <div class="hidden name"><code>goesaodc_createHourlyRasterStack.Rd</code></div>
+    <div class="hidden name"><code>goesaodc_createHourlyAverageRaster.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Create a <code>RasterStack</code> from GOES AOD data files for the 
-date and hour specified by <code>startdate</code>. Each <code>RasterLayer</code> contains
-data from one Advanced Baseline Imager (ABI) scan during the specified time 
-period.</p>
-<p>If data for the specified time period is not found in the directory specified 
-by <code><a href='setSatelliteDataDir.html'>setSatelliteDataDir()</a></code>, it will be downloaded in order to create the
-<code>RasterStack</code>.</p>
-<p>The Z axis of the <code>RasterStack</code> is a character vector where each element
-is the time stamp of the scan and has the format YYYYMMDDHHMMSS. This can be 
-accessed using the <code><a href='https://www.rdocumentation.org/packages/raster/topics/zvalues'>raster::getZ()</a></code> function. Names of the 
-<code>RasterStack</code> are also time stamps of the scan, of the format XHH.MM.SS.</p>
+    <p>Creates a RasterBrick of a state's average AOD for a given hour.</p>
 <p>Data quality level `dqfLevel` can take a value of:</p>
 <p>0: High quality retrieval flag
 1: Medium quality retrieval flag
@@ -153,9 +133,8 @@ accessed using the <code><a href='https://www.rdocumentation.org/packages/raster
     
     </div>
 
-    <pre class="usage"><span class='fu'>goesaodc_createHourlyRasterStack</span>(<span class='kw'>startdate</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"AOD"</span>,
-  <span class='kw'>res</span> <span class='kw'>=</span> <span class='fl'>0.1</span>, <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>mean</span>, <span class='kw'>bbox</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>lonLo</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>lonHi</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>latLo</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>latHi</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>dqfLevel</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>goesaodc_createHourlyAverageRaster</span>(<span class='kw'>startdate</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>state</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>res</span> <span class='kw'>=</span> <span class='fl'>0.1</span>, <span class='kw'>dqfLevel</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -166,55 +145,48 @@ accessed using the <code><a href='https://www.rdocumentation.org/packages/raster
 <code>POSIXct</code></p></td>
     </tr>
     <tr>
-      <th>var</th>
-      <td><p>variable ("AOD, "DQF" or "ID")</p></td>
+      <th>state</th>
+      <td><p>a SpatialPolygonsDataFrame for the desired state</p></td>
     </tr>
     <tr>
       <th>res</th>
       <td><p>resolution of raster in degrees</p></td>
     </tr>
     <tr>
-      <th>fun</th>
-      <td><p>function to use when rasterizing. Not currently supported, defaults
-to mean.</p></td>
-    </tr>
-    <tr>
-      <th>bbox</th>
-      <td><p>bounding box generated by <code><a href='https://www.rdocumentation.org/packages/sp/topics/bbox'>sp::bbox</a></code>. Overrides lonLo, lonHi
-latLo, latHi if provided</p></td>
-    </tr>
-    <tr>
-      <th>lonLo</th>
-      <td><p>lower longitude extent</p></td>
-    </tr>
-    <tr>
-      <th>lonHi</th>
-      <td><p>upper longitude extent</p></td>
-    </tr>
-    <tr>
-      <th>latLo</th>
-      <td><p>lower latitude extent</p></td>
-    </tr>
-    <tr>
-      <th>latHi</th>
-      <td><p>upper latitude extent</p></td>
-    </tr>
-    <tr>
       <th>dqfLevel</th>
       <td><p>data quality flag level, numeric (0, 1, 2, or 3)</p></td>
+    </tr>
+    <tr>
+      <th>na.rm</th>
+      <td><p>logical that determines if an average should be generated for
+pixels that do not always have values</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>RasterStack</p>
+    <p>RasterBrick</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='setSatelliteDataDir.html'>setSatelliteDataDir</a></span>(<span class='st'>"~/Data/Satellite"</span>)
-<span class='no'>date</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>lubridate</span><span class='kw ns'>::</span><span class='fu'><a href='https://www.rdocumentation.org/packages/lubridate/topics/ymd_hms'>ymd_h</a></span>(<span class='st'>"2019-05-16 16"</span>, <span class='kw'>tz</span> <span class='kw'>=</span> <span class='st'>"UTC"</span>)
-<span class='no'>rstrStack</span> <span class='kw'>&lt;-</span> <span class='fu'>goesaodc_createHourlyRasterStack</span>(<span class='kw'>startdate</span> <span class='kw'>=</span> <span class='no'>date</span>, <span class='kw'>res</span> <span class='kw'>=</span> <span class='fl'>0.5</span>)
-<span class='kw pkg'>rasterVis</span><span class='kw ns'>::</span><span class='fu'><a href='https://www.rdocumentation.org/packages/rasterVis/topics/levelplot-methods'>levelplot</a></span>(<span class='no'>rstrStack</span>)</div><div class='img'><img src='goesaodc_createHourlyRasterStack-1.png' alt='' width='700' height='433' /></div></pre>
+    <pre class="examples"><div class='input'><span class='co'># Library setup</span>
+<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/library'>library</a></span>(<span class='no'>MazamaSatelliteUtils</span>)
+<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/library'>library</a></span>(<span class='no'>MazamaSpatialUtils</span>)</div><div class='output co'>#&gt; <span class='message'>Loading required package: sp</span></div><div class='input'><span class='fu'><a href='setSatelliteDataDir.html'>setSatelliteDataDir</a></span>(<span class='st'>"~/Data/Satellite"</span>)
+<span class='fu'><a href='https://www.rdocumentation.org/packages/MazamaSpatialUtils/topics/setSpatialDataDir'>setSpatialDataDir</a></span>(<span class='st'>"~/Data/Spatial"</span>)
+<span class='fu'><a href='https://www.rdocumentation.org/packages/MazamaSpatialUtils/topics/loadSpatialData'>loadSpatialData</a></span>(<span class='st'>"USCensusStates"</span>)
+
+<span class='co'># Take average for Oregon on July 31, 2019 at 9am (the Milepost 97 Fire)</span>
+<span class='no'>oregon</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/subset'>subset</a></span>(<span class='no'>USCensusStates</span>, <span class='no'>stateCode</span> <span class='kw'>==</span> <span class='st'>"OR"</span>)
+<span class='no'>date</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>lubridate</span><span class='kw ns'>::</span><span class='fu'><a href='https://www.rdocumentation.org/packages/lubridate/topics/ymd_hms'>ymd_h</a></span>(<span class='st'>"2019-07-31 16"</span>, <span class='kw'>tz</span> <span class='kw'>=</span> <span class='st'>"UTC"</span>)
+<span class='no'>avg</span> <span class='kw'>&lt;-</span> <span class='fu'>goesaodc_createHourlyAverageRaster</span>(<span class='no'>date</span>, <span class='no'>oregon</span>, <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
+
+<span class='co'># Plot average AOD raster and state border</span>
+<span class='no'>pal_aod</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/grDevices/topics/colorRamp'>colorRampPalette</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"lightgoldenrod1"</span>, <span class='st'>"red3"</span>))
+<span class='no'>title</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/paste'>paste0</a></span>(<span class='st'>"Average AOD ("</span>,
+                <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/strptime'>strftime</a></span>(<span class='no'>date</span>, <span class='st'>"%Y-%m-%d %I%p"</span>, <span class='kw'>tz</span> <span class='kw'>=</span> <span class='st'>"America/Los_Angeles"</span>),
+                <span class='st'>")"</span>)
+<span class='fu'><a href='https://www.rdocumentation.org/packages/graphics/topics/plot'>plot</a></span>(<span class='no'>avg</span>, <span class='kw'>col</span> <span class='kw'>=</span> <span class='fu'>pal_aod</span>(<span class='fl'>50</span>),
+     <span class='kw'>main</span> <span class='kw'>=</span> <span class='no'>title</span>, <span class='kw'>xlab</span> <span class='kw'>=</span> <span class='st'>"Longitude"</span>, <span class='kw'>ylab</span> <span class='kw'>=</span> <span class='st'>"Latitude"</span>)</div><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/graphics/topics/plot'>plot</a></span>(<span class='no'>oregon</span>, <span class='kw'>add</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</div><div class='img'><img src='goesaodc_createHourlyAverageRaster-1.png' alt='' width='700' height='433' /></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
