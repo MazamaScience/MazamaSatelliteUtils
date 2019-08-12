@@ -1,0 +1,123 @@
+---
+title: "Working With GOES AODC Rasters"
+author: "Mazama Science"
+date: "8/12/2019"
+output: html_document
+vignette: >
+  %\VignetteIndexEntry{Working With GOES AODC Rasters}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(MazamaSatelliteUtils)
+library(MazamaSpatialUtils)
+setSatelliteDataDir("~/Data/Satellite")
+setSpatialDataDir("~/Data/Spatial")
+loadSpatialData("USCensusStates")
+
+florida <- subset(USCensusStates, stateCode == "FL")
+nc <- goesaodc_openFile("OR_ABI-L2-AODC-M6_G16_s20191291201274_e20191291204047_c20191291210009.nc")
+
+pal_aod <- colorRampPalette(c("lightgoldenrod1", "red3"))
+pal_dqf <- colorRampPalette(c("green", "red"))
+```
+
+## Raster Objects
+
+A Raster is used to store and visualize information that is "gridded" like the
+pixels of an image. It is tailored towards visualizing geospatial data so that
+each pixel (or "cell") of the Raster covers a small area of the Earth's 
+surface and the color represents the value of a desired measurement, such as
+aerosol optical depth. In order to create a Raster that can be displayed, we 
+must create a single RasterBrick made up of RasterLayers for each variable.
+
+[more](https://www.neonscience.org/raster-res-extent-pixels-r)
+
+## Creating a RasterLayer
+
+A RasterLayer must be defined before any data can be rasterized onto it.
+
+```{r, echo=FALSE}
+res <- 0.1
+bbox <- sp::bbox(florida)
+
+lon_min <- bbox[1, 1]
+lon_max <- bbox[1, 2]
+lat_min <- bbox[2, 1]
+lat_max <- bbox[2, 2]
+
+ncols <- ((lon_max - lon_min) / res) + 1
+nrows <- ((lat_max - lat_min) / res) + 1
+
+rasterLayer <- raster::raster(nrows=nrows, ncols=ncols,
+                              xmn=lon_min, xmx=lon_max,
+                              ymn=lat_min, ymx=lat_max,
+                              res=res,
+                              crs="+proj=longlat +datum=WGS84 +ellps=GRS80")
+```
+
+## Rasterizing SpatialPoints
+
+Once the `RasterLayer` grid is defined, we can rasterize all of the readings 
+from our `SpatialPoints` object with the `rasterize` function. Now we have to 
+decide how our cells should be colored based on SpatialPoint measurements. A 
+cell will not be defined if it doesn't contain any points, but what if it 
+contains more than one point? For this case we define the `fun` parameter for 
+`rasterize`, which determines how to calculate one summarizing value from many
+points. By default this is set to be the "mean" value for all the points in the 
+cell.
+
+The result of this function is a `RasterBrick` with a separate `RasterLayer` for 
+each variable.
+
+```{r, echo=FALSE}
+spatialPoints <- goesaodc_createSpatialPoints(nc = nc, bbox = bbox)
+rasterBrick <- raster::rasterize(spatialPoints, rasterLayer, fun = mean)
+plot(rasterBrick)
+```
+
+The "ID" layer is included automatically--coloring each cell by the ID numbers
+of the features in the `SpatialPoints` object. While it's not very helpful in
+determining air quality, it does give a nice visual for how the GOES-16 ABI
+scans the Earth from North to South. As the ID plot legend suggests, there are
+about 70,000 SpatialPoint features in all:
+
+```{r}
+spatialPoints
+```
+
+The AOD and DQF measurements are more useful for our atmospheric analysis. Let's
+plot them with the state border on top:
+
+```{r, echo=FALSE}
+par(mfrow=c(1, 2))
+
+plot(rasterBrick$AOD, main = "AOD", col = pal_aod(50))
+plot(florida, add = TRUE)
+
+plot(rasterBrick$DQF, main = "DQF", col = pal_dqf(50))
+plot(florida, add = TRUE)
+```
+
+## Raster Metrics
+
+```{r}
+rb_mean   <- raster::rasterize(spatialPoints, rasterLayer, fun = mean)
+rb_median <- raster::rasterize(spatialPoints, rasterLayer, fun = median)
+rb_sd     <- raster::rasterize(spatialPoints, rasterLayer, fun = sd)
+rb_count  <- raster::rasterize(spatialPoints, rasterLayer, fun = "count")
+
+plot(rb_mean$AOD,   main = "AOD Mean", col = pal_aod(50))
+plot(rb_median$AOD, main = "AOD Median", col = pal_aod(50))
+plot(rb_sd$AOD,     main = "AOD Standard Deviation", col = pal_aod(50))
+plot(rb_count$AOD,  main = "Points in Cells", col = pal_aod(50))
+```
+
+## RasterStacks and Averaging
+
+```{r}
+rasterVis::levelplot(rasterBrick$AOD, main = "AOD", margin = FALSE)
+```
