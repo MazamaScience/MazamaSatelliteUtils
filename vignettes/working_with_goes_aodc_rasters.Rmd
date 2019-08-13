@@ -30,18 +30,48 @@ pal_dqf <- colorRampPalette(c("green", "red"))
 A Raster is used to store and visualize information that is "gridded" like the
 pixels of an image. It is tailored towards visualizing geospatial data so that
 each pixel (or "cell") of the Raster covers a small area of the Earth's 
-surface and the color represents the value of a desired measurement, such as
-aerosol optical depth. In order to create a Raster that can be displayed, we 
-must create a single RasterBrick made up of RasterLayers for each variable.
+surface and the color represents the value of a measurement, such as aerosol 
+optical depth. A Raster is creted in several steps, bu the process can be 
+streamlined with `MazamaSatelliteUtils` functions. Let's walk through the 
+process first though to understand what Rasters are made of and how they are put
+together:
 
 [more](https://www.neonscience.org/raster-res-extent-pixels-r)
 
 ## Creating a RasterLayer
 
-A RasterLayer must be defined before any data can be rasterized onto it.
+Before any data can actually be rastered, a RasterLayer must first be defined in
+order to to set up the grid to draw to. This grid is given a bounding box with
+min/max longitudes and latitudes as well as a horizontal and vertical resolution
+given the number of rows and columns of cells. Like a digital image, more pixels
+results in a sharper and less blocky result.
 
-```{r, echo=FALSE}
-res <- 0.1
+The last requirement is a Coordinate Reference System (CRS) `proj4string`. This 
+is necessary to project the RasterLayer over the correct area on Earth using
+standard points of reference.
+"+proj=longlat +datum=WGS84 +ellps=GRS80" is the default we use and can be 
+broken up into several elements:
+
+1. proj=longlat: The projection system to use in order to transform 3D spherical
+world coordinates onto our 2D screen. In this case we'll use longitude and
+latitude. There are quite a lot of 
+[others](https://proj.org/operations/projections/index.html) to choose from.
+
+2. datum=WGS84: A coordinate system for the Earth. The WGS84 (World Geodetic 
+System 1984) is a common standard and is used for Google Maps.
+
+3. ellps=GRS80: The ellipsoid used to model the Earth. GRS80 and WGS84 are
+almost identical.
+
+Further reading on CRS and projections:
+[More on geodetic systems](https://gisgeography.com/wgs84-world-geodetic-system/)
+[PROJ4](https://proj.org/)
+[more on CRS](https://rspatial.org/spatial/6-crs.html).
+[Overview of Coordinate Reference Systems (CRS) in R](https://www.nceas.ucsb.edu/~frazier/RSpatialGuides/OverviewCoordinateReferenceSystems.pdf)
+[Coordinate Systems in R](https://mgimond.github.io/Spatial/coordinate-systems-in-r.html)
+
+```{r}
+res <- 0.05
 bbox <- sp::bbox(florida)
 
 lon_min <- bbox[1, 1]
@@ -52,11 +82,10 @@ lat_max <- bbox[2, 2]
 ncols <- ((lon_max - lon_min) / res) + 1
 nrows <- ((lat_max - lat_min) / res) + 1
 
-rasterLayer <- raster::raster(nrows=nrows, ncols=ncols,
-                              xmn=lon_min, xmx=lon_max,
-                              ymn=lat_min, ymx=lat_max,
-                              res=res,
-                              crs="+proj=longlat +datum=WGS84 +ellps=GRS80")
+rasterLayer <- raster::raster(nrows = nrows, ncols = ncols,
+                              xmn = lon_min, xmx = lon_max,
+                              ymn = lat_min, ymx = lat_max,
+                              crs = "+proj=longlat +datum=WGS84 +ellps=GRS80")
 ```
 
 ## Rasterizing SpatialPoints
@@ -92,8 +121,8 @@ spatialPoints
 The AOD and DQF measurements are more useful for our atmospheric analysis. Let's
 plot them with the state border on top:
 
-```{r, echo=FALSE}
-par(mfrow=c(1, 2))
+```{r, echo=FALSE, fig.width=8, fig.height=4}
+par(mfrow=c(1, 2), mar=c(2, 4, 2, 4))
 
 plot(rasterBrick$AOD, main = "AOD", col = pal_aod(50))
 plot(florida, add = TRUE)
@@ -102,14 +131,32 @@ plot(rasterBrick$DQF, main = "DQF", col = pal_dqf(50))
 plot(florida, add = TRUE)
 ```
 
-## Raster Metrics
+The process for creating this final RasterBrick is streamlined by the 
+`MazmaSatelliteUtils` function `goesaodc_createRaster`. The following code 
+produces the exact same result without having to go through the steps of 
+explicitly defining a new RasterLayer and rastering to it:
 
 ```{r}
+rb_simpler <- goesaodc_createRaster(nc = nc, res = res, fun = mean, bbox = bbox)
+
+plot(rb_simpler$AOD, main = "AOD", col = pal_aod(50))
+plot(florida, add = TRUE)
+```
+
+## Raster Metrics
+
+We can select several different `fun` methods besides `mean` to calculate the 
+final value for a cell. There are the usual statistical functions: `median`, 
+`sd`, `min`, `max`, as well as several specific functions provided by rasterize:
+"count", "first", and "last". "last" is used by default.
+
+```{r, fig.width=8, fig.height=6}
 rb_mean   <- raster::rasterize(spatialPoints, rasterLayer, fun = mean)
 rb_median <- raster::rasterize(spatialPoints, rasterLayer, fun = median)
 rb_sd     <- raster::rasterize(spatialPoints, rasterLayer, fun = sd)
 rb_count  <- raster::rasterize(spatialPoints, rasterLayer, fun = "count")
 
+par(mfrow=c(2, 2), mar=c(2, 3, 2, 3))
 plot(rb_mean$AOD,   main = "AOD Mean", col = pal_aod(50))
 plot(rb_median$AOD, main = "AOD Median", col = pal_aod(50))
 plot(rb_sd$AOD,     main = "AOD Standard Deviation", col = pal_aod(50))
