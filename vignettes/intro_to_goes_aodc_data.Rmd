@@ -319,9 +319,9 @@ plot(x = ts_buffer$datetime, y = ts_buffer$aod, pch = 16, cex = 1,
      main = paste(datetimeLocal, "PDT"), xlab = "Time (local)", ylab = "AOD")
 ```
 
-A time series plot with only 12 points doesn't provide as much insight as one
-that covers a whole day. We are currently building a function that can create
-a raster stack for given date between sunrise and sunset, and plotting this
-gives a much clearer view on the trend of AOD than a single hour does:
+A time series plot with only 12 points isn't especially useful, though it can
+help show the trend of the AOD values over a portion of a day. We are currently 
+building a function that can create a raster stack for every daylight hour for a
+given date, which has provided some very interesting insight so far!
 
-![](~/Desktop/aod_ts_day.png)
+![](aod_ts_day.png)
