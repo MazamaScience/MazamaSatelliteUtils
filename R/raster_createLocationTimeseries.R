@@ -2,15 +2,15 @@
 #' 
 #' @title Create a Tibble for a location's AOD readings at a given hour
 #' 
-#' @param rasterStack a RasterStack that holds layers for every ...
-#' @param lon longitude of the location.
-#' @param lat latitude of the location.
+#' @param rasterStack a RasterStack with a RasterLayer for every data snapshot.
+#' @param longitude longitude of the location.
+#' @param latitude latitude of the location.
 #' @param bbox bounding box for the rasters.
-#' @param method determines how a value is extracted from the location cell if a
-#' buffer is not defined. Can be set to either "simple", which returns the 
-#' direct location cell value, or "bilinear", which interpolates 4 nearest 
-#' raster cell values.
-#' @param buffer radius for the circluar region around the location. If multiple
+#' @param method determines how a value is extracted from the location if a
+#' buffer is not used. Can be set to either "simple", which returns the exact 
+#' value of the cell the coordinates fall in, or "bilinear", which interpolates 
+#' the four nearest raster cell values.
+#' @param buffer radius for a circluar region around the location. If multiple
 #' cells fall within this region then all of their values are aggregated by the
 #' 'fun' method. Radius is measured in map units (typically meters).
 #' @param fun function for aggregating all the values in the buffer (if buffer 
@@ -31,29 +31,33 @@
 #' setSpatialDataDir("~/Data/Spatial")
 #' loadSpatialData("USCensusStates")
 #' 
-#' # Oregon on July 31, 2019 at 9am (Milepost 97 Fire)
-#' startdate <- lubridate::ymd_h("2019-07-31 16", tz = "UTC")
+#' # Oregon on August 1, 2019 at 12pm (Milepost 97 Fire)
+#' startdate <- lubridate::ymd_h("2019-08-01 19", tz = "UTC")
 #' oregon <- subset(USCensusStates, stateCode == "OR")
 #' bbox_oregon <- sp::bbox(oregon)
+#' lon <- -123.245
+#' lat <- 42.861
 #' 
 #' # Gather all the raster layers for the given hour into a stack
 #' rasterStack <- goesaodc_createHourlyRasterStack(startdate = startdate, 
 #'                                                 bbox = bbox_oregon,
-#'                                                 res = 0.1)
+#'                                                 res = 0.05)
 #' 
+#' rasterAvg <- raster::mean(rasterStack, na.rm = TRUE)
 #' tb <- raster_createLocationTimeseries(rasterStack = rasterStack,
-#'                                       longitude = -123.26, latitude = 42.86, 
+#'                                       longitude = lon, latitude = lat, 
 #'                                       bbox = bbox_oregon,
 #'                                       buffer = 1000)
 #' 
 #' # Plot AOD time series
+#' pal_aod <- colorRampPalette(c("lightgoldenrod1", "red3"))
 #' par(mfrow = c(1, 2))
-#' raster::plot(rasterStack[[1]])
+#' raster::plot(rasterAvg, main = "Average AOD", col = pal_aod(50),
+#'              xlim = c(-125, -122), ylim = c(42, 44))
 #' plot(oregon, add = TRUE)
-#' points(x = c(-123.26), y = c(42.86), col = "red", cex = 1.0, pch = 3)
+#' points(x = c(lon), y = c(lat), cex = 2.0, pch = 3, lwd = 1.5)
 #' plot(x = tb$datetime, y = tb$aod, pch = 15, cex = 1,
-#'      main = paste0("Milepost 97 (", startdate, ")"), 
-#'      xlab = "Time", ylab = "AOD")
+#'      main = startdate, xlab = "Time", ylab = "AOD")
 #' }
 
 raster_createLocationTimeseries <- function(

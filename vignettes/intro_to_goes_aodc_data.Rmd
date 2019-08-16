@@ -13,68 +13,89 @@ vignette: >
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-This vignette will cover the basics of working with aerosol optical depth (AOD) 
-readings from the GOES-16 Geostationary Operational Environmental Satellite. 
+## Aerosol Optical Depth
+Aerosol optical depth provides a measure of air quality by estimating the amount
+of particles in a vertical column of the atmosphere. The absorbtion and 
+scattering of certain spectral wavelengths on the atmosphere is fed into aerosol
+models to determine an AOD value. This number is unitless, but values closer to 
+0.0 correspond to a cleaner atmosphere while higher values correspond to more 
+hazy conditions. An average AOD for the U.S. is usually around 0.1 and 0.15.
 
-Aerosol optical depth is a measure of the amount of particles in a vertical 
-column of the atmosphere. The value itself is related to the scattering and 
-absorbition of certain light waves on the atmosphere measured by the Advanced 
+There are limitations to this method though. Sunlight is required for the
+measurement process, meaning that AOD levels can't be estimated during 
+nighttime. Additionally, many areas will have no AOD defined due to the 
+reflectance of underlying clouds or snow.
+
+## AOD Source
+The MazamaSatelliteUtils package uses AOD data provided by the Advanced 
 Baseline Imager ([ABI](https://www.goes-r.gov/spacesegment/abi.html)) on board 
-the GOES-16 satellite. AOD is unitless, but values closer to 0.0 correspond to 
-a cleaner atmosphere while higher values correspond to hazy conditions. An 
-average AOD for the U.S. would usually lie between 0.1 and 0.15. More on the 
-measurement process can be found in the 
+the GOES-16 satellite. This geostationary satellite is positioned to give the 
+ABI a full view of the lower 48 states, and about every 5 minutes the imager
+can complete a full scan of this region. Each individual scan is saved to its 
+own NetCDF file.
+
+More on the ABI's AOD measurement process can be found in the 
 [GOES-R aerosol optical depth overview](https://www.star.nesdis.noaa.gov/goesr/product_aero_aod.php)
 and the
 [ABI AOD algorithm theoretical basis document](https://www.star.nesdis.noaa.gov/goesr/docs/ATBD/AOD.pdf).
 
-## Package Setup and Dependencies
+## NetCDF Files
+The "Common Data Form" filetype is used for efficient access to multidimensional
+array-based data such as atmospheric measurements. A typical scan of North 
+America holds 3,750,000 readings per variable, resulting in a file of around 3 
+to 4 MB. If scans are taken every 5 minutes, a single day would hold about
+12 files * 24 hrs * 3 MB = 860 MB worth of data. Due to this fairly large size, 
+downloading a NetCDF saves the file to a specified data directory from which the
+contents can be accessed through a file handle.
 
-Aerosol optical depth is stored along with many other kinds of measurements
-taken by the GOES-16 satellite in large netCDF "Common Data Form" files. These 
-files are structured for the efficient access of multidimentional array-oriented
-data like atmospheric readings. 
+## MazamaSatelliteUtils Setup
+Let's start exploring AOD data with the `MazamaSatelliteUtils` package. Let's
+first give ourselves a case study to focus, such as the recent Milepost 97 Fire.
+This incident was reported on July 24, 2019 about 1 mile southeast of 
+Canyonville, Oregon and is still current as of August 11, 2019. This should 
+provide plenty of data for us to examine in detail.
 
-Our first step when using the `MazamaSatelliteUtils` package is to provide a 
-`SatelliteDataDir`: A directory where all our working netCDF files will be 
-stored to and read from:
+To begin our analysis, let's load the MazamaSatelliteUtils package and define a 
+`SatelliteDataDir`: A directory where all our NetCDF files will be stored to and
+read from:
 
-```{r setup_dependencies, message=FALSE}
+```{r satellite_setup, message=FALSE}
 library(MazamaSatelliteUtils)
 setSatelliteDataDir("~/Data/Satellite")
 ```
 
-## Downloading Data and Creating netCDF Handles
+## Downloading Data and Creating NetCDF Handles
+We can now start loading in some satellite data using the `goesaodc_downloadAOD`
+package function. Here we have to provide a datetime to specify which files we 
+want. If the datetime is defined to the hour, then all of the NetCDF files 
+generated in that hour will be downloaded. If just the date is given with no 
+time specified, then all files generated during that entire day will be fetched.
+In either case, any downloaded files will be stored in the `SatelliteDataDir` we
+just defined.
 
-A new netCDF file is generated about every five minutes, meaning that a single
-hour is typically made up of around a dozen files. Downloading these files does 
-not load them as objects in the R environment, but instead saves them to the 
-`SatelliteDataDir` directory where they can be opened individually through their
-netCDF handles.
+Since downloading NetCDF files can take a bit of time, let's just gather data 
+for August 1, 2019 at 16:00:00 UTC (9AM PDT).
 
-For this walkthrough, let's take a look at data read throughout hour 16:00 UTC 
-on May 16, 2019:
-
-```{r download_data}
-date <- lubridate::ymd_h("2019-05-16 16", tz = "UTC")
-downloadedFiles <- goesaodc_downloadAOD(date)
+```{r download_files}
+datetime <- lubridate::ymd_h("2019-08-01 16", tz = "UTC")
+downloadedFiles <- goesaodc_downloadAOD(datetime)
 ```
 
-If an hour is not specified, then every file generated over the given day will
-be downloaded. The `goesaodc_downloadAOD()` function also returns a vector of
-paths to each downloaded file. However, if a file already exists in the 
-`SatelliteDataDir` directory then it will not be downloaded again (and will not
-be included in the returned vector). We can see which files are now availible to
-read by calling `goesaodc_listFiles()` on the date we specified:
+The `goesaodc_downloadAOD()` function also returns a vector of paths to each 
+downloaded file. However, if a file already exists in the `SatelliteDataDir` 
+directory then it will not be downloaded again and will not show up in the 
+returned vector. We can see which files are now availible to read by calling 
+`goesaodc_listFiles()` on the datetime we specified:
 
-```{r display_downloaded_files}
-dateFiles <- goesaodc_listFiles(date)
+```{r display_files}
+dateFiles <- goesaodc_listFiles(datetime)
 print(dateFiles)
 ```
 
-To read one of these netCDF datasets we need a handle to access it by. This 
-can be done by calling `goesaodc_openFile()` on one of the filenames, so let's
-open the first one in our downloaded time range `dateFiles[1]`:
+In order to read the contents of a NetCDF file we will need a handle to access 
+it by. This can be done by calling `goesaodc_openFile()` on the dataset 
+filename, so let's just open the first one in our downloaded time range 
+`dateFiles[1]`:
 
 ```{r load_handle}
 nc <- goesaodc_openFile(filename = dateFiles[1])
@@ -189,7 +210,20 @@ raster::plot(rstr_lowdef, "AOD")
 maps::map("state", add = TRUE)
 ```
 
-## Rasters Over a Timeframe
+```{r spatial_setup}
+library(MazamaSpatialUtils)
+setSpatialDataDir("~/Data/Spatial")
+loadSpatialData("USCensusStates")
+```
+
+## AOD Over Time
+One benefit of deploying many unique monitors on ground level is that it is very
+easy to retrieve time series data from specific, fixed locations. There is only 
+one ABI, however, and the locations it scans aren't uniquely nor consistently 
+identified between scans which makes tracking over time more difficult. 
+Rasterizing helps solve this problem since the grid cells are always fixed 
+between scans and can be queried easily by finding the cells close to the
+desired coordinates.
 
 So far we have created plots for AOD points from just one netCDF file at a 
 time, however, the `MazamaSatelliteUtils` package also provides functions to 
