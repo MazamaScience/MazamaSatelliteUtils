@@ -63,5 +63,4 @@ goesaodc_plotSpatialPoints <- function(
   col_i <- .bincode(spatialPointsSub[[var]], breaks)
   col_v <- cols[col_i]
   plot(spatialPointsSub, pch=pch, col=col_v, cex=cex, add = add)
-  
 }
