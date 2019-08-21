@@ -27,23 +27,25 @@
 #' 
 #' oregon <- subset(USCensusStates, stateCode == "OR")
 #' dateLocal <- lubridate::ymd("2019-08-01", tz = "America/Los_Angeles")
-#' goesaodc_createSpVideo(date = dateLocal, state = oregon, dqfLevel = 2)
+#' goesaodc_createSpatialPointsVideo(date = dateLocal, state = oregon, var = "AOD", dqfLevel = 2)
 #' }
 
-goesaodc_createSpVideo <- function(
+goesaodc_createSpatialPointsVideo <- function(
   date = NULL,
   state = NULL,
+  var = "AOD",
   dqfLevel = 2
 ) {
   
   dateStr <- strftime(date, "%Y%m%d", tz = "America/Los_Angeles")
   bbox_state <- sp::bbox(state)
   
-  # Calculate UTC start and end times  
-  startTimeUTC <- date + lubridate::hours(6)
+  # Calculate UTC start and end times
+  #startTimeUTC <- date
+  startTimeUTC <- date + lubridate::hours(6) # Debug start at sunrise
   attributes(startTimeUTC)$tzone <- "UTC"
-  endTimeUTC <- startTimeUTC + lubridate::hours(1) # Short debug period
   #endTimeUTC <- startTimeUTC + lubridate::hours(23)
+  endTimeUTC <- startTimeUTC + lubridate::hours(11) # Short debug period
   
   # Get all the hours between the UTC start and end times
   hours <- seq.POSIXt(from = startTimeUTC, to = endTimeUTC, by = "hour")
@@ -78,8 +80,8 @@ goesaodc_createSpVideo <- function(
       }, silent = TRUE)
       
       # Frame setup
-      i <- stringr::str_pad(frameNumber, 4, 'left', '0')
-      frameFileName <- paste0(i, ".png")
+      i <- stringr::str_pad(frameNumber, 3, 'left', '0')
+      frameFileName <- paste0(dateStr, "_", i, ".png")
       frameFilePath <- file.path(tempdir(), frameFileName)
       png(frameFilePath, width = 1280, height = 720, units = "px")
       
@@ -89,30 +91,32 @@ goesaodc_createSpVideo <- function(
         # Still draw the state border even if there are no spatial points
         if (grep("No data for selected region", errMsg) == 1) {
           par(bg = 'gray')
-          plot(oregon, main = paste(frameLocalTimestamp, "PDT"))
+          plot(state, main = paste(frameLocalTimestamp, "PDT"))
         } else {
           stop(errMsg)
         }
       } else {
         par(bg = 'gray')
-        plot(oregon, main =  paste(frameLocalTimestamp, "PDT"))
-        goesaodc_plotSpatialPoints(sp, cex = 0.5, 
-                                   breaks = c(-3.0, -0.5, 0.0, 0.25, 0.75, 1.0, 1.5, 2.0, 3.0), 
+        plot(state, main =  paste(frameLocalTimestamp, "PDT"))
+        goesaodc_plotSpatialPoints(sp,
+                                   var = var,
+                                   cex = 0.5, 
+                                   breaks = c(-3.0, -0.2, 0.1, 0.2, 0.4, 0.6, 0.8, 1.0, 1.5, 3.0), 
                                    add = TRUE)
-        plot(oregon, add = TRUE)
-        
-        #hist(readings_aod)
-        dev.off()
-        frameNumber <- frameNumber + 1
+        plot(state, add = TRUE)
       }
+      
+      print(frameFileName)
+      dev.off()
+      frameNumber <- frameNumber + 1
     }
   }
   
-  videoFileName <- paste0(dateStr, "_DQF", dqfLevel, ".mp4")
-
+  videoFileName <- paste0(state$stateCode, "_", dateStr, "_DQF", dqfLevel, ".mp4")
+  
   # Define system calls to ffmpeg to create video from frames
   cmd_cd <- paste0("cd ", tempdir())
-  cmd_ffmpeg <- paste0("ffmpeg -loglevel quiet -r 4 -f image2 -s 1280x720 -i %04d.png -vcodec libx264 -crf 25 ~/Desktop/", videoFileName)
+  cmd_ffmpeg <- paste0("ffmpeg -loglevel quiet -r 4 -f image2 -s 1280x720 -i ", dateStr, "_%03d.png -vcodec libx264 -crf 25 ~/Desktop/", videoFileName)
   cmd <- paste0(cmd_cd, " && ", cmd_ffmpeg)
   
   system(cmd)
