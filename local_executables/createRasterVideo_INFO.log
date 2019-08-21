@@ -1,0 +1,80 @@
+INFO [2019-08-21 14:54:32] Running createRasterVideo_exec.R version 0.1.1
+INFO [2019-08-21 14:54:32] Loading data file for 2019-08-01 06
+INFO [2019-08-21 14:54:49] Generating frame for 06:01:46
+INFO [2019-08-21 14:54:51] Generating frame for 06:06:46
+INFO [2019-08-21 14:54:52] Generating frame for 06:11:46
+INFO [2019-08-21 14:54:54] Generating frame for 06:16:46
+INFO [2019-08-21 14:54:55] Generating frame for 06:21:46
+INFO [2019-08-21 14:54:56] Generating frame for 06:26:46
+INFO [2019-08-21 14:54:58] Generating frame for 06:31:46
+INFO [2019-08-21 14:54:59] Generating frame for 06:36:46
+INFO [2019-08-21 14:55:00] Generating frame for 06:41:46
+INFO [2019-08-21 14:55:02] Generating frame for 06:46:46
+INFO [2019-08-21 14:55:03] Generating frame for 06:51:46
+INFO [2019-08-21 14:55:05] Generating frame for 06:56:46
+INFO [2019-08-21 14:55:06] Loading data file for 2019-08-01 07
+INFO [2019-08-21 14:55:24] Generating frame for 07:01:46
+INFO [2019-08-21 14:55:25] Generating frame for 07:06:46
+INFO [2019-08-21 14:55:26] Generating frame for 07:11:46
+INFO [2019-08-21 14:55:28] Generating frame for 07:16:46
+INFO [2019-08-21 14:55:29] Generating frame for 07:21:46
+INFO [2019-08-21 14:55:30] Generating frame for 07:26:46
+INFO [2019-08-21 14:55:32] Generating frame for 07:31:46
+INFO [2019-08-21 14:55:33] Generating frame for 07:36:46
+INFO [2019-08-21 14:55:34] Generating frame for 07:41:46
+INFO [2019-08-21 14:55:36] Generating frame for 07:46:46
+INFO [2019-08-21 14:55:37] Generating frame for 07:51:46
+INFO [2019-08-21 14:55:38] Generating frame for 07:56:46
+INFO [2019-08-21 14:55:40] Loading data file for 2019-08-01 08
+INFO [2019-08-21 14:55:56] Generating frame for 08:01:46
+INFO [2019-08-21 14:55:58] Generating frame for 08:06:46
+INFO [2019-08-21 14:55:59] Generating frame for 08:11:46
+INFO [2019-08-21 14:56:00] Generating frame for 08:16:46
+INFO [2019-08-21 14:56:01] Generating frame for 08:21:46
+INFO [2019-08-21 14:56:03] Generating frame for 08:26:46
+INFO [2019-08-21 14:56:04] Generating frame for 08:31:46
+INFO [2019-08-21 14:56:05] Generating frame for 08:36:46
+INFO [2019-08-21 14:56:07] Generating frame for 08:41:46
+INFO [2019-08-21 14:56:08] Generating frame for 08:46:46
+INFO [2019-08-21 14:56:09] Generating frame for 08:51:46
+INFO [2019-08-21 14:56:10] Generating frame for 08:56:46
+INFO [2019-08-21 14:56:12] Loading data file for 2019-08-01 09
+INFO [2019-08-21 14:56:29] Generating frame for 09:01:46
+INFO [2019-08-21 14:56:31] Generating frame for 09:06:46
+INFO [2019-08-21 14:56:32] Generating frame for 09:11:46
+INFO [2019-08-21 14:56:34] Generating frame for 09:16:46
+INFO [2019-08-21 14:56:35] Generating frame for 09:21:46
+INFO [2019-08-21 14:56:36] Generating frame for 09:26:46
+INFO [2019-08-21 14:56:38] Generating frame for 09:31:46
+INFO [2019-08-21 14:56:39] Generating frame for 09:36:46
+INFO [2019-08-21 14:56:41] Generating frame for 09:41:46
+INFO [2019-08-21 14:56:42] Generating frame for 09:46:46
+INFO [2019-08-21 14:56:43] Generating frame for 09:51:46
+INFO [2019-08-21 14:56:45] Generating frame for 09:56:46
+INFO [2019-08-21 14:56:46] Loading data file for 2019-08-01 10
+INFO [2019-08-21 14:57:04] Generating frame for 10:01:46
+INFO [2019-08-21 14:57:05] Generating frame for 10:06:46
+INFO [2019-08-21 14:57:07] Generating frame for 10:11:46
+INFO [2019-08-21 14:57:08] Generating frame for 10:16:46
+INFO [2019-08-21 14:57:10] Generating frame for 10:21:46
+INFO [2019-08-21 14:57:11] Generating frame for 10:26:46
+INFO [2019-08-21 14:57:12] Generating frame for 10:31:46
+INFO [2019-08-21 14:57:14] Generating frame for 10:36:46
+INFO [2019-08-21 14:57:15] Generating frame for 10:41:46
+INFO [2019-08-21 14:57:17] Generating frame for 10:46:46
+INFO [2019-08-21 14:57:18] Generating frame for 10:51:46
+INFO [2019-08-21 14:57:19] Generating frame for 10:56:46
+INFO [2019-08-21 14:57:21] Loading data file for 2019-08-01 11
+INFO [2019-08-21 14:57:38] Generating frame for 11:01:46
+INFO [2019-08-21 14:57:40] Generating frame for 11:06:46
+INFO [2019-08-21 14:57:41] Generating frame for 11:11:46
+INFO [2019-08-21 14:57:42] Generating frame for 11:16:46
+INFO [2019-08-21 14:57:44] Generating frame for 11:21:46
+INFO [2019-08-21 14:57:45] Generating frame for 11:26:46
+INFO [2019-08-21 14:57:47] Generating frame for 11:31:46
+INFO [2019-08-21 14:57:48] Generating frame for 11:36:46
+INFO [2019-08-21 14:57:49] Generating frame for 11:41:46
+INFO [2019-08-21 14:57:51] Generating frame for 11:46:46
+INFO [2019-08-21 14:57:52] Generating frame for 11:51:46
+INFO [2019-08-21 14:57:53] Generating frame for 11:56:46
+INFO [2019-08-21 14:57:55] Calling ffmpeg to make video from frames
