@@ -161,15 +161,15 @@ result <- try({
   frameNumber <- 1
   for (hour in hours) {
     
-    localHour <- hour
+    localHour <- lubridate::parse_date_time(hour, orders = "Ymd HMS", tz = "UTC")
     attributes(localHour)$tzone <- "America/Los_Angeles"
     
     if (opt$verbose) {
-      print(paste(localHour))
+      print(strftime(localHour, "%Y-%m-%d %H", tz = "America/Los_Angeles"))
     }
     
     # Download the scan files for this hour
-    logger.info("Loading data file for %s", localHour)
+    logger.info("Loading data file for %s", strftime(localHour, "%Y-%m-%d %H", tz = "America/Los_Angeles"))
     goesaodc_downloadAOD(startdate = hour)
     
     # Get the names of these scan files

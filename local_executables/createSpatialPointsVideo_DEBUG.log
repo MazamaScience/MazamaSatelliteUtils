@@ -1,5 +1,5 @@
-INFO [2019-08-21 13:42:48] Running createSpatialPointsVideo_exec.R version 0.1.1
-DEBUG [2019-08-21 13:42:48] R session:
+INFO [2019-08-21 13:56:57] Running createSpatialPointsVideo_exec.R version 0.1.1
+DEBUG [2019-08-21 13:56:57] R session:
 
 R version 3.5.2 (2018-12-20)
 Platform: x86_64-apple-darwin15.6.0 (64-bit)
@@ -27,32 +27,32 @@ loaded via a namespace (and not attached):
 [10] getopt_1.20.3        raster_2.8-4         lambda.r_1.2.3      
 [13] rgdal_1.3-6          compiler_3.5.2      
 
-INFO [2019-08-21 13:42:48] Loading data file for 2019-08-01 07:00:00
-INFO [2019-08-21 13:43:05] Generating frame for 00:01:46
-INFO [2019-08-21 13:43:07] Generating frame for 00:06:46
-INFO [2019-08-21 13:43:07] Generating frame for 00:11:46
-INFO [2019-08-21 13:43:08] Generating frame for 00:16:46
-INFO [2019-08-21 13:43:09] Generating frame for 00:21:46
-INFO [2019-08-21 13:43:09] Generating frame for 00:26:46
-INFO [2019-08-21 13:43:10] Generating frame for 00:31:46
-INFO [2019-08-21 13:43:10] Generating frame for 00:36:46
-INFO [2019-08-21 13:43:11] Generating frame for 00:41:46
-INFO [2019-08-21 13:43:12] Generating frame for 00:46:46
-INFO [2019-08-21 13:43:12] Generating frame for 00:51:46
-INFO [2019-08-21 13:43:13] Generating frame for 00:56:46
-INFO [2019-08-21 13:43:13] Loading data file for 2019-08-01 08:00:00
-INFO [2019-08-21 13:43:31] Generating frame for 01:01:46
-INFO [2019-08-21 13:43:31] Generating frame for 01:06:46
-INFO [2019-08-21 13:43:32] Generating frame for 01:11:46
-INFO [2019-08-21 13:43:32] Generating frame for 01:16:46
-INFO [2019-08-21 13:43:33] Generating frame for 01:21:46
-INFO [2019-08-21 13:43:34] Generating frame for 01:26:46
-INFO [2019-08-21 13:43:34] Generating frame for 01:31:46
-INFO [2019-08-21 13:43:35] Generating frame for 01:36:46
-INFO [2019-08-21 13:43:35] Generating frame for 01:41:46
-INFO [2019-08-21 13:43:36] Generating frame for 01:46:46
-INFO [2019-08-21 13:43:37] Generating frame for 01:51:46
-INFO [2019-08-21 13:43:37] Generating frame for 01:56:46
-INFO [2019-08-21 13:43:38] Calling ffmpeg to make video from frames
-INFO [2019-08-21 13:43:38] Completed successfully!
-ERROR [2019-08-21 13:43:38] No errors
+INFO [2019-08-21 13:56:57] Loading data file for 2019-08-01 00
+INFO [2019-08-21 13:57:14] Generating frame for 00:01:46
+INFO [2019-08-21 13:57:16] Generating frame for 00:06:46
+INFO [2019-08-21 13:57:16] Generating frame for 00:11:46
+INFO [2019-08-21 13:57:17] Generating frame for 00:16:46
+INFO [2019-08-21 13:57:18] Generating frame for 00:21:46
+INFO [2019-08-21 13:57:18] Generating frame for 00:26:46
+INFO [2019-08-21 13:57:19] Generating frame for 00:31:46
+INFO [2019-08-21 13:57:19] Generating frame for 00:36:46
+INFO [2019-08-21 13:57:20] Generating frame for 00:41:46
+INFO [2019-08-21 13:57:20] Generating frame for 00:46:46
+INFO [2019-08-21 13:57:21] Generating frame for 00:51:46
+INFO [2019-08-21 13:57:22] Generating frame for 00:56:46
+INFO [2019-08-21 13:57:22] Loading data file for 2019-08-01 01
+INFO [2019-08-21 13:57:40] Generating frame for 01:01:46
+INFO [2019-08-21 13:57:40] Generating frame for 01:06:46
+INFO [2019-08-21 13:57:41] Generating frame for 01:11:46
+INFO [2019-08-21 13:57:41] Generating frame for 01:16:46
+INFO [2019-08-21 13:57:42] Generating frame for 01:21:46
+INFO [2019-08-21 13:57:43] Generating frame for 01:26:46
+INFO [2019-08-21 13:57:43] Generating frame for 01:31:46
+INFO [2019-08-21 13:57:44] Generating frame for 01:36:46
+INFO [2019-08-21 13:57:45] Generating frame for 01:41:46
+INFO [2019-08-21 13:57:45] Generating frame for 01:46:46
+INFO [2019-08-21 13:57:46] Generating frame for 01:51:46
+INFO [2019-08-21 13:57:46] Generating frame for 01:56:46
+INFO [2019-08-21 13:57:47] Calling ffmpeg to make video from frames
+INFO [2019-08-21 13:58:01] Completed successfully!
+ERROR [2019-08-21 13:58:01] No errors
