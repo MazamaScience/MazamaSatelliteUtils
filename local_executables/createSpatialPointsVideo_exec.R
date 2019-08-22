@@ -149,9 +149,9 @@ result <- try({
   bbox_state <- sp::bbox(state)
   
   # Calculate UTC start and end times
-  startTimeUTC <- opt$date
+  startTimeUTC <- opt$date + lubridate::hours(6)
   attributes(startTimeUTC)$tzone <- "UTC"
-  endTimeUTC <- startTimeUTC + lubridate::hours(23)
+  endTimeUTC <- startTimeUTC + lubridate::hours(5)
   
   # Get all the hours between the UTC start and end times
   hours <- seq.POSIXt(from = startTimeUTC, to = endTimeUTC, by = "hour")
