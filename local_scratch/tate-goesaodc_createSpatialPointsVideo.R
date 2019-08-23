@@ -4,9 +4,10 @@
 #' 
 #' @param date the date (local)
 #' @param state a SpatialPolygonsDataFrame for the state of interest
+#' @param var the variable to color spatial points with
 #' @param dqfLevel data quality flag level
 #' 
-#' @description f
+#' @description Generates a video of 
 #' 
 #' 0: High quality retrieval flag
 #' 1: Medium quality retrieval flag
@@ -25,7 +26,8 @@
 #' 
 #' oregon <- subset(USCensusStates, stateCode == "OR")
 #' dateLocal <- lubridate::ymd("2019-08-01", tz = "America/Los_Angeles")
-#' goesaodc_createSpatialPointsVideo(date = dateLocal, state = oregon, var = "AOD", dqfLevel = 2)
+#' goesaodc_createSpatialPointsVideo(date = dateLocal, state = oregon, 
+#'                                   var = "AOD", dqfLevel = 2)
 #' }
 
 goesaodc_createSpatialPointsVideo <- function(

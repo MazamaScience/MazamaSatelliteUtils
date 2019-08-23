@@ -109,6 +109,16 @@ if (opt$state == "") {
   stop("Must define a state")
 }
 
+if (opt$cellSize == 5) {
+  res = 0.0525
+} else if (opt$cellSize == 10) {
+  res = 0.105
+} else if (opt$cellSize == 20) {
+  res = 0.21
+} else {
+  stop("Cell size must be 5, 10, or 20 (km)")
+}
+
 if (!dir.exists(opt$outputDir)) {
   stop(paste0("outputDir not found:  ", opt$outputDir))
 }
@@ -154,9 +164,9 @@ result <- try({
   bbox_state <- sp::bbox(state)
   
   # Calculate UTC start and end times
-  startTimeUTC <- opt$date
+  startTimeUTC <- opt$date + lubridate::hours(6)
   attributes(startTimeUTC)$tzone <- "UTC"
-  endTimeUTC <- startTimeUTC + lubridate::hours(23)
+  endTimeUTC <- startTimeUTC + lubridate::hours(2)
   
   # Get all the hours between the UTC start and end times
   hours <- seq.POSIXt(from = startTimeUTC, to = endTimeUTC, by = "hour")
@@ -203,7 +213,7 @@ result <- try({
       # Try creating spatial points
       result <- try({
         rstr <- goesaodc_createRaster(nc, 
-                                      res = 0.06, bbox = bbox_state, 
+                                      res = res, bbox = bbox_state, 
                                       dqfLevel = opt$dqfLevel)
       }, silent = TRUE)
       
