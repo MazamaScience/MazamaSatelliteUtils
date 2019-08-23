@@ -12,6 +12,7 @@ if (dqfLevel == 0) {
   dqfTitle <- "Low & Medium & High"
 }
 
+# Define date range and time step
 start <- lubridate::ymd_h("2019-05-01 16", tz = "UTC")
 end <- lubridate::ymd_h("2019-05-25 16", tz = "UTC")
 times <- seq.POSIXt(from = start, to = end, by = "day")
@@ -19,6 +20,7 @@ times <- seq.POSIXt(from = start, to = end, by = "day")
 frameNumber <- 1
 for (i in 1:length(times)) {
   
+  # Load day data
   #goesaodc_downloadAOD(startdate = times[i])
   print(times[i])
   timeFiles <- goesaodc_listFiles(startdate = times[i])
@@ -35,7 +37,7 @@ for (i in 1:length(times)) {
   # Draw frame
   png(frameFilePath, width = 1280, height = 720, units = "px")
   maps::map("state")
-  goesaodc_plotSpatialPoints(sp, cex = 0.4, add = TRUE)
+  goesaodc_plotSpatialPoints(sp, var = "DQF", cex = 0.4, add = TRUE)
   
   title(paste0("Data Quality: ", dqfTitle,"\n", localTime, " PDT"), cex.main = 2.0)
   if (dqfLevel < 2) {

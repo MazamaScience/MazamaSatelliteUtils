@@ -4,6 +4,7 @@
 #' 
 #' @param startdate startdate, specified to the hour, in any Y-m-d H format or
 #' \code{POSIXct}
+#' @param timezone the timezone to determine sunrise and sunset
 #' @param var variable ("AOD, "DQF" or "ID")
 #' @param res resolution of raster in degrees
 #' @param fun function to use when rasterizing. Not currently supported, defaults

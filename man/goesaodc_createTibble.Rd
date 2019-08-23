@@ -18,6 +18,7 @@ This information is sufficient to plot as points or create a raster object.
 }
 \examples{
 \donttest{
+library(MazamaSatelliteUtils)
 setSatelliteDataDir("~/Data/Satellite")
 nc <- goesaodc_openFile("OR_ABI-L2-AODC-M6_G16_s20191291201274_e20191291204047_c20191291210009.nc")
 
