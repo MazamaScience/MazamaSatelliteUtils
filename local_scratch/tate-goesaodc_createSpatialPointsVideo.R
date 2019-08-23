@@ -1,14 +1,12 @@
 #' @export
 #' 
-#' @title Create a video timelapse of GOES spatial points
+#' @title Create a daily video of GOES spatial points
 #' 
 #' @param date the date (local)
 #' @param state a SpatialPolygonsDataFrame for the state of interest
 #' @param dqfLevel data quality flag level
 #' 
-#' @description Create a RasterBrick of GOES AOD data including data points
-#' with the specified resolution and function, and within the specified extent 
-#' and data quality flag level. Data quality level can take a value of:
+#' @description f
 #' 
 #' 0: High quality retrieval flag
 #' 1: Medium quality retrieval flag
@@ -116,7 +114,9 @@ goesaodc_createSpatialPointsVideo <- function(
   
   # Define system calls to ffmpeg to create video from frames
   cmd_cd <- paste0("cd ", tempdir())
-  cmd_ffmpeg <- paste0("ffmpeg -loglevel quiet -r 4 -f image2 -s 1280x720 -i ", dateStr, "_%03d.png -vcodec libx264 -crf 25 ~/Desktop/", videoFileName)
+  cmd_ffmpeg <- paste0("ffmpeg -loglevel quiet -r 4 -f image2 -s 1280x720 -i ", 
+                       dateStr, "_%03d.png -vcodec libx264 -crf 25 ~/Desktop/", 
+                       videoFileName)
   cmd <- paste0(cmd_cd, " && ", cmd_ffmpeg)
   
   system(cmd)
