@@ -67,7 +67,7 @@ second." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MazamaSatelliteUtils</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
       </span>
     </div>
 
@@ -90,10 +90,16 @@ second." />
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
+      <a href="../articles/goes-east_data_quality_limits.html">GOES-East Data Quality Spatial Limits</a>
+    </li>
+    <li>
       <a href="../articles/grid_sizes.html">Grid Sizes</a>
     </li>
     <li>
       <a href="../articles/intro_to_goes_aodc_data.html">Intro to GOES AODC Data</a>
+    </li>
+    <li>
+      <a href="../articles/working_with_goes_aodc_rasters.html">Working With GOES AODC Rasters</a>
     </li>
   </ul>
 </li>
@@ -155,7 +161,7 @@ netcdf filenames</p></td>
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'><a href='setSatelliteDataDir.html'>setSatelliteDataDir</a></span>(<span class='st'>"~/Data/Satellite"</span>)
 
-<span class='no'>date</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>lubridate</span><span class='kw ns'>::</span><span class='fu'><a href='https://www.rdocumentation.org/packages/lubridate/topics/ymd_hms'>ymd_h</a></span>(<span class='st'>"2019-05-16 16"</span>, <span class='kw'>tz</span> <span class='kw'>=</span> <span class='st'>"UTC"</span>)
+<span class='no'>date</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>lubridate</span><span class='kw ns'>::</span><span class='fu'><a href='http://lubridate.tidyverse.org/reference/ymd_hms.html'>ymd_h</a></span>(<span class='st'>"2019-05-16 16"</span>, <span class='kw'>tz</span> <span class='kw'>=</span> <span class='st'>"UTC"</span>)
 <span class='no'>files</span> <span class='kw'>&lt;-</span> <span class='fu'>goesaodc_listFiles</span>(<span class='no'>date</span>)
 <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/print'>print</a></span>(<span class='no'>files</span>)</div><div class='output co'>#&gt;  [1] "OR_ABI-L2-AODC-M6_G16_s20191361601308_e20191361604081_c20191361606472.nc"
 #&gt;  [2] "OR_ABI-L2-AODC-M6_G16_s20191361606308_e20191361609081_c20191361611412.nc"

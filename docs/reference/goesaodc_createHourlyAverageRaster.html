@@ -68,7 +68,7 @@ Data quality level `dqfLevel` can take a value of:
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MazamaSatelliteUtils</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
       </span>
     </div>
 
@@ -91,10 +91,16 @@ Data quality level `dqfLevel` can take a value of:
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
+      <a href="../articles/goes-east_data_quality_limits.html">GOES-East Data Quality Spatial Limits</a>
+    </li>
+    <li>
       <a href="../articles/grid_sizes.html">Grid Sizes</a>
     </li>
     <li>
       <a href="../articles/intro_to_goes_aodc_data.html">Intro to GOES AODC Data</a>
+    </li>
+    <li>
+      <a href="../articles/working_with_goes_aodc_rasters.html">Working With GOES AODC Rasters</a>
     </li>
   </ul>
 </li>
@@ -158,8 +164,8 @@ Data quality level `dqfLevel` can take a value of:
     </tr>
     <tr>
       <th>na.rm</th>
-      <td><p>logical that determines if an average should be generated for
-pixels that do not always have values</p></td>
+      <td><p>logical that determines if an average should be taken for pixels
+that do not always have values</p></td>
     </tr>
     </table>
     
@@ -177,16 +183,15 @@ pixels that do not always have values</p></td>
 
 <span class='co'># Take average for Oregon on July 31, 2019 at 9am (the Milepost 97 Fire)</span>
 <span class='no'>oregon</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/subset'>subset</a></span>(<span class='no'>USCensusStates</span>, <span class='no'>stateCode</span> <span class='kw'>==</span> <span class='st'>"OR"</span>)
-<span class='no'>date</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>lubridate</span><span class='kw ns'>::</span><span class='fu'><a href='https://www.rdocumentation.org/packages/lubridate/topics/ymd_hms'>ymd_h</a></span>(<span class='st'>"2019-07-31 16"</span>, <span class='kw'>tz</span> <span class='kw'>=</span> <span class='st'>"UTC"</span>)
-<span class='no'>avg</span> <span class='kw'>&lt;-</span> <span class='fu'>goesaodc_createHourlyAverageRaster</span>(<span class='no'>date</span>, <span class='no'>oregon</span>, <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
+<span class='no'>date</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>lubridate</span><span class='kw ns'>::</span><span class='fu'><a href='http://lubridate.tidyverse.org/reference/ymd_hms.html'>ymd_h</a></span>(<span class='st'>"2019-07-31 16"</span>, <span class='kw'>tz</span> <span class='kw'>=</span> <span class='st'>"UTC"</span>)
+<span class='no'>avg</span> <span class='kw'>&lt;-</span> <span class='fu'>goesaodc_createHourlyAverageRaster</span>(<span class='no'>date</span>, <span class='no'>oregon</span>, <span class='kw'>res</span> <span class='kw'>=</span> <span class='fl'>0.05</span>, <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
 
 <span class='co'># Plot average AOD raster and state border</span>
 <span class='no'>pal_aod</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/grDevices/topics/colorRamp'>colorRampPalette</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"lightgoldenrod1"</span>, <span class='st'>"red3"</span>))
 <span class='no'>title</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/paste'>paste0</a></span>(<span class='st'>"Average AOD ("</span>,
                 <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/strptime'>strftime</a></span>(<span class='no'>date</span>, <span class='st'>"%Y-%m-%d %I%p"</span>, <span class='kw'>tz</span> <span class='kw'>=</span> <span class='st'>"America/Los_Angeles"</span>),
-                <span class='st'>")"</span>)
-<span class='fu'><a href='https://www.rdocumentation.org/packages/graphics/topics/plot'>plot</a></span>(<span class='no'>avg</span>, <span class='kw'>col</span> <span class='kw'>=</span> <span class='fu'>pal_aod</span>(<span class='fl'>50</span>),
-     <span class='kw'>main</span> <span class='kw'>=</span> <span class='no'>title</span>, <span class='kw'>xlab</span> <span class='kw'>=</span> <span class='st'>"Longitude"</span>, <span class='kw'>ylab</span> <span class='kw'>=</span> <span class='st'>"Latitude"</span>)</div><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/graphics/topics/plot'>plot</a></span>(<span class='no'>oregon</span>, <span class='kw'>add</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</div><div class='img'><img src='goesaodc_createHourlyAverageRaster-1.png' alt='' width='700' height='433' /></div></pre>
+                <span class='st'>" PDT)"</span>)
+<span class='fu'><a href='https://www.rdocumentation.org/packages/graphics/topics/plot'>plot</a></span>(<span class='no'>avg</span>, <span class='kw'>col</span> <span class='kw'>=</span> <span class='fu'>pal_aod</span>(<span class='fl'>50</span>), <span class='kw'>main</span> <span class='kw'>=</span> <span class='no'>title</span>)</div><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/graphics/topics/plot'>plot</a></span>(<span class='no'>oregon</span>, <span class='kw'>add</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</div><div class='img'><img src='goesaodc_createHourlyAverageRaster-1.png' alt='' width='700' height='433' /></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

@@ -60,7 +60,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MazamaSatelliteUtils</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
       </span>
     </div>
 
@@ -83,10 +83,16 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
+      <a href="../articles/goes-east_data_quality_limits.html">GOES-East Data Quality Spatial Limits</a>
+    </li>
+    <li>
       <a href="../articles/grid_sizes.html">Grid Sizes</a>
     </li>
     <li>
       <a href="../articles/intro_to_goes_aodc_data.html">Intro to GOES AODC Data</a>
+    </li>
+    <li>
+      <a href="../articles/working_with_goes_aodc_rasters.html">Working With GOES AODC Rasters</a>
     </li>
   </ul>
 </li>
@@ -113,39 +119,49 @@
       
     </div>
 
-    <div id="mazamasatelliteutils-012" class="section level1">
+    <div id="mazamasatelliteutils-0-2-0" class="section level1">
 <h1 class="page-header">
-<a href="#mazamasatelliteutils-012" class="anchor"></a>MazamaSatelliteUtils 0.1.2</h1>
+<a href="#mazamasatelliteutils-0-2-0" class="anchor"></a>MazamaSatelliteUtils 0.2.0</h1>
+<p>Lots of work testing and using the package to determine what new functionality needs to be added. Improved documentation throughout including function docs and vignettes.</p>
+<p>Added functions:</p>
+<ul>
+<li><code><a href="../reference/goesaodc_createHourlyAverageRaster.html">goesaodc_createHourlyAverageRaster()</a></code></li>
+<li><code><a href="../reference/raster_createLocationTimeseries.html">raster_createLocationTimeseries()</a></code></li>
+</ul>
+</div>
+    <div id="mazamasatelliteutils-0-1-2" class="section level1">
+<h1 class="page-header">
+<a href="#mazamasatelliteutils-0-1-2" class="anchor"></a>MazamaSatelliteUtils 0.1.2</h1>
 <p>Standardized time-related parameters to all be “starttime”, which emphesizes that times refer to ABI scan start times.</p>
 <p>Added unit testing.</p>
 </div>
-    <div id="mazamasatelliteutils-011" class="section level1">
+    <div id="mazamasatelliteutils-0-1-1" class="section level1">
 <h1 class="page-header">
-<a href="#mazamasatelliteutils-011" class="anchor"></a>MazamaSatelliteUtils 0.1.1</h1>
+<a href="#mazamasatelliteutils-0-1-1" class="anchor"></a>MazamaSatelliteUtils 0.1.1</h1>
 <p>New functions to download and work with GOES AOD data</p>
 <p>Added functions:</p>
 <ul>
-<li>goesaodc_createHourlyRasterStack.R</li>
-<li>goesaodc_createRaster.R</li>
-<li>goesaodc_createSpatialPoints.R</li>
-<li>goesaodc_createTibble.R</li>
-<li>goesaodc_downloadAOD.R</li>
-<li>goesaodc_listFiles.R</li>
-<li>goesaodc_openFile.R</li>
-<li>goesaodc_plotSpatialPoints.R</li>
-<li>goesaodc_getCoordBounds</li>
-<li>goesaodc_getCoordGrid</li>
-<li>goesaodc_getProjection</li>
-<li>goesaodc_isGoesProjection</li>
-<li>goesaodc_getStartString</li>
-<li>getAttributes</li>
-<li>isDaylight</li>
-<li>getValue</li>
+<li><code><a href="../reference/goesaodc_createHourlyRasterStack.html">goesaodc_createHourlyRasterStack()</a></code></li>
+<li><code><a href="../reference/goesaodc_createRaster.html">goesaodc_createRaster()</a></code></li>
+<li><code><a href="../reference/goesaodc_createSpatialPoints.html">goesaodc_createSpatialPoints()</a></code></li>
+<li><code><a href="../reference/goesaodc_createTibble.html">goesaodc_createTibble()</a></code></li>
+<li><code><a href="../reference/goesaodc_downloadAOD.html">goesaodc_downloadAOD()</a></code></li>
+<li><code><a href="../reference/goesaodc_listFiles.html">goesaodc_listFiles()</a></code></li>
+<li><code><a href="../reference/goesaodc_openFile.html">goesaodc_openFile()</a></code></li>
+<li><code><a href="../reference/goesaodc_plotSpatialPoints.html">goesaodc_plotSpatialPoints()</a></code></li>
+<li><code><a href="../reference/goesaodc_getCoordBounds.html">goesaodc_getCoordBounds()</a></code></li>
+<li><code><a href="../reference/goesaodc_getCoordGrid.html">goesaodc_getCoordGrid()</a></code></li>
+<li><code><a href="../reference/goesaodc_getProjection.html">goesaodc_getProjection()</a></code></li>
+<li><code><a href="../reference/goesaodc_isGoesProjection.html">goesaodc_isGoesProjection()</a></code></li>
+<li><code><a href="../reference/goesaodc_getStartString.html">goesaodc_getStartString()</a></code></li>
+<li><code><a href="../reference/getAttributes.html">getAttributes()</a></code></li>
+<li><code><a href="../reference/isDaylight.html">isDaylight()</a></code></li>
+<li><code><a href="../reference/getValue.html">getValue()</a></code></li>
 </ul>
 </div>
-    <div id="mazamasatelliteutils-010" class="section level1">
+    <div id="mazamasatelliteutils-0-1-0" class="section level1">
 <h1 class="page-header">
-<a href="#mazamasatelliteutils-010" class="anchor"></a>MazamaSatelliteUtils 0.1.0</h1>
+<a href="#mazamasatelliteutils-0-1-0" class="anchor"></a>MazamaSatelliteUtils 0.1.0</h1>
 <ul>
 <li>Initial package creation with functions ported from <code>report-nasa-maiac</code>.</li>
 </ul>
@@ -156,9 +172,10 @@
     <div id="tocnav">
       <h2>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
-        <li><a href="#mazamasatelliteutils-012">0.1.2</a></li>
-        <li><a href="#mazamasatelliteutils-011">0.1.1</a></li>
-        <li><a href="#mazamasatelliteutils-010">0.1.0</a></li>
+        <li><a href="#mazamasatelliteutils-0-2-0">0.2.0</a></li>
+        <li><a href="#mazamasatelliteutils-0-1-2">0.1.2</a></li>
+        <li><a href="#mazamasatelliteutils-0-1-1">0.1.1</a></li>
+        <li><a href="#mazamasatelliteutils-0-1-0">0.1.0</a></li>
       </ul>
     </div>
   </div>

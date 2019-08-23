@@ -30,7 +30,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MazamaSatelliteUtils</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
       </span>
     </div>
 
@@ -53,10 +53,16 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
+      <a href="../articles/goes-east_data_quality_limits.html">GOES-East Data Quality Spatial Limits</a>
+    </li>
+    <li>
       <a href="../articles/grid_sizes.html">Grid Sizes</a>
     </li>
     <li>
       <a href="../articles/intro_to_goes_aodc_data.html">Intro to GOES AODC Data</a>
+    </li>
+    <li>
+      <a href="../articles/working_with_goes_aodc_rasters.html">Working With GOES AODC Rasters</a>
     </li>
   </ul>
 </li>
@@ -88,83 +94,78 @@
 
     
     
-<p>This vignette will cover the basics of working with aerosol optical depth (AOD) readings from the GOES-16 Geostationary Operational Environmental Satellite.</p>
-<p>Aerosol optical depth is a measure of the amount of particles in a vertical column of the atmosphere. The value itself is related to the scattering and absorbition of certain light waves on the atmosphere measured by the Advanced Baseline Imager (<a href="https://www.goes-r.gov/spacesegment/abi.html">ABI</a>) on board the GOES-16 satellite. AOD is unitless, but values closer to 0.0 correspond to a cleaner atmosphere while higher values correspond to hazy conditions. An average AOD for the U.S. would usually lie between 0.1 and 0.15. More on the measurement process can be found in the <a href="https://www.star.nesdis.noaa.gov/goesr/product_aero_aod.php">GOES-R aerosol optical depth overview</a> and the <a href="https://www.star.nesdis.noaa.gov/goesr/docs/ATBD/AOD.pdf">ABI AOD algorithm theoretical basis document</a>.</p>
-<div id="package-setup-and-dependencies" class="section level2">
+<div id="aerosol-optical-depth" class="section level2">
 <h2 class="hasAnchor">
-<a href="#package-setup-and-dependencies" class="anchor"></a>Package Setup and Dependencies</h2>
-<p>Aerosol optical depth is stored along with many other kinds of measurements taken by the GOES-16 satellite in large netCDF “Common Data Form” files. These files are structured for the efficient access of multidimentional array-oriented data like atmospheric readings.</p>
-<p>Our first step when using the <code>MazamaSatelliteUtils</code> package is to provide a <code>SatelliteDataDir</code>: A directory where all our working netCDF files will be stored to and read from:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(MazamaSatelliteUtils)</a>
-<a class="sourceLine" id="cb1-2" title="2"><span class="kw"><a href="../reference/setSatelliteDataDir.html">setSatelliteDataDir</a></span>(<span class="st">"~/Data/Satellite"</span>)</a></code></pre></div>
+<a href="#aerosol-optical-depth" class="anchor"></a>Aerosol Optical Depth</h2>
+<p>Aerosol optical depth provides a measure of air quality by estimating the amount of particles in a vertical column of the atmosphere. The absorbtion and scattering of certain spectral wavelengths on the atmosphere is fed into aerosol models to determine an AOD value. This number is unitless, but values closer to 0.0 correspond to a cleaner atmosphere while higher values correspond to more hazy conditions. An average AOD for the U.S. is usually around 0.1 and 0.15.</p>
+<p>There are several limitations to this method. Sunlight is required for the measurement process, meaning that AOD levels can’t be estimated during nighttime. Additionally, many areas will have no AOD defined due to the reflectance of clouds or snow.</p>
+</div>
+<div id="aod-source" class="section level2">
+<h2 class="hasAnchor">
+<a href="#aod-source" class="anchor"></a>AOD Source</h2>
+<p>The MazamaSatelliteUtils package uses AOD data provided by the Advanced Baseline Imager (<a href="https://www.goes-r.gov/spacesegment/abi.html">ABI</a>) on board the GOES-16 satellite. This geostationary satellite is positioned to give the ABI a full view of the lower 48 states so that about every 5 minutes the imager can complete a full scan of this region. The measurements of each individual scan are saved to a NetCDF file for that particular period in time.</p>
+<p>More on the ABI’s AOD measurement process can be found in the <a href="https://www.star.nesdis.noaa.gov/goesr/product_aero_aod.php">GOES-R aerosol optical depth overview</a> and the <a href="https://www.star.nesdis.noaa.gov/goesr/docs/ATBD/AOD.pdf">ABI AOD algorithm theoretical basis document</a>.</p>
+</div>
+<div id="netcdf-files" class="section level2">
+<h2 class="hasAnchor">
+<a href="#netcdf-files" class="anchor"></a>NetCDF Files</h2>
+<p>The “Common Data Form” filetype is used for efficient access to multidimensional array-based data such as atmospheric measurements. A typical scan of North America holds 3,750,000 readings per variable, resulting in a file of around 3 to 4 MB. If scans are taken every 5 minutes, a single day would hold about 12 files * 24 hrs * 3 MB = 860 MB worth of data. Due to this fairly large size, downloading a NetCDF using the <code>MazamaSatelliteUtils</code> package saves the file to a specified data directory from which the contents can be accessed through a file handle.</p>
+</div>
+<div id="mazamasatelliteutils-setup" class="section level2">
+<h2 class="hasAnchor">
+<a href="#mazamasatelliteutils-setup" class="anchor"></a>MazamaSatelliteUtils Setup</h2>
+<p>Let’s start exploring AOD data with the <code>MazamaSatelliteUtils</code> package. First we’ll give ourselves a case study to focuson though, such as the recent Milepost 97 Fire. This incident was reported on July 24, 2019 about 1 mile southeast of Canyonville, Oregon and is still current as of August 11, 2019. This should provide plenty of data for us to examine in detail.</p>
+<p>To begin our analysis, let’s load the <code>MazamaSatelliteUtils</code> package and define a <code>SatelliteDataDir</code>: A directory where all of our NetCDF files will be stored to and read from:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(MazamaSatelliteUtils)
+<span class="kw"><a href="../reference/setSatelliteDataDir.html">setSatelliteDataDir</a></span>(<span class="st">"~/Data/Satellite"</span>)</code></pre></div>
 </div>
 <div id="downloading-data-and-creating-netcdf-handles" class="section level2">
 <h2 class="hasAnchor">
-<a href="#downloading-data-and-creating-netcdf-handles" class="anchor"></a>Downloading Data and Creating netCDF Handles</h2>
-<p>A new netCDF file is generated about every five minutes, meaning that a single hour is typically made up of around a dozen files. Downloading these files does not load them as objects in the R environment, but instead saves them to the <code>SatelliteDataDir</code> directory where they can be opened individually through their netCDF handles.</p>
-<p>For this walkthrough, let’s take a look at data read throughout hour 16:00 UTC on May 16, 2019:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1">date &lt;-<span class="st"> </span>lubridate<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/lubridate/topics/ymd_hms">ymd_h</a></span>(<span class="st">"2019-05-16 16"</span>, <span class="dt">tz =</span> <span class="st">"UTC"</span>)</a>
-<a class="sourceLine" id="cb2-2" title="2">downloadedFiles &lt;-<span class="st"> </span><span class="kw"><a href="../reference/goesaodc_downloadAOD.html">goesaodc_downloadAOD</a></span>(date)</a></code></pre></div>
-<p>If an hour is not specified, then every file generated over the given day will be downloaded. The <code><a href="../reference/goesaodc_downloadAOD.html">goesaodc_downloadAOD()</a></code> function also returns a vector of paths to each downloaded file. However, if a file already exists in the <code>SatelliteDataDir</code> directory then it will not be downloaded again (and will not be included in the returned vector). We can see which files are now availible to read by calling <code><a href="../reference/goesaodc_listFiles.html">goesaodc_listFiles()</a></code> on the date we specified:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1">dateFiles &lt;-<span class="st"> </span><span class="kw"><a href="../reference/goesaodc_listFiles.html">goesaodc_listFiles</a></span>(date)</a>
-<a class="sourceLine" id="cb3-2" title="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/print">print</a></span>(dateFiles)</a></code></pre></div>
-<pre><code>##  [1] "OR_ABI-L2-AODC-M6_G16_s20191361601308_e20191361604081_c20191361606472.nc"
-##  [2] "OR_ABI-L2-AODC-M6_G16_s20191361606308_e20191361609081_c20191361611412.nc"
-##  [3] "OR_ABI-L2-AODC-M6_G16_s20191361611309_e20191361614081_c20191361616461.nc"
-##  [4] "OR_ABI-L2-AODC-M6_G16_s20191361616309_e20191361619081_c20191361621509.nc"
-##  [5] "OR_ABI-L2-AODC-M6_G16_s20191361621309_e20191361624082_c20191361626409.nc"
-##  [6] "OR_ABI-L2-AODC-M6_G16_s20191361626309_e20191361629081_c20191361631503.nc"
-##  [7] "OR_ABI-L2-AODC-M6_G16_s20191361631309_e20191361634082_c20191361636545.nc"
-##  [8] "OR_ABI-L2-AODC-M6_G16_s20191361636309_e20191361639082_c20191361641542.nc"
-##  [9] "OR_ABI-L2-AODC-M6_G16_s20191361641309_e20191361644082_c20191361646546.nc"
-## [10] "OR_ABI-L2-AODC-M6_G16_s20191361646309_e20191361649082_c20191361651566.nc"
-## [11] "OR_ABI-L2-AODC-M6_G16_s20191361651309_e20191361654082_c20191361656556.nc"
-## [12] "OR_ABI-L2-AODC-M6_G16_s20191361656309_e20191361659082_c20191361701585.nc"</code></pre>
-<p>To read one of these netCDF datasets we need a handle to access it by. This can be done by calling <code><a href="../reference/goesaodc_openFile.html">goesaodc_openFile()</a></code> on one of the filenames, so let’s open the first one in our downloaded time range <code>dateFiles[1]</code>:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1">nc &lt;-<span class="st"> </span><span class="kw"><a href="../reference/goesaodc_openFile.html">goesaodc_openFile</a></span>(<span class="dt">filename =</span> dateFiles[<span class="dv">1</span>])</a></code></pre></div>
+<a href="#downloading-data-and-creating-netcdf-handles" class="anchor"></a>Downloading Data and Creating NetCDF Handles</h2>
+<p>We can now start loading in satellite data using the <code><a href="../reference/goesaodc_downloadAOD.html">goesaodc_downloadAOD()</a></code> function. For this we have to provide a datetime to specify which files we want. If the datetime is defined to the hour, then all of the NetCDF files generated in that hour will be downloaded. If just the date is given with no time specified, then all files generated during that entire day will be fetched. In either case, any downloaded files will be stored in the <code>SatelliteDataDir</code> we just defined.</p>
+<p>Since downloading many NetCDF files can take a bit of time, for now let’s only gather data for August 1, 2019 at 17:00:00 UTC (10AM PDT).</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">datetime &lt;-<span class="st"> </span>lubridate<span class="op">::</span><span class="kw"><a href="http://lubridate.tidyverse.org/reference/ymd_hms.html">ymd_h</a></span>(<span class="st">"2019-08-01 17"</span>, <span class="dt">tz =</span> <span class="st">"UTC"</span>)
+downloadedFiles &lt;-<span class="st"> </span><span class="kw"><a href="../reference/goesaodc_downloadAOD.html">goesaodc_downloadAOD</a></span>(datetime)</code></pre></div>
+<p>The <code><a href="../reference/goesaodc_downloadAOD.html">goesaodc_downloadAOD()</a></code> function also returns a vector of paths to each downloaded file. However, if a file already exists in the <code>SatelliteDataDir</code> directory then it will not be downloaded again and will not show up in the returned vector. We can see which files are now availible to read by calling <code><a href="../reference/goesaodc_listFiles.html">goesaodc_listFiles()</a></code> on the datetime we specified:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">dateFiles &lt;-<span class="st"> </span><span class="kw"><a href="../reference/goesaodc_listFiles.html">goesaodc_listFiles</a></span>(datetime)
+<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/print">print</a></span>(dateFiles)</code></pre></div>
+<pre><code>##  [1] "OR_ABI-L2-AODC-M6_G16_s20192131701466_e20192131704239_c20192131706505.nc"
+##  [2] "OR_ABI-L2-AODC-M6_G16_s20192131706466_e20192131709239_c20192131711561.nc"
+##  [3] "OR_ABI-L2-AODC-M6_G16_s20192131711466_e20192131714239_c20192131716548.nc"
+##  [4] "OR_ABI-L2-AODC-M6_G16_s20192131716466_e20192131719239_c20192131721506.nc"
+##  [5] "OR_ABI-L2-AODC-M6_G16_s20192131721466_e20192131724239_c20192131726554.nc"
+##  [6] "OR_ABI-L2-AODC-M6_G16_s20192131726466_e20192131729239_c20192131731576.nc"
+##  [7] "OR_ABI-L2-AODC-M6_G16_s20192131731466_e20192131734239_c20192131736514.nc"
+##  [8] "OR_ABI-L2-AODC-M6_G16_s20192131736466_e20192131739239_c20192131741522.nc"
+##  [9] "OR_ABI-L2-AODC-M6_G16_s20192131741466_e20192131744239_c20192131746521.nc"
+## [10] "OR_ABI-L2-AODC-M6_G16_s20192131746466_e20192131749239_c20192131751539.nc"
+## [11] "OR_ABI-L2-AODC-M6_G16_s20192131751466_e20192131754239_c20192131756556.nc"
+## [12] "OR_ABI-L2-AODC-M6_G16_s20192131756466_e20192131759239_c20192131801513.nc"</code></pre>
+<p>In order to read the contents of a NetCDF file we will need a handle to access it by. This can be done by calling <code><a href="../reference/goesaodc_openFile.html">goesaodc_openFile()</a></code> on the dataset filename, so let’s open the first one in our downloaded time range <code>dateFiles[1]</code>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">nc &lt;-<span class="st"> </span><span class="kw"><a href="../reference/goesaodc_openFile.html">goesaodc_openFile</a></span>(<span class="dt">filename =</span> dateFiles[<span class="dv">1</span>])</code></pre></div>
 </div>
-<div id="netcdf-handle-functions" class="section level2">
+<div id="reading-through-netcdf-handles" class="section level2">
 <h2 class="hasAnchor">
-<a href="#netcdf-handle-functions" class="anchor"></a>netCDF Handle Functions</h2>
-<p>Now that we have a handle (class <code>ncdf4</code>) to a netCDF file we can start exploring how this dataset is structured.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/names">names</a></span>(nc)</a></code></pre></div>
-<pre><code>##  [1] "filename"    "writable"    "id"          "safemode"    "format"     
-##  [6] "is_GMT"      "groups"      "fqgn2Rindex" "ndims"       "natts"      
-## [11] "dim"         "unlimdimid"  "nvars"       "var"</code></pre>
-<p>Here is a brief rundown of the various top level elements in these <code>ncdf4</code> objects:</p>
-<ol style="list-style-type: decimal">
-<li>
-<code>filename</code> - A character string containing the name of the file.</li>
-<li>
-<code>writeable</code> - Logical stating whether or not the file can be written to. This will always be <code>FALSE</code> when the file is loaded through <code><a href="../reference/goesaodc_openFile.html">goesaodc_openFile()</a></code>.</li>
-<li>
-<code>ndims</code> - The number of dimensions in the file.</li>
-<li>
-<code>nvars</code> - The number of variables in the file that are not dimensional variables.</li>
-<li>
-<code>natts</code> - The number of global attributes.</li>
-<li>
-<code>unlimdimid</code> - The unlimited dimension id. -1 if there is none.</li>
-</ol>
-<p>At this point we can freely access any of the 68 variables in the dataset (listed by <code><a href="https://www.rdocumentation.org/packages/base/topics/names">names(nc$var)</a></code>) using the <code>ncvar_get()</code> function provided through <code>ncdf4</code>.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1">readings_aod &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/numeric">as.numeric</a></span>(ncdf4<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ncdf4/topics/ncvar_get">ncvar_get</a></span>(nc, <span class="st">"AOD"</span>))</a>
-<a class="sourceLine" id="cb8-2" title="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/print">print</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/length">length</a></span>(readings_aod))</a></code></pre></div>
+<a href="#reading-through-netcdf-handles" class="anchor"></a>Reading Through NetCDF Handles</h2>
+<p>Now that we have a handle to a netCDF file we can freely access readings from any of the variables in the dataset (listed by <code><a href="https://www.rdocumentation.org/packages/base/topics/names">names(nc$var)</a></code>) using the <code>ncvar_get()</code> function from the <code>ncdf4</code> package.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">readings_aod &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/numeric">as.numeric</a></span>(ncdf4<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ncdf4/topics/ncvar_get">ncvar_get</a></span>(nc, <span class="st">"AOD"</span>))
+<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/print">print</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/length">length</a></span>(readings_aod))</code></pre></div>
 <pre><code>## [1] 3750000</code></pre>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/print">print</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/range">range</a></span>(readings_aod, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>))</a></code></pre></div>
-<pre><code>## [1] -2.575102  2.475025</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/print">print</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/range">range</a></span>(readings_aod, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>))</code></pre></div>
+<pre><code>## [1] -2.575025  2.475025</code></pre>
 </div>
-<div id="aod-data-as-a-tibble" class="section level2">
+<div id="aod-and-dqf-data-as-a-tibble" class="section level2">
 <h2 class="hasAnchor">
-<a href="#aod-data-as-a-tibble" class="anchor"></a>AOD Data as a Tibble</h2>
-<p>For our purposes of mapping AOD values, we can consolidate all the data we need (longitude, latitude, and AOD) and make it even easier to access by forming it into a tibble with the function <code><a href="../reference/goesaodc_createTibble.html">goesaodc_createTibble()</a></code>. The “DQF” variable is included as well, which represents the data quality flag for each reading. This flag can take one of the four following values (<a href="https://www.goes-r.gov/products/docs/PUG-L2+-vol5.pdf">source p.295</a>):</p>
+<a href="#aod-and-dqf-data-as-a-tibble" class="anchor"></a>AOD and DQF Data as a Tibble</h2>
+<p>For our purposes of mapping AOD values, we can consolidate all the data we need (longitude, latitude, and AOD) and make it even easier to access by forming it into a tibble. The “DQF” variable will be included as well, which represents the data quality flag for each reading. This flag can take one of the four following values:</p>
 <ul>
 <li>0 - High quality</li>
 <li>1 - Medium quality</li>
 <li>2 - Low quality</li>
-<li>3 - No retrieval flag</li>
+<li>3 - No retrieval flag <a href="https://www.goes-r.gov/products/docs/PUG-L2+-vol5.pdf">source p.295</a>:</li>
 </ul>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1">tb &lt;-<span class="st"> </span><span class="kw"><a href="../reference/goesaodc_createTibble.html">goesaodc_createTibble</a></span>(nc)</a>
-<a class="sourceLine" id="cb12-2" title="2">knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>(tb))</a></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">tb &lt;-<span class="st"> </span><span class="kw"><a href="../reference/goesaodc_createTibble.html">goesaodc_createTibble</a></span>(nc)
+knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>(tb))</code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">AOD</th>
@@ -174,85 +175,152 @@
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="right">0.1676945</td>
+<td align="right">0.3395383</td>
 <td align="right">2</td>
-<td align="right">-111.2095</td>
-<td align="right">52.40050</td>
+<td align="right">-116.7126</td>
+<td align="right">52.91507</td>
 </tr>
 <tr class="even">
-<td align="right">0.1220750</td>
+<td align="right">0.3942509</td>
 <td align="right">2</td>
-<td align="right">-111.1630</td>
-<td align="right">52.39641</td>
+<td align="right">-116.6584</td>
+<td align="right">52.90973</td>
 </tr>
 <tr class="odd">
-<td align="right">0.1533613</td>
+<td align="right">0.4041146</td>
 <td align="right">2</td>
-<td align="right">-111.1166</td>
-<td align="right">52.39232</td>
+<td align="right">-116.2278</td>
+<td align="right">52.86751</td>
 </tr>
 <tr class="even">
-<td align="right">0.1359458</td>
+<td align="right">0.5748025</td>
 <td align="right">2</td>
-<td align="right">-111.0703</td>
-<td align="right">52.38824</td>
+<td align="right">-116.1744</td>
+<td align="right">52.86229</td>
 </tr>
 <tr class="odd">
-<td align="right">0.1354064</td>
+<td align="right">0.7381697</td>
 <td align="right">2</td>
-<td align="right">-111.0240</td>
-<td align="right">52.38417</td>
+<td align="right">-116.1211</td>
+<td align="right">52.85709</td>
 </tr>
 <tr class="even">
-<td align="right">0.1523596</td>
+<td align="right">0.6993315</td>
 <td align="right">2</td>
-<td align="right">-110.9778</td>
-<td align="right">52.38011</td>
+<td align="right">-116.0678</td>
+<td align="right">52.85190</td>
 </tr>
 </tbody>
 </table>
 </div>
-<div id="working-with-data-as-spatialpoints" class="section level2">
+<div id="working-with-data-as-spatial-points" class="section level2">
 <h2 class="hasAnchor">
-<a href="#working-with-data-as-spatialpoints" class="anchor"></a>Working With Data as SpatialPoints</h2>
-<p>The next step is actaully visualizing this data on geographic maps by creating and plotting spatial points from the AOD readings:</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" title="1">sp &lt;-<span class="st"> </span><span class="kw"><a href="../reference/goesaodc_createSpatialPoints.html">goesaodc_createSpatialPoints</a></span>(nc)</a>
-<a class="sourceLine" id="cb13-2" title="2"></a>
-<a class="sourceLine" id="cb13-3" title="3">maps<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/maps/topics/map">map</a></span>(<span class="st">"world"</span>)</a>
-<a class="sourceLine" id="cb13-4" title="4"><span class="kw"><a href="../reference/goesaodc_plotSpatialPoints.html">goesaodc_plotSpatialPoints</a></span>(sp, <span class="dt">add =</span> <span class="ot">TRUE</span>, <span class="dt">cex =</span> <span class="fl">0.2</span>)</a></code></pre></div>
+<a href="#working-with-data-as-spatial-points" class="anchor"></a>Working With Data as Spatial Points</h2>
+<p>We can now finally start visualizing this data on geographic maps by creating and plotting spatial points from the AOD readings. Each spatial point represents a single reading from the ABI’s scan, so that each has a longitude, latitude, AOD value, and DQF flag. Let’s plot <strong>all</strong> of the points for our datetime on a world map:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sp &lt;-<span class="st"> </span><span class="kw"><a href="../reference/goesaodc_createSpatialPoints.html">goesaodc_createSpatialPoints</a></span>(nc)
+
+maps<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/maps/topics/map">map</a></span>(<span class="st">"world"</span>)
+<span class="kw"><a href="../reference/goesaodc_plotSpatialPoints.html">goesaodc_plotSpatialPoints</a></span>(sp, <span class="dt">add =</span> <span class="ot">TRUE</span>, <span class="dt">cex =</span> <span class="fl">0.1</span>)</code></pre></div>
 <p><img src="intro_to_goes_aodc_data_files/figure-html/spatialPlot_world-1.png" width="700"></p>
-<p>Since the GOES-16 satellite is geosynchrous, it can only provide scans over a portion of the Americas. Let’s zoom in to just the U.S. readings by defining the <code>database</code> for the underlying map:</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" title="1">maps<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/maps/topics/map">map</a></span>(<span class="dt">database =</span> <span class="st">"state"</span>)</a>
-<a class="sourceLine" id="cb14-2" title="2"><span class="kw"><a href="../reference/goesaodc_plotSpatialPoints.html">goesaodc_plotSpatialPoints</a></span>(sp, <span class="dt">add =</span> <span class="ot">TRUE</span>, <span class="dt">cex =</span> <span class="fl">0.2</span>)</a></code></pre></div>
+<p>As you can see, only the United States and Mexico have readings defined. The GOES-16 satellite can’t scan beyond the disk visible below its geosynchrous orbit, so let’s zoom in to just the U.S.:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">maps<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/maps/topics/map">map</a></span>(<span class="dt">database =</span> <span class="st">"state"</span>)
+<span class="kw"><a href="../reference/goesaodc_plotSpatialPoints.html">goesaodc_plotSpatialPoints</a></span>(sp, <span class="dt">add =</span> <span class="ot">TRUE</span>, <span class="dt">cex =</span> <span class="fl">0.3</span>)</code></pre></div>
 <p><img src="intro_to_goes_aodc_data_files/figure-html/spatialPlot_usa-1.png" width="700"></p>
-<p>The desired quality of the data can also be specified when creating the spatial points. Defining the <code>dqfLevel</code> includes all points that are <em>at and below</em> the given level. Let’s look at all of the points at level 0 (highest quality):</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" title="1">sp_dqf0 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/goesaodc_createSpatialPoints.html">goesaodc_createSpatialPoints</a></span>(nc, <span class="dt">dqfLevel =</span> <span class="dv">0</span>)</a>
-<a class="sourceLine" id="cb15-2" title="2"></a>
-<a class="sourceLine" id="cb15-3" title="3">maps<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/maps/topics/map">map</a></span>(<span class="st">"state"</span>)</a>
-<a class="sourceLine" id="cb15-4" title="4"><span class="kw"><a href="../reference/goesaodc_plotSpatialPoints.html">goesaodc_plotSpatialPoints</a></span>(sp_dqf0, <span class="dt">add =</span> <span class="ot">TRUE</span>, <span class="dt">cex =</span> <span class="fl">0.2</span>)</a></code></pre></div>
+<p>Now that we have a clearer image of the points we can start to understand the AOD values themselves. The <code><a href="../reference/goesaodc_plotSpatialPoints.html">goesaodc_plotSpatialPoints()</a></code> function colors points according to their AOD value by default, but you can switch to DQF coloring by setting the <code>var</code> parameter to “DQF”. Additionally, when creating your spatial points you can also define the <code>dqfLevel</code> which subsets all points that are <em>at and below</em> the given level. Let’s look at the points at level 0 (highest quality):</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sp_dqf0 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/goesaodc_createSpatialPoints.html">goesaodc_createSpatialPoints</a></span>(nc, <span class="dt">dqfLevel =</span> <span class="dv">0</span>)
+
+maps<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/maps/topics/map">map</a></span>(<span class="st">"state"</span>)
+<span class="kw"><a href="../reference/goesaodc_plotSpatialPoints.html">goesaodc_plotSpatialPoints</a></span>(sp_dqf0, <span class="dt">add =</span> <span class="ot">TRUE</span>, <span class="dt">cex =</span> <span class="fl">0.3</span>)</code></pre></div>
 <p><img src="intro_to_goes_aodc_data_files/figure-html/spatialPlot_high_quality-1.png" width="700"></p>
-<p>As you can see, quite a bit of data has been removed since a good portion of it was marked as only medium or low quality.</p>
+<p>As you can see, quite a bit of data has been removed since a good portion was marked as only medium or low quality. At this point let’s zoom in all the way to Oregon to check for signs of the Milepost 97 Fire (including all quality levels). We’ll need to use the <code>MazamaSpatialUtils</code> package to get the spatial data for the state and cull out-of-bounds points:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(MazamaSpatialUtils)
+<span class="kw"><a href="https://www.rdocumentation.org/packages/MazamaSpatialUtils/topics/setSpatialDataDir">setSpatialDataDir</a></span>(<span class="st">"~/Data/Spatial"</span>)
+<span class="kw"><a href="https://www.rdocumentation.org/packages/MazamaSpatialUtils/topics/loadSpatialData">loadSpatialData</a></span>(<span class="st">"USCensusStates"</span>)
+
+oregon &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/subset">subset</a></span>(USCensusStates, stateCode <span class="op">==</span><span class="st"> "OR"</span>)
+bbox_oregon &lt;-<span class="st"> </span>sp<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/sp/topics/bbox">bbox</a></span>(oregon)
+sp_oregon &lt;-<span class="st"> </span><span class="kw"><a href="../reference/goesaodc_createSpatialPoints.html">goesaodc_createSpatialPoints</a></span>(nc, <span class="dt">bbox =</span> bbox_oregon)
+
+lon_mp97 &lt;-<span class="st"> </span><span class="op">-</span><span class="fl">123.268</span>
+lat_mp97 &lt;-<span class="st"> </span><span class="fl">42.913</span>
+
+<span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(oregon)
+<span class="kw"><a href="../reference/goesaodc_plotSpatialPoints.html">goesaodc_plotSpatialPoints</a></span>(sp_oregon, <span class="dt">cex =</span> <span class="fl">0.3</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)
+<span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/points">points</a></span>(<span class="dt">x =</span> lon_mp97, <span class="dt">y =</span> lat_mp97, <span class="dt">pch =</span> <span class="dv">0</span>, <span class="dt">cex =</span> <span class="fl">4.0</span>, <span class="dt">lwd =</span> <span class="fl">1.5</span>, <span class="dt">col =</span> <span class="st">"darkgreen"</span>)</code></pre></div>
+<p><img src="intro_to_goes_aodc_data_files/figure-html/spatialPlot_oregon-1.png" width="700"></p>
 </div>
-<div id="working-with-data-as-a-raster" class="section level2">
+<div id="rasterizing-spatial-points" class="section level2">
 <h2 class="hasAnchor">
-<a href="#working-with-data-as-a-raster" class="anchor"></a>Working With Data as a Raster</h2>
-<p>Lastly, we can generate raster objects for each netCDF file. These can be plotted and mapped over.</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" title="1">rstr &lt;-<span class="st"> </span><span class="kw"><a href="../reference/goesaodc_createRaster.html">goesaodc_createRaster</a></span>(nc)</a>
-<a class="sourceLine" id="cb16-2" title="2"></a>
-<a class="sourceLine" id="cb16-3" title="3">raster<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/raster/topics/plot">plot</a></span>(rstr, <span class="st">"AOD"</span>)</a>
-<a class="sourceLine" id="cb16-4" title="4">maps<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/maps/topics/map">map</a></span>(<span class="st">"state"</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
+<a href="#rasterizing-spatial-points" class="anchor"></a>Rasterizing Spatial Points</h2>
+<p>A raster image divides geographic space into uniform pixels or “cells”. A grid is placed over a map and the value of each cell is calculated by aggregating the values of all the spatial points that fall in that region. For example, if 20 points are contained within one grid space, then all their AOD values could be averaged together to determine the resulting AOD of the raster cell. The uniform grid size is defined by the resolution of the raster (in lon/lat degrees) such that higher resolutions reduce cell area and increase the detail and accuracy of the final image.</p>
+<p>Rasters provide the benefit of filling in undefined spaces around spatial points. They also make it easier to track the readings of specific locations over time if the ABI doesn’t scan the exact coordinates you are hoping to analyze.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rstr &lt;-<span class="st"> </span><span class="kw"><a href="../reference/goesaodc_createRaster.html">goesaodc_createRaster</a></span>(nc, <span class="dt">bbox =</span> bbox_oregon, <span class="dt">res =</span> <span class="fl">0.08</span>)
+pal_aod &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/grDevices/topics/colorRamp">colorRampPalette</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"lightgoldenrod1"</span>, <span class="st">"red3"</span>))
+
+raster<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/raster/topics/plot">plot</a></span>(rstr<span class="op">$</span>AOD, <span class="dt">col =</span> <span class="kw">pal_aod</span>(<span class="dv">50</span>))
+<span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(oregon, <span class="dt">add =</span> <span class="ot">TRUE</span>)
+<span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/points">points</a></span>(<span class="dt">x =</span> lon_mp97, <span class="dt">y =</span> lat_mp97, <span class="dt">pch =</span> <span class="dv">0</span>, <span class="dt">cex =</span> <span class="fl">4.0</span>, <span class="dt">lwd =</span> <span class="fl">1.5</span>, <span class="dt">col =</span> <span class="st">"darkgreen"</span>)</code></pre></div>
 <p><img src="intro_to_goes_aodc_data_files/figure-html/create_raster_highdef-1.png" width="700"></p>
-<p>The resolution of these rasters can be set with the <code>res</code> parameter. Values closer to zero increase the image resolution while larger values decrease it and produce more ‘blocky’ pictures (but are faster to generate). The resolution is set to 0.1 by default, but let’s try a slightly higher value:</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" title="1">rstr_lowdef &lt;-<span class="st"> </span><span class="kw"><a href="../reference/goesaodc_createRaster.html">goesaodc_createRaster</a></span>(nc, <span class="dt">res =</span> <span class="fl">0.5</span>)</a>
-<a class="sourceLine" id="cb17-2" title="2"></a>
-<a class="sourceLine" id="cb17-3" title="3">raster<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/raster/topics/plot">plot</a></span>(rstr_lowdef, <span class="st">"AOD"</span>)</a>
-<a class="sourceLine" id="cb17-4" title="4">maps<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/maps/topics/map">map</a></span>(<span class="st">"state"</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
-<p><img src="intro_to_goes_aodc_data_files/figure-html/create_raster_lowdef-1.png" width="700"></p>
+<p>The resolution of the raster is defined by latitudial degrees, so that setting <code>res = 1</code> means every cell will be 1 latitudial degree tall, but may have varying widths due to how longitudes converge near the poles. The estimated area for each cell in km^2 cell can be approximated with <code><a href="https://www.rdocumentation.org/packages/raster/topics/area">raster::area()</a></code>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">approxCellArea &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/mean">mean</a></span>(raster<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/raster/topics/getValues">values</a></span>(raster<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/raster/topics/area">area</a></span>(rstr)))
+cellCount &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/dim">dim</a></span>(rstr)[<span class="dv">1</span>] <span class="op">*</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/dim">dim</a></span>(rstr)[<span class="dv">2</span>]
+approxCellArea <span class="op">*</span><span class="st"> </span>cellCount</code></pre></div>
+<pre><code>## [1] 308807.8</code></pre>
+<p>This slightly overestimates Oregon’s true area of 255,030 km² due to the imperfect state bounding box and cell area approximation.</p>
+<p>Resolutions closer to zero increase the image accuracy while larger values decrease it and produce more ‘blocky’ pictures (but are faster to generate).</p>
 </div>
-<div id="rasters-over-a-timeframe" class="section level2">
+<div id="aod-over-time" class="section level2">
 <h2 class="hasAnchor">
-<a href="#rasters-over-a-timeframe" class="anchor"></a>Rasters Over a Timeframe</h2>
-<p>So far we have created plots for AOD points from just one netCDF file at a time, however, the <code>MazamaSatelliteUtils</code> package also provides functions to visualize readings between multiple netCDFs over a given hour. The first of these is the <code>goesaodc_createRasterStack</code> function, which can be used to generate a stack of RasterBricks to be plotted together. The second is the <code>goesaodc_createHourlyAverageRaster</code> function, which can be used to visualize the “average” AOD for a state over a given hour.</p>
+<a href="#aod-over-time" class="anchor"></a>AOD Over Time</h2>
+<div id="raster-stacks" class="section level3">
+<h3 class="hasAnchor">
+<a href="#raster-stacks" class="anchor"></a>Raster Stacks</h3>
+<p>So far we have only looked at a single instant from our original datetime. There are still 11 other datasets from 16:00:00 that we can analyze like we did this one, but it’s also possible to start combining data into either aggregated rasters or time series plots. In both cases we first create a stack of rasters by, again, defining an hour or date of interest. Let’s stay with our current hour:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rstrStack &lt;-<span class="st"> </span><span class="kw"><a href="../reference/goesaodc_createHourlyRasterStack.html">goesaodc_createHourlyRasterStack</a></span>(<span class="dt">startdate =</span> datetime, 
+                                              <span class="dt">bbox =</span> bbox_oregon, <span class="dt">res =</span> <span class="fl">0.08</span>)</code></pre></div>
+<p>This raster stack now contains individual layers for each downloaded dataset. We can visualize them all at once using the <code>rasterVis</code> package:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rasterVis<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/rasterVis/topics/levelplot-methods">levelplot</a></span>(rstrStack)</code></pre></div>
+<p><img src="intro_to_goes_aodc_data_files/figure-html/rasterStack_levelPlot-1.png" width="768"></p>
+<p>Additionally, one can aggregate all of the rasters together to make one summarizing image, such as finding the mean AOD value for every pixel between scans.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rstrStackAvg &lt;-<span class="st"> </span>raster<span class="op">::</span><span class="kw">mean</span>(rstrStack, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>)
+raster<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/raster/topics/plot">plot</a></span>(rstrStackAvg, <span class="dt">col =</span> <span class="kw">pal_aod</span>(<span class="dv">50</span>))
+<span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(oregon, <span class="dt">add =</span> <span class="ot">TRUE</span>)
+<span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/points">points</a></span>(<span class="dt">x =</span> lon_mp97, <span class="dt">y =</span> lat_mp97, <span class="dt">pch =</span> <span class="dv">0</span>, <span class="dt">cex =</span> <span class="fl">4.0</span>, <span class="dt">lwd =</span> <span class="fl">1.5</span>, 
+       <span class="dt">col =</span> <span class="st">"darkgreen"</span>)</code></pre></div>
+<p><img src="intro_to_goes_aodc_data_files/figure-html/rasterStack_average-1.png" width="700"></p>
+</div>
+<div id="time-series-plots" class="section level3">
+<h3 class="hasAnchor">
+<a href="#time-series-plots" class="anchor"></a>Time Series Plots</h3>
+<p>Finally, the <code><a href="../reference/raster_createLocationTimeseries.html">raster_createLocationTimeseries()</a></code> function allows us to track AOD values of a specific location in each layer of a stack, resulting in a tibble of AOD values and their timestamps. There are a couple of ways of extracting this location data, however. The default method is to track the one cell that the given coordinates fall into, chosen by setting the <code>method</code> parameter to “simple”. Additionally, one can set <code>method</code> to “bilinear”, and track the AOD interpolated between the 4 closest cells.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">datetimeLocal &lt;-<span class="st"> </span>datetime
+<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/attributes">attributes</a></span>(datetimeLocal)<span class="op">$</span>tzone =<span class="st"> "America/Los_Angeles"</span>
+
+ts_simple &lt;-<span class="st"> </span><span class="kw"><a href="../reference/raster_createLocationTimeseries.html">raster_createLocationTimeseries</a></span>(<span class="dt">rasterStack =</span> rstrStack,
+                                             <span class="dt">longitude =</span> lon_mp97, 
+                                             <span class="dt">latitude =</span> lat_mp97, 
+                                             <span class="dt">bbox =</span> bbox_oregon,
+                                             <span class="dt">method =</span> <span class="st">"simple"</span>)
+
+<span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(<span class="dt">x =</span> ts_simple<span class="op">$</span>datetime, <span class="dt">y =</span> ts_simple<span class="op">$</span>aod, <span class="dt">pch =</span> <span class="dv">16</span>, <span class="dt">cex =</span> <span class="dv">1</span>,
+     <span class="dt">main =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/paste">paste</a></span>(datetimeLocal, <span class="st">"PDT"</span>), <span class="dt">xlab =</span> <span class="st">"Time (local)"</span>, <span class="dt">ylab =</span> <span class="st">"AOD"</span>)</code></pre></div>
+<p><img src="intro_to_goes_aodc_data_files/figure-html/timeseries_method-1.png" width="700"></p>
+<p>Aside from the two <code>method</code> options, we can instead define a <code>buffer</code>, which is a circular area around our location that will aggregate the values of cells that fall within it. Provide the <code>buffer</code>radius in meters and a <code>fun</code> aggregation method such as mean, min, or max. <code>fun</code> is st to mean by default.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ts_buffer &lt;-<span class="st"> </span><span class="kw"><a href="../reference/raster_createLocationTimeseries.html">raster_createLocationTimeseries</a></span>(<span class="dt">rasterStack =</span> rstrStack,
+                                             <span class="dt">longitude =</span> lon_mp97,
+                                             <span class="dt">latitude =</span> lat_mp97, 
+                                             <span class="dt">bbox =</span> bbox_oregon,
+                                             <span class="dt">buffer =</span> <span class="dv">10000</span>,
+                                             <span class="dt">fun =</span> mean)
+
+<span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(<span class="dt">x =</span> ts_buffer<span class="op">$</span>datetime, <span class="dt">y =</span> ts_buffer<span class="op">$</span>aod, <span class="dt">pch =</span> <span class="dv">16</span>, <span class="dt">cex =</span> <span class="dv">1</span>,
+     <span class="dt">main =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/paste">paste</a></span>(datetimeLocal, <span class="st">"PDT"</span>), <span class="dt">xlab =</span> <span class="st">"Time (local)"</span>, <span class="dt">ylab =</span> <span class="st">"AOD"</span>)</code></pre></div>
+<p><img src="intro_to_goes_aodc_data_files/figure-html/timeseries_buffer-1.png" width="700"></p>
+<p>A time series plot with only 12 points isn’t especially useful, though it can help show the trend of the AOD values over a portion of a day. We are currently building a function that can create a raster stack for every daylight hour for a given date, which has provided some very interesting insight so far!</p>
+<div class="figure">
+<img src="aod_ts_day.png">
+</div>
+</div>
 </div>
   </div>
 
@@ -261,13 +329,16 @@
       <h2 class="hasAnchor">
 <a href="#tocnav" class="anchor"></a>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
-<li><a href="#package-setup-and-dependencies">Package Setup and Dependencies</a></li>
-      <li><a href="#downloading-data-and-creating-netcdf-handles">Downloading Data and Creating netCDF Handles</a></li>
-      <li><a href="#netcdf-handle-functions">netCDF Handle Functions</a></li>
-      <li><a href="#aod-data-as-a-tibble">AOD Data as a Tibble</a></li>
-      <li><a href="#working-with-data-as-spatialpoints">Working With Data as SpatialPoints</a></li>
-      <li><a href="#working-with-data-as-a-raster">Working With Data as a Raster</a></li>
-      <li><a href="#rasters-over-a-timeframe">Rasters Over a Timeframe</a></li>
+<li><a href="#aerosol-optical-depth">Aerosol Optical Depth</a></li>
+      <li><a href="#aod-source">AOD Source</a></li>
+      <li><a href="#netcdf-files">NetCDF Files</a></li>
+      <li><a href="#mazamasatelliteutils-setup">MazamaSatelliteUtils Setup</a></li>
+      <li><a href="#downloading-data-and-creating-netcdf-handles">Downloading Data and Creating NetCDF Handles</a></li>
+      <li><a href="#reading-through-netcdf-handles">Reading Through NetCDF Handles</a></li>
+      <li><a href="#aod-and-dqf-data-as-a-tibble">AOD and DQF Data as a Tibble</a></li>
+      <li><a href="#working-with-data-as-spatial-points">Working With Data as Spatial Points</a></li>
+      <li><a href="#rasterizing-spatial-points">Rasterizing Spatial Points</a></li>
+      <li><a href="#aod-over-time">AOD Over Time</a></li>
       </ul>
 </div>
       </div>
