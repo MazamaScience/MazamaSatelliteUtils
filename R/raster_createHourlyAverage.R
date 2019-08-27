@@ -29,7 +29,7 @@
 #' rstrStack <- goesaodc_createHourlyRasterStack(startdate = date, 
 #'                                               bbox = bbox_oregon,
 #'                                               res = 0.5)
-#' avg <- raster_createHourlyAverage(rstrStack, na.rm = TRUE)
+#' avg <- raster_createStackAverage(rstrStack, na.rm = TRUE)
 #'
 #' # Plot average AOD raster and state border
 #' pal_aod <- colorRampPalette(c("lightgoldenrod1", "red3"))
@@ -40,7 +40,7 @@
 #' plot(oregon, add = TRUE)
 #' }
 
-raster_createHourlyAverage <- function(
+raster_createStackAverage <- function(
   rasterStack = NULL,
   na.rm = FALSE
 ) {
