@@ -1,6 +1,6 @@
 #' @export
 #' 
-#' @title Create a RasterStack for a specified day
+#' @title Create a daytime RasterStack for a specified date
 #' 
 #' @param startdate startdate in any Y-m-d format or \code{POSIXct}
 #' @param timezone the timezone to determine the sunrise and sunset times
@@ -56,7 +56,7 @@
 #' 
 #' dateLocal <- lubridate::ymd("2019-08-01", tz = "America/Los_Angeles")
 #' 
-#' dayStack <- goesaodc_createDailyRasterStack(dateLocal, "America/Los_Angeles",
+#' dayStack <- goesaodc_createDaytimeRasterStack(dateLocal, "America/Los_Angeles",
 #'                                             bbox = bbox_oregon)
 #' tb <- raster_createLocationTimeseries(dayStack, 
 #'                                       longitude = lon, latitude = lat, 
@@ -67,7 +67,7 @@
 #'      main = dateLocal, xlab = "Time (PDT)", ylab = "AOD")
 #' }
 
-goesaodc_createDailyRasterStack <- function(
+goesaodc_createDaytimeRasterStack <- function(
   startdate = NULL,
   timezone = "UTC",
   var = "AOD",
