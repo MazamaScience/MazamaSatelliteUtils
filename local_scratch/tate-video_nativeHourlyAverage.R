@@ -19,9 +19,10 @@ setSatelliteDataDir("~/Data/Satellite/")
 setSpatialDataDir("~/Data/Spatial")
 
 startdate <- lubridate::ymd("2019-08-01", tz = "UTC")
-duration = lubridate::hours(9)
+duration <- lubridate::hours(2)
 
-region = "pnw"
+region <- "enc"
+dqfLevel <- 0
 
 # ----- Script start ---------------
 
@@ -45,24 +46,29 @@ for (hour in as.list(hours)) {
   hourFiles <- goesaodc_listFiles(hourString)
   ncHandles <- purrr::map(hourFiles, goesaodc_openFile)
   
-  # Average AOD readings of all the scans in the hour
+  # List of vectors of DQF level logicals for each scan
+  dqfMasks <- 
+    purrr::map(ncHandles, ncdf4::ncvar_get, varid = "DQF") %>% 
+    purrr::map(as.vector) %>%
+    purrr::map(function(x) { x > dqfLevel })
+  
+  # List of vectors of AOD values for each scan
   aodScans <- 
-    purrr::map(ncHandles, ncdf4::ncvar_get, varid = "AOD") %>%
-    purrr::map(as.vector)
+    purrr::map(ncHandles, ncdf4::ncvar_get, varid = "AOD") %>% 
+    purrr::map(as.vector) 
+  
+  # Mask each AOD scan by its DQF mask
+  for (i in 1:length(aodScans)) {
+    aodScans[[i]][dqfMasks[[i]]] <- NA
+  }
+  
+  # Average the remaining AOD readings of all the scans in the hour
   stackedAODScans <- do.call(rbind, aodScans)
   avgAODReadings <- colMeans(stackedAODScans, na.rm = FALSE)
-  
-  # Average DQF readings of all the scans in the hour
-  dqfScans <- 
-    purrr::map(ncHandles, ncdf4::ncvar_get, varid = "DQF") %>%
-    purrr::map(as.vector)
-  stackedDQFScans <- do.call(rbind, dqfScans)
-  avgDQFReadings <- round(colMeans(stackedDQFScans, na.rm = FALSE))
   
   # Construct a tibble to hold projected lat/lon coords and AOD for the average scan matrix.
   varList <- list()
   varList[["AOD"]] <- avgAODReadings
-  varList[["DQF"]] <- avgDQFReadings
   varList[["lon"]] <- as.numeric( MazamaSatelliteUtils::goesEastGrid$longitude )
   varList[["lat"]] <- as.numeric( MazamaSatelliteUtils::goesEastGrid$latitude )
   
@@ -76,7 +82,6 @@ for (hour in as.list(hours)) {
   tbl <- dplyr::filter(tbl, 
                        lon >= bbox[1], lon <= bbox[2],
                        lat >= bbox[3], lat <= bbox[4])
-  tbl <- dplyr::filter(tbl, DQF <= 2)
   
   # Draw frame
   maps::map("state", regions = states)
