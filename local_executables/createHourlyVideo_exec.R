@@ -162,7 +162,7 @@ localHoursInfo <- PWFSLSmoke::timeInfo(localHours,
 
 # Keep only daylight hours and the midnight (00:00) hours between days
 localDaylightHours <- dplyr::filter(localHoursInfo, day == TRUE)
-localMidnightHours <- dplyr::filter(localHoursInfo, 
+localMidnightHours <- dplyr::filter(localHoursInfo[2:nrow(localHoursInfo),], 
                                     lubridate::hour(localTime) == 0)
 localKeptHours <- dplyr::arrange(rbind(localDaylightHours, localMidnightHours), 
                                  localTime)
@@ -183,8 +183,13 @@ for (hour in as.list(frameHours)) {
   hourString <- strftime(hour, format = "%Y-%m-%d %H:%M:%S", tz = "UTC")
   #downloadedFiles <- goesaodc_downloadAOD(hourString)
   hourFiles <- goesaodc_listFiles(hourString)
-  ncHandles <- purrr::map(hourFiles, goesaodc_openFile)
   
+  if (length(hourFiles) < 1) {
+    stop("No downloaded files for this hour")
+  }
+  
+  ncHandles <- purrr::map(hourFiles, goesaodc_openFile)
+
   # ----- Quality filter and average AOD ---------------------------------------
   
   # List of vectors of DQF level logicals for each scan
@@ -192,23 +197,23 @@ for (hour in as.list(frameHours)) {
     purrr::map(ncHandles, ncdf4::ncvar_get, varid = "DQF") %>% 
     purrr::map(as.vector) %>%
     purrr::map(function(x) { x > opt$dqfLevel })
-  
+
   # List of vectors of AOD values for each scan
   aodScans <- 
     purrr::map(ncHandles, ncdf4::ncvar_get, varid = "AOD") %>% 
     purrr::map(as.vector) 
-  
+
   # Mask each AOD scan by its DQF mask
   for (i in 1:length(aodScans)) {
     aodScans[[i]][dqfMasks[[i]]] <- NA
   }
-  
+
   # Average together the remaining AOD values from all of the scans 
   stackedAODScans <- do.call(rbind, aodScans)
   avgAODReadings <- colMeans(stackedAODScans, na.rm = FALSE)
   
   # ----- Project and subset spatial points ------------------------------------
-  
+
   # Construct a tibble to hold projected lat/lon point coords and average AOD
   varList <- list()
   varList[["AOD"]] <- avgAODReadings
@@ -223,20 +228,27 @@ for (hour in as.list(frameHours)) {
   tbl <- dplyr::filter(tbl, 
                        lon >= regionBbox[1], lon <= regionBbox[2],
                        lat >= regionBbox[3], lat <= regionBbox[4])
-  
+
   # ----- Draw frame -----------------------------------------------------------
   
   # Plot setup
+  localHour <- lubridate::with_tz(hour, tzone = localTimezone)
   i <- stringr::str_pad(frameNumber, 3, 'left', '0')
   frameFileName <- paste0(i, ".png")
   frameFilePath <- file.path(tempdir(), frameFileName)
   breaks <- c(-3.0, -0.2, 0.1, 0.2, 0.4, 0.6, 0.8, 1.0, 1.5, 3.0)
   png(frameFilePath, width = 1280, height = 720, units = "px")
-  layout(matrix(c(1, 2, 2), nrow = 1, ncol = 3, byrow = TRUE))
+  layout(matrix(c(1, 2, 3, 3, 3, 3, 3, 3), nrow = 2, ncol = 4, byrow = FALSE))
+
+  # Date progress bar plot on the upper-left
+  plot(0, 0, col = "transparent", axes = FALSE, xlab = NA, ylab = NA)
+  title(paste(strftime(localHour, "%Y-%m-%d", tz = localTimezone)), cex.main = 5.0)
   
-  # Clock plot on the left
-  plot(x = 1:10, y = 1:10, col = "transparent", axes = FALSE)
-  title(paste(hourString, "UTC"), cex.main = 3.0)
+  # Hour clock plot on the lower-left
+  hourFraction <- lubridate::hour(localHour) / 24
+  pie(x = c(hourFraction, 1/24, 1 - (hourFraction + 1 / 24)), clockwise = TRUE,
+      labels = NA, col = c("white", "red", "white"))
+  title(paste(strftime(localHour, "%H:%M", tz = localTimezone)), cex.main = 3.0)
   
   # Spatial points plot on the right
   maps::map("state", regions = states)
