@@ -11,6 +11,7 @@ VERSION = "0.1.1"
 # The following packages are attached here so they show up in the sessionInfo
 suppressPackageStartupMessages({
   library(futile.logger)
+  library(magrittr)
   library(MazamaCoreUtils)
   library(MazamaSatelliteUtils)
   library(MazamaSpatialUtils)
@@ -35,11 +36,6 @@ if ( interactive() ) {
       c("-s","--startdate"), 
       default=NULL, 
       help="The date to start at [default=\"%default\"]"
-    ),
-    make_option(
-      c("-e","--enddate"), 
-      default=NULL, 
-      help="The date to end at [default=\"%default\"]"
     ),
     make_option(
       c("-d","--duration"), 
@@ -107,16 +103,10 @@ if (!dir.exists(opt$logDir)) {
   stop(paste0("logDir not found:  ", opt$logDir))
 }
 
-
-
-library(MazamaSatelliteUtils)
-library(MazamaSpatialUtils)
-library(magrittr)
+# ------ Setup region ----------------------------------------------------------
 
 setSatelliteDataDir("~/Data/Satellite/")
-setSpatialDataDir("~/Data/Spatial")
-
-# ------ Setup region ----------------------------------------------------------
+setSpatialDataDir("~/Data/Spatial/")
 
 regions <- list(
   a = c("Washington", "Oregon", "Idaho"),
@@ -136,41 +126,58 @@ regions <- list(
   m = c("Georgia", "South Carolina", "Florida")
 )
 
-# Select the region containing the named state
+# Select the region containing the state parameter
 matchingRegions <- sapply(1:length(regions), 
                           function(i) any(regions[[i]] == opt$region))
 if (length(which(matchingRegions == TRUE)) > 0) {
   states <- regions[[which(matchingRegions == TRUE)]]
-  bbox <- maps::map("state", regions = states, fill = TRUE, plot = FALSE)$range
+  regionBbox <- maps::map("state", regions = states, fill = TRUE, plot = FALSE)$range
 } else {
-  bbox <- maps::map("state", regions = ".", fill = TRUE, plot = FALSE)$range
+  regionBbox <- maps::map("state", regions = ".", fill = TRUE, plot = FALSE)$range
 }
 
-# Region central coordinates
-centerLon <- mean(bbox[1:2])
-centerLat <- mean(bbox[3:4])
+# State central coordinates
+stateBbox <- maps::map("state", regions = c(opt$region), fill = TRUE, plot = FALSE)$range
+stateCenterLon <- mean(stateBbox[1:2])
+stateCenterLat <- mean(stateBbox[3:4])
+
+# Timezone is determined by the exact center of the region
+localTimezone <- MazamaSpatialUtils::getTimezone(lon = stateCenterLon, lat = stateCenterLat)
 
 # ----- Setup hours ------------------------------------------------------------
 
-startdate <- lubridate::ymd(opt$startdate, tz = "UTC")
-duration <- lubridate::hours(11)
+# Define local start date and duration (days covered including startdate)
+startdate <- lubridate::ymd(opt$startdate, tz = localTimezone)
+duration <- lubridate::hours(as.numeric(opt$duration) * 24 - 1)
 
-startHour <- startdate + lubridate::hours(12)         # Sunrise on first day
-endHour <- startHour + lubridate::hours(opt$duration) # Sunset on last day
+# Convert start and end date to UTC
+startdateUTC <- lubridate::with_tz(startdate, tzone = "UTC")
+enddateUTC <- startdateUTC + duration
 
-# Generate a frame for each hour
-hours <- seq.POSIXt(from = startHour, to = endHour, by = "hour")
-hoursInfo <- PWFSLSmoke::timeInfo(hours, 
-                                  longitude = centerLon, latitude = centerLat, 
-                                  timezone = "UTC") 
+# Get detailed time info for all hours in between
+localHours <- seq.POSIXt(from = startdateUTC, to = enddateUTC, by = "hour")
+localHoursInfo <- PWFSLSmoke::timeInfo(localHours, 
+                                       longitude = stateCenterLon, latitude = stateCenterLat, 
+                                       timezone = localTimezone)
+
+# Keep only daylight hours and the midnight (00:00) hours between days
+localDaylightHours <- dplyr::filter(localHoursInfo, day == TRUE)
+localMidnightHours <- dplyr::filter(localHoursInfo, 
+                                    lubridate::hour(localTime) == 0)
+localKeptHours <- dplyr::arrange(rbind(localDaylightHours, localMidnightHours), 
+                                 localTime)
+
+# Convert kept local hours to UTC
+frameTimeInfo <- lubridate::with_tz(localKeptHours, tzone = "UTC")
+frameHours <- frameTimeInfo$localTime
 
 # ----- Generate frames --------------------------------------------------------
 
 frameNumber <- 1
-for (hour in as.list(hours)) {
+for (hour in as.list(frameHours)) {
   
   if (opt$verbose) {
-    print(paste("Generating", strftime(hour, format = "%Y-%m-%d %H", tz = "UTC")))
+    print(paste("Generating", strftime(hour, format = "%Y-%m-%d %H", tz = "UTC"), "UTC"))
   }
   
   hourString <- strftime(hour, format = "%Y-%m-%d %H:%M:%S", tz = "UTC")
@@ -214,8 +221,8 @@ for (hour in as.list(hours)) {
   
   # Subset points by the region bounding box
   tbl <- dplyr::filter(tbl, 
-                       lon >= bbox[1], lon <= bbox[2],
-                       lat >= bbox[3], lat <= bbox[4])
+                       lon >= regionBbox[1], lon <= regionBbox[2],
+                       lat >= regionBbox[3], lat <= regionBbox[4])
   
   # ----- Draw frame -----------------------------------------------------------
   
@@ -247,7 +254,7 @@ for (hour in as.list(hours)) {
   dev.off()
 }
 
-# ----- Stitch together video --------------------------------------------------
+# ----- Generate video ---------------------------------------------------------
 
 videoFileName <- paste0(opt$region, "_AOD_DQF", opt$dqfLevel, 
                         ".mp4")
