@@ -1,6 +1,7 @@
 #!/usr/local/bin/Rscript
 
-# This Rscript generates a spatial points video for a region over a given duration.
+# This Rscript generates a spatial points video for a region over a given 
+# duration.
 #
 # Test this script from the command line with:
 #
@@ -39,7 +40,7 @@ if ( interactive() ) {
     ),
     make_option(
       c("-d","--duration"), 
-      default=3, 
+      default=1, 
       help="The number of days to cover [default=\"%default\"]"
     ),
     make_option(
@@ -131,24 +132,29 @@ matchingRegions <- sapply(1:length(regions),
                           function(i) any(regions[[i]] == opt$region))
 if (length(which(matchingRegions == TRUE)) > 0) {
   states <- regions[[which(matchingRegions == TRUE)]]
-  regionBbox <- maps::map("state", regions = states, fill = TRUE, plot = FALSE)$range
+  regionBbox <- 
+    maps::map("state", regions = states, fill = TRUE, plot = FALSE)$range
 } else {
-  regionBbox <- maps::map("state", regions = ".", fill = TRUE, plot = FALSE)$range
+  regionBbox <- 
+    maps::map("state", regions = ".", fill = TRUE, plot = FALSE)$range
 }
 
 # State central coordinates
-stateBbox <- maps::map("state", regions = c(opt$region), fill = TRUE, plot = FALSE)$range
+stateBbox <- 
+  maps::map("state", regions = c(opt$region), fill = TRUE, plot = FALSE)$range
 stateCenterLon <- mean(stateBbox[1:2])
 stateCenterLat <- mean(stateBbox[3:4])
 
 # Timezone is determined by the exact center of the region
-localTimezone <- MazamaSpatialUtils::getTimezone(lon = stateCenterLon, lat = stateCenterLat)
+localTimezone <- 
+  MazamaSpatialUtils::getTimezone(lon = stateCenterLon, lat = stateCenterLat)
 
 # ----- Setup hours ------------------------------------------------------------
 
 # Define local start date and duration (days covered including startdate)
 startdate <- lubridate::ymd(opt$startdate, tz = localTimezone)
 duration <- lubridate::hours(as.numeric(opt$duration) * 24 - 1)
+#duration <- lubridate::hours(8)
 
 # Convert start and end date to UTC
 startdateUTC <- lubridate::with_tz(startdate, tzone = "UTC")
@@ -157,7 +163,8 @@ enddateUTC <- startdateUTC + duration
 # Get detailed time info for all hours in between
 localHours <- seq.POSIXt(from = startdateUTC, to = enddateUTC, by = "hour")
 localHoursInfo <- PWFSLSmoke::timeInfo(localHours, 
-                                       longitude = stateCenterLon, latitude = stateCenterLat, 
+                                       longitude = stateCenterLon, 
+                                       latitude = stateCenterLat, 
                                        timezone = localTimezone)
 
 # Keep only daylight hours and the midnight (00:00) hours between days
@@ -176,16 +183,20 @@ frameHours <- frameTimeInfo$localTime
 frameNumber <- 1
 for (hour in as.list(frameHours)) {
   
+  localHour <- lubridate::with_tz(hour, tzone = localTimezone)
   if (opt$verbose) {
-    print(paste("Generating", strftime(hour, format = "%Y-%m-%d %H", tz = "UTC"), "UTC"))
+    print(paste("Generating", 
+                strftime(localHour, format = "%Y-%m-%d %H", tz = localTimezone),
+                localTimezone))
   }
   
   hourString <- strftime(hour, format = "%Y-%m-%d %H:%M:%S", tz = "UTC")
-  #downloadedFiles <- goesaodc_downloadAOD(hourString)
   hourFiles <- goesaodc_listFiles(hourString)
   
+  # Fetch hour files if they are not already downloaded
   if (length(hourFiles) < 1) {
-    stop("No downloaded files for this hour")
+    goesaodc_downloadAOD(hourString)
+    hourFiles <- goesaodc_listFiles(hourString)
   }
   
   ncHandles <- purrr::map(hourFiles, goesaodc_openFile)
@@ -232,26 +243,24 @@ for (hour in as.list(frameHours)) {
   # ----- Draw frame -----------------------------------------------------------
   
   # Plot setup
-  localHour <- lubridate::with_tz(hour, tzone = localTimezone)
   i <- stringr::str_pad(frameNumber, 3, 'left', '0')
   frameFileName <- paste0(i, ".png")
   frameFilePath <- file.path(tempdir(), frameFileName)
-  breaks <- c(-3.0, -0.2, 0.1, 0.2, 0.4, 0.6, 0.8, 1.0, 1.5, 3.0)
+  head(tbl$AOD)
+  #quantiles <- quantile(tbl$AOD, seq(from = 0.0, to = 1.0, by = 0.2), na.rm = TRUE)
+  breaks <- c(-2.5750, 0.0800, 0.1207, 0.1675, 0.2145, 0.2736, 0.3651, 0.5764, 2.4750)
   png(frameFilePath, width = 1280, height = 720, units = "px")
-  layout(matrix(c(1, 2, 3, 3, 3, 3, 3, 3), nrow = 2, ncol = 4, byrow = FALSE))
-
-  # Date progress bar plot on the upper-left
-  plot(0, 0, col = "transparent", axes = FALSE, xlab = NA, ylab = NA)
-  title(paste(strftime(localHour, "%Y-%m-%d", tz = localTimezone)), cex.main = 5.0)
+  par(xpd = NA)
   
-  # Hour clock plot on the lower-left
-  hourFraction <- lubridate::hour(localHour) / 24
-  pie(x = c(hourFraction, 1/24, 1 - (hourFraction + 1 / 24)), clockwise = TRUE,
-      labels = NA, col = c("white", "red", "white"))
-  title(paste(strftime(localHour, "%H:%M", tz = localTimezone)), cex.main = 3.0)
+  layout(matrix(c(1, 1, 1, 1, 2,
+                  1, 1, 1, 1, 2, 
+                  1, 1, 1, 1, 3), nrow = 3, ncol = 5, byrow = TRUE))
   
-  # Spatial points plot on the right
-  maps::map("state", regions = states)
+  # Spatial points map plot
+  plot(0, 0, xlim = regionBbox[1:2], ylim = regionBbox[3:4], 
+       axes = FALSE, xlab = NA, ylab = NA)
+  rect(par("usr")[1], par("usr")[3], par("usr")[2], par("usr")[4], 
+       col = "gray90", border = NA, lwd = 0)
   if (nrow(tbl) > 0) {
     sp <- sp::SpatialPointsDataFrame(
       coords = dplyr::select(tbl, c(.data$lon, .data$lat)),
@@ -259,8 +268,26 @@ for (hour in as.list(frameHours)) {
     )
     goesaodc_plotSpatialPoints(sp, var = "AOD", cex = 0.5, breaks = breaks, 
                                add = TRUE)
-    maps::map("state", regions = states, add = TRUE)
   }
+  maps::map("state", regions = states, add = TRUE)
+  title(paste("GOES East AOD, DQF <=", opt$dqfLevel), cex.main = 4.0)
+  
+  # Legend color scale
+  cols <- RColorBrewer::brewer.pal(length(breaks) - 1, "YlOrRd")
+  col_i <- .bincode(seq(from = breaks[length(breaks)], to = breaks[1], by = -0.05), breaks)
+  col_v <- cols[col_i]
+  legendImage <- as.raster(matrix(col_v, ncol = 1))
+  plot(0, 0, col = "transparent", xlim = c(-1, 1), ylim = c(breaks[1], breaks[length(breaks)]), 
+       axes = FALSE, xlab = NA, ylab = NA, main = "AOD", cex.main = 3.0)
+  axis(2, cex.axis = 2.0)
+  rasterImage(legendImage, -0.4, breaks[1], 0.0, breaks[length(breaks)])
+  
+  # Timestamp clock plot
+  hourFraction <- lubridate::hour(localHour) / 24
+  pie(x = c(hourFraction, 1/24, 1 - (hourFraction + 1 / 24)), clockwise = TRUE,
+      init.angle = 270, labels = NA, col = c("white", "black", "white"))
+  title(paste0(strftime(localHour, "%Y-%m-%d", tz = localTimezone), "\n", 
+               strftime(localHour, "%H:%M", tz = localTimezone)), cex.main = 2.5)
   
   frameNumber <- frameNumber + 1
   dev.off()
