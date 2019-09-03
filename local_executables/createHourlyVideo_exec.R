@@ -154,7 +154,6 @@ localTimezone <-
 # Define local start date and duration (days covered including startdate)
 startdate <- lubridate::ymd(opt$startdate, tz = localTimezone)
 duration <- lubridate::hours(as.numeric(opt$duration) * 24 - 1)
-#duration <- lubridate::hours(8)
 
 # Convert start and end date to UTC
 startdateUTC <- lubridate::with_tz(startdate, tzone = "UTC")
@@ -246,21 +245,23 @@ for (hour in as.list(frameHours)) {
   i <- stringr::str_pad(frameNumber, 3, 'left', '0')
   frameFileName <- paste0(i, ".png")
   frameFilePath <- file.path(tempdir(), frameFileName)
-  head(tbl$AOD)
-  #quantiles <- quantile(tbl$AOD, seq(from = 0.0, to = 1.0, by = 0.2), na.rm = TRUE)
-  breaks <- c(-2.5750, 0.0800, 0.1207, 0.1675, 0.2145, 0.2736, 0.3651, 0.5764, 2.4750)
+  breaks <- c(-2.5750, 0.0800, 0.1207, 0.1675, 0.2145, 0.2736, 0.3651, 0.5764, 2.4750) # quantile(tbl$AOD, seq(from = 0.0, to = 1.0, by = 0.2), na.rm = TRUE)
   png(frameFilePath, width = 1280, height = 720, units = "px")
   par(xpd = NA)
-  
   layout(matrix(c(1, 1, 1, 1, 2,
                   1, 1, 1, 1, 2, 
-                  1, 1, 1, 1, 3), nrow = 3, ncol = 5, byrow = TRUE))
+                  1, 1, 1, 1, 3), nrow = 3, ncol = 5, byrow = TRUE), respect = TRUE)
   
   # Spatial points map plot
-  plot(0, 0, xlim = regionBbox[1:2], ylim = regionBbox[3:4], 
-       axes = FALSE, xlab = NA, ylab = NA)
-  rect(par("usr")[1], par("usr")[3], par("usr")[2], par("usr")[4], 
-       col = "gray90", border = NA, lwd = 0)
+  # Have to convert to polygons to keep aspect ratio
+  mp <- maps::map("state", regions = states, fill = TRUE, plot = FALSE)
+  polys <- maptools::map2SpatialPolygons(mp, IDs = mp$names, 
+                                      proj4string = CRS("+proj=longlat +datum=WGS84"))
+  polyData <- data.frame(seq_len(length(polys)), row.names = names(polys))
+  spdf <- SpatialPolygonsDataFrame(polys, data = polyData)
+  
+  plot(spdf, border = NA, bg = "gray90")
+  
   if (nrow(tbl) > 0) {
     sp <- sp::SpatialPointsDataFrame(
       coords = dplyr::select(tbl, c(.data$lon, .data$lat)),
@@ -270,7 +271,7 @@ for (hour in as.list(frameHours)) {
                                add = TRUE)
   }
   maps::map("state", regions = states, add = TRUE)
-  title(paste("GOES East AOD, DQF <=", opt$dqfLevel), cex.main = 4.0)
+  title(paste("GOES East AOD, DQF <=", opt$dqfLevel), cex.main = 3.5)
   
   # Legend color scale
   cols <- RColorBrewer::brewer.pal(length(breaks) - 1, "YlOrRd")
@@ -279,13 +280,14 @@ for (hour in as.list(frameHours)) {
   legendImage <- as.raster(matrix(col_v, ncol = 1))
   plot(0, 0, col = "transparent", xlim = c(-1, 1), ylim = c(breaks[1], breaks[length(breaks)]), 
        axes = FALSE, xlab = NA, ylab = NA, main = "AOD", cex.main = 3.0)
-  axis(2, cex.axis = 2.0)
-  rasterImage(legendImage, -0.4, breaks[1], 0.0, breaks[length(breaks)])
+  axis(side = 2, line = -6, cex.axis = 2.0)
+  rasterImage(legendImage, -0.3, breaks[1], 0.3, breaks[length(breaks)])
   
   # Timestamp clock plot
   hourFraction <- lubridate::hour(localHour) / 24
   pie(x = c(hourFraction, 1/24, 1 - (hourFraction + 1 / 24)), clockwise = TRUE,
       init.angle = 270, labels = NA, col = c("white", "black", "white"))
+  text(0, -1.0, "Midnight", cex = 2.0)
   title(paste0(strftime(localHour, "%Y-%m-%d", tz = localTimezone), "\n", 
                strftime(localHour, "%H:%M", tz = localTimezone)), cex.main = 2.5)
   
