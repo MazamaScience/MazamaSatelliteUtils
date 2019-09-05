@@ -84,7 +84,7 @@ gather data for August 1, 2019 at 17:00:00 UTC (10AM PDT).
 
 ```{r download_files}
 datetime <- lubridate::ymd_h("2019-08-01 17", tz = "UTC")
-downloadedFiles <- goesaodc_downloadAOD(datetime)
+downloadedFiles <- goesaodc_downloadAOD(datetime, satID = 16)
 ```
 
 The `goesaodc_downloadAOD()` function also returns a vector of paths to each 
@@ -94,7 +94,7 @@ returned vector. We can see which files are now availible to read by calling
 `goesaodc_listFiles()` on the datetime we specified:
 
 ```{r display_files}
-dateFiles <- goesaodc_listFiles(datetime)
+dateFiles <- goesaodc_listFiles(datetime, satID = 16)
 print(dateFiles)
 ```
 
@@ -255,7 +255,7 @@ by, again, defining an hour or date of interest. Let's stay with our current
 hour:
 
 ```{r create_rasterStack}
-rstrStack <- goesaodc_createHourlyRasterStack(startdate = datetime, 
+rstrStack <- goesaodc_createHourlyRasterStack(startdate = datetime, satID = 16,
                                               bbox = bbox_oregon, res = 0.08)
 ```
 

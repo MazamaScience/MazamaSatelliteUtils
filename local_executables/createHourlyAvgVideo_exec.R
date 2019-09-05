@@ -5,7 +5,7 @@
 #
 # Test this script from the command line with:
 #
-# ./createHourlyVideo_exec.R -s 20190801 -q 2 -r Maine -o ~/Desktop/ -v TRUE
+# ./createHourlyAvgVideo_exec.R -s 20190801 -q 2 -r Maine -o ~/Desktop/ -v TRUE
 
 VERSION = "0.1.1"
 
@@ -54,9 +54,10 @@ if ( interactive() ) {
       help="<= data quality level filter [default=\"%default\"]"
     ),
     make_option(
-      c("-n", "--narm"),
-      default=FALSE,
-      help="Whether NA values should be removed before taking pixel averages [default=\"%default\"]"
+      c("-n", "--naThreshold"),
+      default=1,
+      help="Maximum allowable NA values for a point to be averaged 
+      [default=\"%default\"]"
     ),
     make_option(
       c("-v","--verbose"), 
@@ -87,7 +88,7 @@ if ( interactive() ) {
 
 # Print out version and quit
 if (opt$version) {
-  cat(paste0("createHourlyVideo ", VERSION, "\n"))
+  cat(paste0("createHourlyAvgVideo ", VERSION, "\n"))
   quit()
 }
 
@@ -112,6 +113,26 @@ if (!dir.exists(opt$outputDir)) {
 if (!dir.exists(opt$logDir)) {
   stop(paste0("logDir not found:  ", opt$logDir))
 }
+
+# ----- Set up logging ---------------------------------------------------------
+
+logger.setup(
+  traceLog = file.path(opt$logDir, "createHourlyAvgVideo_TRACE.log"),
+  debugLog = file.path(opt$logDir, "createHourlyAvgVideo_DEBUG.log"), 
+  infoLog  = file.path(opt$logDir, "createHourlyAvgVideo_INFO.log"), 
+  errorLog = file.path(opt$logDir, "createHourlyAvgVideo_ERROR.log")
+)
+
+# For use at the very end
+errorLog <- file.path(opt$logDir, "createHourlyAvgVideo_ERROR.log")
+
+# Silence other warning messages
+options(warn=-1) # -1=ignore, 0=save/print, 1=print, 2=error
+
+# Start logging
+logger.info("Running createHourlyAvgVideo_exec.R version %s", VERSION)
+sessionString <- paste(capture.output(sessionInfo()), collapse="\n")
+logger.debug("R session:\n\n%s\n", sessionString)
 
 # ------ Setup region ----------------------------------------------------------
 
@@ -199,12 +220,12 @@ for (hour in as.list(frameHours)) {
   }
   
   hourString <- strftime(hour, format = "%Y-%m-%d %H:%M:%S", tz = "UTC")
-  hourFiles <- goesaodc_listFiles(hourString)
+  hourFiles <- goesaodc_listFiles(hourString, satID = 16) ######################
   
   # Fetch hour files if they are not already downloaded
   if (length(hourFiles) < 1) {
-    goesaodc_downloadAOD(hourString)
-    hourFiles <- goesaodc_listFiles(hourString)
+    goesaodc_downloadAOD(hourString, satID = 16) ###############################
+    hourFiles <- goesaodc_listFiles(hourString, satID = 16) #################### Automatically choose proper satellite to load from
   }
   
   ncHandles <- purrr::map(hourFiles, goesaodc_openFile)
@@ -229,7 +250,17 @@ for (hour in as.list(frameHours)) {
 
   # Average together the remaining AOD values from all of the scans 
   stackedAODScans <- do.call(rbind, aodScans)
-  avgAODReadings <- colMeans(stackedAODScans, na.rm = opt$narm)
+  #avgAODReadings <- colMeans(stackedAODScans, na.rm = opt$narm) # Faster, but can't test against a NA threshold
+  
+  avgAODReadings <- replicate(ncol(stackedAODScans), NA)
+  for (col in 1:ncol(stackedAODScans)) {
+    v <- as.vector(stackedAODScans[, col])
+    naCount <- length(which(is.na(v)))
+    
+    if (naCount <= opt$naThreshold) {
+      avgAODReadings[col] <- mean(v, na.rm = TRUE)
+    }
+  }
   
   # ----- Project and subset spatial points ------------------------------------
 
