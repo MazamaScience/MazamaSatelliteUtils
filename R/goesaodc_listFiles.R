@@ -26,7 +26,8 @@
 
 goesaodc_listFiles <- function(
   startdate = NULL,
-  jdate = NULL 
+  jdate = NULL,
+  satID = NULL
 ) {
   
   # ----- Parse incoming date --------------------------------------------------
@@ -87,6 +88,10 @@ goesaodc_listFiles <- function(
     
   }
   
+  if (is.null(satID)) {
+    stop("Must specify GOES satellite ID (16 or 17)")
+  }
+  
   # Julian string for comparison with file names
   if ( fullDay ) {
     startString <- strftime(starttime, "%Y%j", tz = "UTC")
@@ -96,7 +101,8 @@ goesaodc_listFiles <- function(
 
   # ----- Get Matching Files ---------------------------------------------------
   
-  regex <- "OR_ABI-L2-AODC-M[0-9]_G16_s[0-9]+_e[0-9]+_c[0-9]+\\.nc"
+  # regex <- "OR_ABI-L2-AODC-M[0-9]_G16_s[0-9]+_e[0-9]+_c[0-9]+\\.nc"
+  regex <- paste0("OR_ABI-L2-AODC-M[0-9]_G", satID, "_s[0-9]+_e[0-9]+_c[0-9]+\\.nc")
   dataFiles <- list.files(getSatelliteDataDir(), pattern = regex)
   startStrings <- purrr::map_chr(dataFiles, goesaodc_getStartString)
   
