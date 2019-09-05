@@ -45,13 +45,18 @@ if ( interactive() ) {
     ),
     make_option(
       c("-r","--region"), 
-      default=NULL, 
+      default=".", 
       help="Which region to view [default=\"%default\"]"
     ),
     make_option(
       c("-q", "--dqfLevel"),
       default=2,
       help="<= data quality level filter [default=\"%default\"]"
+    ),
+    make_option(
+      c("-n", "--narm"),
+      default=FALSE,
+      help="Whether NA values should be removed before taking pixel averages [default=\"%default\"]"
     ),
     make_option(
       c("-v","--verbose"), 
@@ -92,8 +97,12 @@ if (opt$startdate == "") {
   stop("Must define a start date")
 }
 
-if (opt$region == "") {
-  stop("Must define a region")
+if (opt$duration < 1) {
+  stop("Duration must be 1 or more days")
+}
+
+if (opt$dqfLevel < 0 || opt$dqfLevel > 3) {
+  stop("DQF level must be 0-3")
 }
 
 if (!dir.exists(opt$outputDir)) {
@@ -110,28 +119,28 @@ setSatelliteDataDir("~/Data/Satellite/")
 setSpatialDataDir("~/Data/Spatial/")
 
 regions <- list(
-  a = c("Washington", "Oregon", "Idaho"),
-  b = c("Montana", "Wyoming"),
-  c = c("North Dakota", "South Dakota", "Minnisota"),
-  d = c("Wisconsin", "Michigan"),
-  e = c("New York", "Vermont", "New Hampshire", "Maine", "Massachusetts", 
-        "Connecticut", "Rhode Island"),
-  f = c("California", "Nevada"),
-  g = c("Utah", "Colorado", "Arizona", "New Mexico"),
-  h = c("Nebraska", "Iowa", "Kansas", "Missouri"),
-  i = c("Illinois", "Indiana", "Ohio", "Kentucky", "Tennessee"),
-  j = c("Pennsylvania", "New Jersey", "West Virginia", "Maryland", "Deleware", 
-        "Virginia", "North Carolina"),
-  k = c("Texas", "Oklahoma"),
-  l = c("Arkansas", "Louisiana", "Mississippi", "Alabama"),
-  m = c("Georgia", "South Carolina", "Florida")
+  a = c("washington", "oregon", "idaho"),
+  b = c("montana", "wyoming"),
+  c = c("north dakota", "south dakota", "minnesota"),
+  d = c("wisconsin", "michigan"),
+  e = c("new york", "vermont", "new hampshire", "maine", "massachusetts", 
+        "connecticut", "rhode island"),
+  f = c("california", "nevada"),
+  g = c("utah", "colorado", "arizona", "new mexico"),
+  h = c("nebraska", "iowa", "kansas", "missouri"),
+  i = c("illinois", "indiana", "ohio", "kentucky", "tennessee"),
+  j = c("pennsylvania", "new jersey", "west virginia", "maryland", "deleware", 
+        "virginia", "north carolina"),
+  k = c("texas", "oklahoma"),
+  l = c("arkansas", "louisiana", "mississippi", "alabama"),
+  m = c("georgia", "south carolina", "florida")
 )
 
 # Select the region containing the state parameter
 matchingRegions <- sapply(1:length(regions), 
-                          function(i) any(regions[[i]] == opt$region))
-if (length(which(matchingRegions == TRUE)) > 0) {
-  states <- regions[[which(matchingRegions == TRUE)]]
+                          function(i) any(regions[[i]] == tolower(opt$region)))
+if (length(which(matchingRegions)) > 0) {
+  states <- regions[[which(matchingRegions)]]
   regionBbox <- 
     maps::map("state", regions = states, fill = TRUE, plot = FALSE)$range
 } else {
@@ -145,7 +154,7 @@ stateBbox <-
 stateCenterLon <- mean(stateBbox[1:2])
 stateCenterLat <- mean(stateBbox[3:4])
 
-# Timezone is determined by the exact center of the region
+# Timezone is determined by the center of the named state in the region
 localTimezone <- 
   MazamaSpatialUtils::getTimezone(lon = stateCenterLon, lat = stateCenterLat)
 
@@ -159,7 +168,7 @@ duration <- lubridate::hours(as.numeric(opt$duration) * 24 - 1)
 startdateUTC <- lubridate::with_tz(startdate, tzone = "UTC")
 enddateUTC <- startdateUTC + duration
 
-# Get detailed time info for all hours in between
+# Get detailed time info for all hours between the start and end
 localHours <- seq.POSIXt(from = startdateUTC, to = enddateUTC, by = "hour")
 localHoursInfo <- PWFSLSmoke::timeInfo(localHours, 
                                        longitude = stateCenterLon, 
@@ -220,7 +229,7 @@ for (hour in as.list(frameHours)) {
 
   # Average together the remaining AOD values from all of the scans 
   stackedAODScans <- do.call(rbind, aodScans)
-  avgAODReadings <- colMeans(stackedAODScans, na.rm = FALSE)
+  avgAODReadings <- colMeans(stackedAODScans, na.rm = opt$narm)
   
   # ----- Project and subset spatial points ------------------------------------
 
@@ -245,12 +254,14 @@ for (hour in as.list(frameHours)) {
   i <- stringr::str_pad(frameNumber, 3, 'left', '0')
   frameFileName <- paste0(i, ".png")
   frameFilePath <- file.path(tempdir(), frameFileName)
-  breaks <- c(-2.5750, 0.0800, 0.1207, 0.1675, 0.2145, 0.2736, 0.3651, 0.5764, 2.4750) # quantile(tbl$AOD, seq(from = 0.0, to = 1.0, by = 0.2), na.rm = TRUE)
+  breaks <- c(-2.5750, 0.0800, 0.1207, 0.1675, 0.2145, 0.2736, 0.3651, 0.5764, 
+              2.4750) # quantile(tbl$AOD, seq(from = 0.0, to = 1.0, by = 0.2), na.rm = TRUE)
   png(frameFilePath, width = 1280, height = 720, units = "px")
   par(xpd = NA)
   layout(matrix(c(1, 1, 1, 1, 2,
                   1, 1, 1, 1, 2, 
-                  1, 1, 1, 1, 3), nrow = 3, ncol = 5, byrow = TRUE), respect = TRUE)
+                  1, 1, 1, 1, 3), nrow = 3, ncol = 5, byrow = TRUE), 
+         respect = TRUE)
   
   # Spatial points map plot
   # Have to convert to polygons to keep aspect ratio
@@ -259,9 +270,9 @@ for (hour in as.list(frameHours)) {
                                       proj4string = CRS("+proj=longlat +datum=WGS84"))
   polyData <- data.frame(seq_len(length(polys)), row.names = names(polys))
   spdf <- SpatialPolygonsDataFrame(polys, data = polyData)
-  
   plot(spdf, border = NA, bg = "gray90")
   
+  # Plot points if there are any 
   if (nrow(tbl) > 0) {
     sp <- sp::SpatialPointsDataFrame(
       coords = dplyr::select(tbl, c(.data$lon, .data$lat)),
@@ -270,15 +281,17 @@ for (hour in as.list(frameHours)) {
     goesaodc_plotSpatialPoints(sp, var = "AOD", cex = 0.5, breaks = breaks, 
                                add = TRUE)
   }
-  maps::map("state", regions = states, add = TRUE)
+  maps::map("state", regions = states, lwd = 2.0, add = TRUE)
   title(paste("GOES East AOD, DQF <=", opt$dqfLevel), cex.main = 3.5)
   
   # Legend color scale
   cols <- RColorBrewer::brewer.pal(length(breaks) - 1, "YlOrRd")
-  col_i <- .bincode(seq(from = breaks[length(breaks)], to = breaks[1], by = -0.05), breaks)
+  col_i <- .bincode(seq(from = breaks[length(breaks)], to = breaks[1], 
+                        by = -0.05), breaks)
   col_v <- cols[col_i]
   legendImage <- as.raster(matrix(col_v, ncol = 1))
-  plot(0, 0, col = "transparent", xlim = c(-1, 1), ylim = c(breaks[1], breaks[length(breaks)]), 
+  plot(0, 0, col = "transparent", xlim = c(-1, 1), 
+       ylim = c(breaks[1], breaks[length(breaks)]), 
        axes = FALSE, xlab = NA, ylab = NA, main = "AOD", cex.main = 3.0)
   axis(side = 2, line = -6, cex.axis = 2.0)
   rasterImage(legendImage, -0.3, breaks[1], 0.3, breaks[length(breaks)])
@@ -289,7 +302,8 @@ for (hour in as.list(frameHours)) {
       init.angle = 270, labels = NA, col = c("white", "black", "white"))
   text(0, -1.0, "Midnight", cex = 2.0)
   title(paste0(strftime(localHour, "%Y-%m-%d", tz = localTimezone), "\n", 
-               strftime(localHour, "%H:%M", tz = localTimezone)), cex.main = 2.5)
+               strftime(localHour, "%H:%M", tz = localTimezone)), 
+        cex.main = 3.0)
   
   frameNumber <- frameNumber + 1
   dev.off()
