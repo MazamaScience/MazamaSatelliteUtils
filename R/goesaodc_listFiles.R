@@ -5,6 +5,7 @@
 #' @param startdate desired date in any Y-m-d [H] format or \code{POSIXct}
 #' @param jdate desired date in as a Julian date string, i.e. as seen in the
 #'   netcdf filenames
+#' @param satID ID number of the source GOES satellite
 #' 
 #' @description Retrieve a list of GOES AOD files available in the
 #' \code{satelliteDataDir} for a specified date and hour.
@@ -20,7 +21,7 @@
 #' setSatelliteDataDir("~/Data/Satellite")
 #' 
 #' date <- lubridate::ymd_h("2019-05-16 16", tz = "UTC")
-#' files <- goesaodc_listFiles(date)
+#' files <- goesaodc_listFiles(date, satID = 16)
 #' print(files)
 #' }
 
