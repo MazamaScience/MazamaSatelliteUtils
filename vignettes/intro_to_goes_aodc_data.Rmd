@@ -1,10 +1,10 @@
 ---
-title: "Intro to GOES AODC Data"
+title: "Intro to GOES AOD Data"
 author: "Mazama Science"
 date: "7/30/2019"
 output: html_document
 vignette: >
-  %\VignetteIndexEntry{Intro to GOES AODC Data}
+  %\VignetteIndexEntry{Intro to GOES AOD Data}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -45,19 +45,18 @@ and the
 
 The "Common Data Form" filetype is used for efficient access to multidimensional
 array-based data such as atmospheric measurements. A typical scan of North 
-America holds 3,750,000 readings per variable, resulting in a file of around 3 
-to 4 MB. If scans are taken every 5 minutes, a single day would hold about
-12 files * 24 hrs * 3 MB = 860 MB worth of data. Due to this fairly large size, 
-downloading a NetCDF using the `MazamaSatelliteUtils` package saves the file to a 
-specified data directory from which the contents can be accessed through a file 
-handle.
+America yields around 3 to 4 MB of data. If scans are taken every 5 minutes, a 
+single day would hold about 12 files * 24 hrs * 3 MB = 860 MB in all. Due to 
+this fairly large size, downloading a NetCDF using the `MazamaSatelliteUtils` 
+package saves the file to a specified data directory from which the contents can
+be accessed through a file handle.
 
 ## MazamaSatelliteUtils Setup
 
 Let's start exploring AOD data with the `MazamaSatelliteUtils` package. First 
 we'll give ourselves a case study to focuson though, such as the recent Milepost
 97 Fire. This incident was reported on July 24, 2019 about 1 mile southeast of 
-Canyonville, Oregon and is still current as of August 11, 2019. This should 
+Canyonville, Oregon and is still current as of August 14, 2019. This should 
 provide plenty of data for us to examine in detail.
 
 To begin our analysis, let's load the `MazamaSatelliteUtils` package and define
@@ -84,7 +83,7 @@ gather data for August 1, 2019 at 17:00:00 UTC (10AM PDT).
 
 ```{r download_files}
 datetime <- lubridate::ymd_h("2019-08-01 17", tz = "UTC")
-downloadedFiles <- goesaodc_downloadAOD(datetime, satID = 16)
+downloadedFiles <- goesaodc_downloadAOD(datetime, satId = 16)
 ```
 
 The `goesaodc_downloadAOD()` function also returns a vector of paths to each 
@@ -94,7 +93,7 @@ returned vector. We can see which files are now availible to read by calling
 `goesaodc_listFiles()` on the datetime we specified:
 
 ```{r display_files}
-dateFiles <- goesaodc_listFiles(datetime, satID = 16)
+dateFiles <- goesaodc_listFiles(datetime, satId = 16)
 print(dateFiles)
 ```
 
@@ -142,19 +141,19 @@ knitr::kable(head(tb))
 
 We can now finally start visualizing this data on geographic maps by creating 
 and plotting spatial points from the AOD readings. Each spatial point represents
-a single reading from the ABI's scan, so that each has a longitude, latitude,
-AOD value, and DQF flag. Let's plot **all** of the points for our datetime
-on a world map:
+a single reading from the ABI's scan, creating a dense grid of measurements 
+taken about 4km from each other. Let's plot **all** of the points for our 
+datetime now on a world map:
 
-```{r spatialPlot_world}
+```{r spatialPlot_world, warning=FALSE}
 sp <- goesaodc_createSpatialPoints(nc)
 
 maps::map("world")
 goesaodc_plotSpatialPoints(sp, add = TRUE, cex = 0.1)
 ```
 
-As you can see, only the United States and Mexico have readings defined. 
-The GOES-16 satellite can't scan beyond the disk visible below its geosynchrous 
+As you can see, only the United States and Mexico have readings defined. The 
+GOES-16 satellite can't scan beyond the disk visible below its geosynchrous 
 orbit, so let's zoom in to just the U.S.:
 
 ```{r spatialPlot_usa}
@@ -165,16 +164,16 @@ goesaodc_plotSpatialPoints(sp, add = TRUE, cex = 0.3)
 Now that we have a clearer image of the points we can start to understand the
 AOD values themselves. The `goesaodc_plotSpatialPoints()` function colors 
 points according to their AOD value by default, but you can switch to DQF 
-coloring by setting the `var` parameter to "DQF".
-Additionally, when creating your spatial points you can also define the 
-`dqfLevel` which subsets all points that are *at and below* the given level. 
-Let's look at the points at level 0 (highest quality):
+coloring by setting the `var` parameter to "DQF". Additionally, when creating 
+your spatial points you can also define the `dqfLevel` which subsets all points 
+that are *at and below* the given level. Let's look at the points at level 0 
+(highest quality):
 
 ```{r spatialPlot_high_quality}
 sp_dqf0 <- goesaodc_createSpatialPoints(nc, dqfLevel = 0)
 
 maps::map("state")
-goesaodc_plotSpatialPoints(sp_dqf0, add = TRUE, cex = 0.3)
+goesaodc_plotSpatialPoints(sp_dqf0, cex = 0.3, add = TRUE)
 ```
 
 As you can see, quite a bit of data has been removed since a good portion was 
@@ -197,14 +196,18 @@ lat_mp97 <- 42.913
 
 plot(oregon)
 goesaodc_plotSpatialPoints(sp_oregon, cex = 0.3, add = TRUE)
-points(x = lon_mp97, y = lat_mp97, pch = 0, cex = 4.0, lwd = 1.5, col = "darkgreen")
+points(x = lon_mp97, y = lat_mp97, pch = 0, cex = 4.0, lwd = 1.5, 
+       col = "darkgreen")
 ```
+
+Now we can start to make out the the scan pattern made by the ABI, which forms a 
+slightly tilted grid of points.
 
 ## Rasterizing Spatial Points
 
 A raster image divides geographic space into uniform pixels or "cells". A grid
 is placed over a map and the value of each cell is calculated by aggregating the
-values of all the spatial points that fall in that region. For example, if 20 
+those of all the spatial points that fall in that region. For example, if 20 
 points are contained within one grid space, then all their AOD values could be 
 averaged together to determine the resulting AOD of the raster cell. The uniform
 grid size is defined by the resolution of the raster (in lon/lat degrees) such 
@@ -212,36 +215,64 @@ that higher resolutions reduce cell area and increase the detail and accuracy of
 the final image.
 
 Rasters provide the benefit of filling in undefined spaces around spatial 
-points. They also make it easier to track the readings of specific locations
-over time if the ABI doesn't scan the exact coordinates you are hoping to 
-analyze.
-
+points while also making it easier to track locations that the ABI might not 
+have made spatial points for.
 
 ```{r create_raster_highdef}
-rstr <- goesaodc_createRaster(nc, bbox = bbox_oregon, res = 0.08)
+rstr <- goesaodc_createRaster(nc, bbox = bbox_oregon, res = 0.1)
 pal_aod <- colorRampPalette(c("lightgoldenrod1", "red3"))
+pal_count <- colorRampPalette(c("powderblue", "dodgerblue4"))
 
 raster::plot(rstr$AOD, col = pal_aod(50))
 plot(oregon, add = TRUE)
-points(x = lon_mp97, y = lat_mp97, pch = 0, cex = 4.0, lwd = 1.5, col = "darkgreen")
+points(x = lon_mp97, y = lat_mp97, pch = 0, cex = 4.0, lwd = 1.5, 
+       col = "darkgreen")
 ```
 
-The resolution of the raster is defined by latitudial degrees, so that setting
-`res = 1` means every cell will be 1 latitudial degree tall, but may have 
-varying widths due to how longitudes converge near the poles. The estimated area 
-for each cell in km^2 cell can be approximated with `raster::area()`.
+The resolution of the raster is defined by coordinate degrees, so that by 
+setting `res` to 0.1 every cell will be 0.1 longitudial degrees "wide" and 0.1 
+latitudial degrees "tall". However, cell dimensions in meters are not consistent
+due to how longitude and latitude lines are curved around the Earth. We can 
+approximate the average cell size though by finding the average area of each and
+then taking the square root of the slightly rectangular regions. The 
+`raster::area()` function estimates the area of each cell in km²:
 
 ```{r cell_area}
-approxCellArea <- mean(raster::values(raster::area(rstr)))
-cellCount <- dim(rstr)[1] * dim(rstr)[2]
-approxCellArea * cellCount
+avgCellArea <- mean(raster::values(raster::area(rstr)))
 ```
 
-This slightly overestimates Oregon's true area of 255,030 km² due to the 
-imperfect state bounding box and cell area approximation.
+Just for a sanity check, we can make a rough guess of the size of Oregon
+state using the average cell area of `r avgCellArea` km² and the number of 
+cells in the bounding box (`r dim(rstr)[1] * dim(rstr)[2]`). This yields 
+`r avgCellArea * dim(rstr)[1] * dim(rstr)[2]` km², which isn't to far off from 
+the offical state area of 255,030 km².
 
-Resolutions closer to zero increase the image accuracy while larger values 
-decrease it and produce more 'blocky' pictures (but are faster to generate).
+The square root of the mean cell area is `r sqrt(avgCellArea)`. So for a raster
+of Oregon with a resolution of 0.1, each cell is about `r sqrt(avgCellArea)` km
+on each side.
+
+By zooming in even closer to MilePost 97 we can actually see how these cells are 
+defined by the spatial points they contain. Here, cells are colored by the 
+number of points that fall within them:
+
+```{r}
+bbox_mp97 <- c(-124, -123, 42.5, 43.5)
+pointCoords_mb97 <- dplyr::filter(tb, 
+                                  lon > bbox_mp97[1], lon < bbox_mp97[2], 
+                                  lat > bbox_mp97[3], lat < bbox_mp97[4])
+
+rstrCount <- goesaodc_createRaster(nc, bbox = bbox_oregon, res = 0.1, 
+                                   fun = "count")
+raster::plot(rstrCount$AOD, main = "Cell Point Count", col = pal_count(50),
+             xlim = bbox_mp97[1:2], ylim = bbox_mp97[3:4])
+plot(oregon, add = TRUE)
+points(pointCoords_mb97$lon, pointCoords_mb97$lat, pch = 16, cex = 0.3)
+points(lon_mp97, lat_mp97, pch = 3, cex = 1, col = "red")
+```
+
+Given that the average distance between spatial points is about 4km, we can 
+confirm our cell size estimation since these appear to be 2 points wide (8km) 
+and about 3 tall (12km).
 
 ## AOD Over Time
 
@@ -255,7 +286,7 @@ by, again, defining an hour or date of interest. Let's stay with our current
 hour:
 
 ```{r create_rasterStack}
-rstrStack <- goesaodc_createHourlyRasterStack(startdate = datetime, satID = 16,
+rstrStack <- goesaodc_createHourlyRasterStack(startdate = datetime, satId = 16,
                                               bbox = bbox_oregon, res = 0.08)
 ```
 
@@ -278,7 +309,7 @@ points(x = lon_mp97, y = lat_mp97, pch = 0, cex = 4.0, lwd = 1.5,
        col = "darkgreen")
 ```
 
-### Time Series Plots
+### Hourly Time Series Plots
 
 Finally, the `raster_createLocationTimeseries()` function allows us to track
 AOD values of a specific location in each layer of a stack, resulting in a 
@@ -288,7 +319,7 @@ cell that the given coordinates fall into, chosen by setting the `method`
 parameter to "simple". Additionally, one can set `method` to "bilinear", and
 track the AOD interpolated between the 4 closest cells.
 
-```{r timeseries_method}
+```{r timeseries_method, fig.width=11, fig.height=6}
 datetimeLocal <- datetime
 attributes(datetimeLocal)$tzone = "America/Los_Angeles"
 
@@ -298,6 +329,14 @@ ts_simple <- raster_createLocationTimeseries(rasterStack = rstrStack,
                                              bbox = bbox_oregon,
                                              method = "simple")
 
+par(mfrow=c(1, 2))
+raster::plot(rstrStackAvg, col = pal_aod(50), 
+             xlim = c(-125, -122), ylim = c(42, 44),
+             main = "Milepost 97 AOD", 
+             xlab = "Longitude", ylab = "Latitude")
+plot(oregon, add = TRUE)
+points(x = lon_mp97, y = lat_mp97, pch = 3, lwd = 2)
+
 plot(x = ts_simple$datetime, y = ts_simple$aod, pch = 16, cex = 1,
      main = paste(datetimeLocal, "PDT"), xlab = "Time (local)", ylab = "AOD")
 ```
@@ -305,19 +344,30 @@ plot(x = ts_simple$datetime, y = ts_simple$aod, pch = 16, cex = 1,
 Aside from the two `method` options, we can instead define a `buffer`, which is
 a circular area around our location that will aggregate the values of cells that
 fall within it. Provide the `buffer`radius in meters and a `fun` aggregation
-method such as mean, min, or max. `fun` is st to mean by default.
+method such as mean, min, or max. `fun` is set to mean by default.
 
-```{r timeseries_buffer}
+```{r timeseries_buffer, fig.width=11, fig.height=6}
 ts_buffer <- raster_createLocationTimeseries(rasterStack = rstrStack,
                                              longitude = lon_mp97,
                                              latitude = lat_mp97, 
                                              bbox = bbox_oregon,
-                                             buffer = 10000,
+                                             buffer = 20000,
                                              fun = mean)
+
+par(mfrow=c(1, 2))
+raster::plot(rstrStackAvg, col = pal_aod(50), 
+             xlim = c(-125, -122), ylim = c(42, 44),
+             main = "Milepost 97 AOD", 
+             xlab = "Longitude", ylab = "Latitude")
+plot(oregon, add = TRUE)
+points(x = lon_mp97, y = lat_mp97, pch = 1, lwd = 0.5, cex = 5)
+points(x = lon_mp97, y = lat_mp97, pch = 3, lwd = 2)
 
 plot(x = ts_buffer$datetime, y = ts_buffer$aod, pch = 16, cex = 1,
      main = paste(datetimeLocal, "PDT"), xlab = "Time (local)", ylab = "AOD")
 ```
+
+### Daily Time Series Plots
 
 A time series plot with only 12 points isn't especially useful, though it can
 help show the trend of the AOD values over a portion of a day. We are currently 
