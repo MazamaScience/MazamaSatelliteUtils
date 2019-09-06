@@ -38,14 +38,22 @@ goesaodc_createTibble <- function(
   varList[["AOD"]] <- as.numeric(ncdf4::ncvar_get(nc, "AOD"))
   varList[["DQF"]] <- as.numeric(ncdf4::ncvar_get(nc, "DQF"))
   
-  # Read in package internal grid information
-  varList[["lon"]] <- as.numeric( MazamaSatelliteUtils::goesEastGrid$longitude )
-  varList[["lat"]] <- as.numeric( MazamaSatelliteUtils::goesEastGrid$latitude )
+  # Get satellite GOES ID number
+  i <- regexpr("_G[0-9]+_", nc$filename)
+  satId <- substr(nc$filename, i + 2, i + attributes(i)$match.length - 2)[1]
   
-  # TODO:  tidyr::drop_na() may be too restrictive if we have multiple data columns.
+  # Read in package internal grid information
+  if (satId == 16) {
+    varList[["lon"]] <- as.numeric( MazamaSatelliteUtils::goesEastGrid$longitude )
+    varList[["lat"]] <- as.numeric( MazamaSatelliteUtils::goesEastGrid$latitude )
+  } else if (satId == 17) {
+    varList[["lon"]] <- as.numeric( MazamaSatelliteUtils::goesWestGrid$longitude )
+    varList[["lat"]] <- as.numeric( MazamaSatelliteUtils::goesWestGrid$latitude )
+  }
   
   # Create a tibble with all columns but removing rows if any of the columns
   # are missing.
+  # TODO:  tidyr::drop_na() may be too restrictive if we have multiple data columns.
   tbl <-
     tibble::as_tibble(varList) %>%
     tidyr::drop_na()

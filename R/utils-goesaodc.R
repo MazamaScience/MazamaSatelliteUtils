@@ -58,12 +58,12 @@ goesaodc_getCoordGrid <- function(nc) {
                   y_rad = y * y_scale + y_offset)
   
   # Get the parameters needed for geolocation
-  r_eq <- ncatt_get(nc, "goesaodc_imager_projection", "semi_major_axis")$value
-  r_pol <- ncatt_get(nc, "goesaodc_imager_projection", "semi_minor_axis")$value
-  perspective_point <- ncatt_get(nc, "goesaodc_imager_projection",
+  r_eq <- ncatt_get(nc, "goes_imager_projection", "semi_major_axis")$value
+  r_pol <- ncatt_get(nc, "goes_imager_projection", "semi_minor_axis")$value
+  perspective_point <- ncatt_get(nc, "goes_imager_projection",
                                  "perspective_point_height")$value
   H <- perspective_point + r_eq
-  lambda0 <- ncatt_get(nc, "goesaodc_imager_projection",
+  lambda0 <- ncatt_get(nc, "goes_imager_projection",
                        "longitude_of_projection_origin")$value * (pi / 180)
   
   # ----- Convert scan angles to latitude and longitude ------------------------
@@ -143,7 +143,8 @@ goesaodc_isGoesProjection <- function(
   nc
 ) {
   projection <- goesaodc_getProjection(nc)
-  return(all(unlist(projection) == unlist(MazamaSatelliteUtils::goesEastGrid$projection)))
+  return(all(unlist(projection) == unlist(MazamaSatelliteUtils::goesEastGrid$projection)) ||
+         all(unlist(projection) == unlist(MazamaSatelliteUtils::goesWestGrid$projection)))
 }
 
 
