@@ -5,7 +5,7 @@
 #' @param startdate desired date in any Y-m-d [H] format or \code{POSIXct}
 #' @param jdate desired date in as a Julian date string, i.e. as seen in the
 #'   netcdf filenames
-#' @param satID ID number of the source GOES satellite
+#' @param satId ID number of the source GOES satellite
 #' @param baseUrl base URL for data queries
 #' @param quiet if TRUE, suppress status messages and progress bar
 #' 
@@ -24,18 +24,18 @@
 #' setSatelliteDataDir("~/Data/Satellite")
 #' 
 #' date <- lubridate::ymd_h("2019-05-16 16", tz = "UTC")
-#' files <- goesaodc_downloadAOD(date, satID = 16)
+#' files <- goesaodc_downloadAOD(date, satId = 16)
 #' print(files)
 #' 
 #' date <- 2019051616
-#' files <- goesaodc_downloadAOD(date, satID = 16)
+#' files <- goesaodc_downloadAOD(date, satId = 16)
 #' print(files)
 #' }
 
 goesaodc_downloadAOD <- function(
   startdate = NULL,
   jdate = NULL,
-  satID = NULL,
+  satId = NULL,
   baseUrl = "https://tools-1.airfire.org/Satellite/",
   quiet = FALSE
 ) {
@@ -98,7 +98,7 @@ goesaodc_downloadAOD <- function(
     
   }
   
-  if (is.null(satID)) {
+  if (is.null(satId)) {
     stop("Must specify GOES satellite ID (16 or 17)")
   }
   
@@ -109,7 +109,7 @@ goesaodc_downloadAOD <- function(
     startString <- strftime(starttime, "%Y%j%H", tz = "UTC")
   }
   
-  baseUrl <- paste0(baseUrl, "GOES-", satID, "/AODC")
+  baseUrl <- paste0(baseUrl, "GOES-", satId, "/AODC")
   
   # ----- Download Data --------------------------------------------------------
   
@@ -169,9 +169,9 @@ if (FALSE) {
   
   # Hour where startdate is numeric
   startdate <- 2019051616
-  downloadedFiles <- goesaodc_downloadAOD(startdate, satID = 16)
+  downloadedFiles <- goesaodc_downloadAOD(startdate, satId = 16)
   
   # Full day where startdate is POSIXct
   startdate <- lubridate::parse_date_time("20190516", "Ymd", tz = "UTC")
-  downloadedFiles <- goesaodc_downloadAOD(startdate, satID = 16)
+  downloadedFiles <- goesaodc_downloadAOD(startdate, satId = 16)
 }

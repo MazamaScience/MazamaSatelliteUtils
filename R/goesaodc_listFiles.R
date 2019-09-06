@@ -5,7 +5,7 @@
 #' @param startdate desired date in any Y-m-d [H] format or \code{POSIXct}
 #' @param jdate desired date in as a Julian date string, i.e. as seen in the
 #'   netcdf filenames
-#' @param satID ID number of the source GOES satellite
+#' @param satId ID number of the source GOES satellite
 #' 
 #' @description Retrieve a list of GOES AOD files available in the
 #' \code{satelliteDataDir} for a specified date and hour.
@@ -21,14 +21,14 @@
 #' setSatelliteDataDir("~/Data/Satellite")
 #' 
 #' date <- lubridate::ymd_h("2019-05-16 16", tz = "UTC")
-#' files <- goesaodc_listFiles(date, satID = 16)
+#' files <- goesaodc_listFiles(date, satId = 16)
 #' print(files)
 #' }
 
 goesaodc_listFiles <- function(
   startdate = NULL,
   jdate = NULL,
-  satID = NULL
+  satId = NULL
 ) {
   
   # ----- Parse incoming date --------------------------------------------------
@@ -89,7 +89,7 @@ goesaodc_listFiles <- function(
     
   }
   
-  if (is.null(satID)) {
+  if (is.null(satId)) {
     stop("Must specify GOES satellite ID (16 or 17)")
   }
   
@@ -103,7 +103,7 @@ goesaodc_listFiles <- function(
   # ----- Get Matching Files ---------------------------------------------------
   
   # regex <- "OR_ABI-L2-AODC-M[0-9]_G16_s[0-9]+_e[0-9]+_c[0-9]+\\.nc"
-  regex <- paste0("OR_ABI-L2-AODC-M[0-9]_G", satID, "_s[0-9]+_e[0-9]+_c[0-9]+\\.nc")
+  regex <- paste0("OR_ABI-L2-AODC-M[0-9]_G", satId, "_s[0-9]+_e[0-9]+_c[0-9]+\\.nc")
   dataFiles <- list.files(getSatelliteDataDir(), pattern = regex)
   startStrings <- purrr::map_chr(dataFiles, goesaodc_getStartString)
   

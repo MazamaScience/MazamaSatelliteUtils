@@ -4,7 +4,7 @@
 #' 
 #' @param startdate startdate, specified to the hour, in any Y-m-d H format or
 #' \code{POSIXct}
-#' @param satID ID number of the source GOES satellite
+#' @param satId ID number of the source GOES satellite
 #' @param var variable ("AOD, "DQF" or "ID")
 #' @param res resolution of raster in degrees
 #' @param fun function to use when rasterizing. Not currently supported, defaults
@@ -44,14 +44,14 @@
 #' \donttest{
 #' setSatelliteDataDir("~/Data/Satellite")
 #' date <- lubridate::ymd_h("2019-05-16 16", tz = "UTC")
-#' rstrStack <- goesaodc_createHourlyRasterStack(startdate = date, satID = 16, 
+#' rstrStack <- goesaodc_createHourlyRasterStack(startdate = date, satId = 16, 
 #'                                               res = 0.2)
 #' rasterVis::levelplot(rstrStack)
 #' }
 
 goesaodc_createHourlyRasterStack <- function(
   startdate = NULL,
-  satID = NULL,
+  satId = NULL,
   var = "AOD",
   res = 0.1,
   fun = mean,
@@ -77,20 +77,20 @@ goesaodc_createHourlyRasterStack <- function(
     stop("Parameter 'startdate' is required")
   }
   
-  if (is.null(satID)) {
+  if (is.null(satId)) {
     stop("Must specify GOES satellite ID (16 or 17)")
   }
   
   # ----- Download GOES AOD Files ----------------------------------------------
   
   # make sure that files are downloaded
-  goesaodc_downloadAOD(dt, satID = satID)
+  goesaodc_downloadAOD(dt, satId = satId)
   
   # ----- Create List of RasterLayers ------------------------------------------
   
   # create list of AOD raster layers for specified hour and region
   rasterList <- 
-    goesaodc_listFiles(dt, satID = satID) %>%           # create list of filenames for specified hour
+    goesaodc_listFiles(dt, satId = satId) %>%           # create list of filenames for specified hour
     purrr::map(goesaodc_openFile) %>%                   # open each file in the list
     purrr::map(goesaodc_createRaster, res = res,        # rasterize each open file specified params
                # fun = fun,                             # NOTE: passing fun here does not work. Results in
@@ -119,7 +119,7 @@ goesaodc_createHourlyRasterStack <- function(
   
   # assign times to the Z axis
   times <-
-    goesaodc_listFiles(dt, satID = satID) %>%
+    goesaodc_listFiles(dt, satId = satId) %>%
     purrr::map_chr(goesaodc_getStartString) %>%
     purrr::map(lubridate::parse_date_time, orders = ("YjHMS"))
   
