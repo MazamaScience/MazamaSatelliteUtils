@@ -1,7 +1,8 @@
 #!/usr/local/bin/Rscript
 
-# This Rscript generates a raster video for a state over a given day. If
-# The resulting video is labeled by the state, state, variable, and DQF level.
+# This Rscript generates a raster video of either AOD or DQF over a single CONUS
+# state. The timelapse covers a whole day from 00:00 to 23:59 at ~5 minute 
+# intervals.
 #
 # Test this script from the command line with:
 #
@@ -33,14 +34,14 @@ if ( interactive() ) {
   
   option_list <- list(
     make_option(
-      c("-s","--stateCode"), 
-      default="", 
-      help="The state's two-character state code [default=\"%default\"]"
-    ),
-    make_option(
       c("-d","--date"), 
       default=0, 
       help="The date [default=\"%default\"]"
+    ),
+    make_option(
+      c("-s","--stateCode"), 
+      default="", 
+      help="The state's two-character state code [default=\"%default\"]"
     ),
     make_option(
       c("-x","--variable"), 

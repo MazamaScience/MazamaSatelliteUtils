@@ -1,12 +1,17 @@
 #!/usr/local/bin/Rscript
 
-# This Rscript generates an hourly averaged AOD timelapse video for a region in
-# the continental US.
+# This Rscript generates an hourly averaged AOD spatial points video for a 
+# region in the continental US.
+
+# This Rscript generates a spatial points video of AOD over a multi-state CONUS 
+# region. The readings are hourly averaged from the start to end date but 
+# exclude all nighttime hours except for each midnight hour (00:00) between 
+# days.
 #
 # Test this script from the command line with:
 #
 # ./createHourlyAvgVideo_exec.R -s 20190801 -d 2 -r maine -q 1 -n 12 -o ~/Desktop/ -v TRUE
-# ./createHourlyAvgVideo_exec.R --startdate="20190802" --duration="1" --region="Indiana" --dqfLevel="2" --naThreshold="2" --outputDir"~/Desktop/" --verbose="TRUE"
+# ./createHourlyAvgVideo_exec.R --startdate="20190802" --duration="1" --region="New York" --dqfLevel="2" --naThreshold="2" --outputDir="~/Desktop/" --verbose="TRUE"
 
 VERSION = "0.1.1"
 
