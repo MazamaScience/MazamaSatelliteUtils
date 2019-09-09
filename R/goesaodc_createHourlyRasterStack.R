@@ -44,7 +44,8 @@
 #' \donttest{
 #' setSatelliteDataDir("~/Data/Satellite")
 #' date <- lubridate::ymd_h("2019-05-16 16", tz = "UTC")
-#' rstrStack <- goesaodc_createHourlyRasterStack(startdate = date, satId = 16, 
+#' rstrStack <- goesaodc_createHourlyRasterStack(satId = "G16", 
+#'                                               startdate = date, 
 #'                                               res = 0.2)
 #' rasterVis::levelplot(rstrStack)
 #' }
@@ -65,6 +66,11 @@ goesaodc_createHourlyRasterStack <- function(
   
   # ----- Validate Input -------------------------------------------------------
   
+  satId <- toupper(satId)
+  if (!(satId %in% c("G16", "G17"))) {
+    stop("Must specify GOES satellite ID (G16 or G17)")
+  }
+  
   if (!is.null(startdate)) {
     suppressWarnings({
       #dt <- lubridate::parse_date_time(startdate, "YmdH", tz = "UTC")
@@ -77,20 +83,16 @@ goesaodc_createHourlyRasterStack <- function(
     stop("Parameter 'startdate' is required")
   }
   
-  if (is.null(satId)) {
-    stop("Must specify GOES satellite ID (16 or 17)")
-  }
-  
   # ----- Download GOES AOD Files ----------------------------------------------
   
   # make sure that files are downloaded
-  goesaodc_downloadAOD(dt, satId = satId)
+  goesaodc_downloadAOD(satId, dt)
   
   # ----- Create List of RasterLayers ------------------------------------------
   
   # create list of AOD raster layers for specified hour and region
   rasterList <- 
-    goesaodc_listFiles(dt, satId = satId) %>%           # create list of filenames for specified hour
+    goesaodc_listFiles(satId, dt) %>%                   # create list of filenames for specified hour
     purrr::map(goesaodc_openFile) %>%                   # open each file in the list
     purrr::map(goesaodc_createRaster, res = res,        # rasterize each open file specified params
                # fun = fun,                             # NOTE: passing fun here does not work. Results in
@@ -119,7 +121,7 @@ goesaodc_createHourlyRasterStack <- function(
   
   # assign times to the Z axis
   times <-
-    goesaodc_listFiles(dt, satId = satId) %>%
+    goesaodc_listFiles(satId, dt) %>%
     purrr::map_chr(goesaodc_getStartString) %>%
     purrr::map(lubridate::parse_date_time, orders = ("YjHMS"))
   

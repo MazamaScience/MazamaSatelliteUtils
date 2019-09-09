@@ -2,18 +2,18 @@
 % Please edit documentation in R/goesaodc_downloadAOD.R
 \name{goesaodc_downloadAOD}
 \alias{goesaodc_downloadAOD}
-\title{Download GOES 16 AOD data}
+\title{Download GOES-16 or GOES-17 AOD data}
 \usage{
-goesaodc_downloadAOD(startdate = NULL, jdate = NULL, satID = NULL,
+goesaodc_downloadAOD(satId = NULL, startdate = NULL, jdate = NULL,
   baseUrl = "https://tools-1.airfire.org/Satellite/", quiet = FALSE)
 }
 \arguments{
+\item{satId}{ID number of the source GOES satellite}
+
 \item{startdate}{desired date in any Y-m-d [H] format or \code{POSIXct}}
 
 \item{jdate}{desired date in as a Julian date string, i.e. as seen in the
 netcdf filenames}
-
-\item{satID}{ID number of the source GOES satellite}
 
 \item{baseUrl}{base URL for data queries}
 
@@ -34,11 +34,11 @@ that day will be downloaded.
 setSatelliteDataDir("~/Data/Satellite")
 
 date <- lubridate::ymd_h("2019-05-16 16", tz = "UTC")
-files <- goesaodc_downloadAOD(date, satID = 16)
+files <- goesaodc_downloadAOD("G16", date)
 print(files)
 
 date <- 2019051616
-files <- goesaodc_downloadAOD(date, satID = 16)
+files <- goesaodc_downloadAOD("G16", date)
 print(files)
 }
 }

@@ -1,11 +1,11 @@
 #' @export
 #' 
 #' @title List downloaded GOES AOD files for a specified date and hour
-#' 
+#'
+#' @param satId ID number of the source GOES satellite
 #' @param startdate desired date in any Y-m-d [H] format or \code{POSIXct}
 #' @param jdate desired date in as a Julian date string, i.e. as seen in the
 #'   netcdf filenames
-#' @param satId ID number of the source GOES satellite
 #' 
 #' @description Retrieve a list of GOES AOD files available in the
 #' \code{satelliteDataDir} for a specified date and hour.
@@ -21,17 +21,22 @@
 #' setSatelliteDataDir("~/Data/Satellite")
 #' 
 #' date <- lubridate::ymd_h("2019-05-16 16", tz = "UTC")
-#' files <- goesaodc_listFiles(date, satId = 16)
+#' files <- goesaodc_listFiles("G16", date)
 #' print(files)
 #' }
 
 goesaodc_listFiles <- function(
+  satId = NULL,
   startdate = NULL,
-  jdate = NULL,
-  satId = NULL
+  jdate = NULL
 ) {
   
-  # ----- Parse incoming date --------------------------------------------------
+  # ----- Validate Parameters --------------------------------------------------
+  
+  satId <- toupper(satId)
+  if (!(satId %in% c("G16", "G17"))) {
+    stop("Must specify GOES satellite ID (G16 or G17)")
+  }
   
   if ( !is.null(startdate) ) {
     
@@ -89,10 +94,6 @@ goesaodc_listFiles <- function(
     
   }
   
-  if (is.null(satId)) {
-    stop("Must specify GOES satellite ID (16 or 17)")
-  }
-  
   # Julian string for comparison with file names
   if ( fullDay ) {
     startString <- strftime(starttime, "%Y%j", tz = "UTC")
@@ -102,8 +103,7 @@ goesaodc_listFiles <- function(
 
   # ----- Get Matching Files ---------------------------------------------------
   
-  # regex <- "OR_ABI-L2-AODC-M[0-9]_G16_s[0-9]+_e[0-9]+_c[0-9]+\\.nc"
-  regex <- paste0("OR_ABI-L2-AODC-M[0-9]_G", satId, "_s[0-9]+_e[0-9]+_c[0-9]+\\.nc")
+  regex <- paste0("OR_ABI-L2-AODC-M[0-9]_", satId, "_s[0-9]+_e[0-9]+_c[0-9]+\\.nc")
   dataFiles <- list.files(getSatelliteDataDir(), pattern = regex)
   startStrings <- purrr::map_chr(dataFiles, goesaodc_getStartString)
   

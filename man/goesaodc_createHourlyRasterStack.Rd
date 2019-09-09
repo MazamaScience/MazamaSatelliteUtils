@@ -4,15 +4,15 @@
 \alias{goesaodc_createHourlyRasterStack}
 \title{Create a RasterStack for a specified hour}
 \usage{
-goesaodc_createHourlyRasterStack(startdate = NULL, satID = NULL,
+goesaodc_createHourlyRasterStack(satId = NULL, startdate = NULL,
   var = "AOD", res = 0.1, fun = mean, bbox = NULL, lonLo = NULL,
   lonHi = NULL, latLo = NULL, latHi = NULL, dqfLevel = NULL)
 }
 \arguments{
+\item{satId}{ID number of the source GOES satellite}
+
 \item{startdate}{startdate, specified to the hour, in any Y-m-d H format or
 \code{POSIXct}}
-
-\item{satID}{ID number of the source GOES satellite}
 
 \item{var}{variable ("AOD, "DQF" or "ID")}
 
@@ -33,8 +33,6 @@ latLo, latHi if provided}
 \item{latHi}{upper latitude extent}
 
 \item{dqfLevel}{data quality flag level, numeric (0, 1, 2, or 3)}
-
-\item{timezone}{the timezone to determine sunrise and sunset}
 }
 \value{
 RasterStack
@@ -65,7 +63,8 @@ Data quality level `dqfLevel` can take a value of:
 \donttest{
 setSatelliteDataDir("~/Data/Satellite")
 date <- lubridate::ymd_h("2019-05-16 16", tz = "UTC")
-rstrStack <- goesaodc_createHourlyRasterStack(startdate = date, satID = 16, 
+rstrStack <- goesaodc_createHourlyRasterStack(satId = "G16", 
+                                              startdate = date, 
                                               res = 0.2)
 rasterVis::levelplot(rstrStack)
 }

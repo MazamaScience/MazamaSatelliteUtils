@@ -67,7 +67,7 @@ if ( interactive() ) {
     ),
     make_option(
       c("-v","--verbose"), 
-      default=FALSE, 
+      default=TRUE, 
       help="Print out generated frame files [default=\"%default\"]"
     ),
     make_option(
@@ -173,8 +173,11 @@ result <- try({
     sapply(1:length(regions), 
            function(i) any(regions[[i]] == opt$regionState))
   
-  states <- ifelse(length(which(matchingRegions)) > 0, 
-                   regions[[which(matchingRegions)]], ".")
+  if (length(which(matchingRegions)) > 0) {
+    states <- regions[[which(matchingRegions)]]
+  } else {
+    states <- "."
+  }
   
   regionBbox <- 
     maps::map("state", regions = states, fill = TRUE, plot = FALSE)$range
@@ -230,7 +233,7 @@ result <- try({
                                 tz = localTimezone)
     
     utcHourString <- strftime(hour, format = "%Y-%m-%d %H:%M:%S", tz = "UTC")
-    ncFiles <- goesaodc_listFiles(utcHourString, satId = 16)   # TODO: Determine proper satellite
+    ncFiles <- goesaodc_listFiles("G16", utcHourString)   # TODO: Determine proper satellite
     
     logger.info("Generating frame for %s %s", localHourString, localTimezone)
     if (opt$verbose) {
@@ -240,8 +243,8 @@ result <- try({
     # Fetch hour files if they are not already downloaded
     if (length(ncFiles) < 1) {
       logger.info("Downloading NetCDF files for %s", utcHourString)
-      goesaodc_downloadAOD(utcHourString, satId = 16)          # TODO: Determine proper satellite
-      ncFiles <- goesaodc_listFiles(utcHourString, satId = 16) # TODO: Determine proper satellite
+      goesaodc_downloadAOD("G16", utcHourString)          # TODO: Determine proper satellite
+      ncFiles <- goesaodc_listFiles("G16", utcHourString) # TODO: Determine proper satellite
     }
     
     ncHandles <- purrr::map(ncFiles, goesaodc_openFile)
