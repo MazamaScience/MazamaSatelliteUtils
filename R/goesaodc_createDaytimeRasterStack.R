@@ -56,8 +56,10 @@
 #' 
 #' dateLocal <- lubridate::ymd("2019-08-01", tz = "America/Los_Angeles")
 #' 
-#' dayStack <- goesaodc_createDaytimeRasterStack(dateLocal, "America/Los_Angeles",
-#'                                             bbox = bbox_oregon)
+#' dayStack <- goesaodc_createDaytimeRasterStack(dateLocal, 
+#'                                               longitude = -123.32,
+#'                                               latitude = 42.88,
+#'                                               bbox = bbox_oregon)
 #' tb <- raster_createLocationTimeseries(dayStack, 
 #'                                       longitude = lon, latitude = lat, 
 #'                                       bbox = bbox_oregon)
@@ -69,7 +71,8 @@
 
 goesaodc_createDaytimeRasterStack <- function(
   startdate = NULL,
-  timezone = "UTC",
+  longitude = NULL,
+  latitude = NULL,
   var = "AOD",
   res = 0.1,
   fun = mean,
@@ -82,20 +85,20 @@ goesaodc_createDaytimeRasterStack <- function(
 ) {
   
   # Convert the local date to a UTC date
-  dateUTC <- startdate
-  attributes(dateUTC)$tzone <- "UTC"
+  dateUTC <- lubridate::with_tz(startdate, tzone = "UTC")
+  
+  localTimezone <- MazamaSpatialUtils::getTimezone(longitude, latitude,
+                                                   countryCodes = c("US"))
   
   # Then gather local timeinfo from that UTC date
   dateInfo <- PWFSLSmoke::timeInfo(dateUTC, 
-                                   longitude = lon, latitude = lat, 
-                                   timezone = timezone) 
+                                   longitude = longitude, latitude = latitude, 
+                                   timezone = localTimezone) 
   
-  # Finally, now that we have the local sunrise and sunset times for the date we 
-  # convert them back to UTC times
-  sunriseUTC <- dateInfo$sunrise
-  sunsetUTC <- dateInfo$sunset
-  attributes(sunriseUTC)$tzone <- "UTC"
-  attributes(sunsetUTC)$tzone <- "UTC"
+  # Now that we have the local sunrise and sunset times for the date we convert 
+  # them back to UTC times
+  sunriseUTC <- lubridate::with_tz(dateInfo$sunrise, tzone = "UTC")
+  sunsetUTC <- lubridate::with_tz(dateInfo$sunset, tzone = "UTC")
   
   # Round and contract the boundary hours
   sunriseHourUTC <- lubridate::ceiling_date(sunriseUTC, unit = "hour")
@@ -105,11 +108,15 @@ goesaodc_createDaytimeRasterStack <- function(
   hours <- seq.POSIXt(from = sunriseHourUTC, to = sunsetHourUTC, by = "hour")
   hours <- strftime(hours, format = "%Y-%m-%d %H:%M:%S", tz = "UTC")
   
+  # TODO: Determine proper satellite
+  satId <- "G16"
+  
   # Create a rasterStack for each hour and add them all to one "day" rasterStack
   dayStack <- raster::stack()
   for (hour in hours) {
     result <- try({
-      hourStack <- goesaodc_createHourlyRasterStack(startdate = hour,
+      hourStack <- goesaodc_createHourlyRasterStack(satId = satId,
+                                                    startdate = hour,
                                                     var = var,
                                                     res = 0.1,
                                                     fun = fun,
@@ -128,7 +135,11 @@ goesaodc_createDaytimeRasterStack <- function(
       dayStack <- raster::setZ(dayStack, c(zDay, zHour))
     }, silent = TRUE)
     
-    print(paste0("Stacked hour: ", hour))
+    if ("try-error" %in% class(result)) {
+      stop(result)
+    } else {
+      print(paste0("Stacked hour: ", hour))
+    }
   }
   
   return(dayStack)
