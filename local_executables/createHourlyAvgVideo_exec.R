@@ -10,7 +10,7 @@
 #
 # Test this script from the command line with:
 #
-# ./createHourlyAvgVideo_exec.R -s 20190801 -d 2 -r maine -q 1 -n 12 -o ~/Desktop/ -v TRUE
+# ./createHourlyAvgVideo_exec.R -s 20190801 -d 2 -r maine -q 1 -n 12 -o ~/Desktop/
 # ./createHourlyAvgVideo_exec.R --startdate="20190802" --duration="1" --region="New York" --dqfLevel="2" --naThreshold="2" --outputDir="~/Desktop/" --verbose="TRUE"
 
 VERSION = "0.1.1"
@@ -167,7 +167,7 @@ result <- try({
   
   # Select the region containing the state parameter, defaults to the whole 
   # CONUS
-  opt$regionsState <- tolower(opt$regionState)
+  opt$regionState <- tolower(opt$regionState)
   
   matchingRegions <- 
     sapply(1:length(regions), 
@@ -189,22 +189,34 @@ result <- try({
   stateCenterLon <- mean(stateBbox[1:2])
   stateCenterLat <- mean(stateBbox[3:4])
   
-  # Timezone is determined by the center of the named state in the region
-  localTimezone <- 
-    MazamaSpatialUtils::getTimezone(lon = stateCenterLon, lat = stateCenterLat)
+  # Timezone is determined by the center of the named state in the region. The
+  # center of Florida though is off its coast so just that one case is 
+  # special.
+  if (opt$regionState == "florida") {
+    localTimezone <- "America/New_York"
+  } else {
+    localTimezone <- 
+      MazamaSpatialUtils::getTimezone(lon = stateCenterLon, 
+                                      lat = stateCenterLat,
+                                      countryCodes = c("US"))
+  }
   
   # TODO: Determine which satellite has better coverage of this region
   
   # ----- Setup hours ----------------------------------------------------------
   
+  print(opt$startdate)
+  print(localTimezone)
+  print(opt$regionState)
+  
   # Define local start date and duration (days covered including startdate)
   startdate <- lubridate::ymd(opt$startdate, tz = localTimezone)
   duration <- lubridate::hours(as.numeric(opt$duration) * 24 - 1)
-  
+
   # Convert start and end date to UTC
   startdateUTC <- lubridate::with_tz(startdate, tzone = "UTC")
   enddateUTC <- startdateUTC + duration
-  
+
   # Get detailed local time info for all hours between the start and end
   localHours <- seq.POSIXt(from = startdateUTC, to = enddateUTC, by = "hour")
   localHoursInfo <- PWFSLSmoke::timeInfo(localHours, 
