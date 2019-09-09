@@ -38,15 +38,14 @@ goesaodc_createTibble <- function(
   varList[["AOD"]] <- as.numeric(ncdf4::ncvar_get(nc, "AOD"))
   varList[["DQF"]] <- as.numeric(ncdf4::ncvar_get(nc, "DQF"))
   
-  # Get satellite GOES ID number
-  i <- regexpr("_G[0-9]+_", nc$filename)
-  satId <- substr(nc$filename, i + 2, i + attributes(i)$match.length - 2)[1]
+  # Get GOES satellite ID number
+  satId <- ncdf4::ncatt_get(nc, varid = 0, attname = "platform_ID")$value
   
   # Read in package internal grid information
-  if (satId == 16) {
+  if (satId == "G16") {
     varList[["lon"]] <- as.numeric( MazamaSatelliteUtils::goesEastGrid$longitude )
     varList[["lat"]] <- as.numeric( MazamaSatelliteUtils::goesEastGrid$latitude )
-  } else if (satId == 17) {
+  } else if (satId == "G17") {
     varList[["lon"]] <- as.numeric( MazamaSatelliteUtils::goesWestGrid$longitude )
     varList[["lat"]] <- as.numeric( MazamaSatelliteUtils::goesWestGrid$latitude )
   }

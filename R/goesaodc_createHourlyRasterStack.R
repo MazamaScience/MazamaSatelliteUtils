@@ -2,9 +2,9 @@
 #' 
 #' @title Create a RasterStack for a specified hour
 #' 
+#' @param satId ID number of the source GOES satellite
 #' @param startdate startdate, specified to the hour, in any Y-m-d H format or
 #' \code{POSIXct}
-#' @param satId ID number of the source GOES satellite
 #' @param var variable ("AOD, "DQF" or "ID")
 #' @param res resolution of raster in degrees
 #' @param fun function to use when rasterizing. Not currently supported, defaults
@@ -50,8 +50,8 @@
 #' }
 
 goesaodc_createHourlyRasterStack <- function(
-  startdate = NULL,
   satId = NULL,
+  startdate = NULL,
   var = "AOD",
   res = 0.1,
   fun = mean,
