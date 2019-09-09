@@ -20,7 +20,7 @@ RasterBrick
 Creates a RasterBrick of the average AOD for a given hour.
 }
 \examples{
-\donttest{
+\dontrun{
 # Library setup
 library(MazamaSatelliteUtils)
 library(MazamaSpatialUtils)

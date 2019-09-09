@@ -4,7 +4,7 @@
 \alias{goesaodc_downloadAOD}
 \title{Download GOES 16 AOD data}
 \usage{
-goesaodc_downloadAOD(startdate = NULL, jdate = NULL, satID = NULL,
+goesaodc_downloadAOD(startdate = NULL, jdate = NULL, satId = NULL,
   baseUrl = "https://tools-1.airfire.org/Satellite/", quiet = FALSE)
 }
 \arguments{
@@ -13,7 +13,7 @@ goesaodc_downloadAOD(startdate = NULL, jdate = NULL, satID = NULL,
 \item{jdate}{desired date in as a Julian date string, i.e. as seen in the
 netcdf filenames}
 
-\item{satID}{ID number of the source GOES satellite}
+\item{satId}{ID number of the source GOES satellite}
 
 \item{baseUrl}{base URL for data queries}
 
@@ -30,15 +30,15 @@ downloaded. If \code{startdate} is specified only to the day, all files for
 that day will be downloaded.
 }
 \examples{
-\donttest{
+\dontrun{
 setSatelliteDataDir("~/Data/Satellite")
 
 date <- lubridate::ymd_h("2019-05-16 16", tz = "UTC")
-files <- goesaodc_downloadAOD(date, satID = 16)
+files <- goesaodc_downloadAOD(date, satId = 16)
 print(files)
 
 date <- 2019051616
-files <- goesaodc_downloadAOD(date, satID = 16)
+files <- goesaodc_downloadAOD(date, satId = 16)
 print(files)
 }
 }

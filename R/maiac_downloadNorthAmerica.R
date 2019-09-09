@@ -11,6 +11,7 @@
 #' @references \href{http://usfs.airsis.com}{Interagency Real Time Smoke Monitoring}
 #' @examples
 #' \dontrun{
+#' setSatelliteDataDir("~/Data/Satellite")
 #' maiac_downloadNorthAmerica( "h01v04", 20171009, 2150 )
 #' }
 

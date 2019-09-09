@@ -4,7 +4,7 @@
 \alias{goesaodc_listFiles}
 \title{List downloaded GOES AOD files for a specified date and hour}
 \usage{
-goesaodc_listFiles(startdate = NULL, jdate = NULL, satID = NULL)
+goesaodc_listFiles(startdate = NULL, jdate = NULL, satId = NULL)
 }
 \arguments{
 \item{startdate}{desired date in any Y-m-d [H] format or \code{POSIXct}}
@@ -12,7 +12,7 @@ goesaodc_listFiles(startdate = NULL, jdate = NULL, satID = NULL)
 \item{jdate}{desired date in as a Julian date string, i.e. as seen in the
 netcdf filenames}
 
-\item{satID}{ID number of the source GOES satellite}
+\item{satId}{ID number of the source GOES satellite}
 }
 \value{
 Vector of filenames.
@@ -26,11 +26,11 @@ incoming \code{startdate} or \code{jdate} is specified to the minute or
 second.
 }
 \examples{
-\donttest{
+\dontrun{
 setSatelliteDataDir("~/Data/Satellite")
 
 date <- lubridate::ymd_h("2019-05-16 16", tz = "UTC")
-files <- goesaodc_listFiles(date, satID = 16)
+files <- goesaodc_listFiles(date, satId = 16)
 print(files)
 }
 }

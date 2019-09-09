@@ -59,7 +59,7 @@ Data quality level `dqfLevel` can take a value of:
 3: No retrieval quality flag
 }
 \examples{
-\donttest{
+\dontrun{
 library(MazamaSatelliteUtils)
 library(MazamaSpatialUtils)
 

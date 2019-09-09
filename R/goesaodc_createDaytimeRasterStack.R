@@ -40,7 +40,7 @@
 #' @return RasterStack
 #' 
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' library(MazamaSatelliteUtils)
 #' library(MazamaSpatialUtils)
 #' 
@@ -87,7 +87,8 @@ goesaodc_createDaytimeRasterStack <- function(
   
   # Then gather local timeinfo from that UTC date
   dateInfo <- PWFSLSmoke::timeInfo(dateUTC, 
-                                   longitude = lon, latitude = lat, 
+                                   longitude = lon, 
+                                   latitude = lat, 
                                    timezone = timezone) 
   
   # Finally, now that we have the local sunrise and sunset times for the date we 

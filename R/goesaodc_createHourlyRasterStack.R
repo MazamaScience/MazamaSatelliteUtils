@@ -41,7 +41,7 @@
 #' @return RasterStack
 #' 
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' setSatelliteDataDir("~/Data/Satellite")
 #' date <- lubridate::ymd_h("2019-05-16 16", tz = "UTC")
 #' rstrStack <- goesaodc_createHourlyRasterStack(startdate = date, satId = 16, 

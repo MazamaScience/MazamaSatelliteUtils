@@ -12,7 +12,7 @@
 #' @return RasterBrick
 #' 
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Library setup
 #' library(MazamaSatelliteUtils)
 #' library(MazamaSpatialUtils)
