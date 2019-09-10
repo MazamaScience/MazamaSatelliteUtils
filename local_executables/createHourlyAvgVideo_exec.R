@@ -11,7 +11,7 @@
 # Test this script from the command line with:
 #
 # ./createHourlyAvgVideo_exec.R -s 20190801 -d 2 -r maine -q 1 -n 12 -o ~/Desktop/
-# ./createHourlyAvgVideo_exec.R --startdate="20190802" --duration="1" --region="New York" --dqfLevel="2" --naThreshold="2" --outputDir="~/Desktop/" --verbose="TRUE"
+# ./createHourlyAvgVideo_exec.R --startdate="20190802" --duration="1" --region="New York" --dqfLevel="2" --naThreshold="2" --outputDir="~/Desktop/" --verbose="FALSE"
 
 VERSION = "0.1.1"
 
@@ -51,7 +51,7 @@ if ( interactive() ) {
     ),
     make_option(
       c("-r","--regionState"), 
-      default=".", 
+      default="conus", 
       help="A state in the desired region [default=\"%default\"]"
     ),
     make_option(
@@ -60,10 +60,20 @@ if ( interactive() ) {
       help="<= data quality level filter (0-3) [default=\"%default\"]"
     ),
     make_option(
+      c("-i", "--satId"),
+      default=NULL,
+      help="<= ID of the source GOES satellite (G16 or G17) [default=\"%default\"]"
+    ),
+    make_option(
       c("-n", "--naThreshold"),
       default=1,
       help="Maximum allowable NA values for a point to be averaged 
       [default=\"%default\"]"
+    ),
+    make_option(
+      c("-f", "--frameRate"),
+      default=3,
+      help="Frames per second [default=\"%default\"]"
     ),
     make_option(
       c("-v","--verbose"), 
@@ -112,8 +122,16 @@ if (opt$dqfLevel < 0 || opt$dqfLevel > 3) {
   stop("DQF level must be an integer between 0 and 3")
 }
 
+opt$satId <- toupper(opt$satId)
+if (!(opt$satId %in% c("G16", "G17"))) {
+  stop("GOES satellite ID must be G16 or G17")
+}
+
 if (!dir.exists(opt$outputDir)) {
   stop(paste0("outputDir not found:  ", opt$outputDir))
+}
+if (!endsWith(opt$outputDir, "/")) {
+  opt$outputDir <- paste0(opt$outputDir, "/")
 }
 
 if (!dir.exists(opt$logDir)) {
@@ -175,20 +193,22 @@ result <- try({
   
   if (length(which(matchingRegions)) > 0) {
     states <- regions[[which(matchingRegions)]]
+    timeZoneState <- opt$regionState
   } else {
     states <- "."
+    timeZoneState <- "colorado"
   }
-  
+
   regionBbox <- 
     maps::map("state", regions = states, fill = TRUE, plot = FALSE)$range
-  
+
   # State central coordinates
   stateBbox <- 
     maps::map("state", 
-              regions = c(opt$regionState), fill = TRUE, plot = FALSE)$range
+              regions = c(timeZoneState), fill = TRUE, plot = FALSE)$range
   stateCenterLon <- mean(stateBbox[1:2])
   stateCenterLat <- mean(stateBbox[3:4])
-  
+
   # Timezone is determined by the center of the named state in the region. The
   # center of Florida though is off its coast so just that one case is 
   # special.
@@ -204,10 +224,6 @@ result <- try({
   # TODO: Determine which satellite has better coverage of this region
   
   # ----- Setup hours ----------------------------------------------------------
-  
-  print(opt$startdate)
-  print(localTimezone)
-  print(opt$regionState)
   
   # Define local start date and duration (days covered including startdate)
   startdate <- lubridate::ymd(opt$startdate, tz = localTimezone)
@@ -245,7 +261,7 @@ result <- try({
                                 tz = localTimezone)
     
     utcHourString <- strftime(hour, format = "%Y-%m-%d %H:%M:%S", tz = "UTC")
-    ncFiles <- goesaodc_listFiles("G16", utcHourString)   # TODO: Determine proper satellite
+    ncFiles <- goesaodc_listFiles(opt$satId, utcHourString)   # TODO: Determine proper satellite
     
     logger.info("Generating frame for %s %s", localHourString, localTimezone)
     if (opt$verbose) {
@@ -255,8 +271,8 @@ result <- try({
     # Fetch hour files if they are not already downloaded
     if (length(ncFiles) < 1) {
       logger.info("Downloading NetCDF files for %s", utcHourString)
-      goesaodc_downloadAOD("G16", utcHourString)          # TODO: Determine proper satellite
-      ncFiles <- goesaodc_listFiles("G16", utcHourString) # TODO: Determine proper satellite
+      goesaodc_downloadAOD(opt$satId, utcHourString)          # TODO: Determine proper satellite
+      ncFiles <- goesaodc_listFiles(opt$satId, utcHourString) # TODO: Determine proper satellite
     }
     
     ncHandles <- purrr::map(ncFiles, goesaodc_openFile)
@@ -306,29 +322,35 @@ result <- try({
   
     # Construct a tibble to hold projected lat/lon point coords and average AOD
     varList <- list()
-    varList[["AOD"]] <- avgAODReadings
-    varList[["lon"]] <- as.numeric(MazamaSatelliteUtils::goesEastGrid$longitude)
-    varList[["lat"]] <- as.numeric(MazamaSatelliteUtils::goesEastGrid$latitude)
-    
-    # Remove any points with NA lat/lon/AOD values
-    tbl <-
-      tibble::as_tibble(varList) %>%
-      tidyr::drop_na()
+    varList[["AOD"]] <- 10 ^ avgAODReadings
+    if (opt$satId == "G16") {
+      varList[["lon"]] <- as.numeric(MazamaSatelliteUtils::goesEastGrid$longitude)
+      varList[["lat"]] <- as.numeric(MazamaSatelliteUtils::goesEastGrid$latitude)  
+    } else if (opt$satId == "G17") {
+      varList[["lon"]] <- as.numeric(MazamaSatelliteUtils::goesWestGrid$longitude)
+      varList[["lat"]] <- as.numeric(MazamaSatelliteUtils::goesWestGrid$latitude)
+    }
+    aodTbl <- tibble::as_tibble(varList)
     
     # Subset points by the region bounding box
-    tbl <- dplyr::filter(tbl, 
+    aodTbl <- dplyr::filter(aodTbl, 
                          lon >= regionBbox[1], lon <= regionBbox[2],
                          lat >= regionBbox[3], lat <= regionBbox[4])
+    
+    # TODO: Make spatial points for readings with null AOD values or out of 
+    # range DQF levels
+    nullTbl <- dplyr::filter(aodTbl, is.null(AOD))
+    lowQualityTbl <- 0
+    
+    aodTbl <- tidyr::drop_na(aodTbl)
   
     # ----- Draw frame ---------------------------------------------------------
     
     # Plot setup
-    i <- stringr::str_pad(frameNumber, 3, 'left', '0')
+    i <- stringr::str_pad(frameNumber, 4, 'left', '0')
     frameFileName <- paste0(i, ".png")
     frameFilePath <- file.path(tempdir(), frameFileName)
-    # quantile(tbl$AOD, seq(from = 0.0, to = 1.0, by = 0.2), na.rm = TRUE)
-    breaks <- c(-2.5750, 0.0800, 0.1207, 0.1675, 0.2145, 0.2736, 0.3651, 0.5764, 
-                2.4750)
+    breaks <- c(0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5)
     png(frameFilePath, width = 1280, height = 720, units = "px")
     par(xpd = NA)
     layout(matrix(c(1, 1, 1, 1, 2,
@@ -346,14 +368,15 @@ result <- try({
     plot(spdf, border = NA, bg = "gray90")
     
     # Plot points if there are any 
-    if (nrow(tbl) > 0) {
+    if (nrow(aodTbl) > 0) {
       sp <- sp::SpatialPointsDataFrame(
-        coords = dplyr::select(tbl, c(.data$lon, .data$lat)),
-        data = dplyr::select(tbl, -c(.data$lon, .data$lat))
+        coords = dplyr::select(aodTbl, c(.data$lon, .data$lat)),
+        data = dplyr::select(aodTbl, -c(.data$lon, .data$lat))
       )
       goesaodc_plotSpatialPoints(sp, var = "AOD", cex = 0.5, breaks = breaks, 
                                  add = TRUE)
     }
+    
     maps::map("state", regions = states, lwd = 2.0, add = TRUE)
     title(paste("GOES East AOD, DQF <=", opt$dqfLevel), cex.main = 3.5)
     
@@ -366,7 +389,7 @@ result <- try({
     plot(0, 0, col = "transparent", xlim = c(-1, 1), 
          ylim = c(breaks[1], breaks[length(breaks)]), 
          axes = FALSE, xlab = NA, ylab = NA, main = "AOD", cex.main = 3.0)
-    axis(side = 2, line = -6, cex.axis = 2.0)
+    axis(side = 2, line = -6, at = breaks, labels = sprintf(breaks, fmt = '%#.1f'), cex.axis = 2.0, las = 1)
     rasterImage(legendImage, -0.3, breaks[1], 0.3, breaks[length(breaks)])
     
     # Timestamp clock plot
@@ -391,9 +414,9 @@ result <- try({
   # Define system calls to ffmpeg to create video from frames
   cmd_cd <- paste0("cd ", tempdir())
   cmd_ffmpeg <- paste0("ffmpeg -loglevel quiet -r ", 
-                       3, " -f image2 -s 1280x720 -i ",
-                       "%03d.png -vcodec libx264 -crf 25 ", 
-                       "~/Desktop", "/", videoFileName)
+                       opt$frameRate, " -f image2 -s 1280x720 -i ",
+                       "%04d.png -vcodec libx264 -crf 25 ", 
+                       opt$outputDir, videoFileName)
   cmd_rm <- paste0("rm *.png")
   cmd <- paste0(cmd_cd, " && ", cmd_ffmpeg, " && ", cmd_rm)
   

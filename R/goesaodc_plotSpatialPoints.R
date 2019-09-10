@@ -47,7 +47,7 @@ goesaodc_plotSpatialPoints <- function(
   }
   
   # Make breaks for specifed number of equally sized color bins
-  # TODO: Use quantiles
+  # TODO: Use quantiles like quantile(aodValues, seq(from = 0.00, to = 1.00, by = 0.10), na.rm = TRUE)
   if (is.null(breaks)) {
     mn <- min(spatialPointsSub[[var]])
     mx <- max(spatialPointsSub[[var]])
@@ -59,7 +59,7 @@ goesaodc_plotSpatialPoints <- function(
     }
   }
   
-  cols <- RColorBrewer::brewer.pal(length(breaks)-1, "YlOrRd")
+  cols <- RColorBrewer::brewer.pal(length(breaks)-1, paletteName)
   col_i <- .bincode(spatialPointsSub[[var]], breaks)
   col_v <- cols[col_i]
   plot(spatialPointsSub, pch=pch, col=col_v, cex=cex, add = add)

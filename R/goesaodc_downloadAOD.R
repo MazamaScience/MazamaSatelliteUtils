@@ -2,7 +2,7 @@
 #' 
 #' @title Download GOES-16 or GOES-17 AOD data
 #' 
-#' @param satId ID number of the source GOES satellite
+#' @param satId ID of the source GOES satellite
 #' @param startdate desired date in any Y-m-d [H] format or \code{POSIXct}
 #' @param jdate desired date in as a Julian date string, i.e. as seen in the
 #'   netcdf filenames
