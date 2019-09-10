@@ -62,7 +62,8 @@ if ( interactive() ) {
     make_option(
       c("-i", "--satId"),
       default=NULL,
-      help="<= ID of the source GOES satellite (G16 or G17) [default=\"%default\"]"
+      help="<= ID of the source GOES satellite (G16 or G17) 
+      [default=\"%default\"]"
     ),
     make_option(
       c("-n", "--naThreshold"),
@@ -122,9 +123,11 @@ if (opt$dqfLevel < 0 || opt$dqfLevel > 3) {
   stop("DQF level must be an integer between 0 and 3")
 }
 
-opt$satId <- toupper(opt$satId)
-if (!(opt$satId %in% c("G16", "G17"))) {
-  stop("GOES satellite ID must be G16 or G17")
+if (!is.null(opt$satId)) {
+  opt$satId <- toupper(opt$satId)
+  if (!(opt$satId %in% c("G16", "G17"))) {
+    stop("GOES satellite ID must be G16 or G17")
+  }
 }
 
 if (!dir.exists(opt$outputDir)) {
@@ -166,33 +169,47 @@ result <- try({
   setSpatialDataDir("~/Data/Spatial/")
   
   regions <- list(
-    a = c("washington", "oregon", "idaho"),
-    b = c("montana", "wyoming"),
-    c = c("north dakota", "south dakota", "minnesota"),
-    d = c("wisconsin", "michigan"),
-    e = c("new york", "vermont", "new hampshire", "maine", "massachusetts", 
-          "connecticut", "rhode island"),
-    f = c("california", "nevada"),
-    g = c("utah", "colorado", "arizona", "new mexico"),
-    h = c("nebraska", "iowa", "kansas", "missouri"),
-    i = c("illinois", "indiana", "ohio", "kentucky", "tennessee"),
-    j = c("pennsylvania", "new jersey", "west virginia", "maryland", "deleware", 
-          "virginia", "north carolina"),
-    k = c("texas", "oklahoma"),
-    l = c("arkansas", "louisiana", "mississippi", "alabama"),
-    m = c("georgia", "south carolina", "florida")
+    list(states = c("washington", "oregon", "idaho"),
+         satId = "G17"),
+    list(states = c("montana", "wyoming"),
+         satId = "G17"),
+    list(states = c("north dakota", "south dakota", "minnesota"),
+         satId = "G16"),
+    list(states = c("wisconsin", "michigan"),
+         satId = "G16"),
+    list(states = c("new york", "vermont", "new hampshire", "maine", 
+                    "massachusetts", "connecticut", "rhode island"),
+         satId = "G16"),
+    list(states = c("california", "nevada"),
+         satId = "G17"),
+    list(states = c("utah", "colorado", "arizona", "new mexico"),
+         satId = "G17"),
+    list(states = c("nebraska", "iowa", "kansas", "missouri"),
+         satId = "G16"),
+    list(states = c("illinois", "indiana", "ohio", "kentucky", "tennessee"),
+         satId = "G16"),
+    list(states = c("pennsylvania", "new jersey", "west virginia", "maryland",
+                    "deleware", "virginia", "north carolina"),
+         satId = "G16"),
+    list(states = c("texas", "oklahoma"),
+         satId = "G16"),
+    list(states = c("arkansas", "louisiana", "mississippi", "alabama"),
+         satId = "G16"),
+    list(states = c("georgia", "south carolina", "florida"),
+         satId = "G16")
   )
   
   # Select the region containing the state parameter, defaults to the whole 
   # CONUS
   opt$regionState <- tolower(opt$regionState)
   
-  matchingRegions <- 
+  matchingRegionIndices <- 
     sapply(1:length(regions), 
-           function(i) any(regions[[i]] == opt$regionState))
+           function(i) any(regions[[i]]$states == opt$regionState))
+  region <- regions[[which(matchingRegionIndices)]]
   
-  if (length(which(matchingRegions)) > 0) {
-    states <- regions[[which(matchingRegions)]]
+  if (length(which(matchingRegionIndices)) > 0) {
+    states <- region$states
     timeZoneState <- opt$regionState
   } else {
     states <- "."
@@ -221,7 +238,9 @@ result <- try({
                                       countryCodes = c("US"))
   }
   
-  # TODO: Determine which satellite has better coverage of this region
+  if (is.null(opt$satId)) {
+    opt$satId <- region$satId
+  }
   
   # ----- Setup hours ----------------------------------------------------------
   
@@ -325,10 +344,12 @@ result <- try({
     varList[["AOD"]] <- 10 ^ avgAODReadings
     if (opt$satId == "G16") {
       varList[["lon"]] <- as.numeric(MazamaSatelliteUtils::goesEastGrid$longitude)
-      varList[["lat"]] <- as.numeric(MazamaSatelliteUtils::goesEastGrid$latitude)  
+      varList[["lat"]] <- as.numeric(MazamaSatelliteUtils::goesEastGrid$latitude)
+      satelliteName <- "GOES-East"
     } else if (opt$satId == "G17") {
       varList[["lon"]] <- as.numeric(MazamaSatelliteUtils::goesWestGrid$longitude)
       varList[["lat"]] <- as.numeric(MazamaSatelliteUtils::goesWestGrid$latitude)
+      satelliteName <- "GOES-WEST"
     }
     aodTbl <- tibble::as_tibble(varList)
     
@@ -378,7 +399,7 @@ result <- try({
     }
     
     maps::map("state", regions = states, lwd = 2.0, add = TRUE)
-    title(paste("GOES East AOD, DQF <=", opt$dqfLevel), cex.main = 3.5)
+    title(paste(satelliteName, " AOD, DQF <=", opt$dqfLevel), cex.main = 3.5)
     
     # Legend color scale
     cols <- RColorBrewer::brewer.pal(length(breaks) - 1, "YlOrRd")
@@ -389,7 +410,7 @@ result <- try({
     plot(0, 0, col = "transparent", xlim = c(-1, 1), 
          ylim = c(breaks[1], breaks[length(breaks)]), 
          axes = FALSE, xlab = NA, ylab = NA, main = "AOD", cex.main = 3.0)
-    axis(side = 2, line = -6, at = breaks, labels = sprintf(breaks, fmt = '%#.1f'), cex.axis = 2.0, las = 1)
+    axis(side = 2, line = -6, at = breaks, labels = sprintf(breaks, fmt = "%#.1f"), cex.axis = 2.0, las = 1)
     rasterImage(legendImage, -0.3, breaks[1], 0.3, breaks[length(breaks)])
     
     # Timestamp clock plot
@@ -408,7 +429,7 @@ result <- try({
   
   # ----- Generate video -------------------------------------------------------
   
-  videoFileName <- paste0(opt$regionState, "_AOD_DQF", opt$dqfLevel, 
+  videoFileName <- paste0(opt$regionState, "_aod_dqf", opt$dqfLevel, 
                           ".mp4")
   
   # Define system calls to ffmpeg to create video from frames
