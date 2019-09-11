@@ -1,12 +1,7 @@
 #!/usr/local/bin/Rscript
 
-# This Rscript generates an hourly averaged AOD spatial points video for a 
-# region in the continental US.
-
-# This Rscript generates a spatial points video of AOD over a multi-state CONUS 
-# region. The readings are hourly averaged from the start to end date but 
-# exclude all nighttime hours except for each midnight hour (00:00) between 
-# days.
+# This Rscript generates an hourly aggregated AOD video of spatial points for a
+# multi-state CONUS region.
 #
 # Test this script from the command line with:
 #
@@ -22,6 +17,7 @@ suppressPackageStartupMessages({
   library(MazamaCoreUtils)
   library(MazamaSatelliteUtils)
   library(MazamaSpatialUtils)
+  library(optparse)
 })
 
 # ----- Get command line arguments ---------------------------------------------
@@ -36,13 +32,11 @@ if ( interactive() ) {
 } else {
   
   # Set up OptionParser
-  library(optparse)
-  
   option_list <- list(
     make_option(
       c("-s","--startdate"), 
       default = NULL, 
-      help = "The date to start at [default=\"%default\"]"
+      help = "The day to start on [default=\"%default\"]"
     ),
     make_option(
       c("-d","--duration"), 
@@ -53,26 +47,28 @@ if ( interactive() ) {
     make_option(
       c("-r","--regionState"), 
       default = "conus", 
-      help = "A name of a state in the desired region. The center coordinate 
-      will be used to determine timezone [default=\"%default\"]"
+      help = "The full name of a state in the desired region. The center 
+      coordinate of which is used to determine the video timezone 
+      [default=\"%default\"]"
     ),
     make_option(
       c("-q", "--dqfLevel"),
       default = 2,
-      help = "<= data quality level filter (0-3) [default=\"%default\"]"
+      help = "Lowest included AOD quality level (0=High, 1=Medium, 2=Low, 3=NA 
+      DQF). All quality levels higher than this are displayed as well 
+      [default=\"%default\"]"
     ),
     make_option(
       c("-i", "--satId"),
       default = NULL,
       help = "ID of the source GOES satellite (G16 or G17). Will be chosen 
-      automatically for best coverage if ID is not provided 
-      [default=\"%default\"]"
+      automatically for best coverage if not provided [default=\"%default\"]"
     ),
     make_option(
       c("-n", "--naThreshold"),
       default = 1,
       help = "Maximum allowable NA readings for a point in an hour (typically 12 
-      readings per hour). Points exceeding this threshold will not be displayed
+      readings per hour). Points exceeding this threshold are not displayed
       [default=\"%default\"]"
     ),
     make_option(
@@ -117,17 +113,17 @@ if (opt$version) {
 
 opt$startdate <- lubridate::ymd(opt$startdate, tz = "UTC")
 if (is.na(opt$startdate)) {
-  stop("Must define a start date in YYYYMMDD format")
+  stop("Start date must be in YYYYMMDD format")
 }
 
 opt$duration <- lubridate::hours(abs(as.integer(opt$duration) * 24 - 1))
 if (is.na(opt$duration) || opt$duration < 1) {
-  stop("Duration must be 1 or more days")
+  stop("Duration must be a positive integer")
 }
 
 opt$dqfLevel <- as.integer(opt$dqfLevel)
 if (opt$dqfLevel < 0 || opt$dqfLevel > 3) {
-  stop("DQF level must be an integer from 0 to 3")
+  stop("DQF level must be 0, 1, 2, or 3")
 }
 
 if (!is.null(opt$satId)) {
@@ -138,8 +134,13 @@ if (!is.null(opt$satId)) {
 }
 
 opt$naThreshold <- as.integer(opt$naThreshold)
-if (is.na(opt$naThreshold)) {
-  stop("NA threshold must be a positive integer from 0 to 12")
+if (is.na(opt$naThreshold) || opt$naThreshold < 1) {
+  stop("NA threshold must be a positive integer")
+}
+
+opt$frameRate <- as.integer(opt$frameRate)
+if (is.na(opt$frameRate) || opt$frameRate < 1) {
+  stop("Frame rate must be a positive integer")
 }
 
 if (!dir.exists(opt$outputDir)) {
