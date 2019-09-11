@@ -25,4 +25,3 @@ goesaodc_plotSpatialPoints(spEast, breaks = breaks, cex = 0.1, add = TRUE)
 goesaodc_plotSpatialPoints(spWest, breaks= breaks, cex = 0.1, add = TRUE)
 maps::map(add = TRUE)
 maps::map("state", add = TRUE)
-
