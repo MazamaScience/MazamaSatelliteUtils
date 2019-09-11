@@ -203,9 +203,8 @@ result <- try({
   # CONUS
   opt$regionState <- tolower(opt$regionState)
   
-  matchingRegionIndices <- 
-    sapply(1:length(regions), 
-           function(i) any(regions[[i]]$states == opt$regionState))
+  matchingRegionIndices <-
+    sapply(regions, function(r) any(r$states == opt$regionState) )
   region <- regions[[which(matchingRegionIndices)]]
   
   if (length(which(matchingRegionIndices)) > 0) {
@@ -260,15 +259,19 @@ result <- try({
                                          timezone = localTimezone)
   
   # Keep only daylight hours and the midnight (00:00) hours between days
-  localDaylightHours <- dplyr::filter(localHoursInfo, day == TRUE)
-  localMidnightHours <- dplyr::filter(localHoursInfo[2:nrow(localHoursInfo), ], 
-                                      lubridate::hour(localTime) == 0)
-  localKeptHours <- 
-    dplyr::arrange(rbind(localDaylightHours, localMidnightHours), localTime)
+  if (FALSE) {
+    localDaylightHours <- dplyr::filter(localHoursInfo, day == TRUE)
+    localMidnightHours <- dplyr::filter(localHoursInfo[2:nrow(localHoursInfo), ], 
+                                        lubridate::hour(localTime) == 0)
+    localKeptHours <- 
+      dplyr::arrange(rbind(localDaylightHours, localMidnightHours), localTime)
   
-  # Convert the kept local hours to UTC
-  frameTimeInfo <- lubridate::with_tz(localKeptHours, tzone = "UTC")
-  frameHours <- frameTimeInfo$localTime
+    # Convert the kept local hours to UTC
+    frameTimeInfo <- lubridate::with_tz(localKeptHours, tzone = "UTC")
+    frameHours <- frameTimeInfo$localTime
+  }
+  
+  frameHours <- lubridate::with_tz(localHoursInfo$localTime, tzone = "UTC")
   
   # ----- Generate frames ------------------------------------------------------
   
@@ -280,7 +283,7 @@ result <- try({
                                 tz = localTimezone)
     
     utcHourString <- strftime(hour, format = "%Y-%m-%d %H:%M:%S", tz = "UTC")
-    ncFiles <- goesaodc_listFiles(opt$satId, utcHourString)   # TODO: Determine proper satellite
+    ncFiles <- goesaodc_listFiles(opt$satId, utcHourString)
     
     logger.info("Generating frame for %s %s", localHourString, localTimezone)
     if (opt$verbose) {
@@ -290,8 +293,8 @@ result <- try({
     # Fetch hour files if they are not already downloaded
     if (length(ncFiles) < 1) {
       logger.info("Downloading NetCDF files for %s", utcHourString)
-      goesaodc_downloadAOD(opt$satId, utcHourString)          # TODO: Determine proper satellite
-      ncFiles <- goesaodc_listFiles(opt$satId, utcHourString) # TODO: Determine proper satellite
+      goesaodc_downloadAOD(opt$satId, utcHourString)
+      ncFiles <- goesaodc_listFiles(opt$satId, utcHourString)
     }
     
     ncHandles <- purrr::map(ncFiles, goesaodc_openFile)
@@ -349,9 +352,11 @@ result <- try({
     } else if (opt$satId == "G17") {
       varList[["lon"]] <- as.numeric(MazamaSatelliteUtils::goesWestGrid$longitude)
       varList[["lat"]] <- as.numeric(MazamaSatelliteUtils::goesWestGrid$latitude)
-      satelliteName <- "GOES-WEST"
+      satelliteName <- "GOES-West"
     }
-    aodTbl <- tibble::as_tibble(varList)
+    aodTbl <- 
+      tibble::as_tibble(varList) %>%
+      tidyr::drop_na()
     
     # Subset points by the region bounding box
     aodTbl <- dplyr::filter(aodTbl, 
@@ -360,10 +365,6 @@ result <- try({
     
     # TODO: Make spatial points for readings with null AOD values or out of 
     # range DQF levels
-    nullTbl <- dplyr::filter(aodTbl, is.null(AOD))
-    lowQualityTbl <- 0
-    
-    aodTbl <- tidyr::drop_na(aodTbl)
   
     # ----- Draw frame ---------------------------------------------------------
     

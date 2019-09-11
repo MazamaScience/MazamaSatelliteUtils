@@ -8,7 +8,7 @@ goesaodc_downloadAOD(satId = NULL, startdate = NULL, jdate = NULL,
   baseUrl = "https://tools-1.airfire.org/Satellite/", quiet = FALSE)
 }
 \arguments{
-\item{satId}{ID number of the source GOES satellite}
+\item{satId}{ID of the source GOES satellite}
 
 \item{startdate}{desired date in any Y-m-d [H] format or \code{POSIXct}}
 
