@@ -10,7 +10,7 @@
 #
 # Test this script from the command line with:
 #
-# ./createHourlyAvgVideo_exec.R -s 20190801 -d 2 -r maine -q 1 -n 12 -o ~/Desktop/
+# ./createHourlyAvgVideo_exec.R -s 20190801 -d 2 -r "california" -q 1 -n 12 -o ~/Desktop/
 # ./createHourlyAvgVideo_exec.R --startdate="20190802" --duration="1" --region="New York" --dqfLevel="2" --naThreshold="2" --outputDir="~/Desktop/" --verbose="FALSE"
 
 VERSION = "0.1.1"
@@ -41,61 +41,65 @@ if ( interactive() ) {
   option_list <- list(
     make_option(
       c("-s","--startdate"), 
-      default=NULL, 
-      help="The date to start at [default=\"%default\"]"
+      default = NULL, 
+      help = "The date to start at [default=\"%default\"]"
     ),
     make_option(
       c("-d","--duration"), 
-      default=1, 
-      help="The number of days to cover [default=\"%default\"]"
+      default = 1, 
+      help = "The number of days to cover (including the start day) 
+      [default=\"%default\"]"
     ),
     make_option(
       c("-r","--regionState"), 
-      default="conus", 
-      help="A state in the desired region [default=\"%default\"]"
+      default = "conus", 
+      help = "A name of a state in the desired region. The center coordinate 
+      will be used to determine timezone [default=\"%default\"]"
     ),
     make_option(
       c("-q", "--dqfLevel"),
-      default=2,
-      help="<= data quality level filter (0-3) [default=\"%default\"]"
+      default = 2,
+      help = "<= data quality level filter (0-3) [default=\"%default\"]"
     ),
     make_option(
       c("-i", "--satId"),
-      default=NULL,
-      help="<= ID of the source GOES satellite (G16 or G17) 
+      default = NULL,
+      help = "ID of the source GOES satellite (G16 or G17). Will be chosen 
+      automatically for best coverage if ID is not provided 
       [default=\"%default\"]"
     ),
     make_option(
       c("-n", "--naThreshold"),
-      default=1,
-      help="Maximum allowable NA values for a point to be averaged 
+      default = 1,
+      help = "Maximum allowable NA readings for a point in an hour (typically 12 
+      readings per hour). Points exceeding this threshold will not be displayed
       [default=\"%default\"]"
     ),
     make_option(
       c("-f", "--frameRate"),
-      default=3,
-      help="Frames per second [default=\"%default\"]"
+      default = 2,
+      help = "Video frames per second [default=\"%default\"]"
     ),
     make_option(
       c("-v","--verbose"), 
-      default=TRUE, 
-      help="Print out generated frame files [default=\"%default\"]"
+      default = TRUE, 
+      help = "Print out generated frame files [default=\"%default\"]"
     ),
     make_option(
       c("-o","--outputDir"), 
-      default=getwd(), 
-      help="Output directory for generated video file [default=\"%default\"]"
+      default = getwd(), 
+      help = "Output directory for generated video file [default=\"%default\"]"
     ),
     make_option(
       c("-l","--logDir"), 
-      default=getwd(), 
-      help="Output directory for generated .log file [default=\"%default\"]"
+      default = getwd(), 
+      help = "Output directory for generated .log file [default=\"%default\"]"
     ),
     make_option(
       c("-V","--version"), 
-      action="store_true", 
-      default=FALSE, 
-      help="Print out version number [default=\"%default\"]"
+      action = "store_true", 
+      default = FALSE, 
+      help = "Print out version number [default=\"%default\"]"
     )
   )
   
@@ -111,16 +115,19 @@ if (opt$version) {
 
 # ----- Validate parameters ----------------------------------------------------
 
-if (opt$startdate == "") {
-  stop("Must define a start date")
+opt$startdate <- lubridate::ymd(opt$startdate, tz = "UTC")
+if (is.na(opt$startdate)) {
+  stop("Must define a start date in YYYYMMDD format")
 }
 
-if (opt$duration < 1) {
+opt$duration <- lubridate::hours(abs(as.integer(opt$duration) * 24 - 1))
+if (is.na(opt$duration) || opt$duration < 1) {
   stop("Duration must be 1 or more days")
 }
 
+opt$dqfLevel <- as.integer(opt$dqfLevel)
 if (opt$dqfLevel < 0 || opt$dqfLevel > 3) {
-  stop("DQF level must be an integer between 0 and 3")
+  stop("DQF level must be an integer from 0 to 3")
 }
 
 if (!is.null(opt$satId)) {
@@ -128,6 +135,11 @@ if (!is.null(opt$satId)) {
   if (!(opt$satId %in% c("G16", "G17"))) {
     stop("GOES satellite ID must be G16 or G17")
   }
+}
+
+opt$naThreshold <- as.integer(opt$naThreshold)
+if (is.na(opt$naThreshold)) {
+  stop("NA threshold must be a positive integer from 0 to 12")
 }
 
 if (!dir.exists(opt$outputDir)) {
@@ -154,7 +166,7 @@ logger.setup(
 errorLog <- file.path(opt$logDir, "createHourlyAvgVideo_ERROR.log")
 
 # Silence other warning messages
-options(warn=-1) # -1=ignore, 0=save/print, 1=print, 2=error
+options(warn = -1) # -1=ignore, 0=save/print, 1=print, 2=error
 
 # Start logging
 logger.info("Running createHourlyAvgVideo_exec.R version %s", VERSION)
@@ -167,6 +179,8 @@ result <- try({
   
   setSatelliteDataDir("~/Data/Satellite/")
   setSpatialDataDir("~/Data/Spatial/")
+  
+  loadSpatialData("NaturalEarthAdm1")
   
   regions <- list(
     list(states = c("washington", "oregon", "idaho"),
@@ -199,15 +213,16 @@ result <- try({
          satId = "G16")
   )
   
-  # Select the region containing the state parameter, defaults to the whole 
+  # Select the region containing the state parameter, defaulting to the whole 
   # CONUS
   opt$regionState <- tolower(opt$regionState)
   
-  matchingRegionIndices <-
+  regionIndex <- which(
     sapply(regions, function(r) any(r$states == opt$regionState) )
-  region <- regions[[which(matchingRegionIndices)]]
+  )
   
-  if (length(which(matchingRegionIndices)) > 0) {
+  if (length(regionIndex) == 1) {
+    region <- regions[[regionIndex]]
     states <- region$states
     timeZoneState <- opt$regionState
   } else {
@@ -218,16 +233,15 @@ result <- try({
   regionBbox <- 
     maps::map("state", regions = states, fill = TRUE, plot = FALSE)$range
 
-  # State central coordinates
   stateBbox <- 
     maps::map("state", 
               regions = c(timeZoneState), fill = TRUE, plot = FALSE)$range
   stateCenterLon <- mean(stateBbox[1:2])
   stateCenterLat <- mean(stateBbox[3:4])
 
-  # Timezone is determined by the center of the named state in the region. The
-  # center of Florida though is off its coast so just that one case is 
-  # special.
+  # Timezone is determined by the center of the regionState. The center of 
+  # Florida though is in the Gulf so just that one case must be handled 
+  # specially
   if (opt$regionState == "florida") {
     localTimezone <- "America/New_York"
   } else {
@@ -237,20 +251,21 @@ result <- try({
                                       countryCodes = c("US"))
   }
   
+  # Automatically select the best satellite for the region if the user did not
+  # provided one
   if (is.null(opt$satId)) {
     opt$satId <- region$satId
   }
   
   # ----- Setup hours ----------------------------------------------------------
   
-  # Define local start date and duration (days covered including startdate)
-  startdate <- lubridate::ymd(opt$startdate, tz = localTimezone)
-  duration <- lubridate::hours(as.numeric(opt$duration) * 24 - 1)
-
+  # Assign local timezone to start date
+  opt$startdate <- lubridate::ymd(opt$startdate, tz = localTimezone)
+  
   # Convert start and end date to UTC
-  startdateUTC <- lubridate::with_tz(startdate, tzone = "UTC")
-  enddateUTC <- startdateUTC + duration
-
+  startdateUTC <- lubridate::with_tz(opt$startdate, tzone = "UTC")
+  enddateUTC <- startdateUTC + opt$duration
+  
   # Get detailed local time info for all hours between the start and end
   localHours <- seq.POSIXt(from = startdateUTC, to = enddateUTC, by = "hour")
   localHoursInfo <- PWFSLSmoke::timeInfo(localHours, 
@@ -283,17 +298,21 @@ result <- try({
                                 tz = localTimezone)
     
     utcHourString <- strftime(hour, format = "%Y-%m-%d %H:%M:%S", tz = "UTC")
-    ncFiles <- goesaodc_listFiles(opt$satId, utcHourString)
-    
     logger.info("Generating frame for %s %s", localHourString, localTimezone)
     if (opt$verbose) {
       print(paste("Generating", localHourString, localTimezone))
     }
     
     # Fetch hour files if they are not already downloaded
+    ncFiles <- goesaodc_listFiles(opt$satId, utcHourString)
     if (length(ncFiles) < 1) {
       logger.info("Downloading NetCDF files for %s", utcHourString)
-      goesaodc_downloadAOD(opt$satId, utcHourString)
+      downloadedFiles <- goesaodc_downloadAOD(opt$satId, utcHourString)
+      
+      if (length(downloadedFiles) < 1) {
+        stop(paste0("No ", opt$satId, " data for ", utcHourString))
+      }
+      
       ncFiles <- goesaodc_listFiles(opt$satId, utcHourString)
     }
     
@@ -318,7 +337,7 @@ result <- try({
     }
     
     # ----- Average AOD --------------------------------------------------------
-  
+    
     # Average together the remaining AOD values from all of the scans 
     stackedAODScans <- do.call(rbind, aodScans)
     
@@ -341,7 +360,7 @@ result <- try({
     }
     
     # ----- Project spatial points ---------------------------------------------
-  
+    
     # Construct a tibble to hold projected lat/lon point coords and average AOD
     varList <- list()
     varList[["AOD"]] <- 10 ^ avgAODReadings
@@ -384,7 +403,7 @@ result <- try({
     # Have to convert to polygons to keep aspect ratio
     mp <- maps::map("state", regions = states, fill = TRUE, plot = FALSE)
     polys <- maptools::map2SpatialPolygons(mp, IDs = mp$names, 
-                                    proj4string = CRS("+proj=longlat +datum=WGS84"))
+                                           proj4string = CRS("+proj=longlat +datum=WGS84"))
     polyData <- data.frame(seq_len(length(polys)), row.names = names(polys))
     spdf <- SpatialPolygonsDataFrame(polys, data = polyData)
     plot(spdf, border = NA, bg = "gray90")
@@ -403,16 +422,16 @@ result <- try({
     title(paste(satelliteName, " AOD, DQF <=", opt$dqfLevel), cex.main = 3.5)
     
     # Legend color scale
-    cols <- RColorBrewer::brewer.pal(length(breaks) - 1, "YlOrRd")
-    col_i <- .bincode(seq(from = breaks[length(breaks)], to = breaks[1], 
-                          by = -0.05), breaks)
-    col_v <- cols[col_i]
-    legendImage <- as.raster(matrix(col_v, ncol = 1))
+    paletteColors <- RColorBrewer::brewer.pal(length(breaks) - 1, "YlOrRd")
+    legendImage <- as.raster(matrix(rev(paletteColors), ncol = 1))
+    
     plot(0, 0, col = "transparent", xlim = c(-1, 1), 
          ylim = c(breaks[1], breaks[length(breaks)]), 
          axes = FALSE, xlab = NA, ylab = NA, main = "AOD", cex.main = 3.0)
-    axis(side = 2, line = -6, at = breaks, labels = sprintf(breaks, fmt = "%#.1f"), cex.axis = 2.0, las = 1)
-    rasterImage(legendImage, -0.3, breaks[1], 0.3, breaks[length(breaks)])
+    axis(side = 2, line = -6, at = breaks, 
+         labels = sprintf(breaks, fmt = "%#.1f"), cex.axis = 2.0, las = 1)
+    rasterImage(legendImage, -0.3, breaks[1], 0.3, breaks[length(breaks)],
+                interpolate = FALSE)
     
     # Timestamp clock plot
     hourFraction <- lubridate::hour(localHour) / 24
@@ -430,8 +449,8 @@ result <- try({
   
   # ----- Generate video -------------------------------------------------------
   
-  videoFileName <- paste0(opt$regionState, "_aod_dqf", opt$dqfLevel, 
-                          ".mp4")
+  stateCode <- tolower(MazamaSpatialUtils::stateToCode(tools::toTitleCase(opt$regionState), "US"))
+  videoFileName <- paste0(stateCode, "_aod_dqf", opt$dqfLevel, ".mp4")
   
   # Define system calls to ffmpeg to create video from frames
   cmd_cd <- paste0("cd ", tempdir())
