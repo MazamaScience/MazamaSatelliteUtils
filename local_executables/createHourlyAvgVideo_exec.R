@@ -174,7 +174,7 @@ logger.info("Running createHourlyAvgVideo_exec.R version %s", VERSION)
 sessionString <- paste(capture.output(sessionInfo()), collapse="\n")
 logger.debug("R session:\n\n%s\n", sessionString)
 
-# ------ Setup region ----------------------------------------------------------
+# ------ Set up region ----------------------------------------------------------
 
 result <- try({
   
@@ -258,7 +258,7 @@ result <- try({
     opt$satId <- region$satId
   }
   
-  # ----- Setup hours ----------------------------------------------------------
+  # ----- Set up hours ----------------------------------------------------------
   
   # Assign local timezone to start date
   opt$startdate <- lubridate::ymd(opt$startdate, tz = localTimezone)
@@ -366,12 +366,12 @@ result <- try({
     varList <- list()
     varList[["AOD"]] <- 10 ^ avgAODReadings
     if (opt$satId == "G16") {
-      varList[["lon"]] <- as.numeric(MazamaSatelliteUtils::goesEastGrid$longitude)
-      varList[["lat"]] <- as.numeric(MazamaSatelliteUtils::goesEastGrid$latitude)
+      varList[["lon"]] <- as.numeric(goesEastGrid$longitude)
+      varList[["lat"]] <- as.numeric(goesEastGrid$latitude)
       satelliteName <- "GOES-East"
     } else if (opt$satId == "G17") {
-      varList[["lon"]] <- as.numeric(MazamaSatelliteUtils::goesWestGrid$longitude)
-      varList[["lat"]] <- as.numeric(MazamaSatelliteUtils::goesWestGrid$latitude)
+      varList[["lon"]] <- as.numeric(goesWestGrid$longitude)
+      varList[["lat"]] <- as.numeric(goesWestGrid$latitude)
       satelliteName <- "GOES-West"
     }
     aodTbl <- 
@@ -386,13 +386,11 @@ result <- try({
     # TODO: Make spatial points for readings with null AOD values or out of 
     # range DQF levels
   
-    # ----- Draw frame ---------------------------------------------------------
+    # ----- Set up frame -------------------------------------------------------
     
-    # Plot setup
     i <- stringr::str_pad(frameNumber, 4, 'left', '0')
     frameFileName <- paste0(i, ".png")
     frameFilePath <- file.path(tempdir(), frameFileName)
-    breaks <- c(0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5)
     png(frameFilePath, width = 1280, height = 720, units = "px")
     par(xpd = NA)
     layout(matrix(c(1, 1, 1, 1, 2,
@@ -400,7 +398,12 @@ result <- try({
                     1, 1, 1, 1, 3), nrow = 3, ncol = 5, byrow = TRUE), 
            respect = TRUE)
     
-    # Spatial points map plot
+    # Limit AOD values to not exceed the color scale
+    breaks <- c(0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5)
+    aodTbl$AOD[aodTbl$AOD > breaks[length(breaks)]] <- breaks[length(breaks)]
+    
+    # ----- Plot spatial points map --------------------------------------------
+    
     # Have to convert to polygons to keep aspect ratio
     mp <- maps::map("state", regions = states, fill = TRUE, plot = FALSE)
     polys <- maptools::map2SpatialPolygons(mp, IDs = mp$names, 
@@ -422,17 +425,25 @@ result <- try({
     maps::map("state", regions = states, lwd = 2.0, add = TRUE)
     title(paste(satelliteName, " AOD, DQF <=", opt$dqfLevel), cex.main = 3.5)
     
-    # Legend color scale
+    # ----- Plot color scale ---------------------------------------------------
+    
     paletteColors <- RColorBrewer::brewer.pal(length(breaks) - 1, "YlOrRd")
     legendImage <- as.raster(matrix(rev(paletteColors), ncol = 1))
     
+    labels <- sprintf(breaks, fmt = "%#.1f")
+    labels[length(labels)] <- paste0(labels[length(labels)], "+")
+    at <- seq(from = breaks[1], to = breaks[length(breaks)], 
+              by = (breaks[length(breaks)] - breaks[1]) / (length(breaks) - 1))
+
     plot(0, 0, col = "transparent", xlim = c(-1, 1), 
          ylim = c(breaks[1], breaks[length(breaks)]), 
          axes = FALSE, xlab = NA, ylab = NA, main = "AOD", cex.main = 3.0)
-    axis(side = 2, line = -6, at = breaks, 
-         labels = sprintf(breaks, fmt = "%#.1f"), cex.axis = 2.0, las = 1)
+    axis(side = 2, line = -6, at = at,
+         labels = labels, cex.axis = 2.0, las = 1)
     rasterImage(legendImage, -0.3, breaks[1], 0.3, breaks[length(breaks)],
                 interpolate = FALSE)
+    
+    # ----- Plot timestamp clock -----------------------------------------------
     
     # Timestamp clock plot
     hourFraction <- lubridate::hour(localHour) / 24
@@ -450,7 +461,7 @@ result <- try({
   
   # ----- Generate video -------------------------------------------------------
   
-  stateCode <- tolower(MazamaSpatialUtils::stateToCode(tools::toTitleCase(opt$regionState), "US"))
+  stateCode <- tolower(stateToCode(tools::toTitleCase(opt$regionState), "US"))
   videoFileName <- paste0(stateCode, "_aod_dqf", opt$dqfLevel, ".mp4")
   
   # Define system calls to ffmpeg to create video from frames
