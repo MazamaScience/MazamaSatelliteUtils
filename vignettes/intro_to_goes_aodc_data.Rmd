@@ -374,4 +374,4 @@ help show the trend of the AOD values over a portion of a day. We are currently
 building a function that can create a raster stack for every daylight hour for a
 given date, which has provided some very interesting insight so far!
 
-![](aod_ts_day.png)
+![](img/aod_ts_day.png)

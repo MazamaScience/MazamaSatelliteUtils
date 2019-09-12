@@ -342,9 +342,9 @@ result <- try({
     # Average together the remaining AOD values from all of the scans 
     stackedAODScans <- do.call(rbind, aodScans)
     
-    # It is much faster to use colMeans once rather than averaging each column 
-    # uniquely
-    if (opt$naThreshold <= 0) {
+    # It is much faster to use colMeans once rather than uniquely averaging each
+    # column
+    if (opt$naThreshold == 0) {
       avgAODReadings <- colMeans(stackedAODScans, na.rm = FALSE)
     } else if (opt$naThreshold >= nrow(stackedAODScans)) {
       avgAODReadings <- colMeans(stackedAODScans, na.rm = TRUE)
@@ -374,6 +374,7 @@ result <- try({
       varList[["lat"]] <- as.numeric(goesWestGrid$latitude)
       satelliteName <- "GOES-West"
     }
+    
     aodTbl <- 
       tibble::as_tibble(varList) %>%
       tidyr::drop_na()
@@ -383,7 +384,7 @@ result <- try({
                          lon >= regionBbox[1], lon <= regionBbox[2],
                          lat >= regionBbox[3], lat <= regionBbox[4])
     
-    # TODO: Make spatial points for readings with null AOD values or out of 
+    # TODO: Color spatial points for readings with null AOD values or out of 
     # range DQF levels
   
     # ----- Set up frame -------------------------------------------------------
@@ -398,7 +399,7 @@ result <- try({
                     1, 1, 1, 1, 3), nrow = 3, ncol = 5, byrow = TRUE), 
            respect = TRUE)
     
-    # Limit AOD values to not exceed the color scale
+    # Limit AOD values so they don't exceed the color scale
     breaks <- c(0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5)
     aodTbl$AOD[aodTbl$AOD > breaks[length(breaks)]] <- breaks[length(breaks)]
     
@@ -422,6 +423,7 @@ result <- try({
                                  add = TRUE)
     }
     
+    # Overlay state borders
     maps::map("state", regions = states, lwd = 2.0, add = TRUE)
     title(paste(satelliteName, " AOD, DQF <=", opt$dqfLevel), cex.main = 3.5)
     
@@ -445,7 +447,6 @@ result <- try({
     
     # ----- Plot timestamp clock -----------------------------------------------
     
-    # Timestamp clock plot
     hourFraction <- lubridate::hour(localHour) / 24
     pie(x = c(hourFraction, 1/24, 1 - (hourFraction + 1 / 24)), 
         clockwise = TRUE, init.angle = 270, labels = NA, 
