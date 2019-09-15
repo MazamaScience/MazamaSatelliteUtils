@@ -1,11 +1,11 @@
 #' @export
 #' 
-#' @title Download GOES 16 AOD data
+#' @title Download GOES-16 or GOES-17 AOD data
 #' 
+#' @param satId ID of the source GOES satellite
 #' @param startdate desired date in any Y-m-d [H] format or \code{POSIXct}
 #' @param jdate desired date in as a Julian date string, i.e. as seen in the
 #'   netcdf filenames
-#' @param satId ID number of the source GOES satellite
 #' @param baseUrl base URL for data queries
 #' @param quiet if TRUE, suppress status messages and progress bar
 #' 
@@ -24,23 +24,28 @@
 #' setSatelliteDataDir("~/Data/Satellite")
 #' 
 #' date <- lubridate::ymd_h("2019-05-16 16", tz = "UTC")
-#' files <- goesaodc_downloadAOD(date, satId = 16)
+#' files <- goesaodc_downloadAOD("G16", date)
 #' print(files)
 #' 
 #' date <- 2019051616
-#' files <- goesaodc_downloadAOD(date, satId = 16)
+#' files <- goesaodc_downloadAOD("G16", date)
 #' print(files)
 #' }
 
 goesaodc_downloadAOD <- function(
+  satId = NULL,
   startdate = NULL,
   jdate = NULL,
-  satId = NULL,
   baseUrl = "https://tools-1.airfire.org/Satellite/",
   quiet = FALSE
 ) {
   
   # ----- Validate Parameters --------------------------------------------------
+  
+  satId <- toupper(satId)
+  if (!(satId %in% c("G16", "G17"))) {
+    stop("Must specify GOES satellite ID (G16 or G17)")
+  }
   
   if ( !is.null(startdate) ) {
     
@@ -98,10 +103,6 @@ goesaodc_downloadAOD <- function(
     
   }
   
-  if (is.null(satId)) {
-    stop("Must specify GOES satellite ID (16 or 17)")
-  }
-  
   # Julian string for comparison with file names
   if ( fullDay ) {
     startString <- strftime(starttime, "%Y%j", tz = "UTC")
@@ -109,7 +110,12 @@ goesaodc_downloadAOD <- function(
     startString <- strftime(starttime, "%Y%j%H", tz = "UTC")
   }
   
-  baseUrl <- paste0(baseUrl, "GOES-", satId, "/AODC")
+  # Choose satellite data source directory
+  if (satId == "G16") {
+    satUrl <- paste0(baseUrl, "GOES-16/AODC")
+  } else if (satId == "G17") {
+    satUrl <- paste0(baseUrl, "GOES-17/AODC")
+  }
   
   # ----- Download Data --------------------------------------------------------
   
@@ -117,7 +123,7 @@ goesaodc_downloadAOD <- function(
   
   # Get list of available files for specified date
   links <- 
-    xml2::read_html(baseUrl) %>%
+    xml2::read_html(satUrl) %>%
     xml2::xml_child("body") %>% 
     xml2::xml_child("table") %>%
     xml2::xml_find_all("//a") %>%
@@ -141,7 +147,7 @@ goesaodc_downloadAOD <- function(
     filePath <- paste0(satelliteDataDir,"/", file)
     # don't download if file exists locally
     if ( !file.exists(filePath) ) {
-      fileUrl <- paste0(baseUrl, "/", file)
+      fileUrl <- paste0(satUrl, "/", file)
       
       result <- try({
         utils::download.file(fileUrl, destfile = filePath, quiet = quiet)
@@ -158,20 +164,4 @@ goesaodc_downloadAOD <- function(
   
   return(invisible(downloadedFiles))
   
-}
-
-
-# ===== DEBUGGING ==============================================================
-
-if (FALSE) {
-  
-  setSatelliteDataDir("~/Data/Satellite")
-  
-  # Hour where startdate is numeric
-  startdate <- 2019051616
-  downloadedFiles <- goesaodc_downloadAOD(startdate, satId = 16)
-  
-  # Full day where startdate is POSIXct
-  startdate <- lubridate::parse_date_time("20190516", "Ymd", tz = "UTC")
-  downloadedFiles <- goesaodc_downloadAOD(startdate, satId = 16)
 }

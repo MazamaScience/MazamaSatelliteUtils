@@ -20,7 +20,7 @@ restrictions typically results in an image like the following:
 
 <center>
 
-![](dqf_2.png)
+![](img/dqf_2.png)
 
 </center>
 
@@ -31,7 +31,7 @@ something interesting:
 
 <center>
 
-![](dqf_1.png)
+![](img/dqf_1.png)
 
 </center>
 
@@ -59,7 +59,7 @@ satellite's ABI scanner is limited to only covering the area shown below:
 
 <center>
 
-![](GOESWestEast.jpg)
+![](img/GOESWestEast.jpg)
 
 </center>
 
@@ -71,7 +71,7 @@ California can only be seen at a very shallow angle.
 
 <center>
 
-![](satelliteview.jpg)
+![](img/satelliteview.jpg)
 
 </center>
 
@@ -85,7 +85,7 @@ the zenith at the observation target. ("Viewing zenith angle" in the diagram)
 
 <center>
 
-![](vza-sza.gif)
+![](img/vza-sza.gif)
 
 </center>
 

@@ -4,14 +4,13 @@
 \alias{goesaodc_createDaytimeRasterStack}
 \title{Create a daytime RasterStack for a specified date}
 \usage{
-goesaodc_createDaytimeRasterStack(startdate = NULL, timezone = "UTC",
-  var = "AOD", res = 0.1, fun = mean, bbox = NULL, lonLo = NULL,
-  lonHi = NULL, latLo = NULL, latHi = NULL, dqfLevel = NULL)
+goesaodc_createDaytimeRasterStack(startdate = NULL, longitude = NULL,
+  latitude = NULL, var = "AOD", res = 0.1, fun = mean,
+  bbox = NULL, lonLo = NULL, lonHi = NULL, latLo = NULL,
+  latHi = NULL, dqfLevel = NULL)
 }
 \arguments{
 \item{startdate}{startdate in any Y-m-d format or \code{POSIXct}}
-
-\item{timezone}{the timezone to determine the sunrise and sunset times}
 
 \item{var}{variable ("AOD, "DQF" or "ID")}
 
@@ -32,6 +31,8 @@ latLo, latHi if provided}
 \item{latHi}{upper latitude extent}
 
 \item{dqfLevel}{data quality flag level, numeric (0, 1, 2, or 3)}
+
+\item{timezone}{the timezone to determine the sunrise and sunset times}
 }
 \value{
 RasterStack
@@ -75,8 +76,10 @@ lat <-   42.861
 
 dateLocal <- lubridate::ymd("2019-08-01", tz = "America/Los_Angeles")
 
-dayStack <- goesaodc_createDaytimeRasterStack(dateLocal, "America/Los_Angeles",
-                                            bbox = bbox_oregon)
+dayStack <- goesaodc_createDaytimeRasterStack(dateLocal, 
+                                              longitude = -123.32,
+                                              latitude = 42.88,
+                                              bbox = bbox_oregon)
 tb <- raster_createLocationTimeseries(dayStack, 
                                       longitude = lon, latitude = lat, 
                                       bbox = bbox_oregon)
