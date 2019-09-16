@@ -2,6 +2,7 @@
 
 # ----- Top level map functionality --------------------------------------------
 
+# Gee
 setSpatialDataDir('~/Data/Spatial')
 loadSpatialData('USCensusStates')
 bbox(subset(USCensusStates, stateCode == 'WA'))
