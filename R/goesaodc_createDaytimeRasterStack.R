@@ -3,7 +3,8 @@
 #' @title Create a daytime RasterStack for a specified date
 #' 
 #' @param startdate startdate in any Y-m-d format or \code{POSIXct}
-#' @param timezone the timezone to determine the sunrise and sunset times
+#' @param longitude longitude of the location.
+#' @param latitude latitude of the location.
 #' @param var variable ("AOD, "DQF" or "ID")
 #' @param res resolution of raster in degrees
 #' @param fun function to use when rasterizing. Not currently supported, defaults
@@ -51,8 +52,8 @@
 #' # Define the region of interest (Milepost 97 Fire in Oregon)
 #' oregon <- subset(USCensusStates, stateCode == "OR")
 #' bbox_oregon <- sp::bbox(oregon)
-#' lon <- -123.245
-#' lat <-   42.861
+#' longitude <- -123.245
+#' latitude <-   42.861
 #' 
 #' dateLocal <- lubridate::ymd("2019-08-01", tz = "America/Los_Angeles")
 #' 
@@ -61,7 +62,8 @@
 #'                                               latitude = 42.88,
 #'                                               bbox = bbox_oregon)
 #' tb <- raster_createLocationTimeseries(dayStack, 
-#'                                       longitude = lon, latitude = lat, 
+#'                                       longitude = longitude, 
+#'                                       latitude = latitude, 
 #'                                       bbox = bbox_oregon)
 #' 
 #' plot(x = tb$datetime, y = tb$aod, 
@@ -87,13 +89,13 @@ goesaodc_createDaytimeRasterStack <- function(
   # Convert the local date to a UTC date
   dateUTC <- lubridate::with_tz(startdate, tzone = "UTC")
   
-  localTimezone <- MazamaSpatialUtils::getTimezone(longitude, latitude,
-                                                   countryCodes = c("US"))
+  timezone <- MazamaSpatialUtils::getTimezone(longitude, latitude,
+                                              countryCodes = c("US"))
   
   # Then gather local timeinfo from that UTC date
   dateInfo <- PWFSLSmoke::timeInfo(dateUTC, 
-                                   longitude = lon, 
-                                   latitude = lat, 
+                                   longitude = longitude, 
+                                   latitude = latitude, 
                                    timezone = timezone) 
   
   # Now that we have the local sunrise and sunset times for the date we convert 

@@ -12,6 +12,10 @@ goesaodc_createDaytimeRasterStack(startdate = NULL, longitude = NULL,
 \arguments{
 \item{startdate}{startdate in any Y-m-d format or \code{POSIXct}}
 
+\item{longitude}{longitude of the location.}
+
+\item{latitude}{latitude of the location.}
+
 \item{var}{variable ("AOD, "DQF" or "ID")}
 
 \item{res}{resolution of raster in degrees}
@@ -31,8 +35,6 @@ latLo, latHi if provided}
 \item{latHi}{upper latitude extent}
 
 \item{dqfLevel}{data quality flag level, numeric (0, 1, 2, or 3)}
-
-\item{timezone}{the timezone to determine the sunrise and sunset times}
 }
 \value{
 RasterStack
@@ -71,8 +73,8 @@ loadSpatialData("USCensusStates")
 # Define the region of interest (Milepost 97 Fire in Oregon)
 oregon <- subset(USCensusStates, stateCode == "OR")
 bbox_oregon <- sp::bbox(oregon)
-lon <- -123.245
-lat <-   42.861
+longitude <- -123.245
+latitude <-   42.861
 
 dateLocal <- lubridate::ymd("2019-08-01", tz = "America/Los_Angeles")
 
@@ -81,7 +83,8 @@ dayStack <- goesaodc_createDaytimeRasterStack(dateLocal,
                                               latitude = 42.88,
                                               bbox = bbox_oregon)
 tb <- raster_createLocationTimeseries(dayStack, 
-                                      longitude = lon, latitude = lat, 
+                                      longitude = longitude, 
+                                      latitude = latitude, 
                                       bbox = bbox_oregon)
 
 plot(x = tb$datetime, y = tb$aod, 
