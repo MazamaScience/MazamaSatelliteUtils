@@ -29,6 +29,7 @@ Download .hdf file of a MAIAC tile for a particular day.
 }
 \examples{
 \dontrun{
+setSatelliteDataDir("~/Data/Satellite")
 maiac_downloadNorthAmerica( "h01v04", 20171009, 2150 )
 }
 }

@@ -1,7 +1,8 @@
 #!/usr/local/bin/Rscript
 
-# This Rscript generates a raster video for a state over a given day. If
-# The resulting video is labeled by the state, state, variable, and DQF level.
+# This Rscript generates a raster video of either AOD or DQF over a single CONUS
+# state. The timelapse covers a whole day from 00:00 to 23:59 at ~5 minute 
+# intervals.
 #
 # Test this script from the command line with:
 #
@@ -33,14 +34,14 @@ if ( interactive() ) {
   
   option_list <- list(
     make_option(
-      c("-s","--stateCode"), 
-      default="", 
-      help="The state's two-character state code [default=\"%default\"]"
-    ),
-    make_option(
       c("-d","--date"), 
       default=0, 
       help="The date [default=\"%default\"]"
+    ),
+    make_option(
+      c("-s","--stateCode"), 
+      default="", 
+      help="The state's two-character state code [default=\"%default\"]"
     ),
     make_option(
       c("-x","--variable"), 
@@ -109,6 +110,16 @@ if (opt$state == "") {
   stop("Must define a state")
 }
 
+if (opt$cellSize == 5) {
+  res = 0.0525
+} else if (opt$cellSize == 10) {
+  res = 0.105
+} else if (opt$cellSize == 20) {
+  res = 0.21
+} else {
+  stop("Cell size must be 5, 10, or 20 (km)")
+}
+
 if (!dir.exists(opt$outputDir)) {
   stop(paste0("outputDir not found:  ", opt$outputDir))
 }
@@ -154,9 +165,9 @@ result <- try({
   bbox_state <- sp::bbox(state)
   
   # Calculate UTC start and end times
-  startTimeUTC <- opt$date
+  startTimeUTC <- opt$date + lubridate::hours(6)
   attributes(startTimeUTC)$tzone <- "UTC"
-  endTimeUTC <- startTimeUTC + lubridate::hours(23)
+  endTimeUTC <- startTimeUTC + lubridate::hours(2)
   
   # Get all the hours between the UTC start and end times
   hours <- seq.POSIXt(from = startTimeUTC, to = endTimeUTC, by = "hour")
@@ -177,10 +188,10 @@ result <- try({
     
     # Download the scan files for this hour
     logger.info("Loading data file for %s", strftime(localHour, "%Y-%m-%d %H", tz = "America/Los_Angeles"))
-    goesaodc_downloadAOD(startdate = hour)
+    goesaodc_downloadAOD(startdate = hour, satId = 16)
     
     # Get the names of these scan files
-    scanFilenames <- goesaodc_listFiles(startdate = hour)
+    scanFilenames <- goesaodc_listFiles(startdate = hour, satId = 16)
     
     # Generate a frame for each scan file
     for (scanFilename in scanFilenames) {
@@ -203,7 +214,7 @@ result <- try({
       # Try creating spatial points
       result <- try({
         rstr <- goesaodc_createRaster(nc, 
-                                      res = 0.06, bbox = bbox_state, 
+                                      res = res, bbox = bbox_state, 
                                       dqfLevel = opt$dqfLevel)
       }, silent = TRUE)
       

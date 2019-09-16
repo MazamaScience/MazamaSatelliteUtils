@@ -4,11 +4,13 @@
 \alias{goesaodc_createHourlyRasterStack}
 \title{Create a RasterStack for a specified hour}
 \usage{
-goesaodc_createHourlyRasterStack(startdate = NULL, var = "AOD",
-  res = 0.1, fun = mean, bbox = NULL, lonLo = NULL, lonHi = NULL,
-  latLo = NULL, latHi = NULL, dqfLevel = NULL)
+goesaodc_createHourlyRasterStack(satId = NULL, startdate = NULL,
+  var = "AOD", res = 0.1, fun = mean, bbox = NULL, lonLo = NULL,
+  lonHi = NULL, latLo = NULL, latHi = NULL, dqfLevel = NULL)
 }
 \arguments{
+\item{satId}{ID number of the source GOES satellite}
+
 \item{startdate}{startdate, specified to the hour, in any Y-m-d H format or
 \code{POSIXct}}
 
@@ -58,10 +60,12 @@ Data quality level `dqfLevel` can take a value of:
 3: No retrieval quality flag
 }
 \examples{
-\donttest{
+\dontrun{
 setSatelliteDataDir("~/Data/Satellite")
 date <- lubridate::ymd_h("2019-05-16 16", tz = "UTC")
-rstrStack <- goesaodc_createHourlyRasterStack(startdate = date, res = 0.5)
+rstrStack <- goesaodc_createHourlyRasterStack(satId = "G16", 
+                                              startdate = date, 
+                                              res = 0.2)
 rasterVis::levelplot(rstrStack)
 }
 }

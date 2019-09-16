@@ -23,7 +23,7 @@
 #' @return Tibble
 #' 
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Library setup
 #' library(MazamaSatelliteUtils)
 #' library(MazamaSpatialUtils)

@@ -38,7 +38,7 @@ The readings are approximated by tracking the AOD values for raster cells
 close to the coordinates.
 }
 \examples{
-\donttest{
+\dontrun{
 # Library setup
 library(MazamaSatelliteUtils)
 library(MazamaSpatialUtils)

@@ -25,6 +25,7 @@ Imports:
     ncdf4,
     purrr,
     raster,
+    PWFSLSmoke,
     RColorBrewer,
     rlang,
     sp,
