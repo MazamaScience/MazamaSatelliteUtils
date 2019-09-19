@@ -1,12 +1,13 @@
 Type: Package
 Package: MazamaSatelliteUtils
-Version: 0.2.1
+Version: 0.2.2
 Title: Utilities for Working with Model and Satellite Data as Rasters
 Authors@R: c(
     person("Jonathan", "Callahan", email="jonathan.s.callahan@gmail.com", role=c("aut","cre")),
     person("Helen", "Miller", email="helen@ohana.org", role=c("aut")),
     person("Raffuse", "Sean", email="sraffuse@ucdavis.edu", role=c("aut")),
     person("Rex", "Thompson", email="rexs.thompson@gmail.com", role=c("aut")),
+    person("Tate", "Brasel", email="tatebrasel6@gmail.com", role=c("aut")),
     person("Thomas", "Bergamaschi", email="tbergama@gmail.com", role=c("aut")),
     person("Roger", "Andre", email="randre@gmail.com", role=c("aut"))
     )
@@ -15,6 +16,7 @@ Author: Jonathan Callahan [aut, cre],
     Sean Raffuse [aut],
     Rex Thompson [aut],
     Thomas Bergamaschi [aut],
+    Tate Brasel [aut],
     Roger Andre [aut]
 Maintainer: Jonathan Callahan <jonathan@mazamascience.com>
 Depends:

@@ -1,4 +1,8 @@
-# MazamaSatelliteUtils 0.2.0
+# MazamaSatelliteUtils 0.2.2
+
+Including two satellite images as raw data for testing.
+
+# MazamaSatelliteUtils 0.2.1
 
 Updated variable names to pass checks.
 
