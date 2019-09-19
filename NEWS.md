@@ -1,5 +1,9 @@
 # MazamaSatelliteUtils 0.2.0
 
+Updated variable names to pass checks.
+
+# MazamaSatelliteUtils 0.2.0
+
 Lots of work testing and using the package to determine what new functionality
 needs to be added. Improved documentation throughout including function docs
 and vignettes.
