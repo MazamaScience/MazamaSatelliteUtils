@@ -29,15 +29,17 @@ goesaodc_listFiles <- function(
   satId = NULL,
   startdate = NULL,
   jdate = NULL
+  # ROGER:  Include "fullDay = FALSE"
 ) {
   
   # ----- Validate Parameters --------------------------------------------------
   
   satId <- toupper(satId)
-  if (!(satId %in% c("G16", "G17"))) {
+  if ( !(satId %in% c("G16", "G17")) ) {
     stop("Must specify GOES satellite ID (G16 or G17)")
   }
   
+  # ROGER:  From here through line 97 can be replaced with MazamaCoreUtils::parseDatetime
   if ( !is.null(startdate) ) {
     
     # Is it a full day?
