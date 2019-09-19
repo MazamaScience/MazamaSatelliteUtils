@@ -39,9 +39,9 @@ goesaodc_listFiles <- function(
     stop("Must specify GOES satellite ID (G16 or G17)")
   }
   
-  # ROGER:  From here through line 97 can be replaced with MazamaCoreUtils::parseDatetime
   if ( !is.null(startdate) ) {
     
+    # ROGER: Use MazamaCoreUtils::parseDatetime(startdate, timezone = "UTC") for this chunk
     # Is it a full day?
     suppressWarnings({
       starttime <- lubridate::parse_date_time(startdate, "Ymd", tz = "UTC") 
@@ -61,6 +61,8 @@ goesaodc_listFiles <- function(
     
   } else if ( !is.null(jdate) ) {
     
+    # ROGER: orders <- c("Yj", "YjJ", "YjHM", "YjHMS")
+    # ROGER: Use lubridate::parse_date_time(jdate, orders = orders, tz = "UTC") for this chunk
     # Check for operator error
     if ( !is.numeric(jdate) && !is.character(jdate) ) {
       jdate_class <- paste(class(jdate), sep = ", ")

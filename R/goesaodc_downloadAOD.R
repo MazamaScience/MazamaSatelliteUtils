@@ -38,6 +38,7 @@ goesaodc_downloadAOD <- function(
   jdate = NULL,
   baseUrl = "https://tools-1.airfire.org/Satellite/",
   quiet = FALSE
+  # ROGER: Use "fullDay = FALSE" here just like in goesaodc_listFile()
 ) {
   
   # ----- Validate Parameters --------------------------------------------------
@@ -49,6 +50,7 @@ goesaodc_downloadAOD <- function(
   
   if ( !is.null(startdate) ) {
     
+    # ROGER: Use MazamaCoreUtils::parseDatetime(startdate, timezone = "UTC") for this chunk
     # Is it a full day?
     suppressWarnings({
       starttime <- lubridate::parse_date_time(startdate, "Ymd", tz = "UTC") 
@@ -68,6 +70,8 @@ goesaodc_downloadAOD <- function(
     
   } else if ( !is.null(jdate) ) {
     
+    # ROGER: orders <- c("Yj", "YjJ", "YjHM", "YjHMS")
+    # ROGER: Use lubridate::parse_date_time(jdate, orders = orders, tz = "UTC") for this chunk
     # Check for operator error
     if ( !is.numeric(jdate) && !is.character(jdate) ) {
       jdate_class <- paste(class(jdate), sep = ", ")
