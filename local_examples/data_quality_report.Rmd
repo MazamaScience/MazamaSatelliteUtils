@@ -29,10 +29,10 @@ a part of the aggregation? (Reword)
 startdate <- 2019050211
 
 # Download files if necessary
-goesaodc_downloadAOD(startdate)
+goesaodc_downloadAOD("G16", startdate)
 
 nc <- 
-  goesaodc_listFiles(startdate)[1] %>%
+  goesaodc_listFiles("G16", startdate)[1] %>%
   goesaodc_openFile()
 
 AOD <- ncdf4::ncvar_get(nc, "AOD")

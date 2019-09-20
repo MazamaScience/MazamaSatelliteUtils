@@ -12,4 +12,5 @@ test_that("fails on when passed incorrect parameters", {
   expect_error({
     goesaodc_downloadAOD()
   })
+  
 })

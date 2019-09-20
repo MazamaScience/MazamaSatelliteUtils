@@ -4,66 +4,77 @@
 #' specified \code{region}
 #' 
 #' @param datetime desired datetime in any Y-m-d H [MS] format or \code{POSIXct}
-#' @param region a named region. Currently only \code{"CONUS"} is supported
+#' @param bbox bounding box for region of interest
+#' @param timezone timezone in which to interpret the \code{datetime}
+#' 
+# ROGER:  Flesh out documentation
 #' 
 #' @return logical
 
 
 isDaylight <- function(
   datetime = NULL,
-  region = "CONUS"
+  bbox = NULL,
+  timezone = "UTC"
 ) {
   
-  # ----- parse datetime -------------------------------------------------------
+  # ----- Validate parameters --------------------------------------------------
   
-  if (!is.null(datetime)) {
-    orders <- c("Ymd", "YmdH", "YmdHM", "YmdHMS")
-    suppressWarnings({
-      dt <- lubridate::parse_date_time(datetime, orders, tz = "UTC")
-    })
-    if (is.na(dt)) {
-      stop("Parameter 'datetime' cannot be interpreted.")
-    } 
+  MazamaCoreUtils::stopIfNull(datetime)
+  MazamaCoreUtils::stopIfNull(bbox)
+  
+  datetime <- MazamaCoreUtils::parseDatetime(datetime, timezone)
+  
+  # ----- Extract boundaries ---------------------------------------------------
+  
+  if ( 
+    class(bbox) == "matrix" &&
+    all(colnames(bbox) == c("min","max")) &&
+    all(rownames(bbox) == c("x","y"))
+  ) {
+    # > bbox(us)
+    # min       max
+    # x -117.12238 -86.77278
+    # y   14.55055  32.71846
+    w <- bbox[1,1]
+    e <- bbox[1,2]
+    s <- bbox[2,1]
+    n <- bbox[2,2]
   } else {
-    stop("Parameter 'datetime' must be defined.")
+    # ROGER:  support raster::extent() type bbox
+    stop("bbox type not recognized")
   }
   
-  # ----- get CONUS sunrise and sunset ------------------------
+  mid_lat <- s + (n-s)/2
   
-  if (region == "CONUS") {
-    
-    # East Coast and West Coast coordinates determined as follows:
-    # 
-    # > states_conus <- subset(USCensusStates, stateCode %in% PWFSLSmoke::CONUS)
-    # > bb <- bbox(states_conus)
-    # > lat_midpoint <- (bb["y", "max"] - bb["y", "min"])/2 + bb["y", "min"]
-    # > west_coast <- c(bb["x", "min"], lat_midpoint)
-    # > west_coast
-    # [1] -124.76307   36.95373
-    # > east_coast <- c(bb["x", "max"], lat_midpoint)
-    # east_coast
-    # [1] -66.94989  36.95373
-    
-    # maptools::sunriset() requires a matrix
-    west_coast <- matrix(c(-124.76307, 36.95373), nrow = 1)
-    east_coast <- matrix(c(-66.94989, 36.95373), nrow = 1)
-    
-    # sunrise for East Coast
-    sunrise <- maptools::sunriset(east_coast, dt, direction = "sunrise",
+  # ----- Calculate sunrise and sunset -----------------------------------------
+  
+  # maptools::sunriset() requires a matrix
+  west_edge <- matrix(c(w, mid_lat), nrow = 1)
+  east_edge <- matrix(c(e, mid_lat), nrow = 1)
+  
+  # sunrise for mid_lat on East edge
+  sunriseDF <- maptools::sunriset(east_edge, 
+                                  datetime, 
+                                  direction = "sunrise",
                                   POSIXct.out = TRUE)
-    
-    # sunset for West Coast
-    sunset <- maptools::sunriset(west_coast, dt, direction = "sunset",
+  
+  # sunset for mid_lat West edge
+  sunsetDF <- maptools::sunriset(west_edge, 
+                                 datetime, 
+                                 direction = "sunset",
                                  POSIXct.out = TRUE)
-    
-    sunrise <- sunrise[,2]; sunset <- sunset[,2]
-  }
+  
+  # Extract vectors
+  sunrise <- sunriseDF[,2] 
+  sunset <- sunsetDF[,2]
   
   # ----- check if datetime is during daylight hours ---------------------------
   
-  if (dt > sunrise && dt < sunset) {
+  if ( datetime > sunrise && datetime < sunset ) {
     return(TRUE)
   } else {
     return(FALSE)
   }
+  
 }
