@@ -9,6 +9,17 @@
 #' 
 #' @return Tibble (dataframe) with NetCDF variables and associated locations.
 #' 
+#
+# ROGER:  Read up on \dontrun{} amd \donttest{} at:
+# ROGER:    https://kbroman.org/pkg_primer/pages/tests.html
+# ROGER:    https://cran.r-project.org/web/packages/roxygen2/vignettes/rd.html
+# ROGER:
+# ROGER:  Also spend some time understanding the use of devtools::test()
+# ROGER:
+# ROGER:  Update the example below to be \donttest{} and to use one of the
+# ROGER:  package internal netcdf files. This should run fast on our desktop
+# ROGER:  machines where the goes~Grid files have already been created.
+#
 #' @examples
 #' \dontrun{
 #' library(MazamaSatelliteUtils)
@@ -32,6 +43,16 @@ goesaodc_createTibble <- function(
   
   # ----- Assemble Tibble ------------------------------------------------------
   
+  # ROGER:  The goestEastGrid and goestWestGrid are no longer available as
+  # ROGER:  package variables. We will need to:
+  # ROGER:    1) have satID choose which data file to load
+  # ROGER:    2) test for their existence and stop with an appropriate message if not found
+  # ROGER:    3) load them into memory with something like:
+  # ROGER:  gridFile <- "goestEastGrid.rda"
+  # ROGER:  filePath <- file.path(getSatelliteDataDir(), gridFile)
+  # ROGER:  goesGrid <- get(load(filePath))
+  # ROGER:    4) obtain lon and lat from the now in-memory goesGrid
+
   varList <- list()
   
   # Get AOD and DQF from netCDF
