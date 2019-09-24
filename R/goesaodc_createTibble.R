@@ -46,7 +46,8 @@ goesaodc_createTibble <- function(
   # ROGER:  The goestEastGrid and goestWestGrid are no longer available as
   # ROGER:  package variables. We will need to:
   # ROGER:    1) have satID choose which data file to load
-  # ROGER:    2) test for their existence and stop with an appropriate message if not found
+  # ROGER:    2) test for existence and stop with an appropriate message 
+  #              if not found
   # ROGER:    3) load them into memory with something like:
   # ROGER:  gridFile <- "goestEastGrid.rda"
   # ROGER:  filePath <- file.path(getSatelliteDataDir(), gridFile)
@@ -62,13 +63,18 @@ goesaodc_createTibble <- function(
   # Get GOES satellite ID number
   satId <- ncdf4::ncatt_get(nc, varid = 0, attname = "platform_ID")$value
   
+  # Read dataDir (ADDED BY ROGER FOR TESTING)
+  satelliteDataDir <- getSatelliteDataDir()
+  load(paste0(satelliteDataDir,"/", "goesEastGrid.rda"))
+  load(paste0(satelliteDataDir,"/", "goesWestGrid.rda"))
+  
   # Read in package internal grid information
   if (satId == "G16") {
-    varList[["lon"]] <- as.numeric( MazamaSatelliteUtils::goesEastGrid$longitude )
-    varList[["lat"]] <- as.numeric( MazamaSatelliteUtils::goesEastGrid$latitude )
+    varList[["lon"]] <- as.numeric( goesEastGrid$longitude )
+    varList[["lat"]] <- as.numeric( goesEastGrid$latitude )
   } else if (satId == "G17") {
-    varList[["lon"]] <- as.numeric( MazamaSatelliteUtils::goesWestGrid$longitude )
-    varList[["lat"]] <- as.numeric( MazamaSatelliteUtils::goesWestGrid$latitude )
+    varList[["lon"]] <- as.numeric( goesWestGrid$longitude )
+    varList[["lat"]] <- as.numeric( goesWestGrid$latitude )
   }
   
   # Create a tibble with all columns but removing rows if any of the columns

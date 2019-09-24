@@ -143,8 +143,12 @@ goesaodc_isGoesProjection <- function(
   nc
 ) {
   projection <- goesaodc_getProjection(nc)
-  return(all(unlist(projection) == unlist(MazamaSatelliteUtils::goesEastGrid$projection)) ||
-         all(unlist(projection) == unlist(MazamaSatelliteUtils::goesWestGrid$projection)))
+  # Read dataDir (ADDED BY ROGER FOR TESTING)
+  satelliteDataDir <- getSatelliteDataDir()
+  load(paste0(satelliteDataDir,"/", "goesEastGrid.rda"))
+  load(paste0(satelliteDataDir,"/", "goesWestGrid.rda"))
+  return(all(unlist(projection) == unlist(goesEastGrid$projection)) ||
+         all(unlist(projection) == unlist(goesWestGrid$projection)))
 }
 
 

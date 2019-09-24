@@ -1,11 +1,21 @@
 #' @export
 #' 
 #' @title Create GOES grids in satelliteDataDir
+#' @param showProgress logical specify whether to show progress bar while 
+#' building grids
 #' @description Creates data files with geolocation information for GOES-16 
-#' (East) and GOES-17 (West) satellite products.
+#' (East) and GOES-17 (West) satellite products.  Checks for the presence of
+#' GOES 16 & GOES 17 .nc (NetCDF) files in /inst/extdata. If present, it
+#' will read projection and coordinate grid information from them and create
+#' GOES East and West grids in the directory previously set with 
+#' \code{setSatelliteDataDir()}.
 #' 
-#' ROGER: Flesh out this documentation
-#'  
+#' JON: What do you want to do if the .nc files DON'T exist?
+#' TODO: Function currently generates warinings:
+#' "In sqrt(b^2 - 4 * a * c) : NaNs produced"
+#' Check that we can safely ignore them, or even suppressWarningMessages({ ... })
+#' 
+#' 
 installGoesGrids <- function(
   # ROGER:  Optional "showProgress = TRUE"
 ) {

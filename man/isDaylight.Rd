@@ -5,12 +5,14 @@
 \title{check if specified \code{datetime} is during the daylight hours of the
 specified \code{region}}
 \usage{
-isDaylight(datetime = NULL, region = "CONUS")
+isDaylight(datetime = NULL, bbox = NULL, timezone = "UTC")
 }
 \arguments{
 \item{datetime}{desired datetime in any Y-m-d H [MS] format or \code{POSIXct}}
 
-\item{region}{a named region. Currently only \code{"CONUS"} is supported}
+\item{bbox}{bounding box for region of interest}
+
+\item{timezone}{timezone in which to interpret the \code{datetime}}
 }
 \value{
 logical
