@@ -44,15 +44,15 @@ goesaodc_createTibble <- function(
   # ----- Assemble Tibble ------------------------------------------------------
   
   # ROGER:  The goestEastGrid and goestWestGrid are no longer available as
-  # ROGER:  package variables. We will need to:
-  # ROGER:    1) have satID choose which data file to load
-  # ROGER:    2) test for existence and stop with an appropriate message 
-  #              if not found
-  # ROGER:    3) load them into memory with something like:
-  # ROGER:  gridFile <- "goestEastGrid.rda"
-  # ROGER:  filePath <- file.path(getSatelliteDataDir(), gridFile)
-  # ROGER:  goesGrid <- get(load(filePath))
-  # ROGER:    4) obtain lon and lat from the now in-memory goesGrid
+  #         package variables. We will need to:
+  # [X] ROGER:    1) have satID choose which data file to load
+  # [X] ROGER:    2) test for existence and stop with an appropriate message 
+  #                  if not found
+  # [X] ROGER:    3) load them into memory with something like:
+  #   gridFile <- "goestEastGrid.rda"
+  #   filePath <- file.path(getSatelliteDataDir(), gridFile)
+  #   goesGrid <- get(load(filePath))
+  # [X] ROGER:  4) obtain lon and lat from the now in-memory goesGrid
 
   varList <- list()
   
@@ -60,26 +60,34 @@ goesaodc_createTibble <- function(
   varList[["AOD"]] <- as.numeric(ncdf4::ncvar_get(nc, "AOD"))
   varList[["DQF"]] <- as.numeric(ncdf4::ncvar_get(nc, "DQF"))
   
-  # Get GOES satellite ID number
-  satId <- ncdf4::ncatt_get(nc, varid = 0, attname = "platform_ID")$value
+  # Get satID from netCDF, will be either "G16" or "G17"
+  satID <- ncdf4::ncatt_get(nc, varid = 0, attname = "platform_ID")$value
   
-  # Read dataDir (ADDED BY ROGER FOR TESTING)
-  satelliteDataDir <- getSatelliteDataDir()
-  load(paste0(satelliteDataDir,"/", "goesEastGrid.rda"))
-  load(paste0(satelliteDataDir,"/", "goesWestGrid.rda"))
+  # have satID choose which gridFile to load
+  if ( satID == "G16") {
+    gridFile <- "goesEastGrid.rda"
+  } else if ( satID == "G17" ) {
+    gridFile <- "goesWestGrid.rda"
+  }
+  
+  # FILEPATH BUILDING CODE
+  filePath <- file.path(getSatelliteDataDir(), gridFile)
+  
+  # test for existence, load grid if found, stop with an appropriate message
+  # if missing
+  if ( file.exists(filePath) ) {
+    goesGrid <- get(load(filePath))
+  } else {
+    stop("Grid file not found. Run 'InstallGoesGrids()' first")
+  }  
   
   # Read in package internal grid information
-  if (satId == "G16") {
-    varList[["lon"]] <- as.numeric( goesEastGrid$longitude )
-    varList[["lat"]] <- as.numeric( goesEastGrid$latitude )
-  } else if (satId == "G17") {
-    varList[["lon"]] <- as.numeric( goesWestGrid$longitude )
-    varList[["lat"]] <- as.numeric( goesWestGrid$latitude )
-  }
+  varList[["lon"]] <- as.numeric( goesGrid$longitude )
+  varList[["lat"]] <- as.numeric( goesGrid$latitude )
   
   # Create a tibble with all columns but removing rows if any of the columns
   # are missing.
-  # TODO:  tidyr::drop_na() may be too restrictive if we have multiple data columns.
+  # TODO:  tidyr::drop_na() may be too restrictive for multiple data columns.
   tbl <-
     tibble::as_tibble(varList) %>%
     tidyr::drop_na()
