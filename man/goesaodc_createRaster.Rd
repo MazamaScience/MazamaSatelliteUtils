@@ -42,10 +42,14 @@ and data quality flag level. Data quality level can take a value of:
 3: No retrieval quality flag
 }
 \examples{
-\dontrun{
-setSatelliteDataDir("~/Data/Satellite")
-nc <- goesaodc_openFile("OR_ABI-L2-AODC-M6_G16_s20191291201274_e20191291204047_c20191291210009.nc")
+\donttest{
+library(MazamaSatelliteUtils)
 
+setSatelliteDataDir("~/Data/Satellite")
+netCDF <- system.file("extdata", 
+                      "OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc", 
+                      package = "MazamaSatelliteUtils")
+nc <- ncdf4::nc_open(netCDF) 
 rstr <- goesaodc_createRaster(nc, res = 0.1, dqfLevel = 2) 
 raster::plot(rstr, "AOD")
 maps::map("state", add = TRUE)

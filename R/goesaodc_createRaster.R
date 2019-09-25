@@ -25,10 +25,14 @@
 #' @return RasterBrick
 #' 
 #' @examples 
-#' \dontrun{
-#' setSatelliteDataDir("~/Data/Satellite")
-#' nc <- goesaodc_openFile("OR_ABI-L2-AODC-M6_G16_s20191291201274_e20191291204047_c20191291210009.nc")
+#' \donttest{
+#' library(MazamaSatelliteUtils)
 #' 
+#' setSatelliteDataDir("~/Data/Satellite")
+#' netCDF <- system.file("extdata", 
+#'                       "OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc", 
+#'                       package = "MazamaSatelliteUtils")
+#' nc <- ncdf4::nc_open(netCDF) 
 #' rstr <- goesaodc_createRaster(nc, res = 0.1, dqfLevel = 2) 
 #' raster::plot(rstr, "AOD")
 #' maps::map("state", add = TRUE)
@@ -45,6 +49,54 @@ goesaodc_createRaster <- function(
   latHi = NULL,
   dqfLevel = NULL
 ) {
+
+  # Check that nc has GOES projection
+  if ( !goesaodc_isGoesProjection(nc) ) {
+    stop("Parameter 'nc' does not have standard GOES-R projection information.")
+  }
+  
+  # Get satID from netCDF, will be either "G16" or "G17"
+  satID <- ncdf4::ncatt_get(nc, varid = 0, attname = "platform_ID")$value
+  
+  # Choose which gridFile to load based on satID
+  if ( satID == "G16") {
+    gridFile <- "goesEastGrid.rda"
+  } else if ( satID == "G17" ) {
+    gridFile <- "goesWestGrid.rda"
+  }
+  
+  # Assemble the correct filepath based on satID and Data directory
+  filePath <- file.path(getSatelliteDataDir(), gridFile)
+  
+  # Test for grid existence and if found, load it. Stop with appropriate message
+  # if missing
+  if ( file.exists(filePath) ) {
+    goesGrid <- get(load(filePath))
+  } else {
+    stop("Grid file not found. Run 'InstallGoesGrids()' first")
+  }  
+  
+  # ----- Create Raster --------------------------------------------------------
+  
+  # set extent
+  if (!is.null(bbox)) {
+    lon_min <- bbox[1, 1]; lon_max <- bbox[1, 2]
+    lat_min <- bbox[2, 1]; lat_max <- bbox[2, 2]
+  } else {
+    lon_min <- min(goesGrid$longitude, na.rm = TRUE)
+    lon_max <- max(goesGrid$longitude, na.rm = TRUE)
+    lat_min <- min(goesGrid$latitude, na.rm = TRUE)
+    lat_max <- max(goesGrid$latitude, na.rm = TRUE)
+  }
+  
+  ncols <- ( ( lon_max - lon_min ) / res ) + 1
+  nrows <- ( ( lat_max - lat_min ) / res ) + 1
+  
+  raster <- raster::raster(nrows = nrows, ncols = ncols,
+                           xmn = lon_min, xmx = lon_max,
+                           ymn = lat_min, ymx = lat_max,
+                           res = res,
+                           crs = "+proj=longlat +datum=WGS84 +ellps=GRS80")
   
   # ----- Create SpatialPointsDataFrame ----------------------------------------
   
@@ -54,29 +106,9 @@ goesaodc_createRaster <- function(
                                                 latLo = latLo, latHi = latHi,
                                                 dqfLevel = dqfLevel)
   
-  # ----- Create Raster --------------------------------------------------------
+  # ----- Create rasterBrick ---------------------------------------------------
   
-  # set extent
-  if (!is.null(bbox)) {
-    lon_min <- bbox[1, 1]; lon_max <- bbox[1, 2]
-    lat_min <- bbox[2, 1]; lat_max <- bbox[2, 2]
-  } else {
-    lon_min <- min(MazamaSatelliteUtils::goesEastGrid$longitude, na.rm = TRUE)
-    lon_max <- max(MazamaSatelliteUtils::goesEastGrid$longitude, na.rm = TRUE)
-    lat_min <- min(MazamaSatelliteUtils::goesEastGrid$latitude, na.rm = TRUE)
-    lat_max <- max(MazamaSatelliteUtils::goesEastGrid$latitude, na.rm = TRUE)
-  }
-  
-  ncols <- ((lon_max - lon_min)/res)+1
-  nrows <- ((lat_max - lat_min)/res)+1
-  
-  raster <- raster::raster(nrows=nrows, ncols=ncols,
-                           xmn=lon_min, xmx=lon_max,
-                           ymn=lat_min, ymx=lat_max,
-                           res=res,
-                           crs="+proj=longlat +datum=WGS84 +ellps=GRS80")
-  
-  rasterBrick <- raster::rasterize(spatialPoints, raster, fun=fun)
+  rasterBrick <- raster::rasterize(spatialPoints, raster, fun = fun)
   
   return(rasterBrick)
   
