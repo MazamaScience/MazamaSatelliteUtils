@@ -17,10 +17,16 @@ Create a tibble with columns: AOD, DQF, lon and lat.
 This information is sufficient to plot as points or create a raster object.
 }
 \examples{
-\dontrun{
+\donttest{
 library(MazamaSatelliteUtils)
+
 setSatelliteDataDir("~/Data/Satellite")
-nc <- goesaodc_openFile("OR_ABI-L2-AODC-M6_G16_s20191291201274_e20191291204047_c20191291210009.nc")
+
+netCDF <- system.file("extdata", 
+                     "OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc", 
+                     package = "MazamaSatelliteUtils")
+                     
+nc <- ncdf4::nc_open(netCDF)
 
 tbl <- goesaodc_createTibble(nc)
 head(tbl)

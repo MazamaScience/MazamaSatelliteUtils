@@ -8,26 +8,21 @@
 #' This information is sufficient to plot as points or create a raster object.
 #' 
 #' @return Tibble (dataframe) with NetCDF variables and associated locations.
-#' 
-#
-# ROGER:  Read up on \dontrun{} amd \donttest{} at:
-# ROGER:    https://kbroman.org/pkg_primer/pages/tests.html
-# ROGER:    https://cran.r-project.org/web/packages/roxygen2/vignettes/rd.html
-# ROGER:
-# ROGER:  Also spend some time understanding the use of devtools::test()
-# ROGER:
-# ROGER:  Update the example below to be \donttest{} and to use one of the
-# ROGER:  package internal netcdf files. This should run fast on our desktop
-# ROGER:  machines where the goes~Grid files have already been created.
 #
 #' @examples
-#' \dontrun{
-#' library(MazamaSatelliteUtils)
-#' setSatelliteDataDir("~/Data/Satellite")
-#' nc <- goesaodc_openFile("OR_ABI-L2-AODC-M6_G16_s20191291201274_e20191291204047_c20191291210009.nc")
-#' 
-#' tbl <- goesaodc_createTibble(nc)
-#' head(tbl)
+#' \donttest{
+#'library(MazamaSatelliteUtils)
+#'
+#'setSatelliteDataDir("~/Data/Satellite")
+#'
+#'netCDF <- system.file("extdata", 
+#'                      "OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc", 
+#'                      package = "MazamaSatelliteUtils")
+#'                      
+#'nc <- ncdf4::nc_open(netCDF)
+#'
+#'tbl <- goesaodc_createTibble(nc)
+#'head(tbl)
 #' }
 
 goesaodc_createTibble <- function(
@@ -42,18 +37,6 @@ goesaodc_createTibble <- function(
   }
   
   # ----- Assemble Tibble ------------------------------------------------------
-  
-  # ROGER:  The goestEastGrid and goestWestGrid are no longer available as
-  #         package variables. We will need to:
-  # [X] ROGER:    1) have satID choose which data file to load
-  # [X] ROGER:    2) test for existence and stop with an appropriate message 
-  #                  if not found
-  # [X] ROGER:    3) load them into memory with something like:
-  #   gridFile <- "goestEastGrid.rda"
-  #   filePath <- file.path(getSatelliteDataDir(), gridFile)
-  #   goesGrid <- get(load(filePath))
-  # [X] ROGER:  4) obtain lon and lat from the now in-memory goesGrid
-
   varList <- list()
   
   # Get AOD and DQF from netCDF
@@ -63,17 +46,17 @@ goesaodc_createTibble <- function(
   # Get satID from netCDF, will be either "G16" or "G17"
   satID <- ncdf4::ncatt_get(nc, varid = 0, attname = "platform_ID")$value
   
-  # have satID choose which gridFile to load
+  # Choose which gridFile to load based on satID
   if ( satID == "G16") {
     gridFile <- "goesEastGrid.rda"
   } else if ( satID == "G17" ) {
     gridFile <- "goesWestGrid.rda"
   }
   
-  # FILEPATH BUILDING CODE
+  # Assemble the correct filepath based on satID and Data directory
   filePath <- file.path(getSatelliteDataDir(), gridFile)
   
-  # test for existence, load grid if found, stop with an appropriate message
+  # Test for grid existence and if found, load it. Stop with appropriate message
   # if missing
   if ( file.exists(filePath) ) {
     goesGrid <- get(load(filePath))
