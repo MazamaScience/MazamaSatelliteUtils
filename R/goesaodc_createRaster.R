@@ -49,7 +49,7 @@ goesaodc_createRaster <- function(
   latHi = NULL,
   dqfLevel = NULL
 ) {
-
+  
   # Check that nc has GOES projection
   if ( !goesaodc_isGoesProjection(nc) ) {
     stop("Parameter 'nc' does not have standard GOES-R projection information.")
@@ -100,11 +100,15 @@ goesaodc_createRaster <- function(
   
   # ----- Create SpatialPointsDataFrame ----------------------------------------
   
-  spatialPoints <- goesaodc_createSpatialPoints(nc = nc,
-                                                bbox = bbox,
-                                                lonLo = lonLo, lonHi = lonHi,
-                                                latLo = latLo, latHi = latHi,
-                                                dqfLevel = dqfLevel)
+  spatialPoints <- goesaodc_createSpatialPoints(
+    nc = nc,
+    bbox = bbox,
+    lonLo = lonLo, 
+    lonHi = lonHi,
+    latLo = latLo, 
+    latHi = latHi,
+    dqfLevel = dqfLevel
+  )
   
   # ----- Create rasterBrick ---------------------------------------------------
   

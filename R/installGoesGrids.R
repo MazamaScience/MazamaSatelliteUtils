@@ -17,14 +17,7 @@
 #' 
 #' 
 installGoesGrids <- function(
-  # ROGER:  Optional "showProgress = TRUE"
 ) {
-  
-  # ROGER:  Can we use the progress package to display a progress bar??
-  # ROGER:    https://github.com/r-lib/progress
-  # ROGER:
-  # ROGER:  The goal is only to let someone know that work is being done and
-  # ROGER:  show elapsed time.
   
   outputDir <- getSatelliteDataDir()
   
@@ -34,6 +27,8 @@ installGoesGrids <- function(
   G16_filepath <- file.path(outputDir, filename)
   
   if ( !file.exists(G16_filepath) ) {
+    cat(sprintf("Creating %s", G16_filepath), "\n")
+    
     
     # Get a NetCDF handle for the package internal GOES-16 dataset
     nc_filepath <- system.file(
@@ -72,6 +67,7 @@ installGoesGrids <- function(
   G17_filepath <- file.path(outputDir, filename)
   
   if ( !file.exists(G17_filepath) ) {
+    cat(sprintf("Creating %s", G16_filepath), "\n")
     
     # Get a NetCDF handle for the package internal GOES-17 dataset
     nc_filepath <- system.file(

@@ -14,6 +14,7 @@
 #' \code{startdate} is specified to the hour, only files for that hour will be 
 #' downloaded. If \code{startdate} is specified only to the day, all files for 
 #' that day will be downloaded.
+#' UPDATE THESE!!!!
 #' 
 #' @return Vector of downloaded filepaths.
 #' 
