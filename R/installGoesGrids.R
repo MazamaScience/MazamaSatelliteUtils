@@ -46,6 +46,7 @@ installGoesGrids <- function(
     ncol <- length(ncvar_get(nc, varid = "y"))
     
     # Create a tibble where each AOD value has an associated location
+    cat(sprintf("%s", "................"), "\n")
     coordGrid <- goesaodc_getCoordGrid(nc)
     longitude <- coordGrid$lon
     latitude <- coordGrid$lat
@@ -58,6 +59,7 @@ installGoesGrids <- function(
     )  
     
     save(goesEastGrid, file = G16_filepath)
+    cat(sprintf("%s", "Done"), "\n")
     
   }
   
@@ -67,7 +69,7 @@ installGoesGrids <- function(
   G17_filepath <- file.path(outputDir, filename)
   
   if ( !file.exists(G17_filepath) ) {
-    cat(sprintf("Creating %s", G16_filepath), "\n")
+    cat(sprintf("Creating %s", G17_filepath), "\n")
     
     # Get a NetCDF handle for the package internal GOES-17 dataset
     nc_filepath <- system.file(
@@ -85,6 +87,7 @@ installGoesGrids <- function(
     ncol <- length(ncvar_get(nc, varid = "y"))
     
     # Create a tibble where each AOD value has an associated location
+    cat(sprintf("%s", "................"), "\n")
     coordGrid <- goesaodc_getCoordGrid(nc)
     longitude <- coordGrid$lon
     latitude <- coordGrid$lat
@@ -97,6 +100,7 @@ installGoesGrids <- function(
     ) 
     
     save(goesWestGrid, file = G17_filepath)
+    cat(sprintf("%s", "Done"), "\n")
     
   }
   
