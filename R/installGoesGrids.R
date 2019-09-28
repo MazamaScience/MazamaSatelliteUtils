@@ -7,14 +7,6 @@
 #' will read projection and coordinate grid information from them and create
 #' GOES East and West grids in the directory previously set with 
 #' \code{setSatelliteDataDir()}.
-#' @examples 
-#' \dontrun{
-#' library(MazamaSatelliteUtils)
-#' 
-#' setSatelliteDataDir("~/Data/Satellite")
-#' installGoesGrids()
-#' 
-#' }
 #' 
 #' JON: What do you want to do if the .nc files DON'T exist?
 #' TODO: Function currently generates warinings:
@@ -22,6 +14,14 @@
 #' Check that we can safely ignore them, or even suppressWarningMessages({ ... })
 #' 
 #' 
+#' @examples
+#' \donttest{
+#' library(MazamaSatelliteUtils)
+#' 
+#' setSatelliteDataDir("~/Data/Satellite")
+#' installGoesGrids()
+#' } 
+
 installGoesGrids <- function(
 ) {
   
