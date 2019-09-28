@@ -29,9 +29,11 @@
 #' library(MazamaSatelliteUtils)
 #' 
 #' setSatelliteDataDir("~/Data/Satellite")
-#' netCDF <- system.file("extdata", 
-#'                       "OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc", 
-#'                       package = "MazamaSatelliteUtils")
+#' netCDF <- system.file(
+#'   "extdata", 
+#'   "OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc", 
+#'   package = "MazamaSatelliteUtils"
+#' )
 #' nc <- ncdf4::nc_open(netCDF) 
 #' rstr <- goesaodc_createRaster(nc, res = 0.1, dqfLevel = 2) 
 #' raster::plot(rstr, "AOD")
@@ -50,10 +52,14 @@ goesaodc_createRaster <- function(
   dqfLevel = NULL
 ) {
   
+  # ----- Validate parameters --------------------------------------------------
+  
   # Check that nc has GOES projection
   if ( !goesaodc_isGoesProjection(nc) ) {
     stop("Parameter 'nc' does not have standard GOES-R projection information.")
   }
+  
+  # ----- Get grid data --------------------------------------------------------
   
   # Get satID from netCDF, will be either "G16" or "G17"
   satID <- ncdf4::ncatt_get(nc, varid = 0, attname = "platform_ID")$value
@@ -73,7 +79,7 @@ goesaodc_createRaster <- function(
   if ( file.exists(filePath) ) {
     goesGrid <- get(load(filePath))
   } else {
-    stop("Grid file not found. Run 'InstallGoesGrids()' first")
+    stop("Grid file not found. Run 'installGoesGrids()' first")
   }  
   
   # ----- Create Raster --------------------------------------------------------

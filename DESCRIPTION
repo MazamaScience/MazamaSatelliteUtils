@@ -1,6 +1,6 @@
 Type: Package
 Package: MazamaSatelliteUtils
-Version: 0.2.2
+Version: 0.2.3
 Title: Utilities for Working with Model and Satellite Data as Rasters
 Authors@R: c(
     person("Jonathan", "Callahan", email="jonathan.s.callahan@gmail.com", role=c("aut","cre")),
@@ -46,7 +46,8 @@ Suggests:
     rmarkdown,
     testthat
 Description: A suite of utility functions providing functionality commonly 
-    needed for download of satellite products and conversion to Raster objects.
+    needed for download and plotting of satellite products and conversion to 
+    Raster objects.
 License: GPL-3
 VignetteBuilder: knitr
 Repository: CRAN

@@ -1,3 +1,9 @@
+# MazamaSatelliteUtils 0.2.3
+
+* New `installGoesGrids()` function creates lat-lon grids from the package
+internal GOES-16 annd Goes-17 netcdf files.
+* Improved documentation and examples.
+
 # MazamaSatelliteUtils 0.2.2
 
 Including two satellite images as raw data for testing.

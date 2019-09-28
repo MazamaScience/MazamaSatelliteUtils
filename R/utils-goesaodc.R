@@ -33,7 +33,8 @@ goesaodc_getCoordBounds <- function(nc) {
 #'
 #' @param nc netcdf handle
 #'
-#' @description Code borrowed from https://github.com/raffscallion/goesfire/blob/master/R/utils.R
+#' @description Code borrowed from 
+#' https://github.com/raffscallion/goesfire/blob/master/R/utils.R
 #'
 #' @return Dataframe.
 #'  
@@ -143,12 +144,12 @@ goesaodc_isGoesProjection <- function(
   nc
 ) {
   projection <- goesaodc_getProjection(nc)
-  # Read dataDir (ADDED BY ROGER FOR TESTING)
   satelliteDataDir <- getSatelliteDataDir()
-  load(paste0(satelliteDataDir,"/", "goesEastGrid.rda"))
-  load(paste0(satelliteDataDir,"/", "goesWestGrid.rda"))
-  return(all(unlist(projection) == unlist(goesEastGrid$projection)) ||
-         all(unlist(projection) == unlist(goesWestGrid$projection)))
+  goesEastGrid <- get(load(file.path(satelliteDataDir, "goesEastGrid.rda")))
+  goesWestGrid <- get(load(file.path(satelliteDataDir, "goesWestGrid.rda")))
+  isGoesEast <- all(unlist(projection) == unlist(goesEastGrid$projection))
+  isGoesWest <- all(unlist(projection) == unlist(goesWestGrid$projection))
+  return(isGoesEast || isGoesWest)
 }
 
 

@@ -31,10 +31,12 @@ Create a SpatialPointsDataFrame of GOES data including data
 within the specified extent and data quality flag level. Data quality level
 can take a value of:
 
-0: High quality retrieval flag
-1: Medium quality retrieval flag
-2: Low quality retrieval flag
-3: No retrieval quality flag
+\itemize{
+\item{0}{ -- High quality retrieval flag}
+\item{1}{ -- Medium quality retrieval flag}
+\item{2}{ -- Low quality retrieval flag}
+\item{3}{ -- No retrieval quality flag}
+}
 }
 \examples{
 \dontrun{

@@ -15,9 +15,11 @@
 #'
 #' setSatelliteDataDir("~/Data/Satellite")
 #'
-#' netCDF <- system.file("extdata", 
-#'                      "OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc", 
-#'                      package = "MazamaSatelliteUtils")
+#' netCDF <- system.file(
+#'   "extdata", 
+#'   "OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc", 
+#'   package = "MazamaSatelliteUtils"
+#' )
 #'                      
 #' nc <- ncdf4::nc_open(netCDF)
 #'
@@ -29,19 +31,14 @@ goesaodc_createTibble <- function(
   nc
 ) {
   
-  # ----- Validate Parameters --------------------------------------------------
+  # ----- Validate parameters --------------------------------------------------
   
   # Check that nc has GOES projection
   if ( !goesaodc_isGoesProjection(nc) ) {
     stop("Parameter 'nc' does not have standard GOES-R projection information.")
   }
   
-  # ----- Assemble Tibble ------------------------------------------------------
-  varList <- list()
-  
-  # Get AOD and DQF from netCDF
-  varList[["AOD"]] <- as.numeric(ncdf4::ncvar_get(nc, "AOD"))
-  varList[["DQF"]] <- as.numeric(ncdf4::ncvar_get(nc, "DQF"))
+  # ----- Get grid data --------------------------------------------------------
   
   # Get satID from netCDF, will be either "G16" or "G17"
   satID <- ncdf4::ncatt_get(nc, varid = 0, attname = "platform_ID")$value
@@ -61,12 +58,20 @@ goesaodc_createTibble <- function(
   if ( file.exists(filePath) ) {
     goesGrid <- get(load(filePath))
   } else {
-    stop("Grid file not found. Run 'InstallGoesGrids()' first")
+    stop("Grid file not found. Run 'installGoesGrids()' first")
   }  
   
-  # Read in package internal grid information
+  # ----- Create tibble --------------------------------------------------------
+  
+  varList <- list()
+  
+  # Get lon and lat from grid file
   varList[["lon"]] <- as.numeric( goesGrid$longitude )
   varList[["lat"]] <- as.numeric( goesGrid$latitude )
+  
+  # Get AOD and DQF from netCDF
+  varList[["AOD"]] <- as.numeric(ncdf4::ncvar_get(nc, "AOD"))
+  varList[["DQF"]] <- as.numeric(ncdf4::ncvar_get(nc, "DQF"))
   
   # Create a tibble with all columns but removing rows if any of the columns
   # are missing.

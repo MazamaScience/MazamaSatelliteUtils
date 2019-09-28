@@ -14,5 +14,6 @@ goesaodc_getCoordGrid(nc)
 Dataframe.
 }
 \description{
-Code borrowed from https://github.com/raffscallion/goesfire/blob/master/R/utils.R
+Code borrowed from 
+https://github.com/raffscallion/goesfire/blob/master/R/utils.R
 }

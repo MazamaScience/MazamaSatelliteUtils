@@ -16,10 +16,12 @@
 #' within the specified extent and data quality flag level. Data quality level
 #' can take a value of:
 #' 
-#' 0: High quality retrieval flag
-#' 1: Medium quality retrieval flag
-#' 2: Low quality retrieval flag
-#' 3: No retrieval quality flag
+#' \itemize{
+#' \item{0}{ -- High quality retrieval flag}
+#' \item{1}{ -- Medium quality retrieval flag}
+#' \item{2}{ -- Low quality retrieval flag}
+#' \item{3}{ -- No retrieval quality flag}
+#' }
 #' 
 #' @return SpatialPointsDataFrame
 #' 
@@ -40,7 +42,7 @@ goesaodc_createSpatialPoints <- function(
   dqfLevel = NULL
 ) {
   
-  # ----- Validate Parameters --------------------------------------------------
+  # ----- Validate parameters --------------------------------------------------
   
   if ( !is.null(dqfLevel) ) {
     if (!(dqfLevel %in% c(0, 1, 2, 3))) {
@@ -48,7 +50,7 @@ goesaodc_createSpatialPoints <- function(
     }
   }
   
-  # ----- Filter Data ----------------------------------------------------------
+  # ----- Filter data ----------------------------------------------------------
   
   # create tibble
   tbl <- goesaodc_createTibble(nc)

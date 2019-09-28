@@ -11,7 +11,6 @@
 #' 
 #' @return logical
 
-
 isDaylight <- function(
   datetime = NULL,
   bbox = NULL,
