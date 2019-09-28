@@ -22,15 +22,13 @@
 #' 
 #' @examples 
 #' \dontrun{
+#' library(MazamaSatelliteUtils)
 #' setSatelliteDataDir("~/Data/Satellite")
 #' 
 #' date <- lubridate::ymd_h("2019-05-16 16", tz = "UTC")
 #' files <- goesaodc_downloadAOD("G16", date)
 #' print(files)
-#' 
-#' date <- 2019051616
-#' files <- goesaodc_downloadAOD("G16", date)
-#' print(files)
+#' THESE NEED TO BE UPDATED!!!!!
 #' }
 
 goesaodc_downloadAOD <- function(
@@ -50,7 +48,6 @@ goesaodc_downloadAOD <- function(
   }
   
   if ( !is.null(startdate) ) {
-    
     # ROGER: Use MazamaCoreUtils::parseDatetime(startdate, timezone = "UTC") for this chunk
     # Is it a full day?
     suppressWarnings({
@@ -70,7 +67,6 @@ goesaodc_downloadAOD <- function(
     }
     
   } else if ( !is.null(jdate) ) {
-    
     # ROGER: orders <- c("Yj", "YjJ", "YjHM", "YjHMS")
     # ROGER: Use lubridate::parse_date_time(jdate, orders = orders, tz = "UTC") for this chunk
     # Check for operator error

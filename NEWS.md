@@ -1,3 +1,9 @@
+# MazamaSatelliteUtils 0.2.3
+
+Updated code to work with included .nc files and also to use grid files which 
+are now located in /Data and built after installation, rather than included as
+part of the apackage.
+
 # MazamaSatelliteUtils 0.2.2
 
 Including two satellite images as raw data for testing.

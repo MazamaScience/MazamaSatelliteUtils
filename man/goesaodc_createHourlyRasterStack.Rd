@@ -60,7 +60,8 @@ Data quality level `dqfLevel` can take a value of:
 3: No retrieval quality flag
 }
 \examples{
-\dontrun{
+\donttest{
+library(MazamaSatelliteUtils)
 setSatelliteDataDir("~/Data/Satellite")
 date <- lubridate::ymd_h("2019-05-16 16", tz = "UTC")
 rstrStack <- goesaodc_createHourlyRasterStack(satId = "G16", 

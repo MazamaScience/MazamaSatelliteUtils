@@ -143,7 +143,6 @@ goesaodc_isGoesProjection <- function(
   nc
 ) {
   projection <- goesaodc_getProjection(nc)
-  # Read dataDir (ADDED BY ROGER FOR TESTING)
   satelliteDataDir <- getSatelliteDataDir()
   load(paste0(satelliteDataDir,"/", "goesEastGrid.rda"))
   load(paste0(satelliteDataDir,"/", "goesWestGrid.rda"))

@@ -32,15 +32,13 @@ UPDATE THESE!!!!
 }
 \examples{
 \dontrun{
+library(MazamaSatelliteUtils)
 setSatelliteDataDir("~/Data/Satellite")
 
 date <- lubridate::ymd_h("2019-05-16 16", tz = "UTC")
 files <- goesaodc_downloadAOD("G16", date)
 print(files)
-
-date <- 2019051616
-files <- goesaodc_downloadAOD("G16", date)
-print(files)
+THESE NEED TO BE UPDATED!!!!!
 }
 }
 \seealso{
