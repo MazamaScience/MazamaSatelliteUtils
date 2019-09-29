@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Determines the x and y bounds (in radians) for a given netcdf handle — goesaodc_getCoordBounds • MazamaSatelliteUtils</title>
+<title>Utilities for working with model and satellite data as rasters. — MazamaSatelliteUtils • MazamaSatelliteUtils</title>
 
 
 <!-- jquery -->
@@ -35,8 +35,9 @@
 
 
 
-<meta property="og:title" content="Determines the x and y bounds (in radians) for a given netcdf handle — goesaodc_getCoordBounds" />
-<meta property="og:description" content="Determines the x and y bounds (in radians) for a given netcdf handle" />
+<meta property="og:title" content="Utilities for working with model and satellite data as rasters. — MazamaSatelliteUtils" />
+<meta property="og:description" content="A suite of utility functions providing functionality commonly 
+needed for download of satellite products and conversion to Raster objects." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -103,36 +104,59 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Determines the x and y bounds (in radians) for a given netcdf handle</h1>
+    <h1>Utilities for working with model and satellite data as rasters.</h1>
     
-    <div class="hidden name"><code>goesaodc_getCoordBounds.Rd</code></div>
+    <div class="hidden name"><code>MazamaSatelliteUtils.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Determines the x and y bounds (in radians) for a given netcdf handle</p>
+    <p>A suite of utility functions providing functionality commonly 
+needed for download of satellite products and conversion to Raster objects.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>goesaodc_getCoordBounds</span>(<span class='no'>nc</span>)</pre>
 
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>nc</th>
-      <td><p>netcdf handle</p></td>
-    </tr>
-    </table>
 
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+    <h2 class="hasAnchor" id="source"><a class="anchor" href="#source"></a>Source</h2>
 
-    <p>A named list with x1, x2, y1, and y2.</p>
+    <p><a href='https://www.ncdc.noaa.gov/sites/default/files/attachments/GOES-17_ABI_L2_AOD_Provisional_ReadMe.pdf'>https://www.ncdc.noaa.gov/sites/default/files/attachments/GOES-17_ABI_L2_AOD_Provisional_ReadMe.pdf</a></p>
+<p>The package contains two sample NetCDF files with GOES-16 and GOES-17 AOD 
+data from for 2019-09-06 18:26 UTC -- 1pm Pacific Daily Time.</p>
+<p>Access these files with:</p>
+<pre>
+G16_filepath &lt;- system.file(
+  "extdata", 
+  "OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc", 
+  package = "MazamaSatelliteUtils")
+
+G17_filepath &lt;- system.file(
+  "extdata", 
+  "OR_ABI-L2-AODC-M6_G17_s20192491826196_e20192491828569_c20192491830494.nc", 
+  package = "MazamaSatelliteUtils")
+</pre>
+
+    <h2 class="hasAnchor" id="goes-aod"><a class="anchor" href="#goes-aod"></a>GOES AOD</h2>
+
+    
+
+<p>ABI L2+ AOD NetCDF files from NOAA contain the aerosol optical 
+depth at 550 nm over land and over water, associated quality flags, mean, 
+maximum, minimum and standard deviation of 550-nm AOD for the entire domain. 
+The AOD is a measure of the columnar extinction (scattering +absorption) of 
+radiation by aerosols. It is proportional to the amount (number or mass 
+concentration) of aerosols in an atmospheric column.</p><dl class='dl-horizontal'>
+  <dt>dqf</dt><dd><p>data quality</p></dd>
+  <dt>aod</dt><dd><p>measure optical depth</p></dd>
+  ...
+
+</dl>
+
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-      <li><a href="#value">Value</a></li>
+      <li><a href="#source">Source</a></li>
+      <li><a href="#goes-aod">GOES AOD</a></li>
     </ul>
 
   </div>

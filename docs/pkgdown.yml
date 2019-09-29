@@ -1,9 +1,5 @@
 pandoc: 1.19.2.1
-pkgdown: 1.3.0
+pkgdown: 1.4.1
 pkgdown_sha: ~
-articles:
-  goes-east_data_quality_limits: goes-east_data_quality_limits.html
-  grid_sizes: grid_sizes.html
-  intro_to_goes_aodc_data: intro_to_goes_aodc_data.html
-  working_with_goes_aodc_rasters: working_with_goes_aodc_rasters.html
+articles: []
 
