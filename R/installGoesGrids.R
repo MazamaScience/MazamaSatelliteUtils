@@ -12,8 +12,18 @@
 #' "In sqrt(b^2 - 4 * a * c) : NaNs produced"
 #' Check that we can safely ignore them, or even suppressWarningMessages({ ... })
 #' 
-installGoesGrids <- function() {
-  
+#' 
+#' @examples
+#' \donttest{
+#' library(MazamaSatelliteUtils)
+#' 
+#' setSatelliteDataDir("~/Data/Satellite")
+#' installGoesGrids()
+#' } 
+
+installGoesGrids <- function(
+) {
+
   outputDir <- getSatelliteDataDir()
   
   # ----- GOES-16 --------------------------------------------------------------

@@ -2,6 +2,8 @@
 
 * New `installGoesGrids()` function creates lat-lon grids from the package
 internal GOES-16 annd Goes-17 netcdf files.
+* All code now expects to find GOES grids located in the directory specified
+by `setSatelliteDataDir()`
 * Improved documentation and examples.
 
 # MazamaSatelliteUtils 0.2.2

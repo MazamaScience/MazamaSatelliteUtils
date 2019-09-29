@@ -29,7 +29,8 @@ goesaodc_openFile <- function(
   
   if ( is.null(filename) )
     stop("Required parameter 'filename' is missing.")
-  
+  # TODO - ADD A CHECK FOR FILE EXISTENCE AND IF MISSING IN dataDir,
+  # LOOK FOR THE FILE IN /extdata INSTEAD. THEN UPDATE EXAMPLES THAT USE ncdf4
   fullPath <- file.path(dataDir, filename)
   
   # Let nc_open error messages bubble up 

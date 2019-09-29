@@ -32,10 +32,14 @@ Quickly subsample and plot points in a GOES AOD
 spatialPointsDataFrame
 }
 \examples{
-\dontrun{
-setSatelliteDataDir("~/Data/Satellite")
-nc <- goesaodc_openFile("OR_ABI-L2-AODC-M6_G16_s20191291201274_e20191291204047_c20191291210009.nc")
+\donttest{
+library(MazamaSatelliteUtils)
 
+setetSatelliteDataDir("~/Data/Satellite")
+netCDF <- system.file("extdata", 
+                      "OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc", 
+                      package = "MazamaSatelliteUtils")
+nc <- ncdf4::nc_open(netCDF) 
 maps::map("state")
 sp <- goesaodc_createSpatialPoints(nc, dqfLevel = 1)
 goesaodc_plotSpatialPoints(sp, cex = 0.25, add = TRUE)

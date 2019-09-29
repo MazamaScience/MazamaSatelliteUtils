@@ -18,3 +18,11 @@ TODO: Function currently generates warinings:
 "In sqrt(b^2 - 4 * a * c) : NaNs produced"
 Check that we can safely ignore them, or even suppressWarningMessages({ ... })
 }
+\examples{
+\donttest{
+library(MazamaSatelliteUtils)
+
+setSatelliteDataDir("~/Data/Satellite")
+installGoesGrids()
+} 
+}
