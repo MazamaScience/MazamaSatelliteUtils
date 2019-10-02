@@ -4,7 +4,8 @@
 \alias{goesaodc_listFiles}
 \title{List downloaded GOES AOD files for a specified date and hour}
 \usage{
-goesaodc_listFiles(satId = NULL, startdate = NULL, jdate = NULL)
+goesaodc_listFiles(satId = NULL, startdate = NULL, jdate = NULL,
+  fullDay = FALSE)
 }
 \arguments{
 \item{satId}{ID number of the source GOES satellite}
@@ -13,6 +14,8 @@ goesaodc_listFiles(satId = NULL, startdate = NULL, jdate = NULL)
 
 \item{jdate}{desired date in as a Julian date string, i.e. as seen in the
 netcdf filenames}
+
+\item{fullDay}{Specifies that the user wants an entire day's worth of data}
 }
 \value{
 Vector of filenames.
@@ -26,12 +29,17 @@ incoming \code{startdate} or \code{jdate} is specified to the minute or
 second.
 }
 \examples{
-\dontrun{
+\donttest{
 library(MazamaSatelliteUtils)
 setSatelliteDataDir("~/Data/Satellite")
 
-date <- lubridate::ymd_h("2019-05-16 16", tz = "UTC")
-files <- goesaodc_listFiles("G16", date)
-print(files)
+date_with_hour <- "2019-09-06 16"
+goesaodc_listFiles(satId = "G16", startdate = date_with_hour)
+
+jdate <- "201924916"
+goesaodc_listFiles(satId = "G17", jdate = jdate, fullDay = TRUE)
+
+day_only <- "2019-09-06"
+goesaodc_listFiles(satId = "G16", startdate = day_only)
 }
 }

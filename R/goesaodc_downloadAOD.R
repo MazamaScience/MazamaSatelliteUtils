@@ -28,7 +28,6 @@
 #' date <- lubridate::ymd_h("2019-05-16 16", tz = "UTC")
 #' files <- goesaodc_downloadAOD("G16", date)
 #' print(files)
-#' THESE NEED TO BE UPDATED!!!!!
 #' }
 
 goesaodc_downloadAOD <- function(

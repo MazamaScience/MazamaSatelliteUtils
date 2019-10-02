@@ -6,6 +6,7 @@
 #' @param startdate desired date in any Y-m-d [H] format or \code{POSIXct}
 #' @param jdate desired date in as a Julian date string, i.e. as seen in the
 #'   netcdf filenames
+#' @param fullDay Specifies that the user wants an entire day's worth of data
 #' 
 #' @description Retrieve a list of GOES AOD files available in the
 #' \code{satelliteDataDir} for a specified date and hour.
@@ -17,81 +18,65 @@
 #' @return Vector of filenames.
 #' 
 #' @examples 
-#' \dontrun{
+#' \donttest{
 #' library(MazamaSatelliteUtils)
 #' setSatelliteDataDir("~/Data/Satellite")
 #' 
-#' date <- lubridate::ymd_h("2019-05-16 16", tz = "UTC")
-#' files <- goesaodc_listFiles("G16", date)
-#' print(files)
+#' date_with_hour <- "2019-09-06 16"
+#' goesaodc_listFiles(satId = "G16", startdate = date_with_hour)
+#' 
+#' jdate <- "201924916"
+#' goesaodc_listFiles(satId = "G17", jdate = jdate, fullDay = TRUE)
+#' 
+#' day_only <- "2019-09-06"
+#' goesaodc_listFiles(satId = "G16", startdate = day_only)
 #' }
 
 goesaodc_listFiles <- function(
   satId = NULL,
   startdate = NULL,
-  jdate = NULL
-  # ROGER:  Include "fullDay = FALSE"
+  jdate = NULL,
+  fullDay = FALSE
 ) {
   
-  # ----- Validate Parameters --------------------------------------------------
-  
-  satId <- toupper(satId)
-  if ( !(satId %in% c("G16", "G17")) ) {
-    stop("Must specify GOES satellite ID (G16 or G17)")
+  # VERIFY THAT satId HAS BEEN SPECIFIED
+  if ( is.null(satId) ) {
+    
+    stop("GOES satID must be specified")
+    
+  } else {
+    
+    satId <- toupper(satId)
+    
+    if ( !(satId %in% c("G16", "G17")) ) {
+      stop("Must specify GOES satellite ID (G16 or G17)")
+      
+    }
+    
   }
   
+  # IF A startdate HAS BEEN PASSED IN, ATTEMPT TO PARSE IT
   if ( !is.null(startdate) ) {
     
-    # ROGER: Use MazamaCoreUtils::parseDatetime(startdate, timezone = "UTC") for this chunk
-    # Is it a full day?
-    suppressWarnings({
-      starttime <- lubridate::parse_date_time(startdate, "Ymd", tz = "UTC") 
-    })
-    if ( !is.na(starttime) ) {
+    suppressWarnings(
+      starttime <- MazamaCoreUtils::parseDatetime(startdate, timezone = "UTC") )
+    if (lubridate::hour(starttime) == 0) {
       fullDay <- TRUE
-    } else {
-      orders <- c("YmdH","YmdHM","YmdHMS")
-      suppressWarnings({
-        starttime <- lubridate::parse_date_time(startdate, orders, tz = "UTC")
-      })
-      if ( is.na(starttime) ) {
-        stop("Parameter 'startdate' cannot be interpreted. Is it a 'jdate'?")
-      }
-      fullDay <- FALSE
+      
     }
     
+    # OTHERWISE IF jdate PRESENT, CONVERT IT TO POSIXt
   } else if ( !is.null(jdate) ) {
     
-    # ROGER: orders <- c("Yj", "YjJ", "YjHM", "YjHMS")
-    # ROGER: Use lubridate::parse_date_time(jdate, orders = orders, tz = "UTC") for this chunk
-    # Check for operator error
-    if ( !is.numeric(jdate) && !is.character(jdate) ) {
-      jdate_class <- paste(class(jdate), sep = ", ")
-      stop(paste0("Parameter 'jdate' cannot be of class '", jdate_class, "'"), call. = FALSE)
-    }
-    
-    jdate <- as.character(jdate)
-    
-    # Check for operator error
-    if ( stringr::str_detect(jdate, "[^0-9]") ) {
-      stop(paste0("'", jdate, "' is not a Julian date string."), call. = FALSE)
-    }
-    
-    if ( stringr::str_count(jdate) == 5 ) {
-      starttime <- strptime(jdate, "%Y%j", tz = "UTC")
+    if (stringr::str_length(jdate) <= 7) {
+      # ie 2019249
       fullDay <- TRUE
-    } else if ( stringr::str_count(jdate) == 7 ) {
-      starttime <- strptime(jdate, "%Y%j%H", tz = "UTC")
-      fullDay <- FALSE
-    } else if ( stringr::str_count(jdate) == 9 ) {
-      starttime <- strptime(jdate, "%Y%j%H", tz = "UTC")
-      fullDay <- FALSE
-    } else {
-      # strip the string down to the YjH level
-      jdate <- stringr::str_sub(jdate, end = 9)
-      starttime <- strptime(jdate, "%Y%j%H", tz = "UTC")
-      fullDay <- FALSE
-    }
+    } 
+    
+    # JDATE IS STRIPPED TO 13 CHARS AS 14TH WON'T PARSE (20192491646196)
+    jdate <- stringr::str_sub(jdate, 1, 13)
+    formats <- c("Yj", "YjH", "YjHMS")
+    starttime <- lubridate::parse_date_time(jdate, orders = formats, tz = "UTC")
     
   } else {
     
@@ -99,17 +84,27 @@ goesaodc_listFiles <- function(
     
   }
   
-  # Julian string for comparison with file names
+  # CONVERT starttime TO CORRECT JULIAN FORMAT BASED ON 'fullDay' PARAMETER
   if ( fullDay ) {
+    
     startString <- strftime(starttime, "%Y%j", tz = "UTC")
+    startString <- stringr::str_sub(startString, 1, 7)
+    
   } else {
+    
     startString <- strftime(starttime, "%Y%j%H", tz = "UTC")
+    startString <- stringr::str_sub(startString, 1, 9)
+    
   }
-
-  # ----- Get Matching Files ---------------------------------------------------
   
-  regex <- paste0("OR_ABI-L2-AODC-M[0-9]_", satId, "_s[0-9]+_e[0-9]+_c[0-9]+\\.nc")
+  # ASSEMBLE A LIST OF ALL .nc FILES IN SatelliteDataDir AND THEN LOOK IN THAT
+  # LIST FOR THE PATTERN THAT MATCHES THE SPECIFIED starttime AND fullDay
+  regex <- paste0("OR_ABI-L2-AODC-M[0-9]_",
+                  satId,
+                  "_s[0-9]+_e[0-9]+_c[0-9]+\\.nc")
+  
   dataFiles <- list.files(getSatelliteDataDir(), pattern = regex)
+  
   startStrings <- purrr::map_chr(dataFiles, goesaodc_getStartString)
   
   # Find matching start times
@@ -118,4 +113,4 @@ goesaodc_listFiles <- function(
   
   return(matchingFiles)
   
-}
+} # END OF FUNCTION
