@@ -1,31 +1,33 @@
 #' @export
-#' 
+#'
 #' @title Download GOES-16 or GOES-17 AOD data
-#' 
+#'
 #' @param satId ID of the source GOES satellite
 #' @param startdate desired date in any Y-m-d [H] format or \code{POSIXct}
 #' @param jdate desired date in as a Julian date string, i.e. as seen in the
 #'   netcdf filenames
 #' @param baseUrl base URL for data queries
 #' @param quiet if TRUE, suppress status messages and progress bar
-#' 
-#' @description Download all GOES 16 NetCDF files for the given \code{startdate} 
-#' to the directory specified by \code{setSatelliteDataDir()}. If 
-#' \code{startdate} is specified to the hour, only files for that hour will be 
-#' downloaded. If \code{startdate} is specified only to the day, all files for 
-#' that day will be downloaded.
-#' UPDATE THESE!!!!
-#' 
+#' @param fullDay if TRUE downloads all files for a day, even if a specific hour
+#' has been specified in the \code{startdate}. Set to FALSE by default.
+#'
+#' @description Download all GOES 16 or 17 NetCDF files for the given
+#' \code{startdate} to the directory specified by \code{setSatelliteDataDir()}.
+#' If \code{startdate} is specified to the hour and \code{fullDay} is not
+#' explicitly set to TRUE', only files for that hour will be downloaded. If
+#' \code{startdate} is specified only to the day, all files for that day will
+#' be downloaded. NOTE that all times are assumed to be in UTC timezone.
+#'
 #' @return Vector of downloaded filepaths.
-#' 
+#'
 #' @seealso \code{\link{setSatelliteDataDir}}
-#' 
-#' @examples 
+#'
+#' @examples
 #' \dontrun{
 #' library(MazamaSatelliteUtils)
 #' setSatelliteDataDir("~/Data/Satellite")
-#' 
-#' date <- lubridate::ymd_h("2019-05-16 16", tz = "UTC")
+#'
+#' date <- "2019-05-16 16"
 #' files <- goesaodc_downloadAOD("G16", date)
 #' print(files)
 #' }
@@ -35,96 +37,76 @@ goesaodc_downloadAOD <- function(
   startdate = NULL,
   jdate = NULL,
   baseUrl = "https://tools-1.airfire.org/Satellite/",
-  quiet = FALSE
-  # ROGER: Use "fullDay = FALSE" here just like in goesaodc_listFile()
+  quiet = FALSE,
+  fullDay = FALSE
 ) {
   
   # ----- Validate Parameters --------------------------------------------------
   
-  satId <- toupper(satId)
-  if (!(satId %in% c("G16", "G17"))) {
-    stop("Must specify GOES satellite ID (G16 or G17)")
-  }
-  
-  if ( !is.null(startdate) ) {
-    # ROGER: Use MazamaCoreUtils::parseDatetime(startdate, timezone = "UTC") for this chunk
-    # Is it a full day?
-    suppressWarnings({
-      starttime <- lubridate::parse_date_time(startdate, "Ymd", tz = "UTC") 
-    })
-    if ( !is.na(starttime) ) {
-      fullDay <- TRUE
+  # VERIFY THAT satId HAS BEEN SPECIFIED
+  if ( is.null(satId) ) {
+      stop("GOES satID must be specified")
     } else {
-      orders <- c("YmdH","YmdHM","YmdHMS")
-      suppressWarnings({
-        starttime <- lubridate::parse_date_time(startdate, orders, tz = "UTC")
-      })
-      if ( is.na(starttime) ) {
-        stop("Parameter 'startdate' cannot be interpreted. Is it a 'jdate'?")
+      satId <- toupper(satId)
+      
+      if ( !(satId %in% c("G16", "G17")) ) {
+        stop("Must specify GOES satellite ID (G16 or G17)")
       }
-      fullDay <- FALSE
+    }
+  
+   # IF A startdate HAS BEEN PASSED IN, ATTEMPT TO PARSE IT
+  if ( !is.null(startdate) ) {
+  
+    suppressWarnings(
+      starttime <- MazamaCoreUtils::parseDatetime(startdate, timezone = "UTC") )
+    if (lubridate::hour(starttime) == 0) {
+      fullDay = TRUE
     }
     
+  # OTHERWISE IF jdate PRESENT, CONVERT IT TO POSIXt
   } else if ( !is.null(jdate) ) {
-    # ROGER: orders <- c("Yj", "YjJ", "YjHM", "YjHMS")
-    # ROGER: Use lubridate::parse_date_time(jdate, orders = orders, tz = "UTC") for this chunk
-    # Check for operator error
-    if ( !is.numeric(jdate) && !is.character(jdate) ) {
-      jdate_class <- paste(class(jdate), sep = ", ")
-      stop(paste0("Parameter 'jdate' cannot be of class '", jdate_class, "'"), call. = FALSE)
-    }
+  
+    # sample = 20192491646196
+    # JDATE IS STRIPPED TO 13 CHARS AS 14TH WON'T PARSE
+    jdate <- stringr::str_sub(jdate, 1, 13)
+    formats <- c("Yj", "YjH", "YjHMS")
+    starttime <- lubridate::parse_date_time(jdate, orders = formats, tz = "UTC")
     
-    jdate <- as.character(jdate)
-    
-    # Check for operator error
-    if ( stringr::str_detect(jdate, "[^0-9]") ) {
-      stop(paste0("'", jdate, "' is not a Julian date string."), call. = FALSE)
-    }
-    
-    if ( stringr::str_count(jdate) == 5 ) {
-      starttime <- strptime(jdate, "%Y%j", tz = "UTC")
-      fullDay <- TRUE
-    } else if ( stringr::str_count(jdate) == 7 ) {
-      starttime <- strptime(jdate, "%Y%j%H", tz = "UTC")
-      fullDay <- FALSE
-    } else if ( stringr::str_count(jdate) == 9 ) {
-      starttime <- strptime(jdate, "%Y%j%H", tz = "UTC")
-      fullDay <- FALSE
     } else {
-      # strip the string down to the YjH level
-      jdate <- stringr::str_sub(jdate, end = 9)
-      starttime <- strptime(jdate, "%Y%j%H", tz = "UTC")
-      fullDay <- FALSE
-    }
-    
-  } else {
     
     stop("Either 'startdate' or 'jdate' must be defined.", call. = FALSE)
     
-  }
-  
-  # Julian string for comparison with file names
+    }
+    
+  # CONVERT starttime TO CORRECT JULIAN FORMAT BASED ON 'fullDay' PARAMETER
   if ( fullDay ) {
+  
     startString <- strftime(starttime, "%Y%j", tz = "UTC")
+    startString <- stringr::str_sub(startString, 1, 7)
+    
   } else {
+  
     startString <- strftime(starttime, "%Y%j%H", tz = "UTC")
+    startString <- stringr::str_sub(startString, 1, 9)
+    
   }
   
   # Choose satellite data source directory
   if (satId == "G16") {
+  
     satUrl <- paste0(baseUrl, "GOES-16/AODC")
+    
   } else if (satId == "G17") {
+  
     satUrl <- paste0(baseUrl, "GOES-17/AODC")
   }
   
   # ----- Download Data --------------------------------------------------------
   
-  # DELETE ME: POSIXct called "datetime" by here
-  
   # Get list of available files for specified date
-  links <- 
+  links <-
     xml2::read_html(satUrl) %>%
-    xml2::xml_child("body") %>% 
+    xml2::xml_child("body") %>%
     xml2::xml_child("table") %>%
     xml2::xml_find_all("//a") %>%
     xml2::xml_attr("href")

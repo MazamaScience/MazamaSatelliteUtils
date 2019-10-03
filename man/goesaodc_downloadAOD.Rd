@@ -5,7 +5,8 @@
 \title{Download GOES-16 or GOES-17 AOD data}
 \usage{
 goesaodc_downloadAOD(satId = NULL, startdate = NULL, jdate = NULL,
-  baseUrl = "https://tools-1.airfire.org/Satellite/", quiet = FALSE)
+  baseUrl = "https://tools-1.airfire.org/Satellite/", quiet = FALSE,
+  fullDay = FALSE)
 }
 \arguments{
 \item{satId}{ID of the source GOES satellite}
@@ -18,24 +19,27 @@ netcdf filenames}
 \item{baseUrl}{base URL for data queries}
 
 \item{quiet}{if TRUE, suppress status messages and progress bar}
+
+\item{fullDay}{if TRUE downloads all files for a day, even if a specific hour
+has been specified in the \code{startdate}. Set to FALSE by default.}
 }
 \value{
 Vector of downloaded filepaths.
 }
 \description{
-Download all GOES 16 NetCDF files for the given \code{startdate} 
-to the directory specified by \code{setSatelliteDataDir()}. If 
-\code{startdate} is specified to the hour, only files for that hour will be 
-downloaded. If \code{startdate} is specified only to the day, all files for 
-that day will be downloaded.
-UPDATE THESE!!!!
+Download all GOES 16 or 17 NetCDF files for the given
+\code{startdate} to the directory specified by \code{setSatelliteDataDir()}.
+If \code{startdate} is specified to the hour and \code{fullDay} is not
+explicitly set to TRUE', only files for that hour will be downloaded. If
+\code{startdate} is specified only to the day, all files for that day will
+be downloaded. NOTE that all times are assumed to be in UTC timezone.
 }
 \examples{
 \dontrun{
 library(MazamaSatelliteUtils)
 setSatelliteDataDir("~/Data/Satellite")
 
-date <- lubridate::ymd_h("2019-05-16 16", tz = "UTC")
+date <- "2019-05-16 16"
 files <- goesaodc_downloadAOD("G16", date)
 print(files)
 }
