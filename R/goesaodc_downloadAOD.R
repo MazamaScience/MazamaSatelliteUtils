@@ -60,7 +60,7 @@ goesaodc_downloadAOD <- function(
     suppressWarnings(
       starttime <- MazamaCoreUtils::parseDatetime(startdate, timezone = "UTC") )
     if (lubridate::hour(starttime) == 0) {
-      fullDay = TRUE
+      fullDay <- TRUE
     }
     
   # OTHERWISE IF jdate PRESENT, CONVERT IT TO POSIXt
@@ -126,7 +126,7 @@ goesaodc_downloadAOD <- function(
   # Download matches
   downloadedFiles <- NULL
   for ( file in matchingFiles ) {
-    filePath <- paste0(satelliteDataDir,"/", file)
+    filePath <- paste0(satelliteDataDir, "/", file)
     # don't download if file exists locally
     if ( !file.exists(filePath) ) {
       fileUrl <- paste0(satUrl, "/", file)
@@ -134,13 +134,13 @@ goesaodc_downloadAOD <- function(
       result <- try({
         utils::download.file(fileUrl, destfile = filePath, quiet = quiet)
         downloadedFiles <- c(downloadedFiles, filePath)
-      }, silent=FALSE)
+      }, silent = FALSE)
       
-      if ( "try-error" %in% class(result) ) {
-        errMsg <- geterrmessage()
-        # TODO:  logger.warn(errMsg)
-        # Start work on the next file ###stop(errMsg)
-      }
+    # if ( "try-error" %in% class(result) ) {
+    #    errMsg <- geterrmessage()
+    # TODO:  logger.warn(errMsg)
+    # Start work on the next file ###stop(errMsg)
+    # }
     }
   }
   
