@@ -23,13 +23,15 @@
 #' @seealso \code{\link{setSatelliteDataDir}}
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' library(MazamaSatelliteUtils)
 #' setSatelliteDataDir("~/Data/Satellite")
 #'
-#' date <- "2019-05-16 16"
-#' files <- goesaodc_downloadAOD("G16", date)
-#' print(files)
+#' datetime <- "2019-05-16 16"
+#' goesaodc_downloadAOD(satId ="G16", startdate = datetime)
+#' 
+#' jdate <= "201924918"
+#' goesaodc_downloadAOD(satId = "G17", jdate = jdate)
 #' }
 
 goesaodc_downloadAOD <- function(

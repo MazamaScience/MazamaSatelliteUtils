@@ -1,3 +1,12 @@
+# MazamaSatelliteUtils 0.2.4
+
+* Updated startdate code to use MazamaCoreUtils parseDatetime() to read the 
+specified datetime from the user.  Also updated the jdate logic to work properly
+ with full GOES .nc filename times.
+* Implemented fullDay logic to allow the user to force a full day file listing 
+and/or download, even if the startdate they specify includes hours (or minutes 
+and seconds in a Julian date).
+
 # MazamaSatelliteUtils 0.2.3
 
 * New `installGoesGrids()` function creates lat-lon grids from the package
