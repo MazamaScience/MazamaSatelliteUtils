@@ -35,13 +35,15 @@ explicitly set to TRUE', only files for that hour will be downloaded. If
 be downloaded. NOTE that all times are assumed to be in UTC timezone.
 }
 \examples{
-\dontrun{
+\donttest{
 library(MazamaSatelliteUtils)
 setSatelliteDataDir("~/Data/Satellite")
 
-date <- "2019-05-16 16"
-files <- goesaodc_downloadAOD("G16", date)
-print(files)
+datetime <- "2019-05-16 16"
+goesaodc_downloadAOD(satId ="G16", startdate = datetime)
+
+jdate <= "201924918"
+goesaodc_downloadAOD(satId = "G17", jdate = jdate)
 }
 }
 \seealso{

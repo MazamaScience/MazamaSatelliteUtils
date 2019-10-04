@@ -60,31 +60,11 @@ isDaylight <- function(
   datetime <- MazamaCoreUtils::parseDatetime(datetime, timezone)
   
   # ----- Extract boundaries ---------------------------------------------------
-  
-  if ( 
-    class(bbox) == "matrix" &&
-    all(colnames(bbox) == c("min", "max")) &&
-    all(rownames(bbox) == c("x", "y"))
-  ) {
-    # > bbox(us)
-    # min       max
-    # x -117.12238 -86.77278
-    # y   14.55055  32.71846
-    w <- bbox[1, 1]
-    e <- bbox[1, 2]
-    s <- bbox[2, 1]
-    n <- bbox[2, 2]
-  # SUPPORT FOR raster::extent TYPE BBOX  
-  } else if (class(bbox) == "Extent" &&
-             typeof(bbox) == "S4"
-  ) {
-    w <- bbox[1]
-    e <- bbox[2]
-    s <- bbox[3]
-    n <- bbox[4]
-  } else { 
-    stop("bbox type not recognized")
-  }
+  boundaries <- bboxToVector(bbox)
+  w <- boundaries[1]
+  e <- boundaries[2]
+  s <- boundaries[3]
+  n <- boundaries[4]
   
   mid_lat <- s + (n - s) / 2
   

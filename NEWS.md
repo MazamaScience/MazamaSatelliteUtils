@@ -1,6 +1,16 @@
-# MazamaSatelliteUtils 0.2.4
+# MazamaSatelliteUtils 0.2.6
 
-* Added support for using the extents of rasters as the bbox to test whether 
+Added new bboxToVector() function to support the creation of bounnding box
+extents in vector format from any type of bbox object passed in. Updated these
+files to support new functionality:
+
+* goesaodc_createRaster.R
+* goesaodc_createSpatialPoints.R 
+* utils-time.R
+
+# MazamaSatelliteUtils 0.2.5
+
+Added support for using the extents of rasters as the bbox to test whether 
 a specified time falls whithin the daylight hours of the region. 
 
 # MazamaSatelliteUtils 0.2.4

@@ -2,8 +2,8 @@
 % Please edit documentation in R/utils-time.R
 \name{isDaylight}
 \alias{isDaylight}
-\title{check if specified \code{datetime} is during the daylight hours of the
-specified \code{region}}
+\title{check if specified \code{datetime} is during the daylight hours of 
+the specified \code{region}}
 \usage{
 isDaylight(datetime = NULL, bbox = NULL, timezone = "UTC")
 }
@@ -18,8 +18,8 @@ isDaylight(datetime = NULL, bbox = NULL, timezone = "UTC")
 logical
 }
 \description{
-check if specified \code{datetime} is during the daylight hours of the
-specified \code{region}
+check if specified \code{datetime} is during the daylight hours of 
+the specified \code{region}
 }
 \examples{
 \donttest{

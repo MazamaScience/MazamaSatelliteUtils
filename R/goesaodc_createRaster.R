@@ -1,7 +1,7 @@
 #' @export
-#' 
+#'
 #' @title Create a RasterBrick of GOES data
-#' 
+#'
 #' @param nc ncdf4 handle
 #' @param res resolution of raster in degrees
 #' @param fun function to use when rasterizing
@@ -12,30 +12,30 @@
 #' @param latLo lower latitude extent
 #' @param latHi upper latitude extent
 #' @param dqfLevel data quality flag level
-#' 
+#'
 #' @description Create a RasterBrick of GOES AOD data including data points
-#' with the specified resolution and function, and within the specified extent 
+#' with the specified resolution and function, and within the specified extent
 #' and data quality flag level. Data quality level can take a value of:
-#' 
+#'
 #' 0: High quality retrieval flag
 #' 1: Medium quality retrieval flag
 #' 2: Low quality retrieval flag
 #' 3: No retrieval quality flag
-#' 
+#'
 #' @return RasterBrick
-#' 
-#' @examples 
+#'
+#' @examples
 #' \donttest{
 #' library(MazamaSatelliteUtils)
-#' 
+#'
 #' setSatelliteDataDir("~/Data/Satellite")
 #' netCDF <- system.file(
-#'   "extdata", 
-#'   "OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc", 
+#'   "extdata",
+#'   "OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc",
 #'   package = "MazamaSatelliteUtils"
 #' )
-#' nc <- ncdf4::nc_open(netCDF) 
-#' rstr <- goesaodc_createRaster(nc, res = 0.1, dqfLevel = 2) 
+#' nc <- ncdf4::nc_open(netCDF)
+#' rstr <- goesaodc_createRaster(nc, res = 0.1, dqfLevel = 2)
 #' raster::plot(rstr, "AOD")
 #' maps::map("state", add = TRUE)
 #' }
@@ -80,14 +80,17 @@ goesaodc_createRaster <- function(
     goesGrid <- get(load(filePath))
   } else {
     stop("Grid file not found. Run 'installGoesGrids()' first")
-  }  
+  }
   
   # ----- Create Raster --------------------------------------------------------
   
   # set extent
   if (!is.null(bbox)) {
-    lon_min <- bbox[1, 1]; lon_max <- bbox[1, 2]
-    lat_min <- bbox[2, 1]; lat_max <- bbox[2, 2]
+    boundaries <- bboxToVector(bbox)
+    lon_min <- boundaries[1]
+    lon_max <- boundaries[2]
+    lat_min <- boundaries[3]
+    lat_max <- boundaries[4]
   } else {
     lon_min <- min(goesGrid$longitude, na.rm = TRUE)
     lon_max <- max(goesGrid$longitude, na.rm = TRUE)
@@ -109,9 +112,9 @@ goesaodc_createRaster <- function(
   spatialPoints <- goesaodc_createSpatialPoints(
     nc = nc,
     bbox = bbox,
-    lonLo = lonLo, 
+    lonLo = lonLo,
     lonHi = lonHi,
-    latLo = latLo, 
+    latLo = latLo,
     latHi = latHi,
     dqfLevel = dqfLevel
   )
