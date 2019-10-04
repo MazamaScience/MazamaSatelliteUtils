@@ -21,3 +21,39 @@ logical
 check if specified \code{datetime} is during the daylight hours of the
 specified \code{region}
 }
+\examples{
+\donttest{
+library(MazamaSatelliteUtils)
+setSatelliteDataDir("~/Data/Satellite")
+
+# BBOX AS CREATED BY SP
+
+library(MazamaSpatialUtils)
+
+mx <- subset(SimpleCountries, countryCode == "MX")
+
+mx_bbox <- bbox(mx)
+
+isDaylight(
+  datetime = "2019-09-06 12",
+  bbox = mx_bbox,
+  timezone = "UTC") 
+
+# BBOX AS DEFINED BY CALLING ON raster::extent
+G16_filepath <- system.file(
+  "extdata", 
+  "OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc", 
+  package = "MazamaSatelliteUtils")
+
+nc <- ncdf4::nc_open(G16_filepath)
+
+raster <- goesaodc_createRaster(nc, res = 0.1, dqfLevel = 2)
+
+extent <- raster::extent(raster)
+
+isDaylight(
+  datetime = "2019-09-06 12",
+  bbox = extent,
+  timezone = "UTC")
+}
+}

@@ -1,5 +1,10 @@
 # MazamaSatelliteUtils 0.2.4
 
+* Added support for using the extents of rasters as the bbox to test whether 
+a specified time falls whithin the daylight hours of the region. 
+
+# MazamaSatelliteUtils 0.2.4
+
 * Updated startdate code to use MazamaCoreUtils parseDatetime() to read the 
 specified datetime from the user.  Also updated the jdate logic to work properly
  with full GOES .nc filename times.
