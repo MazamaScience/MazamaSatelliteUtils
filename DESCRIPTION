@@ -26,7 +26,7 @@ Imports:
     lubridate,
     magrittr,
     maptools,
-    MazamaCoreUtils,
+    MazamaCoreUtils (>= 0.3.10),
     ncdf4,
     purrr,
     raster,
