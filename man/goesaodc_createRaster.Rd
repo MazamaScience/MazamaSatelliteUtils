@@ -33,7 +33,7 @@ RasterBrick
 }
 \description{
 Create a RasterBrick of GOES AOD data including data points
-with the specified resolution and function, and within the specified extent 
+with the specified resolution and function, and within the specified extent
 and data quality flag level. Data quality level can take a value of:
 
 0: High quality retrieval flag
@@ -47,12 +47,12 @@ library(MazamaSatelliteUtils)
 
 setSatelliteDataDir("~/Data/Satellite")
 netCDF <- system.file(
-  "extdata", 
-  "OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc", 
+  "extdata",
+  "OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc",
   package = "MazamaSatelliteUtils"
 )
-nc <- ncdf4::nc_open(netCDF) 
-rstr <- goesaodc_createRaster(nc, res = 0.1, dqfLevel = 2) 
+nc <- ncdf4::nc_open(netCDF)
+rstr <- goesaodc_createRaster(nc, res = 0.1, dqfLevel = 2)
 raster::plot(rstr, "AOD")
 maps::map("state", add = TRUE)
 }
