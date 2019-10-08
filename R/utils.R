@@ -6,8 +6,8 @@
 #'
 #' @description Accepts a variety of bbox formats, validates that they are
 #' numerically sane and returns a vector of floats in c(lonLo, lonLo, latLo, latHi) order.
-#' Input can be of type \code{sp::bbox}, \code{raster::extent} or a vector of
-#' floats in c(lonLo, lonHi, latLo, latHi) order.
+#' Input can be a vector of floats in c(lonLo, lonHi, latLo, latHi) order or 
+#' the return value from \code{sp::bbox()} or \code{raster::extent()}.
 #'
 #' @return a vector of floats in c(lonLo, lonHi, latLo, latHi) order.
 #'
@@ -21,6 +21,12 @@ bboxToVector <- function(
   bbox = NULL
 ) {
   
+  # ----- Validate parameters --------------------------------------------------
+  
+  MazamaCoreUtils::stopIfNull(bbox)
+  
+  # ----- Extract data ---------------------------------------------------------
+  
   if (
     class(bbox) == "matrix" &&
     all(colnames(bbox) == c("min", "max")) &&
@@ -33,8 +39,6 @@ bboxToVector <- function(
     s <- bbox[2, 1]
     n <- bbox[2, 2]
     
-    # Trust order and domain
-    
   } else if (
     class(bbox) == "Extent" &&
     typeof(bbox) == "S4"
@@ -46,26 +50,19 @@ bboxToVector <- function(
     s <- bbox[3]
     n <- bbox[4]
     
-    # Trust order and domain
-    
   } else if (
     is.numeric(bbox) &&
     is.vector(bbox)
   ) {
     
-    # Support for vector of floats in c(lonLo, lonHi, latLo, latHi)
-    w <- min(bbox[1], bbox[2])
-    e <- max(bbox[1], bbox[2])
-    s <- min(bbox[3], bbox[4])
-    n <- max(bbox[3], bbox[4])
+    if ( length(bbox) != 4 ) 
+      stop("Parameter 'bbox' should be of length 4. Try c(W, E, S, N).")
     
-    if (w <= -180 || w >= 180 ||
-        e <= -180 || e >= 180)
-      stop("Longitude must be defined in -180:180")
-    
-    if (s <= -90 || s >= 90 ||
-        n <= -90 || n >= 90)
-      stop("Latitude must be defined in -90:90")
+    # Support for vector of floats type
+    w <- bbox[1]
+    e <- bbox[2]
+    s <- bbox[3]
+    n <- bbox[4]
     
   } else {
     
@@ -73,6 +70,23 @@ bboxToVector <- function(
     
   }
 
-    return( c(w, e, s, n) )
+  # ----- Check order and extent -----------------------------------------------
+  
+  lonLo <- min(w, e)
+  lonHi <- max(w, e)
+  latLo <- min(s, n)
+  latHi <- max(s, n)
+  
+  if ( lonLo < -180 || lonLo > 180 ||
+       lonHi < -180 || lonHi > 180 )
+    stop("Longitude must be defined in -180:180")
+  
+  if ( latLo < -90 || latLo > 90 ||
+       latHi < -90 || latHi > 90 )
+    stop("Latitude must be defined in -90:90")
+  
+  # ----- Return ---------------------------------------------------------------
+  
+  return( c(lonLo, lonHi, latLo, latHi) )
   
 }

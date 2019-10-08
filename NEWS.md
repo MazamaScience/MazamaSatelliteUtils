@@ -1,12 +1,20 @@
 # MazamaSatelliteUtils 0.2.6
 
-Added new bboxToVector() function to support the creation of bounnding box
-extents in vector format from any type of bbox object passed in. Updated these
-files to support new functionality:
+Added new `bboxToVector()` function to support the creation of bounnding box
+extents in vector format from any type of bbox object passed in. This allowed
+the removal of parameters `lonLo, lonHi, latLo latHi` from the following
+functions:
 
-* goesaodc_createRaster.R
-* goesaodc_createSpatialPoints.R 
-* utils-time.R
+* `goesaodc_createRaster()`
+* `goesaodc_createDaytimeRasterStack()`
+* `goesaodc_createHourlyRasterStack()`
+* `goesaodc_createSpatialPoints()`
+
+Various additional cleanup including harmonizing the use of parameters:
+
+* `satID`
+* `datetime`
+* `jdate`
 
 # MazamaSatelliteUtils 0.2.5
 

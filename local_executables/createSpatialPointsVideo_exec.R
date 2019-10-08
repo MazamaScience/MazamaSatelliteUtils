@@ -171,10 +171,10 @@ result <- try({
     
     # Download the scan files for this hour
     logger.info("Loading data file for %s", strftime(localHour, "%Y-%m-%d %H", tz = "America/Los_Angeles"))
-    goesaodc_downloadAOD(startdate = hour, satId = 16)
+    goesaodc_downloadAOD(startdate = hour, satID = 16)
     
     # Get the names of these scan files
-    scanFilenames <- goesaodc_listFiles(startdate = hour, satId = 16)
+    scanFilenames <- goesaodc_listFiles(startdate = hour, satID = 16)
     
     # Generate a frame for each scan file
     for (scanFilename in scanFilenames) {

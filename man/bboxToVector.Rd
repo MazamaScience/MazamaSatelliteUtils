@@ -15,12 +15,12 @@ a vector of floats in c(lonLo, lonHi, latLo, latHi) order.
 \description{
 Accepts a variety of bbox formats, validates that they are
 numerically sane and returns a vector of floats in c(lonLo, lonLo, latLo, latHi) order.
-Input can be of type \code{sp::bbox}, \code{raster::extent} or a vector of
-floats in c(lonLo, lonHi, latLo, latHi) order.
+Input can be a vector of floats in c(lonLo, lonHi, latLo, latHi) order or 
+the return value from \code{sp::bbox()} or \code{raster::extent()}.
 }
 \examples{
 \donttest{
-# USE SAMPLE CODE FROM is_daylight.R
+# USE SAMPLE CODE FROM isDaylight.R
 }
 
 }

@@ -4,13 +4,13 @@
 \alias{goesaodc_listFiles}
 \title{List downloaded GOES AOD files for a specified date and hour}
 \usage{
-goesaodc_listFiles(satId = NULL, startdate = NULL, jdate = NULL,
+goesaodc_listFiles(satID = NULL, startdate = NULL, jdate = NULL,
   fullDay = FALSE)
 }
 \arguments{
-\item{satId}{ID number of the source GOES satellite}
+\item{satID}{ID of the source GOES satellite (G16 or G17).}
 
-\item{startdate}{desired date in any Y-m-d [H] format or \code{POSIXct}}
+\item{startdate}{desired date in any Ymd [H] format or \code{POSIXct}}
 
 \item{jdate}{desired date in as a Julian date string, i.e. as seen in the
 netcdf filenames}
@@ -34,12 +34,12 @@ library(MazamaSatelliteUtils)
 setSatelliteDataDir("~/Data/Satellite")
 
 date_with_hour <- "2019-09-06 16"
-goesaodc_listFiles(satId = "G16", startdate = date_with_hour)
+goesaodc_listFiles(satID = "G16", startdate = date_with_hour)
 
 jdate <- "201924916"
-goesaodc_listFiles(satId = "G17", jdate = jdate, fullDay = TRUE)
+goesaodc_listFiles(satID = "G17", jdate = jdate, fullDay = TRUE)
 
 day_only <- "2019-09-06"
-goesaodc_listFiles(satId = "G16", startdate = day_only)
+goesaodc_listFiles(satID = "G16", startdate = day_only)
 }
 }

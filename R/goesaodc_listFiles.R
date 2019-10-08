@@ -2,8 +2,8 @@
 #' 
 #' @title List downloaded GOES AOD files for a specified date and hour
 #'
-#' @param satId ID number of the source GOES satellite
-#' @param startdate desired date in any Y-m-d [H] format or \code{POSIXct}
+#' @param satID ID of the source GOES satellite (G16 or G17).
+#' @param startdate desired date in any Ymd [H] format or \code{POSIXct}
 #' @param jdate desired date in as a Julian date string, i.e. as seen in the
 #'   netcdf filenames
 #' @param fullDay Specifies that the user wants an entire day's worth of data
@@ -23,32 +23,32 @@
 #' setSatelliteDataDir("~/Data/Satellite")
 #' 
 #' date_with_hour <- "2019-09-06 16"
-#' goesaodc_listFiles(satId = "G16", startdate = date_with_hour)
+#' goesaodc_listFiles(satID = "G16", startdate = date_with_hour)
 #' 
 #' jdate <- "201924916"
-#' goesaodc_listFiles(satId = "G17", jdate = jdate, fullDay = TRUE)
+#' goesaodc_listFiles(satID = "G17", jdate = jdate, fullDay = TRUE)
 #' 
 #' day_only <- "2019-09-06"
-#' goesaodc_listFiles(satId = "G16", startdate = day_only)
+#' goesaodc_listFiles(satID = "G16", startdate = day_only)
 #' }
 
 goesaodc_listFiles <- function(
-  satId = NULL,
+  satID = NULL,
   startdate = NULL,
   jdate = NULL,
   fullDay = FALSE
 ) {
   
-  # VERIFY THAT satId HAS BEEN SPECIFIED
-  if ( is.null(satId) ) {
+  # VERIFY THAT satID HAS BEEN SPECIFIED
+  if ( is.null(satID) ) {
     
     stop("GOES satID must be specified")
     
   } else {
     
-    satId <- toupper(satId)
+    satID <- toupper(satID)
     
-    if ( !(satId %in% c("G16", "G17")) ) {
+    if ( !(satID %in% c("G16", "G17")) ) {
       stop("Must specify GOES satellite ID (G16 or G17)")
       
     }
@@ -100,7 +100,7 @@ goesaodc_listFiles <- function(
   # ASSEMBLE A LIST OF ALL .nc FILES IN SatelliteDataDir AND THEN LOOK IN THAT
   # LIST FOR THE PATTERN THAT MATCHES THE SPECIFIED starttime AND fullDay
   regex <- paste0("OR_ABI-L2-AODC-M[0-9]_",
-                  satId,
+                  satID,
                   "_s[0-9]+_e[0-9]+_c[0-9]+\\.nc")
   
   dataFiles <- list.files(getSatelliteDataDir(), pattern = regex)

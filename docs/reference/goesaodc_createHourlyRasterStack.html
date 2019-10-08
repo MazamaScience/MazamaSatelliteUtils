@@ -142,7 +142,7 @@ accessed using the <code><a href='https://rdrr.io/pkg/raster/man/zvalues.html'>r
 3: No retrieval quality flag</p>
     </div>
 
-    <pre class="usage"><span class='fu'>goesaodc_createHourlyRasterStack</span>(<span class='kw'>satId</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>startdate</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+    <pre class="usage"><span class='fu'>goesaodc_createHourlyRasterStack</span>(<span class='kw'>satID</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>startdate</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"AOD"</span>, <span class='kw'>res</span> <span class='kw'>=</span> <span class='fl'>0.1</span>, <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>mean</span>, <span class='kw'>bbox</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>lonLo</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>lonHi</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>latLo</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>latHi</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>dqfLevel</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
 
@@ -150,7 +150,7 @@ accessed using the <code><a href='https://rdrr.io/pkg/raster/man/zvalues.html'>r
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>satId</th>
+      <th>satID</th>
       <td><p>ID number of the source GOES satellite</p></td>
     </tr>
     <tr>
@@ -207,7 +207,7 @@ latLo, latHi if provided</p></td>
 <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>MazamaSatelliteUtils</span>)
 <span class='fu'><a href='setSatelliteDataDir.html'>setSatelliteDataDir</a></span>(<span class='st'>"~/Data/Satellite"</span>)
 <span class='no'>date</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>lubridate</span><span class='kw ns'>::</span><span class='fu'><a href='http://lubridate.tidyverse.org/reference/ymd_hms.html'>ymd_h</a></span>(<span class='st'>"2019-05-16 16"</span>, <span class='kw'>tz</span> <span class='kw'>=</span> <span class='st'>"UTC"</span>)
-<span class='no'>rstrStack</span> <span class='kw'>&lt;-</span> <span class='fu'>goesaodc_createHourlyRasterStack</span>(<span class='kw'>satId</span> <span class='kw'>=</span> <span class='st'>"G16"</span>,
+<span class='no'>rstrStack</span> <span class='kw'>&lt;-</span> <span class='fu'>goesaodc_createHourlyRasterStack</span>(<span class='kw'>satID</span> <span class='kw'>=</span> <span class='st'>"G16"</span>,
                                               <span class='kw'>startdate</span> <span class='kw'>=</span> <span class='no'>date</span>,
                                               <span class='kw'>res</span> <span class='kw'>=</span> <span class='fl'>0.2</span>)
 <span class='kw pkg'>rasterVis</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/rasterVis/man/levelplot-methods.html'>levelplot</a></span>(<span class='no'>rstrStack</span>)</div><div class='img'><img src='goesaodc_createHourlyRasterStack-1.png' alt='' width='700' height='433' /></div><div class='input'># }

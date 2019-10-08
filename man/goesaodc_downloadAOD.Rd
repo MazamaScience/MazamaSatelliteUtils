@@ -4,14 +4,14 @@
 \alias{goesaodc_downloadAOD}
 \title{Download GOES-16 or GOES-17 AOD data}
 \usage{
-goesaodc_downloadAOD(satId = NULL, startdate = NULL, jdate = NULL,
+goesaodc_downloadAOD(satID = NULL, datetime = NULL, jdate = NULL,
   baseUrl = "https://tools-1.airfire.org/Satellite/", quiet = FALSE,
   fullDay = FALSE)
 }
 \arguments{
-\item{satId}{ID of the source GOES satellite}
+\item{satID}{ID of the source GOES satellite (G16 or G17).}
 
-\item{startdate}{desired date in any Y-m-d [H] format or \code{POSIXct}}
+\item{datetime}{desired date in any Ymd [H] format or \code{POSIXct}}
 
 \item{jdate}{desired date in as a Julian date string, i.e. as seen in the
 netcdf filenames}
@@ -21,17 +21,17 @@ netcdf filenames}
 \item{quiet}{if TRUE, suppress status messages and progress bar}
 
 \item{fullDay}{if TRUE downloads all files for a day, even if a specific hour
-has been specified in the \code{startdate}. Set to FALSE by default.}
+has been specified in the \code{datetime}. Set to FALSE by default.}
 }
 \value{
 Vector of downloaded filepaths.
 }
 \description{
 Download all GOES 16 or 17 NetCDF files for the given
-\code{startdate} to the directory specified by \code{setSatelliteDataDir()}.
-If \code{startdate} is specified to the hour and \code{fullDay} is not
+\code{datetime} to the directory specified by \code{setSatelliteDataDir()}.
+If \code{datetime} is specified to the hour and \code{fullDay} is not
 explicitly set to TRUE', only files for that hour will be downloaded. If
-\code{startdate} is specified only to the day, all files for that day will
+\code{datetime} is specified only to the day, all files for that day will
 be downloaded. NOTE that all times are assumed to be in UTC timezone.
 }
 \examples{
@@ -39,11 +39,9 @@ be downloaded. NOTE that all times are assumed to be in UTC timezone.
 library(MazamaSatelliteUtils)
 setSatelliteDataDir("~/Data/Satellite")
 
-datetime <- "2019-05-16 16"
-goesaodc_downloadAOD(satId ="G16", startdate = datetime)
+goesaodc_downloadAOD(satID ="G16", datetime = "2019-05-16 16")
 
-jdate <= "201924918"
-goesaodc_downloadAOD(satId = "G17", jdate = jdate)
+goesaodc_downloadAOD(satID = "G17", jdate = "201924918")
 }
 }
 \seealso{

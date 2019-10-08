@@ -27,11 +27,11 @@ goesaodc_openFile <- function(
   dataDir = getSatelliteDataDir()
 ) {
   
-  if ( is.null(filename) )
-    stop("Required parameter 'filename' is missing.")
-  # TODO - ADD A CHECK FOR FILE EXISTENCE AND IF MISSING IN dataDir,
-  # LOOK FOR THE FILE IN /extdata INSTEAD. THEN UPDATE EXAMPLES THAT USE ncdf4
+  MazamaCoreUtils::stopIfNull(filename)
+  
   fullPath <- file.path(dataDir, filename)
+  if ( !file.exists(fullPath) )
+    stop(paste0("Cannot find ", fullPath))
   
   # Let nc_open error messages bubble up 
   nc <- ncdf4::nc_open(fullPath)

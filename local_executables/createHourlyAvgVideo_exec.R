@@ -59,7 +59,7 @@ if ( interactive() ) {
       [default=\"%default\"]"
     ),
     make_option(
-      c("-i", "--satId"),
+      c("-i", "--satID"),
       default = NULL,
       help = "ID of the source GOES satellite (G16 or G17). Will be chosen 
       automatically for best coverage if not provided [default=\"%default\"]"
@@ -126,9 +126,9 @@ if (opt$dqfLevel < 0 || opt$dqfLevel > 3) {
   stop("DQF level must be 0, 1, 2, or 3")
 }
 
-if (!is.null(opt$satId)) {
-  opt$satId <- toupper(opt$satId)
-  if (!(opt$satId %in% c("G16", "G17"))) {
+if (!is.null(opt$satID)) {
+  opt$satID <- toupper(opt$satID)
+  if (!(opt$satID %in% c("G16", "G17"))) {
     stop("GOES satellite ID must be G16 or G17")
   }
 }
@@ -185,33 +185,33 @@ result <- try({
   
   regions <- list(
     list(states = c("washington", "oregon", "idaho"),
-         satId = "G17"),
+         satID = "G17"),
     list(states = c("montana", "wyoming"),
-         satId = "G17"),
+         satID = "G17"),
     list(states = c("north dakota", "south dakota", "minnesota"),
-         satId = "G16"),
+         satID = "G16"),
     list(states = c("wisconsin", "michigan"),
-         satId = "G16"),
+         satID = "G16"),
     list(states = c("new york", "vermont", "new hampshire", "maine", 
                     "massachusetts", "connecticut", "rhode island"),
-         satId = "G16"),
+         satID = "G16"),
     list(states = c("california", "nevada"),
-         satId = "G17"),
+         satID = "G17"),
     list(states = c("utah", "colorado", "arizona", "new mexico"),
-         satId = "G17"),
+         satID = "G17"),
     list(states = c("nebraska", "iowa", "kansas", "missouri"),
-         satId = "G16"),
+         satID = "G16"),
     list(states = c("illinois", "indiana", "ohio", "kentucky", "tennessee"),
-         satId = "G16"),
+         satID = "G16"),
     list(states = c("pennsylvania", "new jersey", "west virginia", "maryland",
                     "deleware", "virginia", "north carolina"),
-         satId = "G16"),
+         satID = "G16"),
     list(states = c("texas", "oklahoma"),
-         satId = "G16"),
+         satID = "G16"),
     list(states = c("arkansas", "louisiana", "mississippi", "alabama"),
-         satId = "G16"),
+         satID = "G16"),
     list(states = c("georgia", "south carolina", "florida"),
-         satId = "G16")
+         satID = "G16")
   )
   
   # Select the region containing the state parameter, defaulting to the whole 
@@ -254,8 +254,8 @@ result <- try({
   
   # Automatically select the best satellite for the region if the user did not
   # provided one
-  if (is.null(opt$satId)) {
-    opt$satId <- region$satId
+  if (is.null(opt$satID)) {
+    opt$satID <- region$satID
   }
   
   # ----- Set up hours ----------------------------------------------------------
@@ -305,16 +305,16 @@ result <- try({
     }
     
     # Fetch hour files if they are not already downloaded
-    ncFiles <- goesaodc_listFiles(opt$satId, utcHourString)
+    ncFiles <- goesaodc_listFiles(opt$satID, utcHourString)
     if (length(ncFiles) < 1) {
       logger.info("Downloading NetCDF files for %s", utcHourString)
-      downloadedFiles <- goesaodc_downloadAOD(opt$satId, utcHourString)
+      downloadedFiles <- goesaodc_downloadAOD(opt$satID, utcHourString)
       
       if (length(downloadedFiles) < 1) {
-        stop(paste0("No ", opt$satId, " data for ", utcHourString))
+        stop(paste0("No ", opt$satID, " data for ", utcHourString))
       }
       
-      ncFiles <- goesaodc_listFiles(opt$satId, utcHourString)
+      ncFiles <- goesaodc_listFiles(opt$satID, utcHourString)
     }
     
     ncHandles <- purrr::map(ncFiles, goesaodc_openFile)
@@ -365,11 +365,11 @@ result <- try({
     # Construct a tibble to hold projected lat/lon point coords and average AOD
     varList <- list()
     varList[["AOD"]] <- 10 ^ avgAODReadings
-    if (opt$satId == "G16") {
+    if (opt$satID == "G16") {
       varList[["lon"]] <- as.numeric(goesEastGrid$longitude)
       varList[["lat"]] <- as.numeric(goesEastGrid$latitude)
       satelliteName <- "GOES-East"
-    } else if (opt$satId == "G17") {
+    } else if (opt$satID == "G17") {
       varList[["lon"]] <- as.numeric(goesWestGrid$longitude)
       varList[["lat"]] <- as.numeric(goesWestGrid$latitude)
       satelliteName <- "GOES-West"
