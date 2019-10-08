@@ -36,12 +36,12 @@
 
 
 <meta property="og:title" content="Download GOES-16 or GOES-17 AOD data — goesaodc_downloadAOD" />
-<meta property="og:description" content="Download all GOES 16 NetCDF files for the given startdate 
-to the directory specified by setSatelliteDataDir(). If 
-startdate is specified to the hour, only files for that hour will be 
-downloaded. If startdate is specified only to the day, all files for 
-that day will be downloaded.
-UPDATE THESE!!!!" />
+<meta property="og:description" content="Download all GOES 16 or 17 NetCDF files for the given
+datetime to the directory specified by setSatelliteDataDir().
+If datetime is specified to the hour and fullDay is not
+explicitly set to TRUE', only files for that hour will be downloaded. If
+datetime is specified only to the day, all files for that day will
+be downloaded. NOTE that all times are assumed to be in UTC timezone." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -74,7 +74,7 @@ UPDATE THESE!!!!" />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MazamaSatelliteUtils</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.6</span>
       </span>
     </div>
 
@@ -114,27 +114,28 @@ UPDATE THESE!!!!" />
     </div>
 
     <div class="ref-description">
-    <p>Download all GOES 16 NetCDF files for the given <code>startdate</code> 
-to the directory specified by <code><a href='setSatelliteDataDir.html'>setSatelliteDataDir()</a></code>. If 
-<code>startdate</code> is specified to the hour, only files for that hour will be 
-downloaded. If <code>startdate</code> is specified only to the day, all files for 
-that day will be downloaded.
-UPDATE THESE!!!!</p>
+    <p>Download all GOES 16 or 17 NetCDF files for the given
+<code>datetime</code> to the directory specified by <code><a href='setSatelliteDataDir.html'>setSatelliteDataDir()</a></code>.
+If <code>datetime</code> is specified to the hour and <code>fullDay</code> is not
+explicitly set to TRUE', only files for that hour will be downloaded. If
+<code>datetime</code> is specified only to the day, all files for that day will
+be downloaded. NOTE that all times are assumed to be in UTC timezone.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>goesaodc_downloadAOD</span>(<span class='kw'>satID</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>startdate</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>jdate</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>baseUrl</span> <span class='kw'>=</span> <span class='st'>"https://tools-1.airfire.org/Satellite/"</span>, <span class='kw'>quiet</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='fu'>goesaodc_downloadAOD</span>(<span class='kw'>satID</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>datetime</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>jdate</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>baseUrl</span> <span class='kw'>=</span> <span class='st'>"https://tools-1.airfire.org/Satellite/"</span>, <span class='kw'>quiet</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>fullDay</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>satID</th>
-      <td><p>ID of the source GOES satellite</p></td>
+      <td><p>ID of the source GOES satellite (G16 or G17).</p></td>
     </tr>
     <tr>
-      <th>startdate</th>
-      <td><p>desired date in any Y-m-d [H] format or <code>POSIXct</code></p></td>
+      <th>datetime</th>
+      <td><p>desired date in any Ymd [H] format or <code>POSIXct</code></p></td>
     </tr>
     <tr>
       <th>jdate</th>
@@ -149,6 +150,11 @@ netcdf filenames</p></td>
       <th>quiet</th>
       <td><p>if TRUE, suppress status messages and progress bar</p></td>
     </tr>
+    <tr>
+      <th>fullDay</th>
+      <td><p>if TRUE downloads all files for a day, even if a specific hour
+has been specified in the <code>datetime</code>. Set to FALSE by default.</p></td>
+    </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
@@ -159,7 +165,14 @@ netcdf filenames</p></td>
     <div class='dont-index'><p><code><a href='setSatelliteDataDir.html'>setSatelliteDataDir</a></code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"></pre>
+    <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
+<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>MazamaSatelliteUtils</span>)
+<span class='fu'><a href='setSatelliteDataDir.html'>setSatelliteDataDir</a></span>(<span class='st'>"~/Data/Satellite"</span>)
+
+<span class='fu'>goesaodc_downloadAOD</span>(<span class='kw'>satID</span> <span class='kw'>=</span><span class='st'>"G16"</span>, <span class='kw'>datetime</span> <span class='kw'>=</span> <span class='st'>"2019-05-16 16"</span>)
+
+<span class='fu'>goesaodc_downloadAOD</span>(<span class='kw'>satID</span> <span class='kw'>=</span> <span class='st'>"G17"</span>, <span class='kw'>jdate</span> <span class='kw'>=</span> <span class='st'>"201924918"</span>)
+<span class='co'># }</span></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

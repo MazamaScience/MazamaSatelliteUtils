@@ -36,22 +36,28 @@
 
 
 <meta property="og:title" content="Create a daytime RasterStack for a specified date — goesaodc_createDaytimeRasterStack" />
-<meta property="og:description" content="Create a RasterStack from GOES AOD data files for the 
-date specified by startdate. Each RasterLayer contains
-data from one Advanced Baseline Imager (ABI) scan during the specified time 
+<meta property="og:description" content="Create a RasterStack from GOES AOD data files for the
+date specified by datetime. Each RasterLayer contains
+data from one Advanced Baseline Imager (ABI) scan during the specified time
 period.
-If data for the specified time period is not found in the directory specified 
+If data for the specified time period is not found in the directory specified
 by setSatelliteDataDir(), it will be downloaded in order to create the
 RasterStack.
 The Z axis of the RasterStack is a character vector where each element
-is the time stamp of the scan and has the format YYYYMMDDHHMMSS. This can be 
-accessed using the raster::getZ() function. Names of the 
+is the time stamp of the scan and has the format YYYYMMDDHHMMSS. This can be
+accessed using the raster::getZ() function. Names of the
 RasterStack are also time stamps of the scan, of the format XHH.MM.SS.
-Data quality level `dqfLevel` can take a value of:
-0: High quality retrieval flag
-1: Medium quality retrieval flag
-2: Low quality retrieval flag
-3: No retrieval quality flag" />
+The dqfLevel parameter can take a value of:
+
+0 -- High quality retrieval flag
+1 -- Medium quality retrieval flag
+2 -- Low quality retrieval flag
+3 -- No retrieval quality flag
+
+
+The bbox parameter can be a vector of floats in c(lonLo, lonHi, latLo,
+latHi) order or the return value from sp::bbox() or 
+raster::extent()." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -84,7 +90,7 @@ Data quality level `dqfLevel` can take a value of:
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MazamaSatelliteUtils</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.6</span>
       </span>
     </div>
 
@@ -124,43 +130,52 @@ Data quality level `dqfLevel` can take a value of:
     </div>
 
     <div class="ref-description">
-    <p>Create a <code>RasterStack</code> from GOES AOD data files for the 
-date specified by <code>startdate</code>. Each <code>RasterLayer</code> contains
-data from one Advanced Baseline Imager (ABI) scan during the specified time 
+    <p>Create a <code>RasterStack</code> from GOES AOD data files for the
+date specified by <code>datetime</code>. Each <code>RasterLayer</code> contains
+data from one Advanced Baseline Imager (ABI) scan during the specified time
 period.</p>
-<p>If data for the specified time period is not found in the directory specified 
+<p>If data for the specified time period is not found in the directory specified
 by <code><a href='setSatelliteDataDir.html'>setSatelliteDataDir()</a></code>, it will be downloaded in order to create the
 <code>RasterStack</code>.</p>
 <p>The Z axis of the <code>RasterStack</code> is a character vector where each element
-is the time stamp of the scan and has the format YYYYMMDDHHMMSS. This can be 
-accessed using the <code><a href='https://rdrr.io/pkg/raster/man/zvalues.html'>raster::getZ()</a></code> function. Names of the 
+is the time stamp of the scan and has the format YYYYMMDDHHMMSS. This can be
+accessed using the <code><a href='https://rdrr.io/pkg/raster/man/zvalues.html'>raster::getZ()</a></code> function. Names of the
 <code>RasterStack</code> are also time stamps of the scan, of the format XHH.MM.SS.</p>
-<p>Data quality level `dqfLevel` can take a value of:</p>
-<p>0: High quality retrieval flag
-1: Medium quality retrieval flag
-2: Low quality retrieval flag
-3: No retrieval quality flag</p>
+<p>The <code>dqfLevel</code> parameter can take a value of:</p>
+<ul>
+<li><p>0 -- High quality retrieval flag</p></li>
+<li><p>1 -- Medium quality retrieval flag</p></li>
+<li><p>2 -- Low quality retrieval flag</p></li>
+<li><p>3 -- No retrieval quality flag</p></li>
+</ul>
+
+<p>The <code>bbox</code> parameter can be a vector of floats in c(lonLo, lonHi, latLo,
+latHi) order or the return value from <code><a href='https://rdrr.io/pkg/sp/man/bbox.html'>sp::bbox()</a></code> or 
+<code><a href='https://rdrr.io/pkg/raster/man/extent.html'>raster::extent()</a></code>.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>goesaodc_createDaytimeRasterStack</span>(<span class='kw'>startdate</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>longitude</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>latitude</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"AOD"</span>, <span class='kw'>res</span> <span class='kw'>=</span> <span class='fl'>0.1</span>, <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>mean</span>,
-  <span class='kw'>bbox</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>lonLo</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>lonHi</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>latLo</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>latHi</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>dqfLevel</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>goesaodc_createDaytimeRasterStack</span>(<span class='kw'>satID</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>datetime</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>longitude</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>latitude</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"AOD"</span>, <span class='kw'>res</span> <span class='kw'>=</span> <span class='fl'>0.1</span>,
+  <span class='kw'>bbox</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>dqfLevel</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>timezone</span> <span class='kw'>=</span> <span class='st'>"UTC"</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>startdate</th>
-      <td><p>startdate in any Y-m-d format or <code>POSIXct</code></p></td>
+      <th>satID</th>
+      <td><p>ID of the source GOES satellite (G16 or G17).</p></td>
+    </tr>
+    <tr>
+      <th>datetime</th>
+      <td><p>Desired datetime in any Ymd H [MS] format or <code>POSIXct</code>.</p></td>
     </tr>
     <tr>
       <th>longitude</th>
-      <td><p>longitude of the location.</p></td>
+      <td><p>Target longitude used to calcualte daylight hours.</p></td>
     </tr>
     <tr>
       <th>latitude</th>
-      <td><p>latitude of the location.</p></td>
+      <td><p>Target latitude used to calculate daylight hours.</p></td>
     </tr>
     <tr>
       <th>var</th>
@@ -171,34 +186,16 @@ accessed using the <code><a href='https://rdrr.io/pkg/raster/man/zvalues.html'>r
       <td><p>resolution of raster in degrees</p></td>
     </tr>
     <tr>
-      <th>fun</th>
-      <td><p>function to use when rasterizing. Not currently supported, defaults
-to mean.</p></td>
-    </tr>
-    <tr>
       <th>bbox</th>
-      <td><p>bounding box generated by <code><a href='https://rdrr.io/pkg/sp/man/bbox.html'>sp::bbox</a></code>. Overrides lonLo, lonHi
-latLo, latHi if provided</p></td>
-    </tr>
-    <tr>
-      <th>lonLo</th>
-      <td><p>lower longitude extent</p></td>
-    </tr>
-    <tr>
-      <th>lonHi</th>
-      <td><p>upper longitude extent</p></td>
-    </tr>
-    <tr>
-      <th>latLo</th>
-      <td><p>lower latitude extent</p></td>
-    </tr>
-    <tr>
-      <th>latHi</th>
-      <td><p>upper latitude extent</p></td>
+      <td><p>Bounding box for the region of interest.</p></td>
     </tr>
     <tr>
       <th>dqfLevel</th>
-      <td><p>data quality flag level, numeric (0, 1, 2, or 3)</p></td>
+      <td><p>Data quality flag level.</p></td>
+    </tr>
+    <tr>
+      <th>timezone</th>
+      <td><p>timezone in which to interpret the <code>datetime</code>.</p></td>
     </tr>
     </table>
 
@@ -223,10 +220,14 @@ latLo, latHi if provided</p></td>
 
 <span class='no'>dateLocal</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>lubridate</span><span class='kw ns'>::</span><span class='fu'><a href='http://lubridate.tidyverse.org/reference/ymd.html'>ymd</a></span>(<span class='st'>"2019-08-01"</span>, <span class='kw'>tz</span> <span class='kw'>=</span> <span class='st'>"America/Los_Angeles"</span>)
 
-<span class='no'>dayStack</span> <span class='kw'>&lt;-</span> <span class='fu'>goesaodc_createDaytimeRasterStack</span>(<span class='no'>dateLocal</span>,
-                                              <span class='kw'>longitude</span> <span class='kw'>=</span> -<span class='fl'>123.32</span>,
-                                              <span class='kw'>latitude</span> <span class='kw'>=</span> <span class='fl'>42.88</span>,
-                                              <span class='kw'>bbox</span> <span class='kw'>=</span> <span class='no'>bbox_oregon</span>)
+<span class='no'>dayStack</span> <span class='kw'>&lt;-</span> <span class='fu'>goesaodc_createDaytimeRasterStack</span>(
+  <span class='kw'>satID</span> <span class='kw'>=</span> <span class='st'>"G16"</span>,
+  <span class='no'>dateLocal</span>,
+  <span class='kw'>longitude</span> <span class='kw'>=</span> -<span class='fl'>123.32</span>,
+  <span class='kw'>latitude</span> <span class='kw'>=</span> <span class='fl'>42.88</span>,
+  <span class='kw'>bbox</span> <span class='kw'>=</span> <span class='no'>bbox_oregon</span>
+)
+
 <span class='no'>tb</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='raster_createLocationTimeseries.html'>raster_createLocationTimeseries</a></span>(<span class='no'>dayStack</span>,
                                       <span class='kw'>longitude</span> <span class='kw'>=</span> <span class='no'>longitude</span>,
                                       <span class='kw'>latitude</span> <span class='kw'>=</span> <span class='no'>latitude</span>,

@@ -8,7 +8,6 @@
 #' @param latitude Target latitude used to calculate daylight hours.
 #' @param var variable ("AOD, "DQF" or "ID")
 #' @param res resolution of raster in degrees
-#' @param fun use when rasterizing. Not currently supported, defaults to mean.
 #' @param bbox Bounding box for the region of interest.
 #' @param dqfLevel Data quality flag level.
 #' @param timezone timezone in which to interpret the \code{datetime}.
@@ -84,7 +83,6 @@ goesaodc_createDaytimeRasterStack <- function(
   latitude = NULL,
   var = "AOD",
   res = 0.1,
-  fun = mean,
   bbox = NULL,
   dqfLevel = NULL,
   timezone = "UTC"
@@ -135,7 +133,6 @@ goesaodc_createDaytimeRasterStack <- function(
         datetime = hour,
         var = var,
         res = 0.1,
-        fun = fun,
         bbox = bbox,
         dqfLevel = dqfLevel
       )

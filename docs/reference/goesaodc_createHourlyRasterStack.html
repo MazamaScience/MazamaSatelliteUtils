@@ -37,7 +37,7 @@
 
 <meta property="og:title" content="Create a RasterStack for a specified hour — goesaodc_createHourlyRasterStack" />
 <meta property="og:description" content="Create a RasterStack from GOES AOD data files for the 
-date and hour specified by startdate. Each RasterLayer contains
+date and hour specified by datetime. Each RasterLayer contains
 data from one Advanced Baseline Imager (ABI) scan during the specified time 
 period.
 If data for the specified time period is not found in the directory specified 
@@ -47,11 +47,17 @@ The Z axis of the RasterStack is a character vector where each element
 is the time stamp of the scan and has the format YYYYMMDDHHMMSS. This can be 
 accessed using the raster::getZ() function. Names of the 
 RasterStack are also time stamps of the scan, of the format XHH.MM.SS.
-Data quality level `dqfLevel` can take a value of:
-0: High quality retrieval flag
-1: Medium quality retrieval flag
-2: Low quality retrieval flag
-3: No retrieval quality flag" />
+The dqfLevel parameter can take a value of:
+
+0 -- High quality retrieval flag
+1 -- Medium quality retrieval flag
+2 -- Low quality retrieval flag
+3 -- No retrieval quality flag
+
+
+The bbox parameter can be a vector of floats in c(lonLo, lonHi, latLo,
+latHi) order or the return value from sp::bbox() or 
+raster::extent()." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -84,7 +90,7 @@ Data quality level `dqfLevel` can take a value of:
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MazamaSatelliteUtils</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.6</span>
       </span>
     </div>
 
@@ -125,7 +131,7 @@ Data quality level `dqfLevel` can take a value of:
 
     <div class="ref-description">
     <p>Create a <code>RasterStack</code> from GOES AOD data files for the 
-date and hour specified by <code>startdate</code>. Each <code>RasterLayer</code> contains
+date and hour specified by <code>datetime</code>. Each <code>RasterLayer</code> contains
 data from one Advanced Baseline Imager (ABI) scan during the specified time 
 period.</p>
 <p>If data for the specified time period is not found in the directory specified 
@@ -135,28 +141,33 @@ by <code><a href='setSatelliteDataDir.html'>setSatelliteDataDir()</a></code>, it
 is the time stamp of the scan and has the format YYYYMMDDHHMMSS. This can be 
 accessed using the <code><a href='https://rdrr.io/pkg/raster/man/zvalues.html'>raster::getZ()</a></code> function. Names of the 
 <code>RasterStack</code> are also time stamps of the scan, of the format XHH.MM.SS.</p>
-<p>Data quality level `dqfLevel` can take a value of:</p>
-<p>0: High quality retrieval flag
-1: Medium quality retrieval flag
-2: Low quality retrieval flag
-3: No retrieval quality flag</p>
+<p>The <code>dqfLevel</code> parameter can take a value of:</p>
+<ul>
+<li><p>0 -- High quality retrieval flag</p></li>
+<li><p>1 -- Medium quality retrieval flag</p></li>
+<li><p>2 -- Low quality retrieval flag</p></li>
+<li><p>3 -- No retrieval quality flag</p></li>
+</ul>
+
+<p>The <code>bbox</code> parameter can be a vector of floats in c(lonLo, lonHi, latLo,
+latHi) order or the return value from <code><a href='https://rdrr.io/pkg/sp/man/bbox.html'>sp::bbox()</a></code> or 
+<code><a href='https://rdrr.io/pkg/raster/man/extent.html'>raster::extent()</a></code>.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>goesaodc_createHourlyRasterStack</span>(<span class='kw'>satID</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>startdate</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"AOD"</span>, <span class='kw'>res</span> <span class='kw'>=</span> <span class='fl'>0.1</span>, <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>mean</span>, <span class='kw'>bbox</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>lonLo</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>lonHi</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>latLo</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>latHi</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>dqfLevel</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>goesaodc_createHourlyRasterStack</span>(<span class='kw'>satID</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>datetime</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"AOD"</span>, <span class='kw'>res</span> <span class='kw'>=</span> <span class='fl'>0.1</span>, <span class='kw'>bbox</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>dqfLevel</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>timezone</span> <span class='kw'>=</span> <span class='st'>"UTC"</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>satID</th>
-      <td><p>ID number of the source GOES satellite</p></td>
+      <td><p>ID of the source GOES satellite (G16 or G17).</p></td>
     </tr>
     <tr>
-      <th>startdate</th>
-      <td><p>startdate, specified to the hour, in any Y-m-d H format or
-<code>POSIXct</code></p></td>
+      <th>datetime</th>
+      <td><p>desired datetime in any Ymd H [MS] format or <code>POSIXct</code></p></td>
     </tr>
     <tr>
       <th>var</th>
@@ -167,34 +178,16 @@ accessed using the <code><a href='https://rdrr.io/pkg/raster/man/zvalues.html'>r
       <td><p>resolution of raster in degrees</p></td>
     </tr>
     <tr>
-      <th>fun</th>
-      <td><p>function to use when rasterizing. Not currently supported, defaults
-to mean.</p></td>
-    </tr>
-    <tr>
       <th>bbox</th>
-      <td><p>bounding box generated by <code><a href='https://rdrr.io/pkg/sp/man/bbox.html'>sp::bbox</a></code>. Overrides lonLo, lonHi
-latLo, latHi if provided</p></td>
-    </tr>
-    <tr>
-      <th>lonLo</th>
-      <td><p>lower longitude extent</p></td>
-    </tr>
-    <tr>
-      <th>lonHi</th>
-      <td><p>upper longitude extent</p></td>
-    </tr>
-    <tr>
-      <th>latLo</th>
-      <td><p>lower latitude extent</p></td>
-    </tr>
-    <tr>
-      <th>latHi</th>
-      <td><p>upper latitude extent</p></td>
+      <td><p>Bounding box for the region of interest.</p></td>
     </tr>
     <tr>
       <th>dqfLevel</th>
-      <td><p>data quality flag level, numeric (0, 1, 2, or 3)</p></td>
+      <td><p>Data quality flag level.</p></td>
+    </tr>
+    <tr>
+      <th>timezone</th>
+      <td><p>timezone in which to interpret the <code>datetime</code>.</p></td>
     </tr>
     </table>
 
@@ -204,13 +197,34 @@ latLo, latHi if provided</p></td>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
+<span class='co'>### EXTENTS BASED ON PASSED IN FLOATS</span>
 <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>MazamaSatelliteUtils</span>)
 <span class='fu'><a href='setSatelliteDataDir.html'>setSatelliteDataDir</a></span>(<span class='st'>"~/Data/Satellite"</span>)
-<span class='no'>date</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>lubridate</span><span class='kw ns'>::</span><span class='fu'><a href='http://lubridate.tidyverse.org/reference/ymd_hms.html'>ymd_h</a></span>(<span class='st'>"2019-05-16 16"</span>, <span class='kw'>tz</span> <span class='kw'>=</span> <span class='st'>"UTC"</span>)
-<span class='no'>rstrStack</span> <span class='kw'>&lt;-</span> <span class='fu'>goesaodc_createHourlyRasterStack</span>(<span class='kw'>satID</span> <span class='kw'>=</span> <span class='st'>"G16"</span>,
-                                              <span class='kw'>startdate</span> <span class='kw'>=</span> <span class='no'>date</span>,
-                                              <span class='kw'>res</span> <span class='kw'>=</span> <span class='fl'>0.2</span>)
-<span class='kw pkg'>rasterVis</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/rasterVis/man/levelplot-methods.html'>levelplot</a></span>(<span class='no'>rstrStack</span>)</div><div class='img'><img src='goesaodc_createHourlyRasterStack-1.png' alt='' width='700' height='433' /></div><div class='input'># }
+
+<span class='no'>bbox_us</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>124.848974</span>, -<span class='fl'>66.885444</span>, <span class='fl'>24.396308</span>, <span class='fl'>49.384358</span>) <span class='co'># US LOWER 48</span>
+
+<span class='no'>rstrStack</span> <span class='kw'>&lt;-</span> <span class='fu'>goesaodc_createHourlyRasterStack</span>(
+<span class='kw'>satID</span> <span class='kw'>=</span> <span class='st'>"G16"</span>,
+<span class='kw'>datetime</span> <span class='kw'>=</span> <span class='st'>"2019-09-06 16:00"</span>,
+<span class='kw'>bbox</span> <span class='kw'>=</span> <span class='no'>bbox_us</span>,
+<span class='kw'>dqfLevel</span> <span class='kw'>=</span> <span class='fl'>2</span>,
+<span class='kw'>res</span> <span class='kw'>=</span> <span class='fl'>0.2</span>)
+
+<span class='kw pkg'>rasterVis</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/rasterVis/man/levelplot-methods.html'>levelplot</a></span>(<span class='no'>rstrStack</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: no non-missing arguments to min; returning Inf</span></div><div class='output co'>#&gt; <span class='warning'>Warning: no non-missing arguments to max; returning -Inf</span></div><div class='output co'>#&gt; <span class='warning'>Warning: no non-missing arguments to min; returning Inf</span></div><div class='output co'>#&gt; <span class='warning'>Warning: no non-missing arguments to max; returning -Inf</span></div><div class='output co'>#&gt; <span class='warning'>Warning: no non-missing arguments to min; returning Inf</span></div><div class='output co'>#&gt; <span class='warning'>Warning: no non-missing arguments to max; returning -Inf</span></div><div class='output co'>#&gt; <span class='warning'>Warning: no non-missing arguments to min; returning Inf</span></div><div class='output co'>#&gt; <span class='warning'>Warning: no non-missing arguments to max; returning -Inf</span></div><div class='output co'>#&gt; <span class='warning'>Warning: no non-missing arguments to min; returning Inf</span></div><div class='output co'>#&gt; <span class='warning'>Warning: no non-missing arguments to max; returning -Inf</span></div><div class='output co'>#&gt; <span class='warning'>Warning: no non-missing arguments to min; returning Inf</span></div><div class='output co'>#&gt; <span class='warning'>Warning: no non-missing arguments to max; returning -Inf</span></div><div class='output co'>#&gt; <span class='warning'>Warning: no non-missing arguments to min; returning Inf</span></div><div class='output co'>#&gt; <span class='warning'>Warning: no non-missing arguments to max; returning -Inf</span></div><div class='output co'>#&gt; <span class='warning'>Warning: no non-missing arguments to min; returning Inf</span></div><div class='output co'>#&gt; <span class='warning'>Warning: no non-missing arguments to max; returning -Inf</span></div><div class='output co'>#&gt; <span class='warning'>Warning: no non-missing arguments to min; returning Inf</span></div><div class='output co'>#&gt; <span class='warning'>Warning: no non-missing arguments to max; returning -Inf</span></div><div class='output co'>#&gt; <span class='warning'>Warning: no non-missing arguments to min; returning Inf</span></div><div class='output co'>#&gt; <span class='warning'>Warning: no non-missing arguments to max; returning -Inf</span></div><div class='output co'>#&gt; <span class='warning'>Warning: no non-missing arguments to min; returning Inf</span></div><div class='output co'>#&gt; <span class='warning'>Warning: no non-missing arguments to max; returning -Inf</span></div><div class='output co'>#&gt; <span class='warning'>Warning: no non-missing arguments to min; returning Inf</span></div><div class='output co'>#&gt; <span class='warning'>Warning: no non-missing arguments to max; returning -Inf</span></div><div class='output co'>#&gt; <span class='warning'>Warning: no non-missing arguments to min; returning Inf</span></div><div class='output co'>#&gt; <span class='warning'>Warning: no non-missing arguments to max; returning -Inf</span></div><div class='output co'>#&gt; <span class='error'>Error in colorkey$title: $ operator is invalid for atomic vectors</span></div><div class='input'>
+<span class='co'>#### EXTENTS BASED ON sp::bbox OF OREGON</span>
+<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>MazamaSpatialUtils</span>)</div><div class='output co'>#&gt; <span class='message'>Loading required package: sp</span></div><div class='input'>
+<span class='fu'><a href='https://rdrr.io/pkg/MazamaSpatialUtils/man/setSpatialDataDir.html'>setSpatialDataDir</a></span>(<span class='st'>"~/Data/Spatial"</span>)
+<span class='fu'><a href='https://rdrr.io/pkg/MazamaSpatialUtils/man/loadSpatialData.html'>loadSpatialData</a></span>(<span class='st'>"USCensusStates"</span>)
+
+<span class='no'>oregon</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>USCensusStates</span>, <span class='no'>stateCode</span> <span class='kw'>==</span> <span class='st'>"OR"</span>)
+<span class='no'>bbox_oregon</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>sp</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/sp/man/bbox.html'>bbox</a></span>(<span class='no'>oregon</span>)
+
+<span class='no'>rstrStack</span> <span class='kw'>&lt;-</span> <span class='fu'>goesaodc_createHourlyRasterStack</span>(
+<span class='kw'>satId</span> <span class='kw'>=</span> <span class='st'>"G17"</span>,
+<span class='kw'>datetime</span> <span class='kw'>=</span> <span class='st'>"2019-09-06 16"</span>,
+<span class='kw'>bbox</span> <span class='kw'>=</span> <span class='no'>bbox_oregon</span>,
+<span class='kw'>dqfLevel</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='output co'>#&gt; <span class='error'>Error in goesaodc_createHourlyRasterStack(satId = "G17", datetime = "2019-09-06 16",     bbox = bbox_oregon, dqfLevel = 2): unused argument (satId = "G17")</span></div><div class='input'>
+<span class='kw pkg'>rasterVis</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/rasterVis/man/levelplot-methods.html'>levelplot</a></span>(<span class='no'>rstrStack</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: no non-missing arguments to min; returning Inf</span></div><div class='output co'>#&gt; <span class='warning'>Warning: no non-missing arguments to max; returning -Inf</span></div><div class='output co'>#&gt; <span class='warning'>Warning: no non-missing arguments to min; returning Inf</span></div><div class='output co'>#&gt; <span class='warning'>Warning: no non-missing arguments to max; returning -Inf</span></div><div class='output co'>#&gt; <span class='warning'>Warning: no non-missing arguments to min; returning Inf</span></div><div class='output co'>#&gt; <span class='warning'>Warning: no non-missing arguments to max; returning -Inf</span></div><div class='output co'>#&gt; <span class='warning'>Warning: no non-missing arguments to min; returning Inf</span></div><div class='output co'>#&gt; <span class='warning'>Warning: no non-missing arguments to max; returning -Inf</span></div><div class='output co'>#&gt; <span class='warning'>Warning: no non-missing arguments to min; returning Inf</span></div><div class='output co'>#&gt; <span class='warning'>Warning: no non-missing arguments to max; returning -Inf</span></div><div class='output co'>#&gt; <span class='warning'>Warning: no non-missing arguments to min; returning Inf</span></div><div class='output co'>#&gt; <span class='warning'>Warning: no non-missing arguments to max; returning -Inf</span></div><div class='output co'>#&gt; <span class='warning'>Warning: no non-missing arguments to min; returning Inf</span></div><div class='output co'>#&gt; <span class='warning'>Warning: no non-missing arguments to max; returning -Inf</span></div><div class='output co'>#&gt; <span class='warning'>Warning: no non-missing arguments to min; returning Inf</span></div><div class='output co'>#&gt; <span class='warning'>Warning: no non-missing arguments to max; returning -Inf</span></div><div class='output co'>#&gt; <span class='warning'>Warning: no non-missing arguments to min; returning Inf</span></div><div class='output co'>#&gt; <span class='warning'>Warning: no non-missing arguments to max; returning -Inf</span></div><div class='output co'>#&gt; <span class='warning'>Warning: no non-missing arguments to min; returning Inf</span></div><div class='output co'>#&gt; <span class='warning'>Warning: no non-missing arguments to max; returning -Inf</span></div><div class='output co'>#&gt; <span class='warning'>Warning: no non-missing arguments to min; returning Inf</span></div><div class='output co'>#&gt; <span class='warning'>Warning: no non-missing arguments to max; returning -Inf</span></div><div class='output co'>#&gt; <span class='warning'>Warning: no non-missing arguments to min; returning Inf</span></div><div class='output co'>#&gt; <span class='warning'>Warning: no non-missing arguments to max; returning -Inf</span></div><div class='output co'>#&gt; <span class='warning'>Warning: no non-missing arguments to min; returning Inf</span></div><div class='output co'>#&gt; <span class='warning'>Warning: no non-missing arguments to max; returning -Inf</span></div><div class='output co'>#&gt; <span class='error'>Error: $ operator is invalid for atomic vectors</span></div><div class='input'># }
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

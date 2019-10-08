@@ -6,8 +6,6 @@
 #' @param datetime desired datetime in any Ymd H [MS] format or \code{POSIXct}
 #' @param var variable ("AOD, "DQF" or "ID")
 #' @param res resolution of raster in degrees
-#' @param fun function to use when rasterizing. Not currently supported, 
-#' defaults to mean.
 #' @param bbox Bounding box for the region of interest.
 #' @param dqfLevel Data quality flag level.
 #' @param timezone timezone in which to interpret the \code{datetime}.
@@ -43,14 +41,37 @@
 #' 
 #' @examples
 #' \donttest{
+#' ### EXTENTS BASED ON PASSED IN FLOATS
 #' library(MazamaSatelliteUtils)
 #' setSatelliteDataDir("~/Data/Satellite")
-#' rasterStack <- goesaodc_createHourlyRasterStack(
-#'   satID = "G16", 
-#'   datetime = "2019-05-16 16:00", 
-#'   res = 0.2
-#' )
-#' rasterVis::levelplot(rasterStack)
+#' 
+#' bbox_us <- c(-124.848974, -66.885444, 24.396308, 49.384358) # US LOWER 48
+#' 
+#' rstrStack <- goesaodc_createHourlyRasterStack(
+#' satID = "G16", 
+#' datetime = "2019-09-06 16:00", 
+#' bbox = bbox_us,
+#' dqfLevel = 2,
+#' res = 0.2)
+#' 
+#' rasterVis::levelplot(rstrStack)
+#' 
+#' #### EXTENTS BASED ON sp::bbox OF OREGON
+#' library(MazamaSpatialUtils)
+#' 
+#' setSpatialDataDir("~/Data/Spatial")
+#' loadSpatialData("USCensusStates")
+#' 
+#' oregon <- subset(USCensusStates, stateCode == "OR")
+#' bbox_oregon <- sp::bbox(oregon)
+#' 
+#' rstrStack <- goesaodc_createHourlyRasterStack(
+#' satId = "G17", 
+#' datetime = "2019-09-06 16", 
+#' bbox = bbox_oregon,
+#' dqfLevel = 2)
+#' 
+#' rasterVis::levelplot(rstrStack)
 #' }
 
 goesaodc_createHourlyRasterStack <- function(
@@ -58,7 +79,6 @@ goesaodc_createHourlyRasterStack <- function(
   datetime = NULL,
   var = "AOD",
   res = 0.1,
-  fun = mean,
   bbox = NULL,
   dqfLevel = NULL,
   timezone = "UTC"
@@ -88,9 +108,8 @@ goesaodc_createHourlyRasterStack <- function(
     goesaodc_listFiles(satID, datetime) %>%             # create list of filenames for specified hour
     purrr::map(goesaodc_openFile) %>%                   # open each file in the list
     purrr::map(goesaodc_createRaster,                   # rasterize each open file specified params
-               res = res,                               # NOTE: passing fun here does not work. Results in
-               #fun = fun,                              # NOTE: the following error: 
-               bbox = bbox,                             # NOTE: Error in fun(1) : could not find function "fun"
+               res = res,
+               bbox = bbox,                             
                dqfLevel = dqfLevel) %>%  
     purrr::map(function(rst) rst[[var]])                # select RasterLayer of specified variable
   

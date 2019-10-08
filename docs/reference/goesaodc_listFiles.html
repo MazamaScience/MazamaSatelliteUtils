@@ -73,7 +73,7 @@ second." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MazamaSatelliteUtils</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.6</span>
       </span>
     </div>
 
@@ -120,23 +120,28 @@ incoming <code>startdate</code> or <code>jdate</code> is specified to the minute
 second.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>goesaodc_listFiles</span>(<span class='kw'>satID</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>startdate</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>jdate</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>goesaodc_listFiles</span>(<span class='kw'>satID</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>startdate</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>jdate</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>fullDay</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>satID</th>
-      <td><p>ID number of the source GOES satellite</p></td>
+      <td><p>ID of the source GOES satellite (G16 or G17).</p></td>
     </tr>
     <tr>
       <th>startdate</th>
-      <td><p>desired date in any Y-m-d [H] format or <code>POSIXct</code></p></td>
+      <td><p>desired date in any Ymd [H] format or <code>POSIXct</code></p></td>
     </tr>
     <tr>
       <th>jdate</th>
       <td><p>desired date in as a Julian date string, i.e. as seen in the
 netcdf filenames</p></td>
+    </tr>
+    <tr>
+      <th>fullDay</th>
+      <td><p>Specifies that the user wants an entire day's worth of data</p></td>
     </tr>
     </table>
 
@@ -145,14 +150,50 @@ netcdf filenames</p></td>
     <p>Vector of filenames.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
+    <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
 <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>MazamaSatelliteUtils</span>)
 <span class='fu'><a href='setSatelliteDataDir.html'>setSatelliteDataDir</a></span>(<span class='st'>"~/Data/Satellite"</span>)
 
-<span class='no'>date</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>lubridate</span><span class='kw ns'>::</span><span class='fu'><a href='http://lubridate.tidyverse.org/reference/ymd_hms.html'>ymd_h</a></span>(<span class='st'>"2019-05-16 16"</span>, <span class='kw'>tz</span> <span class='kw'>=</span> <span class='st'>"UTC"</span>)
-<span class='no'>files</span> <span class='kw'>&lt;-</span> <span class='fu'>goesaodc_listFiles</span>(<span class='st'>"G16"</span>, <span class='no'>date</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='no'>files</span>)
-}</div></pre>
+<span class='no'>date_with_hour</span> <span class='kw'>&lt;-</span> <span class='st'>"2019-09-06 16"</span>
+<span class='fu'>goesaodc_listFiles</span>(<span class='kw'>satID</span> <span class='kw'>=</span> <span class='st'>"G16"</span>, <span class='kw'>startdate</span> <span class='kw'>=</span> <span class='no'>date_with_hour</span>)</div><div class='output co'>#&gt;  [1] "OR_ABI-L2-AODC-M6_G16_s20192491601094_e20192491603467_c20192491610121.nc"
+#&gt;  [2] "OR_ABI-L2-AODC-M6_G16_s20192491606094_e20192491608467_c20192491615088.nc"
+#&gt;  [3] "OR_ABI-L2-AODC-M6_G16_s20192491611094_e20192491613467_c20192491620114.nc"
+#&gt;  [4] "OR_ABI-L2-AODC-M6_G16_s20192491616094_e20192491618467_c20192491625131.nc"
+#&gt;  [5] "OR_ABI-L2-AODC-M6_G16_s20192491621094_e20192491623467_c20192491630089.nc"
+#&gt;  [6] "OR_ABI-L2-AODC-M6_G16_s20192491626094_e20192491628467_c20192491635120.nc"
+#&gt;  [7] "OR_ABI-L2-AODC-M6_G16_s20192491631094_e20192491633467_c20192491640112.nc"
+#&gt;  [8] "OR_ABI-L2-AODC-M6_G16_s20192491636094_e20192491638467_c20192491645095.nc"
+#&gt;  [9] "OR_ABI-L2-AODC-M6_G16_s20192491641094_e20192491643467_c20192491650101.nc"
+#&gt; [10] "OR_ABI-L2-AODC-M6_G16_s20192491646094_e20192491648467_c20192491655131.nc"
+#&gt; [11] "OR_ABI-L2-AODC-M6_G16_s20192491651094_e20192491653467_c20192491700096.nc"
+#&gt; [12] "OR_ABI-L2-AODC-M6_G16_s20192491656094_e20192491658467_c20192491705115.nc"</div><div class='input'>
+<span class='no'>jdate</span> <span class='kw'>&lt;-</span> <span class='st'>"201924916"</span>
+<span class='fu'>goesaodc_listFiles</span>(<span class='kw'>satID</span> <span class='kw'>=</span> <span class='st'>"G17"</span>, <span class='kw'>jdate</span> <span class='kw'>=</span> <span class='no'>jdate</span>, <span class='kw'>fullDay</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</div><div class='output co'>#&gt;  [1] "OR_ABI-L2-AODC-M6_G17_s20192491801196_e20192491803569_c20192491805437.nc"
+#&gt;  [2] "OR_ABI-L2-AODC-M6_G17_s20192491806196_e20192491808569_c20192491810456.nc"
+#&gt;  [3] "OR_ABI-L2-AODC-M6_G17_s20192491811196_e20192491813569_c20192491815453.nc"
+#&gt;  [4] "OR_ABI-L2-AODC-M6_G17_s20192491816196_e20192491818569_c20192491820468.nc"
+#&gt;  [5] "OR_ABI-L2-AODC-M6_G17_s20192491821196_e20192491823569_c20192491825491.nc"
+#&gt;  [6] "OR_ABI-L2-AODC-M6_G17_s20192491826196_e20192491828569_c20192491830494.nc"
+#&gt;  [7] "OR_ABI-L2-AODC-M6_G17_s20192491831196_e20192491833569_c20192491835517.nc"
+#&gt;  [8] "OR_ABI-L2-AODC-M6_G17_s20192491836196_e20192491838569_c20192491840517.nc"
+#&gt;  [9] "OR_ABI-L2-AODC-M6_G17_s20192491841196_e20192491843569_c20192491845528.nc"
+#&gt; [10] "OR_ABI-L2-AODC-M6_G17_s20192491846196_e20192491848569_c20192491850525.nc"
+#&gt; [11] "OR_ABI-L2-AODC-M6_G17_s20192491851196_e20192491853569_c20192491855529.nc"
+#&gt; [12] "OR_ABI-L2-AODC-M6_G17_s20192491856196_e20192491858569_c20192491900549.nc"</div><div class='input'>
+<span class='no'>day_only</span> <span class='kw'>&lt;-</span> <span class='st'>"2019-09-06"</span>
+<span class='fu'>goesaodc_listFiles</span>(<span class='kw'>satID</span> <span class='kw'>=</span> <span class='st'>"G16"</span>, <span class='kw'>startdate</span> <span class='kw'>=</span> <span class='no'>day_only</span>)</div><div class='output co'>#&gt;  [1] "OR_ABI-L2-AODC-M6_G16_s20192491601094_e20192491603467_c20192491610121.nc"
+#&gt;  [2] "OR_ABI-L2-AODC-M6_G16_s20192491606094_e20192491608467_c20192491615088.nc"
+#&gt;  [3] "OR_ABI-L2-AODC-M6_G16_s20192491611094_e20192491613467_c20192491620114.nc"
+#&gt;  [4] "OR_ABI-L2-AODC-M6_G16_s20192491616094_e20192491618467_c20192491625131.nc"
+#&gt;  [5] "OR_ABI-L2-AODC-M6_G16_s20192491621094_e20192491623467_c20192491630089.nc"
+#&gt;  [6] "OR_ABI-L2-AODC-M6_G16_s20192491626094_e20192491628467_c20192491635120.nc"
+#&gt;  [7] "OR_ABI-L2-AODC-M6_G16_s20192491631094_e20192491633467_c20192491640112.nc"
+#&gt;  [8] "OR_ABI-L2-AODC-M6_G16_s20192491636094_e20192491638467_c20192491645095.nc"
+#&gt;  [9] "OR_ABI-L2-AODC-M6_G16_s20192491641094_e20192491643467_c20192491650101.nc"
+#&gt; [10] "OR_ABI-L2-AODC-M6_G16_s20192491646094_e20192491648467_c20192491655131.nc"
+#&gt; [11] "OR_ABI-L2-AODC-M6_G16_s20192491651094_e20192491653467_c20192491700096.nc"
+#&gt; [12] "OR_ABI-L2-AODC-M6_G16_s20192491656094_e20192491658467_c20192491705115.nc"</div><div class='input'># }
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

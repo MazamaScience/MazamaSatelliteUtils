@@ -6,7 +6,7 @@
 \usage{
 goesaodc_createDaytimeRasterStack(satID = NULL, datetime = NULL,
   longitude = NULL, latitude = NULL, var = "AOD", res = 0.1,
-  fun = mean, bbox = NULL, dqfLevel = NULL, timezone = "UTC")
+  bbox = NULL, dqfLevel = NULL, timezone = "UTC")
 }
 \arguments{
 \item{satID}{ID of the source GOES satellite (G16 or G17).}
@@ -20,8 +20,6 @@ goesaodc_createDaytimeRasterStack(satID = NULL, datetime = NULL,
 \item{var}{variable ("AOD, "DQF" or "ID")}
 
 \item{res}{resolution of raster in degrees}
-
-\item{fun}{use when rasterizing. Not currently supported, defaults to mean.}
 
 \item{bbox}{Bounding box for the region of interest.}
 
@@ -77,10 +75,14 @@ latitude <-   42.861
 
 dateLocal <- lubridate::ymd("2019-08-01", tz = "America/Los_Angeles")
 
-dayStack <- goesaodc_createDaytimeRasterStack(dateLocal,
-                                              longitude = -123.32,
-                                              latitude = 42.88,
-                                              bbox = bbox_oregon)
+dayStack <- goesaodc_createDaytimeRasterStack(
+  satID = "G16",
+  dateLocal,
+  longitude = -123.32,
+  latitude = 42.88,
+  bbox = bbox_oregon
+)
+
 tb <- raster_createLocationTimeseries(dayStack,
                                       longitude = longitude,
                                       latitude = latitude,
