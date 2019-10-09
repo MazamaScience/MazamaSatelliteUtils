@@ -56,7 +56,7 @@ goesaodc_createSpatialPoints <- function(
   
   # create tibble
   tbl <- goesaodc_createTibble(nc)
-    
+
   if ( !is.null(dqfLevel) ) {
     tbl <- dplyr::filter(tbl, .data$DQF <= dqfLevel)
   }
@@ -74,8 +74,7 @@ goesaodc_createSpatialPoints <- function(
       dplyr::filter(.data$lon >= lonLo) %>%
       dplyr::filter(.data$lon <= lonHi) %>%
       dplyr::filter(.data$lat >= latLo) %>%
-      dplyr::filter(.data$lat >= latHi)
-      
+      dplyr::filter(.data$lat <= latHi)
   }
   
   if ( nrow(tbl) == 0 )
