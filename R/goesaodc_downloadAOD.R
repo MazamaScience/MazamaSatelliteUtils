@@ -28,7 +28,7 @@
 #' setSatelliteDataDir("~/Data/Satellite")
 #'
 #' goesaodc_downloadAOD(satID ="G16", datetime = "2019-05-16 16")
-#' 
+#'
 #' goesaodc_downloadAOD(satID = "G17", jdate = "201924918")
 #' }
 
@@ -54,8 +54,9 @@ goesaodc_downloadAOD <- function(
   
     suppressWarnings(
       starttime <- MazamaCoreUtils::parseDatetime(datetime, timezone = "UTC") )
-    if (lubridate::hour(starttime) == 0) {
-      fullDay <- TRUE
+      
+    if ( lubridate::hour(starttime) == 0 && fullDay != TRUE ) {
+      jdate <- strftime(starttime, "%Y%j%H", tz = "UTC")
     }
     
   # OTHERWISE IF jdate PRESENT, CONVERT IT TO POSIXt

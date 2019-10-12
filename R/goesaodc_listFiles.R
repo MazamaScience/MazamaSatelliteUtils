@@ -1,5 +1,5 @@
 #' @export
-#' 
+#'
 #' @title List downloaded GOES AOD files for a specified date and hour
 #'
 #' @param satID ID of the source GOES satellite (G16 or G17).
@@ -7,27 +7,27 @@
 #' @param jdate desired date in as a Julian date string, i.e. as seen in the
 #'   netcdf filenames
 #' @param fullDay Specifies that the user wants an entire day's worth of data
-#' 
+#'
 #' @description Retrieve a list of GOES AOD files available in the
 #' \code{satelliteDataDir} for a specified date and hour.
-#' 
+#'
 #' Note that all files for a particular hour will be returned even if the
 #' incoming \code{startdate} or \code{jdate} is specified to the minute or
 #' second.
-#' 
+#'
 #' @return Vector of filenames.
-#' 
-#' @examples 
+#'
+#' @examples
 #' \donttest{
 #' library(MazamaSatelliteUtils)
 #' setSatelliteDataDir("~/Data/Satellite")
-#' 
+#'
 #' date_with_hour <- "2019-09-06 16"
 #' goesaodc_listFiles(satID = "G16", startdate = date_with_hour)
-#' 
+#'
 #' jdate <- "201924916"
 #' goesaodc_listFiles(satID = "G17", jdate = jdate, fullDay = TRUE)
-#' 
+#'
 #' day_only <- "2019-09-06"
 #' goesaodc_listFiles(satID = "G16", startdate = day_only)
 #' }
@@ -60,9 +60,8 @@ goesaodc_listFiles <- function(
     
     suppressWarnings(
       starttime <- MazamaCoreUtils::parseDatetime(startdate, timezone = "UTC") )
-    if (lubridate::hour(starttime) == 0) {
-      fullDay <- TRUE
-      
+    if ( lubridate::hour(starttime) == 0 && fullDay != TRUE) {
+      jdate <- strftime(starttime, "%Y%j%H", tz = "UTC")
     }
     
     # OTHERWISE IF jdate PRESENT, CONVERT IT TO POSIXt
@@ -71,7 +70,7 @@ goesaodc_listFiles <- function(
     if (stringr::str_length(jdate) <= 7) {
       # ie 2019249
       fullDay <- TRUE
-    } 
+    }
     
     # JDATE IS STRIPPED TO 13 CHARS AS 14TH WON'T PARSE (20192491646196)
     jdate <- stringr::str_sub(jdate, 1, 13)
