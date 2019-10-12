@@ -60,12 +60,12 @@ latHi) order or the return value from \code{sp::bbox()} or
 library(MazamaSatelliteUtils)
 setSatelliteDataDir("~/Data/Satellite")
 
-bbox_us <- c(-124.848974, -66.885444, 24.396308, 49.384358) # US LOWER 48
+bbox_oregon <- c(-124.56624, -116.46350, 41.99179, 46.29203) # OREGON
 
 rstrStack <- goesaodc_createHourlyRasterStack(
 satID = "G16", 
 datetime = "2019-09-06 16:00", 
-bbox = bbox_us,
+bbox = bbox_oregon,
 dqfLevel = 2,
 res = 0.2)
 

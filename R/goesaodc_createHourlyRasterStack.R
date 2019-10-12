@@ -45,12 +45,12 @@
 #' library(MazamaSatelliteUtils)
 #' setSatelliteDataDir("~/Data/Satellite")
 #' 
-#' bbox_us <- c(-124.848974, -66.885444, 24.396308, 49.384358) # US LOWER 48
+#' bbox_oregon <- c(-124.56624, -116.46350, 41.99179, 46.29203) # OREGON
 #' 
 #' rstrStack <- goesaodc_createHourlyRasterStack(
 #' satID = "G16", 
 #' datetime = "2019-09-06 16:00", 
-#' bbox = bbox_us,
+#' bbox = bbox_oregon,
 #' dqfLevel = 2,
 #' res = 0.2)
 #' 
@@ -81,7 +81,7 @@ goesaodc_createHourlyRasterStack <- function(
   res = 0.1,
   bbox = NULL,
   dqfLevel = NULL,
-  timezone = "UTC"
+  timezone = 'UTC'
 ) {
   
   # ----- Validate parameters --------------------------------------------------
@@ -94,7 +94,15 @@ goesaodc_createHourlyRasterStack <- function(
     stop("Parameter 'satID' must be either 'G16' or 'G17'")
   }
   
+  # VALIDATE IS TIME BEING PASSED IN IS ALREADY A POSIX TIME WITH timezone
+  time_classes <- c("POSIXct", "POSIXt", "POSIXlt")
+  if ( class(datetime)[1] %in% time_classes ) {
+    timezone <- attr(datetime,"tzone")
+  }
+  
+  # SINCE WE CAN PASS IN EITHER LOCAL OR UTC, MAKE SURE WE END UP WITH UTC
   datetime <- MazamaCoreUtils::parseDatetime(datetime, timezone)
+  datetime <- lubridate::with_tz(datetime, tzone = "UTC")
 
   # ----- Download GOES AOD Files ----------------------------------------------
   

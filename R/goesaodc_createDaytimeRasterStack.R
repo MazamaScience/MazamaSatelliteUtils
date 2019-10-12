@@ -44,25 +44,22 @@
 #' @examples
 #' \dontrun{
 #' library(MazamaSatelliteUtils)
-#' library(MazamaSpatialUtils)
-#'
 #' setSatelliteDataDir("~/Data/Satellite")
-#' setSpatialDataDir("~/Data/Spatial")
-#' loadSpatialData("USCensusStates")
+#' MazamaCoreUtils::initializeLogging(logDir = "~/Data/Logs")
 #'
 #' # Define the region of interest (Milepost 97 Fire in Oregon)
-#' oregon <- subset(USCensusStates, stateCode == "OR")
-#' bbox_oregon <- sp::bbox(oregon)
+#' bbox_oregon <- c(-124.56624, -116.46350, 41.99179, 46.29203)
 #' longitude <- -123.245
 #' latitude <-   42.861
 #'
-#' dateLocal <- lubridate::ymd("2019-08-01", tz = "America/Los_Angeles")
+#' datetime <- MazamaCoreUtils::parseDatetime(datetime = "2019-09-06", 
+#' timezone = "America/Los_Angeles")
 #'
 #' dayStack <- goesaodc_createDaytimeRasterStack(
 #'   satID = "G16",
-#'   dateLocal,
-#'   longitude = -123.32,
-#'   latitude = 42.88,
+#'   datetime = datetime,
+#'   longitude = longitude,
+#'   latitude = latitude,
 #'   bbox = bbox_oregon
 #' )
 #' 
@@ -73,7 +70,7 @@
 #'
 #' plot(x = tb$datetime, y = tb$aod,
 #'      pch = 15, cex = 0.8, col = rgb(red = 0, green = 0, blue = 0, alpha = 0.8),
-#'      main = dateLocal, xlab = "Time (PDT)", ylab = "AOD")
+#'      main = datetime, xlab = "Time (PDT)", ylab = "AOD")
 #' }
 
 goesaodc_createDaytimeRasterStack <- function(
@@ -92,6 +89,12 @@ goesaodc_createDaytimeRasterStack <- function(
   
   MazamaCoreUtils::stopIfNull(satID)
   MazamaCoreUtils::stopIfNull(datetime)
+  
+  # VALIDATE IS TIME BEING PASSED IN IS ALREADY A POSIX TIME WITH timezone
+  time_classes <- c("POSIXct", "POSIXt", "POSIXlt")
+  if ( class(datetime)[1] %in% time_classes ) {
+    timezone <- attr(datetime,"tzone")
+  }
   
   datetime <- MazamaCoreUtils::parseDatetime(datetime, timezone)
   
@@ -134,8 +137,7 @@ goesaodc_createDaytimeRasterStack <- function(
         var = var,
         res = 0.1,
         bbox = bbox,
-        dqfLevel = dqfLevel
-      )
+        dqfLevel = dqfLevel)
       
       # Combine the rasters and timestamps of the day and hour stacks
       zDay <- raster::getZ(dayStack)
@@ -147,11 +149,18 @@ goesaodc_createDaytimeRasterStack <- function(
     }, silent = TRUE)
     
     if ( "try-error" %in% class(result) ) {
-      stop(result)
+      err_msg <- geterrmessage()
+      if ( stringr::str_detect(err_msg, "No data for selected region") ) {
+        # Warn but don't stop
+        if ( MazamaCoreUtils::logger.isInitialized() ) {
+          MazamaCoreUtils::logger.warn("No data found for hour %s", hour)
+        }
+      } else {
+        stop(result)
+      }
     } else {
-      print(paste0("Stacked hour: ", hour))
+      print(paste0("Stacked hour: ", hour, " UTC"))
     }
-    
   }
   
   # ----- Return ---------------------------------------------------------------
