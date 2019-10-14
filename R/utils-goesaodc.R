@@ -165,9 +165,13 @@ goesaodc_isGoesProjection <- function(
 goesaodc_getStartString <- function(
   file
 ) {
-  stringr::str_split(file, "_") %>% 
-    unlist() %>% 
-    dplyr::nth(-3) %>% 
+  # Example file name:
+  #  OR_ABI-L2-AODC-M4_G17_s20192481500215_e20192481505115_c20192481507046.nc
+  
+  # Extract the "s..." part and strip of the 's' and the fractional seconds 
+  # to get a nicely parseable "YjHMS".
+  
+  stringr::str_split_fixed(file, "_", 6)[,4] %>%
     stringr::str_sub(2, -2)
 }
 
