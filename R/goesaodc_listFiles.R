@@ -1,13 +1,20 @@
 #' @export
 #'
-#' @title List downloaded GOES AOD files for a specified date and hour
+#' @title List available GOES AOD files for a specified date and hour
 #'
 #' @param satID ID of the source GOES satellite (G16 or G17).
-#' @param startdate desired date in any Ymd [H] format or \code{POSIXct}
-#' @param jdate desired date in as a Julian date string, i.e. as seen in the
-#'   netcdf filenames
-#' @param fullDay Specifies that the user wants an entire day's worth of data
-#'
+#' @param datetime Desired datetime in any Ymd H [MS] format or \code{POSIXct}
+#' @param timezone Timezone in which to interpret the \code{datetime}.
+#' @param bbox Bounding box for the region of interest.
+#' @param fullDay Logical specifying whether to list files for an entire 
+#' local time day.
+#' @param daylightOnly Logical specifying whether to list only those files
+#' containing daylight imagery somewhere over the region of interest specified
+#' by \code{bbox}.
+#' @param useLocalDir Logical specifying whether to look for files in 
+#' \code{getSatelliteDataDir()} or \code{baseUrl}.
+#' @param baseUrl Base URL for data queries.
+#' 
 #' @description Retrieve a list of GOES AOD files available in the
 #' \code{satelliteDataDir} for a specified date and hour.
 #'
@@ -17,99 +24,181 @@
 #'
 #' @return Vector of filenames.
 #'
+#' @seealso \link{goesaodc_listLocalFiles}
+#' @seealso \link{goesaodc_listRemoteFiles}
+#' 
 #' @examples
 #' \donttest{
 #' library(MazamaSatelliteUtils)
 #' setSatelliteDataDir("~/Data/Satellite")
 #'
-#' date_with_hour <- "2019-09-06 16"
-#' goesaodc_listFiles(satID = "G16", startdate = date_with_hour)
+#' noon <- "2019-09-06 12:00"
+#' 
+#' # Default to noon UTC
+#' goesaodc_listFiles(
+#'   satID = "G16", 
+#'   datetime = datetime
+#' )
 #'
-#' jdate <- "201924916"
-#' goesaodc_listFiles(satID = "G17", jdate = jdate, fullDay = TRUE)
+#' # Noon on the west coast
+#' goesaodc_listFiles(
+#'   satID = "G16", 
+#'   datetime = datetime,
+#'   timezone = "America/Los_Angeles"
+#' )
 #'
-#' day_only <- "2019-09-06"
-#' goesaodc_listFiles(satID = "G16", startdate = day_only)
+#' # Full local time day (daylight anywhere in the US)
+#' goesaodc_listFiles(
+#'   satID = "G16", 
+#'   datetime = datetime,
+#'   timezone = "America/Los_Angeles",
+#'   fullDay = TRUE
+#' )
+#'
+#' CA_bbox <- c(-125, -114, 32, 42)
+#' 
+#' # Full local time day (daylight only in California)
+#' goesaodc_listFiles(
+#'   satID = "G16", 
+#'   datetime = datetime,
+#'   timezone = "America/Los_Angeles",
+#'   fullDay = TRUE,
+#'   bbox = CA_bbox
+#' )
+#'
 #' }
 
 goesaodc_listFiles <- function(
   satID = NULL,
-  startdate = NULL,
-  jdate = NULL,
-  fullDay = FALSE
+  datetime = NULL,
+  timezone = "UTC",
+  bbox = c(-125, -65, 24, 50), # CONUS
+  fullDay = FALSE,
+  daylightOnly = TRUE,
+  useLocalDir = TRUE,
+  baseUrl = "https://tools-1.airfire.org/Satellite/"
 ) {
   
-  # VERIFY THAT satID HAS BEEN SPECIFIED
-  if ( is.null(satID) ) {
+  # ----- Validate parameters --------------------------------------------------
+  
+  MazamaCoreUtils::stopIfNull(satID)
+  MazamaCoreUtils::stopIfNull(datetime)
+  MazamaCoreUtils::stopIfNull(timezone)
+  MazamaCoreUtils::stopIfNull(bbox)
+  MazamaCoreUtils::stopIfNull(baseUrl)
+  
+  satID <- toupper(satID)
+  
+  # Create satUrl
+  if ( !useLocalDir ) {
+    if ( satID == "G16" ) {
+      satUrl <- paste0(baseUrl, "GOES-16/AODC")
+    } else if ( satID == "G17" ) {
+      satUrl <- paste0(baseUrl, "GOES-17/AODC")
+    } else {
+      stop("Parameter 'satID' must be either 'G16' or 'G17'")
+    }
+  }
+  
+  # ----- Create startPatterns -------------------------------------------------
+  
+  # Create a vector of POSIXct hours
+  
+  if ( !fullDay ) {
+    hours <- 
+      MazamaCoreUtils::parseDatetime(datetime, timezone) %>%
+      lubridate::floor_date(unit = "hour")
+  } else {
+    startHour <- 
+      MazamaCoreUtils::parseDatetime(datetime, timezone) %>%
+      lubridate::floor_date(unit = "day")
+    endHour <- startHour + lubridate::hours(24)
+    hours <- seq(startHour, endHour, by = "hour")
+  }
+  
+  # Mask for daylight hours
+  
+  if ( daylightOnly ) {
+    daylightMask <- isDaylight(hours, timezone, bbox)
+    hours <- hours[daylightMask]
+  }
+  
+  # Create a vector of UTC startPatterns for each requested hour
+  startPatterns <- c(strftime(hours, "_s%Y%j%H", tz = "UTC"))
+  
+  # ----- Local or Remote ------------------------------------------------------
+  
+  if ( useLocalDir ) {
     
-    stop("GOES satID must be specified")
+    dataFiles <- list.files(getSatelliteDataDir(), pattern = regex)
     
   } else {
     
-    satID <- toupper(satID)
+    links <-
+      xml2::read_html(satUrl) %>%
+      xml2::xml_child("body") %>%
+      xml2::xml_child("table") %>%
+      xml2::xml_find_all("//a") %>%
+      xml2::xml_attr("href")
     
-    if ( !(satID %in% c("G16", "G17")) ) {
-      stop("Must specify GOES satellite ID (G16 or G17)")
-      
-    }
+    # TODO:  Figure out which implementation is faster
+    # dataFiles <-
+    #   xml2::read_html(satUrl) %>%
+    #   rvest::html_nodes("table") %>%
+    #   rvest::html_nodes("a") %>% 
+    #   rvest::html_text()
     
-  }
-  
-  # IF A startdate HAS BEEN PASSED IN, ATTEMPT TO PARSE IT
-  if ( !is.null(startdate) ) {
-    
-    suppressWarnings(
-      starttime <- MazamaCoreUtils::parseDatetime(startdate, timezone = "UTC") )
-    if ( lubridate::hour(starttime) == 0 && fullDay != TRUE) {
-      jdate <- strftime(starttime, "%Y%j%H", tz = "UTC")
-    }
-    
-    # OTHERWISE IF jdate PRESENT, CONVERT IT TO POSIXt
-  } else if ( !is.null(jdate) ) {
-    
-    if (stringr::str_length(jdate) <= 7) {
-      # ie 2019249
-      fullDay <- TRUE
-    }
-    
-    # JDATE IS STRIPPED TO 13 CHARS AS 14TH WON'T PARSE (20192491646196)
-    jdate <- stringr::str_sub(jdate, 1, 13)
-    formats <- c("Yj", "YjH", "YjHMS")
-    starttime <- lubridate::parse_date_time(jdate, orders = formats, tz = "UTC")
-    
-  } else {
-    
-    stop("Either 'startdate' or 'jdate' must be defined.", call. = FALSE)
+    dataFiles <- links[-(1:5)]
     
   }
   
-  # CONVERT starttime TO CORRECT JULIAN FORMAT BASED ON 'fullDay' PARAMETER
-  if ( fullDay ) {
-    
-    startString <- strftime(starttime, "%Y%j", tz = "UTC")
-    startString <- stringr::str_sub(startString, 1, 7)
-    
-  } else {
-    
-    startString <- strftime(starttime, "%Y%j%H", tz = "UTC")
-    startString <- stringr::str_sub(startString, 1, 9)
-    
+  # ----- Find matching files --------------------------------------------------
+  
+  # Assemble a list of all satellite data files for our satID
+  regex <- paste0(
+    "OR_ABI-L2-AODC-M[0-9]_",
+    satID,
+    "_s[0-9]+_e[0-9]+_c[0-9]+\\.nc"
+  )
+  
+  # TODO:  Figure out the proper functional programming way to do this using
+  # TODO:  purrr or base::Map().
+  
+  indicesList <- list()
+  for ( startPattern in startPatterns ) {
+    indicesList[[startPattern]] <- 
+      which(stringr::str_detect(dataFiles, startPattern))
   }
+  indices <- as.numeric(unlist(indicesList))
   
-  # ASSEMBLE A LIST OF ALL .nc FILES IN SatelliteDataDir AND THEN LOOK IN THAT
-  # LIST FOR THE PATTERN THAT MATCHES THE SPECIFIED starttime AND fullDay
-  regex <- paste0("OR_ABI-L2-AODC-M[0-9]_",
-                  satID,
-                  "_s[0-9]+_e[0-9]+_c[0-9]+\\.nc")
-  
-  dataFiles <- list.files(getSatelliteDataDir(), pattern = regex)
-  
-  startStrings <- purrr::map_chr(dataFiles, goesaodc_getStartString)
-  
-  # Find matching start times
-  mask <- stringr::str_detect(startStrings, startString)
-  matchingFiles <- dataFiles[mask]
+  matchingFiles <- dataFiles[indices]
   
   return(matchingFiles)
   
 } # END OF FUNCTION
+
+# ===== DEBUGGING ==============================================================
+
+if ( FALSE ) {
+  
+  satID <- "G16"
+  datetime <- "2019-09-06 12:00"
+  timezone <- "America/Los_Angeles"
+  bbox <- c(-125, -65, 24, 50) # CONUS
+  fullDay <- TRUE
+  daylightOnly <- TRUE
+  useLocalDir <- FALSE
+  baseUrl <- "https://tools-1.airfire.org/Satellite/"
+  
+  goesaodc_listFiles(
+    satID = satID,
+    datetime = datetime,
+    timezone = timezone,
+    bbox = bbox,
+    fullDay = fullDay,
+    daylightOnly = daylightOnly,
+    useLocalDir = useLocalDir,
+    baseUrl = baseUrl
+  ) 
+  
+}

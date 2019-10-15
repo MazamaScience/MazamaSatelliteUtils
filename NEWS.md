@@ -1,3 +1,8 @@
+# MazamaSatelliteUtils 0.2.7
+
+* Adding proper vectorization to `isDaylight()`.
+* Added `goesaodc_listLocalFiles()` and `goesaodc_listRemoteFiles()`.
+
 # MazamaSatelliteUtils 0.2.6
 
 Added new `bboxToVector()` function to support the creation of bounnding box
