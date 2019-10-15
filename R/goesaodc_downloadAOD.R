@@ -127,7 +127,7 @@ goesaodc_downloadAOD <- function(
       fileUrl <- paste0(satUrl, "/", file)
       
       result <- try({
-        utils::download.file(fileUrl, destfile = filePath, quiet = quiet)
+        utils::download.file(fileUrl, destfile = filePath, quiet = quiet, method = "auto", mode = "wb")
         downloadedFiles <- c(downloadedFiles, filePath)
       }, silent = FALSE)
       
