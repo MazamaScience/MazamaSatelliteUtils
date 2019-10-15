@@ -2,31 +2,30 @@
 % Please edit documentation in R/utils-time.R
 \name{isDaylight}
 \alias{isDaylight}
-\title{check if specified \code{datetime} is during the daylight hours of 
-the specified \code{region}}
+\title{Determine whether times are during daylight within a region}
 \usage{
-isDaylight(datetime = NULL, bbox = NULL, timezone = "UTC")
+isDaylight(datetime = NULL, timezone = "UTC", bbox = c(-125, -65, 24,
+  50))
 }
 \arguments{
-\item{datetime}{desired datetime in any Y-m-d H [MS] format or \code{POSIXct}}
+\item{datetime}{Desired datetime in any Y-m-d H [MS] format or \code{POSIXct}.}
 
-\item{bbox}{bounding box for region of interest}
+\item{timezone}{Timezone in which to interpret the \code{datetime}.}
 
-\item{timezone}{timezone in which to interpret the \code{datetime}}
+\item{bbox}{Bounding box for region of interest.}
 }
 \value{
-logical
+Logical vector.
 }
 \description{
-check if specified \code{datetime} is during the daylight hours of 
-the specified \code{region}
+Determine whether times are during daylight within a region
 }
 \examples{
 \donttest{
 library(MazamaSatelliteUtils)
 setSatelliteDataDir("~/Data/Satellite")
 
-# BBOX AS CREATED BY SP
+# BBOX AS CREATED BY sp::bbox()
 
 library(MazamaSpatialUtils)
 
@@ -37,13 +36,16 @@ mx_bbox <- bbox(mx)
 isDaylight(
   datetime = "2019-09-06 12",
   bbox = mx_bbox,
-  timezone = "UTC") 
+  timezone = "UTC"
+) 
 
-# BBOX AS DEFINED BY CALLING ON raster::extent
+# BBOX AS CREATED BY raster::extent()
+
 G16_filepath <- system.file(
   "extdata", 
   "OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc", 
-  package = "MazamaSatelliteUtils")
+  package = "MazamaSatelliteUtils"
+)
 
 nc <- ncdf4::nc_open(G16_filepath)
 
