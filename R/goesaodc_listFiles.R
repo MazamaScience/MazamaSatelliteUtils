@@ -126,6 +126,13 @@ goesaodc_listFiles <- function(
   # Create a vector of UTC startPatterns for each requested hour
   startPatterns <- c(strftime(hours, "_s%Y%j%H", tz = "UTC"))
   
+  # ----- Assemble regex to search with ----------------------------------------
+  regex <- paste0(
+    "OR_ABI-L2-AODC-M[0-9]_",
+    satID,
+    "_s[0-9]+_e[0-9]+_c[0-9]+\\.nc"
+  )
+  
   # ----- Local or Remote ------------------------------------------------------
   
   if ( useLocalDir ) {
@@ -155,11 +162,7 @@ goesaodc_listFiles <- function(
   # ----- Find matching files --------------------------------------------------
   
   # Assemble a list of all satellite data files for our satID
-  regex <- paste0(
-    "OR_ABI-L2-AODC-M[0-9]_",
-    satID,
-    "_s[0-9]+_e[0-9]+_c[0-9]+\\.nc"
-  )
+
   
   # TODO:  Figure out the proper functional programming way to do this using
   # TODO:  purrr or base::Map().

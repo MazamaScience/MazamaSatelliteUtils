@@ -98,9 +98,9 @@ goesaodc_getCoordGrid <- function(nc) {
     sz <- r_s * cos(x) * sin(y)
     
     # Coordinates in degrees
-    lon <- ((lambda0 - atan(sy / (H - sx))) * 180) / pi
-    lat <- (atan((r_eq^2 / r_pol^2) * (sz / sqrt((H - sx)^2 + sy^2))) * 180) / pi
-    
+    suppressWarnings( lon <- ((lambda0 - atan(sy / (H - sx))) * 180) / pi )
+    suppressWarnings( lat <- (atan((r_eq^2 / r_pol^2) * (sz / sqrt((H - sx)^2 + sy^2))) * 180) / pi )
+                      
     return(list("lon" = lon, "lat" = lat))
     
   }
@@ -140,17 +140,26 @@ goesaodc_getProjection <- function(
 #' 
 #' @return logical
 #' 
-goesaodc_isGoesProjection <- function(
-  nc
-) {
+goesaodc_isGoesProjection <- function(nc) 
+  {
   projection <- goesaodc_getProjection(nc)
   satelliteDataDir <- getSatelliteDataDir()
-  goesEastGrid <- get(load(file.path(satelliteDataDir, "goesEastGrid.rda")))
-  goesWestGrid <- get(load(file.path(satelliteDataDir, "goesWestGrid.rda")))
-  isGoesEast <- all(unlist(projection) == unlist(goesEastGrid$projection))
-  isGoesWest <- all(unlist(projection) == unlist(goesWestGrid$projection))
+  tryCatch(
+    expr = {
+      goesEastGrid <- get(load(file.path(satelliteDataDir, "goesEastGrid.rda")))
+      goesWestGrid <- get(load(file.path(satelliteDataDir, "goesWestGrid.rda")))
+      isGoesEast <- all(unlist(projection) == unlist(goesEastGrid$projection))
+      isGoesWest <- all(unlist(projection) == unlist(goesWestGrid$projection))
+    },
+    error = function(e){
+      stop(e)
+    },
+    warning = function(w){
+      stop(w)
+    }
+  )  
   return(isGoesEast || isGoesWest)
-}
+  }
 
 
 #' @export

@@ -75,6 +75,11 @@ goesaodc_createRaster <- function(
   # Assemble the correct filepath based on satID and Data directory
   filePath <- file.path(getSatelliteDataDir(), gridFile)
   
+  # Check that grids are present
+  if ( !file.exists(filePath) ) {
+    stop(paste0(filePath, " not found. Run 'installGoesGrids()."))
+  }
+  
   # Test for grid existence and if found, load it. Stop with appropriate message
   # if missing
   if ( file.exists(filePath) ) {

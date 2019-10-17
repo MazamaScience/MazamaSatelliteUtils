@@ -49,7 +49,7 @@
 #' 
 #' rstrStack <- goesaodc_createHourlyRasterStack(
 #' satID = "G16", 
-#' datetime = "2019-09-06 16:00", 
+#' datetime = "2019-09-06", 
 #' bbox = bbox_oregon,
 #' dqfLevel = 2,
 #' res = 0.2)
