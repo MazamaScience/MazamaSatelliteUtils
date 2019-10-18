@@ -4,24 +4,23 @@
 \alias{goesaodc_downloadAOD}
 \title{Download GOES-16 or GOES-17 AOD data}
 \usage{
-goesaodc_downloadAOD(satID = NULL, datetime = NULL, jdate = NULL,
-  baseUrl = "https://tools-1.airfire.org/Satellite/", quiet = FALSE,
-  fullDay = FALSE)
+goesaodc_downloadAOD(satID = NULL, datetime = NULL, endTime = NULL,
+  timezone = "UTC", julian = FALSE,
+  baseUrl = "https://tools-1.airfire.org/Satellite/")
 }
 \arguments{
 \item{satID}{ID of the source GOES satellite (G16 or G17).}
 
-\item{datetime}{desired date in any Ymd [H] format or \code{POSIXct}}
+\item{datetime}{Desired datetime in any Ymd H [MS] format or \code{POSIXct}}
 
-\item{jdate}{desired date in as a Julian date string, i.e. as seen in the
-netcdf filenames}
+\item{endTime}{Desired ending time in any Ymd H [MS] format or \code{POSIXct}}
 
-\item{baseUrl}{base URL for data queries}
+\item{timezone}{Timezone used to interpret \code{datetime} and \code{endTime}}
 
-\item{quiet}{if TRUE, suppress status messages and progress bar}
+\item{julian}{Logical specifying if \code{datetime} (and optionally 
+\code{endTime}) are Julian formatted}
 
-\item{fullDay}{if TRUE downloads all files for a day, even if a specific hour
-has been specified in the \code{datetime}. Set to FALSE by default.}
+\item{baseUrl}{Base URL for data queries.}
 }
 \value{
 Vector of downloaded filepaths.
@@ -30,18 +29,28 @@ Vector of downloaded filepaths.
 Download all GOES 16 or 17 NetCDF files for the given
 \code{datetime} to the directory specified by \code{setSatelliteDataDir()}.
 If \code{datetime} is specified to the hour and \code{fullDay} is not
-explicitly set to TRUE', only files for that hour will be downloaded. If
-\code{datetime} is specified only to the day, all files for that day will
-be downloaded. NOTE that all times are assumed to be in UTC timezone.
+explicitly set to TRUE', only files for that hour will be downloaded. If the
+optional \code{endTime} is specified, all files that exist for the time 
+period between \code{datetime} and \code{endTime} will be downloaded. If 
+\code{timezone} is not specified, "UTC" timezone is assumed.
 }
 \examples{
 \donttest{
 library(MazamaSatelliteUtils)
 setSatelliteDataDir("~/Data/Satellite")
 
-goesaodc_downloadAOD(satID ="G16", datetime = "2019-05-16 16")
+goesaodc_downloadAOD(satID = "G17", 
+datetime = "2019-09-06 18") 
 
-goesaodc_downloadAOD(satID = "G17", jdate = "201924918")
+goesaodc_downloadAOD(satID = "G16",
+datetime = "2019-09-06 08:00",
+endTime = "2019-09-06 12:00",
+timezone = "America/Los_Angeles")
+
+goesaodc_downloadAOD(satID = "G16",
+datetime = "201924915",
+julian = TRUE)
+
 }
 }
 \seealso{

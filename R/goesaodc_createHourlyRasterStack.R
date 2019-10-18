@@ -49,7 +49,7 @@
 #' 
 #' rstrStack <- goesaodc_createHourlyRasterStack(
 #' satID = "G16", 
-#' datetime = "2019-09-06", 
+#' datetime = "2019-09-06 16", 
 #' bbox = bbox_oregon,
 #' dqfLevel = 2,
 #' res = 0.2)
@@ -84,44 +84,34 @@ goesaodc_createHourlyRasterStack <- function(
   timezone = 'UTC'
 ) {
   
-  # ----- Validate parameters --------------------------------------------------
+  # ---- Validate parameters ---------------------------------------------------
   
   MazamaCoreUtils::stopIfNull(satID)
   MazamaCoreUtils::stopIfNull(datetime)
   
-  satID <- toupper(satID)
-  if ( !(satID %in% c("G16", "G17")) ) {
-    stop("Parameter 'satID' must be either 'G16' or 'G17'")
-  }
-  
-  # VALIDATE IS TIME BEING PASSED IN IS ALREADY A POSIX TIME WITH timezone
+  # ---- Check for a POSIXt timezone -------------------------------------------
   time_classes <- c("POSIXct", "POSIXt", "POSIXlt")
   if ( class(datetime)[1] %in% time_classes ) {
     timezone <- attr(datetime,"tzone")
   }
-  
-  # SINCE WE CAN PASS IN EITHER LOCAL OR UTC, MAKE SURE WE END UP WITH UTC
-  datetime <- MazamaCoreUtils::parseDatetime(datetime, timezone)
-  datetime <- lubridate::with_tz(datetime, tzone = "UTC")
 
-  # ----- Download GOES AOD Files ----------------------------------------------
-  
-  # make sure that files are downloaded
+  # ---- Download GOES AOD Files -----------------------------------------------
   goesaodc_downloadAOD(satID, datetime)
   
-  # ----- Create List of RasterLayers ------------------------------------------
+  # ---- Create List of RasterLayers -------------------------------------------
   
   # create list of AOD raster layers for specified hour and region
+  # TODO: un-purrr this...
   rasterList <- 
-    goesaodc_listFiles(satID, datetime) %>%             # create list of filenames for specified hour
-    purrr::map(goesaodc_openFile) %>%                   # open each file in the list
-    purrr::map(goesaodc_createRaster,                   # rasterize each open file specified params
+    goesaodc_listFiles(satID = satID, datetime = datetime) %>%  # filenames
+    purrr::map(goesaodc_openFile) %>%                   # open each file
+    purrr::map(goesaodc_createRaster,                   # rasterize each file 
                res = res,
                bbox = bbox,                             
                dqfLevel = dqfLevel) %>%  
-    purrr::map(function(rst) rst[[var]])                # select RasterLayer of specified variable
+    purrr::map(function(rst) rst[[var]])                # select variable
   
-  # ----- Create RasterStack ---------------------------------------------------
+  # ---- Create RasterStack ----------------------------------------------------
   
   # Extents won't match exactly and raster::stack() needs them to, so
   # find the largest extent necessary to encompass all RasterLayers in the

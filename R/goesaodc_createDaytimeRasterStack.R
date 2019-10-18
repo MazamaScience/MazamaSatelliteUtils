@@ -45,6 +45,7 @@
 #' \dontrun{
 #' library(MazamaSatelliteUtils)
 #' setSatelliteDataDir("~/Data/Satellite")
+#' library(MazamaSpatialUtils)
 #' MazamaCoreUtils::initializeLogging(logDir = "~/Data/Logs")
 #'
 #' # Define the region of interest (Milepost 97 Fire in Oregon)
@@ -73,7 +74,7 @@
 #'      main = datetime, xlab = "Time (PDT)", ylab = "AOD")
 #' }
 
-goesaodc_createDaytimeRasterStack <- function(
+  goesaodc_createDaytimeRasterStack <- function(
   satID = NULL,
   datetime = NULL,
   longitude = NULL,

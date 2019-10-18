@@ -4,9 +4,8 @@
 \alias{goesaodc_listFiles}
 \title{List available GOES AOD files for a specified date and hour}
 \usage{
-goesaodc_listFiles(satID = NULL, datetime = NULL, timezone = "UTC",
-  bbox = c(-125, -65, 24, 50), fullDay = FALSE, daylightOnly = TRUE,
-  useLocalDir = TRUE,
+goesaodc_listFiles(satID = NULL, datetime = NULL, endTime = NULL,
+  useRemote = FALSE, timezone = "UTC", julian = FALSE,
   baseUrl = "https://tools-1.airfire.org/Satellite/")
 }
 \arguments{
@@ -14,19 +13,15 @@ goesaodc_listFiles(satID = NULL, datetime = NULL, timezone = "UTC",
 
 \item{datetime}{Desired datetime in any Ymd H [MS] format or \code{POSIXct}}
 
-\item{timezone}{Timezone in which to interpret the \code{datetime}.}
+\item{endTime}{Desired ending time in any Ymd H [MS] format or \code{POSIXct}}
 
-\item{bbox}{Bounding box for the region of interest.}
-
-\item{fullDay}{Logical specifying whether to list files for an entire 
-local time day.}
-
-\item{daylightOnly}{Logical specifying whether to list only those files
-containing daylight imagery somewhere over the region of interest specified
-by \code{bbox}.}
-
-\item{useLocalDir}{Logical specifying whether to look for files in 
+\item{useRemote}{Logical specifying whether to look for files in 
 \code{getSatelliteDataDir()} or \code{baseUrl}.}
+
+\item{timezone}{Timezone used to interpret \code{datetime} and \code{endTime}}
+
+\item{julian}{Logical specifying if \code{datetime} (and optionally 
+\code{endTime}) are Julian formatted}
 
 \item{baseUrl}{Base URL for data queries.}
 }
@@ -35,55 +30,25 @@ Vector of filenames.
 }
 \description{
 Retrieve a list of GOES AOD files available in the
-\code{satelliteDataDir} for a specified date and hour.
+\code{satelliteDataDir} or at \code{baseUrl} for a specified date and hour.
 
-Note that all files for a particular hour will be returned even if the
+NOTE: All files for a particular hour will be returned even if the
 incoming \code{startdate} or \code{jdate} is specified to the minute or
-second.
+second.  By default, the local directory set by \code{SetSatelliteDir} is 
+searched. \code{useRemote = TRUE} will search \code{baseURL} for all files 
+that are available within the specified timeframe.
 }
 \examples{
 \donttest{
 library(MazamaSatelliteUtils)
 setSatelliteDataDir("~/Data/Satellite")
 
-noon <- "2019-09-06 12:00"
-
-# Default to noon UTC
-goesaodc_listFiles(
-  satID = "G16", 
-  datetime = datetime
-)
-
-# Noon on the west coast
-goesaodc_listFiles(
-  satID = "G16", 
-  datetime = datetime,
-  timezone = "America/Los_Angeles"
-)
-
-# Full local time day (daylight anywhere in the US)
-goesaodc_listFiles(
-  satID = "G16", 
-  datetime = datetime,
-  timezone = "America/Los_Angeles",
-  fullDay = TRUE
-)
-
-CA_bbox <- c(-125, -114, 32, 42)
-
-# Full local time day (daylight only in California)
-goesaodc_listFiles(
-  satID = "G16", 
-  datetime = datetime,
-  timezone = "America/Los_Angeles",
-  fullDay = TRUE,
-  bbox = CA_bbox
-)
-
+ goesaodc_listFiles(
+ satID = "G16",
+ datetime = "2019-09-06 06:00",
+ endTime = "2019-09-06 18:00",
+ timezone = "America/Los_Angeles",
+ useRemote = TRUE,
+ )
 }
-}
-\seealso{
-\link{goesaodc_listLocalFiles}
-
-\link{goesaodc_listRemoteFiles}
 }

@@ -4,93 +4,76 @@
 #'
 #' @param satID ID of the source GOES satellite (G16 or G17).
 #' @param datetime Desired datetime in any Ymd H [MS] format or \code{POSIXct}
-#' @param timezone Timezone in which to interpret the \code{datetime}.
-#' @param bbox Bounding box for the region of interest.
-#' @param fullDay Logical specifying whether to list files for an entire 
-#' local time day.
-#' @param daylightOnly Logical specifying whether to list only those files
-#' containing daylight imagery somewhere over the region of interest specified
-#' by \code{bbox}.
-#' @param useLocalDir Logical specifying whether to look for files in 
+#' @param endTime Desired ending time in any Ymd H [MS] format or \code{POSIXct}
+#' @param useRemote Logical specifying whether to look for files in 
 #' \code{getSatelliteDataDir()} or \code{baseUrl}.
+#' @param timezone Timezone used to interpret \code{datetime} and \code{endTime}
+#' @param julian Logical specifying if \code{datetime} (and optionally 
+#' \code{endTime}) are Julian formatted
 #' @param baseUrl Base URL for data queries.
 #' 
+#' 
 #' @description Retrieve a list of GOES AOD files available in the
-#' \code{satelliteDataDir} for a specified date and hour.
+#' \code{satelliteDataDir} or at \code{baseUrl} for a specified date and hour.
 #'
-#' Note that all files for a particular hour will be returned even if the
+#' NOTE: All files for a particular hour will be returned even if the
 #' incoming \code{startdate} or \code{jdate} is specified to the minute or
-#' second.
+#' second.  By default, the local directory set by \code{SetSatelliteDir} is 
+#' searched. \code{useRemote = TRUE} will search \code{baseURL} for all files 
+#' that are available within the specified timeframe.
 #'
 #' @return Vector of filenames.
 #'
-#' @seealso \link{goesaodc_listLocalFiles}
-#' @seealso \link{goesaodc_listRemoteFiles}
-#' 
 #' @examples
 #' \donttest{
 #' library(MazamaSatelliteUtils)
 #' setSatelliteDataDir("~/Data/Satellite")
 #'
-#' noon <- "2019-09-06 12:00"
-#' 
-#' # Default to noon UTC
-#' goesaodc_listFiles(
-#'   satID = "G16", 
-#'   datetime = datetime
-#' )
-#'
-#' # Noon on the west coast
-#' goesaodc_listFiles(
-#'   satID = "G16", 
-#'   datetime = datetime,
-#'   timezone = "America/Los_Angeles"
-#' )
-#'
-#' # Full local time day (daylight anywhere in the US)
-#' goesaodc_listFiles(
-#'   satID = "G16", 
-#'   datetime = datetime,
-#'   timezone = "America/Los_Angeles",
-#'   fullDay = TRUE
-#' )
-#'
-#' CA_bbox <- c(-125, -114, 32, 42)
-#' 
-#' # Full local time day (daylight only in California)
-#' goesaodc_listFiles(
-#'   satID = "G16", 
-#'   datetime = datetime,
-#'   timezone = "America/Los_Angeles",
-#'   fullDay = TRUE,
-#'   bbox = CA_bbox
-#' )
-#'
+#'  goesaodc_listFiles(
+#'  satID = "G16",
+#'  datetime = "2019-09-06 06:00",
+#'  endTime = "2019-09-06 18:00",
+#'  timezone = "America/Los_Angeles",
+#'  useRemote = TRUE,
+#'  )
 #' }
 
 goesaodc_listFiles <- function(
   satID = NULL,
   datetime = NULL,
+  endTime = NULL,
+  useRemote = FALSE,
   timezone = "UTC",
-  bbox = c(-125, -65, 24, 50), # CONUS
-  fullDay = FALSE,
-  daylightOnly = TRUE,
-  useLocalDir = TRUE,
+  julian = FALSE,
   baseUrl = "https://tools-1.airfire.org/Satellite/"
 ) {
   
-  # ----- Validate parameters --------------------------------------------------
-  
+  # ---- Validate we have what we need -----------------------------------------
   MazamaCoreUtils::stopIfNull(satID)
   MazamaCoreUtils::stopIfNull(datetime)
-  MazamaCoreUtils::stopIfNull(timezone)
-  MazamaCoreUtils::stopIfNull(bbox)
-  MazamaCoreUtils::stopIfNull(baseUrl)
   
+  # ---- Convert satID to uniform case -----------------------------------------
   satID <- toupper(satID)
+  if ( !(satID %in% c("G16", "G17")) )
+    stop("Must specify GOES satellite ID (G16 or G17)")
   
-  # Create satUrl
-  if ( !useLocalDir ) {
+  # ---- Check if a timezone has been passed in with a POSIXt ------------------
+  time_classes <- c("POSIXct", "POSIXt", "POSIXlt")
+  if ( class(datetime)[1] %in% time_classes ) {
+    timezone <- attr(datetime,"tzone")
+  }
+  
+  # ---- Parse incoming times with MazamaCoreUtils -----------------------------
+  datetime <- MazamaCoreUtils::parseDatetime(datetime = datetime, 
+                                             timezone = timezone, 
+                                             julian = julian)
+  
+  if ( !is.null(endTime) ) {
+    endTime <- MazamaCoreUtils::parseDatetime(endTime, timezone, julian = julian)
+  }
+  
+  # ---- Create satUrl for remote searching
+  if ( useRemote ) {
     if ( satID == "G16" ) {
       satUrl <- paste0(baseUrl, "GOES-16/AODC")
     } else if ( satID == "G17" ) {
@@ -100,45 +83,17 @@ goesaodc_listFiles <- function(
     }
   }
   
-  # ----- Create startPatterns -------------------------------------------------
-  
-  # Create a vector of POSIXct hours
-  
-  if ( !fullDay ) {
-    hours <- 
-      MazamaCoreUtils::parseDatetime(datetime, timezone) %>%
-      lubridate::floor_date(unit = "hour")
-  } else {
-    startHour <- 
-      MazamaCoreUtils::parseDatetime(datetime, timezone) %>%
-      lubridate::floor_date(unit = "day")
-    endHour <- startHour + lubridate::hours(24)
-    hours <- seq(startHour, endHour, by = "hour")
-  }
-  
-  # Mask for daylight hours
-  
-  if ( daylightOnly ) {
-    daylightMask <- isDaylight(hours, timezone, bbox)
-    hours <- hours[daylightMask]
-  }
-  
-  # Create a vector of UTC startPatterns for each requested hour
-  startPatterns <- c(strftime(hours, "_s%Y%j%H", tz = "UTC"))
-  
   # ----- Assemble regex to search with ----------------------------------------
-  regex <- paste0(
-    "OR_ABI-L2-AODC-M[0-9]_",
-    satID,
-    "_s[0-9]+_e[0-9]+_c[0-9]+\\.nc"
+  regex <- paste0( "OR_ABI-L2-AODC-M[0-9]_",
+                   satID,
+                   "_s[0-9]+_e[0-9]+_c[0-9]+\\.nc"
   )
   
-  # ----- Local or Remote ------------------------------------------------------
-  
-  if ( useLocalDir ) {
-    
+  # ---- Create a list of all appropriate nc files on disk ---------------------
+  if ( !useRemote) {
     dataFiles <- list.files(getSatelliteDataDir(), pattern = regex)
     
+    # ----- Check remotely for available files and build filelist ----------------  
   } else {
     
     links <-
@@ -148,25 +103,20 @@ goesaodc_listFiles <- function(
       xml2::xml_find_all("//a") %>%
       xml2::xml_attr("href")
     
-    # TODO:  Figure out which implementation is faster
-    # dataFiles <-
-    #   xml2::read_html(satUrl) %>%
-    #   rvest::html_nodes("table") %>%
-    #   rvest::html_nodes("a") %>% 
-    #   rvest::html_text()
-    
     dataFiles <- links[-(1:5)]
-    
   }
   
-  # ----- Find matching files --------------------------------------------------
+  # ----- Build a squence of hours ---------------------------------------------
+  if ( is.null(endTime) ) {
+    hours <- c(datetime)
+  } else {
+    hours <- seq.POSIXt(from = datetime, to = endTime, by = "hour")
+  }
   
-  # Assemble a list of all satellite data files for our satID
-
+  # Convert to UTC and create startPatterns for each requested hour
+  startPatterns <- c(strftime(hours, "_s%Y%j%H", tz = "UTC"))
   
-  # TODO:  Figure out the proper functional programming way to do this using
-  # TODO:  purrr or base::Map().
-  
+  # ---- Match startPatterns to list of filenames ------------------------------
   indicesList <- list()
   for ( startPattern in startPatterns ) {
     indicesList[[startPattern]] <- 
@@ -185,22 +135,18 @@ goesaodc_listFiles <- function(
 if ( FALSE ) {
   
   satID <- "G16"
-  datetime <- "2019-09-06 12:00"
+  datetime <- "2019-09-06 06:00"
+  endTime <- "2019-09-06 18:00"
   timezone <- "America/Los_Angeles"
-  bbox <- c(-125, -65, 24, 50) # CONUS
-  fullDay <- TRUE
-  daylightOnly <- TRUE
-  useLocalDir <- FALSE
+  useRemote <- TRUE
   baseUrl <- "https://tools-1.airfire.org/Satellite/"
   
   goesaodc_listFiles(
     satID = satID,
     datetime = datetime,
+    endTime = endTime,
     timezone = timezone,
-    bbox = bbox,
-    fullDay = fullDay,
-    daylightOnly = daylightOnly,
-    useLocalDir = useLocalDir,
+    useRemote = useRemote,
     baseUrl = baseUrl
   ) 
   
