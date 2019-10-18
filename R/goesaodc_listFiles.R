@@ -60,7 +60,7 @@ goesaodc_listFiles <- function(
   # ---- Check if a timezone has been passed in with a POSIXt ------------------
   time_classes <- c("POSIXct", "POSIXt", "POSIXlt")
   if ( class(datetime)[1] %in% time_classes ) {
-    timezone <- attr(datetime,"tzone")
+    timezone <- attr(datetime, "tzone")
   }
   
   # ---- Parse incoming times with MazamaCoreUtils -----------------------------
@@ -69,7 +69,7 @@ goesaodc_listFiles <- function(
                                              julian = julian)
   
   if ( !is.null(endTime) ) {
-    endTime <- MazamaCoreUtils::parseDatetime(endTime, timezone, julian = julian)
+   endTime <- MazamaCoreUtils::parseDatetime(endTime, timezone, julian = julian)
   }
   
   # ---- Create satUrl for remote searching
@@ -93,7 +93,7 @@ goesaodc_listFiles <- function(
   if ( !useRemote) {
     dataFiles <- list.files(getSatelliteDataDir(), pattern = regex)
     
-    # ----- Check remotely for available files and build filelist ----------------  
+  # ---- Check remotely for available files and build filelist -----------------
   } else {
     
     links <-
@@ -103,7 +103,7 @@ goesaodc_listFiles <- function(
       xml2::xml_find_all("//a") %>%
       xml2::xml_attr("href")
     
-    dataFiles <- links[-(1:5)]
+    dataFiles <- links[ -(1:5) ]
   }
   
   # ----- Build a squence of hours ---------------------------------------------
@@ -147,7 +147,5 @@ if ( FALSE ) {
     endTime = endTime,
     timezone = timezone,
     useRemote = useRemote,
-    baseUrl = baseUrl
-  ) 
-  
-}
+    baseUrl = baseUrl) 
+} 

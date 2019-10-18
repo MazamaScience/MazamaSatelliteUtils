@@ -64,7 +64,7 @@ goesaodc_downloadAOD <- function(
   }
   
   # ----- Build the list of files we should have by listing from remote location
-  remoteFiles <- ra_listFiles(satID = satID, 
+  remoteFiles <- goesaodc_listFiles(satID = satID, 
                               datetime = datetime, 
                               endTime = endTime, 
                               timezone = timezone,
@@ -72,7 +72,7 @@ goesaodc_downloadAOD <- function(
                               useRemote = TRUE)
   
   # ---- Build a list of the local files we already have -----------------------
-  localFiles <- ra_listFiles(satID = satID, 
+  localFiles <- goesaodc_listFiles(satID = satID, 
                              datetime = datetime, 
                              endTime = endTime, 
                              timezone = timezone,
