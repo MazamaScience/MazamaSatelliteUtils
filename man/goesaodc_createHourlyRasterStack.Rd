@@ -5,8 +5,8 @@
 \title{Create a RasterStack for a specified hour}
 \usage{
 goesaodc_createHourlyRasterStack(satID = NULL, datetime = NULL,
-  var = "AOD", res = 0.1, bbox = NULL, dqfLevel = NULL,
-  timezone = "UTC")
+  var = "AOD", res = 0.1, bbox = c(-125, -65, 24, 50),
+  dqfLevel = NULL, timezone = "UTC")
 }
 \arguments{
 \item{satID}{ID of the source GOES satellite (G16 or G17).}
@@ -64,7 +64,7 @@ bbox_oregon <- c(-124.56624, -116.46350, 41.99179, 46.29203) # OREGON
 
 rstrStack <- goesaodc_createHourlyRasterStack(
 satID = "G16", 
-datetime = "2019-09-06", 
+datetime = "2019-09-06 16", 
 bbox = bbox_oregon,
 dqfLevel = 2,
 res = 0.2)
@@ -81,8 +81,9 @@ oregon <- subset(USCensusStates, stateCode == "OR")
 bbox_oregon <- sp::bbox(oregon)
 
 rstrStack <- goesaodc_createHourlyRasterStack(
-satId = "G17", 
-datetime = "2019-09-06 16", 
+satID = "G17", 
+datetime = "2019-09-06 09",
+timezone = "America/Los_Angeles", 
 bbox = bbox_oregon,
 dqfLevel = 2)
 

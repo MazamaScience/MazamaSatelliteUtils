@@ -45,12 +45,12 @@
 #' library(MazamaSatelliteUtils)
 #' setSatelliteDataDir("~/Data/Satellite")
 #' 
-#' bbox_oregon <- c(-124.56624, -116.46350, 41.99179, 46.29203) # OREGON
+#' bbox_us <- c(-125, -65, 24, 50) # CONUS
 #' 
 #' rstrStack <- goesaodc_createHourlyRasterStack(
 #' satID = "G16", 
 #' datetime = "2019-09-06 16", 
-#' bbox = bbox_oregon,
+#' bbox = bbox_us,
 #' dqfLevel = 2,
 #' res = 0.2)
 #' 
@@ -66,9 +66,11 @@
 #' bbox_oregon <- sp::bbox(oregon)
 #' 
 #' rstrStack <- goesaodc_createHourlyRasterStack(
-#' satId = "G17", 
-#' datetime = "2019-09-06 16", 
+#' satID = "G17", 
+#' datetime = "2019-09-06 09",
+#' timezone = "America/Los_Angeles", 
 #' bbox = bbox_oregon,
+#' res = 0.1,
 #' dqfLevel = 2)
 #' 
 #' rasterVis::levelplot(rstrStack)
@@ -79,7 +81,7 @@ goesaodc_createHourlyRasterStack <- function(
   datetime = NULL,
   var = "AOD",
   res = 0.1,
-  bbox = NULL,
+  bbox = c(-125, -65, 24, 50), # LIMIT TO CONUS BY DEFAULT
   dqfLevel = NULL,
   timezone = 'UTC'
 ) {
@@ -96,51 +98,32 @@ goesaodc_createHourlyRasterStack <- function(
   }
 
   # ---- Download GOES AOD Files -----------------------------------------------
-  goesaodc_downloadAOD(satID, datetime)
+  goesaodc_downloadAOD(satID, datetime, timezone = timezone)
   
-  # ---- Create List of RasterLayers -------------------------------------------
+  # ---- Create lists of files, start times and names for layers ---------------
+  fileList <- goesaodc_listFiles(satID = satID, 
+                                 datetime = datetime, 
+                                 timezone = timezone)
+  timeList <- goesaodc_getStartTime(fileList)
+  nameList <- strftime(timeList, format = "%H:%M:%S", tz = "UTC")
   
-  # create list of AOD raster layers for specified hour and region
-  # TODO: un-purrr this...
-  rasterList <- 
-    goesaodc_listFiles(satID = satID, datetime = datetime) %>%  # filenames
-    purrr::map(goesaodc_openFile) %>%                   # open each file
-    purrr::map(goesaodc_createRaster,                   # rasterize each file 
-               res = res,
-               bbox = bbox,                             
-               dqfLevel = dqfLevel) %>%  
-    purrr::map(function(rst) rst[[var]])                # select variable
+  # ---- Create List of of AOD raster layers for hour and region ---------------
+  hourStack <- raster::stack()
   
-  # ---- Create RasterStack ----------------------------------------------------
+  for (nc_file in fileList) {
+    nc <- goesaodc_openFile(nc_file)
+    
+    goes_raster <- goesaodc_createRaster(nc, 
+                                         res = res, 
+                                         bbox = bbox, 
+                                         dqfLevel = dqfLevel )
+    aod_raster <- goes_raster[[var]]
+    hourStack <- raster::stack(hourStack, aod_raster)
+    
+  }
   
-  # Extents won't match exactly and raster::stack() needs them to, so
-  # find the largest extent necessary to encompass all RasterLayers in the
-  # list, and apply that new extent to each of the RasterLayers.
-  lonLo <- min(purrr::map_dbl(rasterList, function(rst) raster::extent(rst)@xmin))
-  lonHi <- max(purrr::map_dbl(rasterList, function(rst) raster::extent(rst)@xmax))
-  latLo <- min(purrr::map_dbl(rasterList, function(rst) raster::extent(rst)@ymin))
-  latHi <- max(purrr::map_dbl(rasterList, function(rst) raster::extent(rst)@ymax))
-  
-  ext <- raster::extent(c(lonLo, lonHi, latLo, latHi))
-  
-  rasterList <- purrr::map(rasterList, function(rst) raster::setExtent(rst, ext))
-  
-  # now create the stack
-  rasterStack <- raster::stack(rasterList)
-  
-  # assign times to the Z axis
-  times <-
-    goesaodc_listFiles(satID, datetime) %>%
-    purrr::map_chr(goesaodc_getStartString) %>%
-    purrr::map(lubridate::parse_date_time, orders = ("YjHMS"))
-  
-  Z <- purrr::map(times, strftime, format = "%Y%m%d%H%M%S", tz = "UTC")
-  
-  rasterStack <- raster::setZ(rasterStack, Z)
-  # NOTE: Why does this prepend "X" to the names?
-  names <- purrr::map(times, strftime, format = "%H:%M:%S", tz = "UTC")
-  names(rasterStack) <- names
-  
-  return(rasterStack)
-  
+  hourStack <- raster::setZ(hourStack, timeList)
+  names(hourStack) <- nameList
+
+  return(hourStack)
 }

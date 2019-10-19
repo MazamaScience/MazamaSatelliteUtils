@@ -62,6 +62,7 @@ latHi) order or the return value from \code{sp::bbox()} or
 \dontrun{
 library(MazamaSatelliteUtils)
 setSatelliteDataDir("~/Data/Satellite")
+library(MazamaSpatialUtils)
 MazamaCoreUtils::initializeLogging(logDir = "~/Data/Logs")
 
 # Define the region of interest (Milepost 97 Fire in Oregon)
