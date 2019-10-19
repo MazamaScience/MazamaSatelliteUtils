@@ -164,14 +164,14 @@ goesaodc_isGoesProjection <- function(nc)
 
 #' @export
 #' 
-#' @title Get the scan start time string from a GOES AODC netCDF file name
+#' @title Get the scan start time from a GOES AODC netCDF file name
 #' @param file GOES AOD netCDF file name
 #' 
-#' @description Get the scan start time string from a GOES AODC netCDF file name
+#' @description Get the scan start time from a GOES AODC netCDF file name
 #' 
-#' @return The scan start time string in Julian days.
+#' @return The scan start time.
 #' 
-goesaodc_getStartString <- function(
+goesaodc_getStartTime <- function(
   file
 ) {
   # Example file name:
@@ -180,7 +180,12 @@ goesaodc_getStartString <- function(
   # Extract the "s..." part and strip of the 's' and the fractional seconds 
   # to get a nicely parseable "YjHMS".
   
-  stringr::str_split_fixed(file, "_", 6)[,4] %>%
+  start_string <- stringr::str_split_fixed(file, "_", 6)[,4] %>%
     stringr::str_sub(2, -2)
+  
+  start_time <- MazamaCoreUtils::parseDatetime(start_string, timezone = "UTC", julian = TRUE)
+  
+  return(start_time)
 }
+
 
