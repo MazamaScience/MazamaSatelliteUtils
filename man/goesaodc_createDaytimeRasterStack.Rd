@@ -70,15 +70,18 @@ bbox_oregon <- c(-124.56624, -116.46350, 41.99179, 46.29203)
 longitude <- -123.245
 latitude <-   42.861
 
-datetime <- MazamaCoreUtils::parseDatetime(datetime = "2019-09-06", 
+datetime <- MazamaCoreUtils::parseDatetime(datetime = "2019-09-06 09", 
 timezone = "America/Los_Angeles")
+
+dqfLevel <- 2
 
 dayStack <- goesaodc_createDaytimeRasterStack(
   satID = "G16",
   datetime = datetime,
   longitude = longitude,
   latitude = latitude,
-  bbox = bbox_oregon
+  bbox = bbox_oregon,
+  dqfLevel = dqfLevel
 )
 
 tb <- raster_createLocationTimeseries(dayStack,

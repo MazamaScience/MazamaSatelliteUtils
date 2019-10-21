@@ -60,12 +60,12 @@ latHi) order or the return value from \code{sp::bbox()} or
 library(MazamaSatelliteUtils)
 setSatelliteDataDir("~/Data/Satellite")
 
-bbox_oregon <- c(-124.56624, -116.46350, 41.99179, 46.29203) # OREGON
+bbox_us <- c(-125, -65, 24, 50) # CONUS
 
 rstrStack <- goesaodc_createHourlyRasterStack(
 satID = "G16", 
 datetime = "2019-09-06 16", 
-bbox = bbox_oregon,
+bbox = bbox_us,
 dqfLevel = 2,
 res = 0.2)
 
@@ -85,6 +85,7 @@ satID = "G17",
 datetime = "2019-09-06 09",
 timezone = "America/Los_Angeles", 
 bbox = bbox_oregon,
+res = 0.1,
 dqfLevel = 2)
 
 rasterVis::levelplot(rstrStack)
