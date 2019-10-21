@@ -62,14 +62,14 @@ setSatelliteDataDir("~/Data/Satellite")
 
 bbox_us <- c(-125, -65, 24, 50) # CONUS
 
-rstrStack <- goesaodc_createHourlyRasterStack(
+rasterStack <- goesaodc_createHourlyRasterStack(
 satID = "G16", 
 datetime = "2019-09-06 16", 
 bbox = bbox_us,
 dqfLevel = 2,
 res = 0.2)
 
-rasterVis::levelplot(rstrStack)
+rasterVis::levelplot(rasterStack)
 
 #### EXTENTS BASED ON sp::bbox OF OREGON
 library(MazamaSpatialUtils)
@@ -80,7 +80,7 @@ loadSpatialData("USCensusStates")
 oregon <- subset(USCensusStates, stateCode == "OR")
 bbox_oregon <- sp::bbox(oregon)
 
-rstrStack <- goesaodc_createHourlyRasterStack(
+rasterStack <- goesaodc_createHourlyRasterStack(
 satID = "G17", 
 datetime = "2019-09-06 09",
 timezone = "America/Los_Angeles", 
@@ -88,6 +88,6 @@ bbox = bbox_oregon,
 res = 0.1,
 dqfLevel = 2)
 
-rasterVis::levelplot(rstrStack)
+rasterVis::levelplot(rasterStack)
 }
 }
