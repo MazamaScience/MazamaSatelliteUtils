@@ -47,14 +47,14 @@
 #' 
 #' bbox_us <- c(-125, -65, 24, 50) # CONUS
 #' 
-#' rstrStack <- goesaodc_createHourlyRasterStack(
+#' rasterStack <- goesaodc_createHourlyRasterStack(
 #' satID = "G16", 
 #' datetime = "2019-09-06 16", 
 #' bbox = bbox_us,
 #' dqfLevel = 2,
 #' res = 0.2)
 #' 
-#' rasterVis::levelplot(rstrStack)
+#' rasterVis::levelplot(rasterStack)
 #' 
 #' #### EXTENTS BASED ON sp::bbox OF OREGON
 #' library(MazamaSpatialUtils)
@@ -65,7 +65,7 @@
 #' oregon <- subset(USCensusStates, stateCode == "OR")
 #' bbox_oregon <- sp::bbox(oregon)
 #' 
-#' rstrStack <- goesaodc_createHourlyRasterStack(
+#' rasterStack <- goesaodc_createHourlyRasterStack(
 #' satID = "G17", 
 #' datetime = "2019-09-06 09",
 #' timezone = "America/Los_Angeles", 
@@ -73,7 +73,7 @@
 #' res = 0.1,
 #' dqfLevel = 2)
 #' 
-#' rasterVis::levelplot(rstrStack)
+#' rasterVis::levelplot(rasterStack)
 #' }
 
 goesaodc_createHourlyRasterStack <- function(
@@ -107,6 +107,7 @@ goesaodc_createHourlyRasterStack <- function(
                                  timezone = timezone)
   timeList <- goesaodc_getStartTime(fileList)
   nameList <- strftime(timeList, format = "%H:%M:%S", tz = "UTC")
+  zList <- strftime(timeList, format = "%Y%m%d%H%M%S", tz = "UTC")
   
   # ---- Create List of of AOD raster layers for hour and region ---------------
   hourStack <- raster::stack()
@@ -123,7 +124,7 @@ goesaodc_createHourlyRasterStack <- function(
     
   }
   
-  hourStack <- raster::setZ(hourStack, timeList)
+  hourStack <- raster::setZ(hourStack, zList)
   names(hourStack) <- nameList
 
   return(hourStack)
