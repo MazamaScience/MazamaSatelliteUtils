@@ -53,15 +53,18 @@
 #' longitude <- -123.245
 #' latitude <-   42.861
 #'
-#' datetime <- MazamaCoreUtils::parseDatetime(datetime = "2019-09-06", 
+#' datetime <- MazamaCoreUtils::parseDatetime(datetime = "2019-09-06 09", 
 #' timezone = "America/Los_Angeles")
+#' 
+#' dqfLevel <- 2
 #'
 #' dayStack <- goesaodc_createDaytimeRasterStack(
 #'   satID = "G16",
 #'   datetime = datetime,
 #'   longitude = longitude,
 #'   latitude = latitude,
-#'   bbox = bbox_oregon
+#'   bbox = bbox_oregon,
+#'   dqfLevel = dqfLevel
 #' )
 #' 
 #' tb <- raster_createLocationTimeseries(dayStack,
@@ -123,32 +126,24 @@
   hours <- seq.POSIXt(from = sunriseHourUTC, to = sunsetHourUTC, by = "hour")
   hours <- strftime(hours, format = "%Y-%m-%d %H:%M:%S", tz = "UTC")
   
-  # ----- Create a single-day rasterStack --------------------------------------
+  # ----- Create a rasterStack of hourly stacks from sunrise to sunset ---------
   
-  # Create a rasterStack for each hour and add them all to one "day" rasterStack
   dayStack <- raster::stack()
   
+  # Container to hold all the hourly Z values
+  timeSlices <- c()
+  
   for (hour in hours) {
-    
     result <- try({
-      
       hourStack <- goesaodc_createHourlyRasterStack(
         satID = satID,
         datetime = hour,
         var = var,
-        res = 0.1,
+        res = res,
         bbox = bbox,
         dqfLevel = dqfLevel)
       
-      # Combine the rasters and timestamps of the day and hour stacks
-      zDay <- raster::getZ(dayStack)
-      zHour <- raster::getZ(hourStack)
-      
-      dayStack <- raster::stack(dayStack, hourStack)
-      dayStack <- raster::setZ(dayStack, c(zDay, zHour))
-      
-    }, silent = TRUE)
-    
+  } , silent = TRUE)
     if ( "try-error" %in% class(result) ) {
       err_msg <- geterrmessage()
       if ( stringr::str_detect(err_msg, "No data for selected region") ) {
@@ -160,12 +155,17 @@
         stop(result)
       }
     } else {
+      # Collect hour's Z values for later and add hourStack to dayStack 
+      zHour <- raster::getZ(hourStack)
+      timeSlices <- append(timeSlices, c(zHour))
+      dayStack <- raster::stack(dayStack, hourStack)
       print(paste0("Stacked hour: ", hour, " UTC"))
     }
   }
+  # ----- Write the full Z-value set to the dayStack ---------------------------
+  dayStack <- raster::setZ(dayStack, c(timeSlices))
   
   # ----- Return ---------------------------------------------------------------
-  
   return(dayStack)
   
 }
