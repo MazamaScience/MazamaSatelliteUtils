@@ -71,6 +71,12 @@ goesaodc_downloadAOD <- function(
                               julian = julian,
                               useRemote = TRUE)
   
+  # ---- Force a stop() if there are no files available for this time ----------
+  if (rlang::is_empty(remoteFiles)) {
+    stop("There is no data available for this time.")
+  }
+  
+  
   # ---- Build a list of the local files we already have -----------------------
   localFiles <- goesaodc_listFiles(satID = satID, 
                              datetime = datetime, 
