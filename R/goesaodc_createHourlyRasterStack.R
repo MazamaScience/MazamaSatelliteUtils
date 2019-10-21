@@ -90,6 +90,7 @@ goesaodc_createHourlyRasterStack <- function(
   
   MazamaCoreUtils::stopIfNull(satID)
   MazamaCoreUtils::stopIfNull(datetime)
+  MazamaCoreUtils::stopIfNull(dqfLevel)
   
   # ---- Check for a POSIXt timezone -------------------------------------------
   time_classes <- c("POSIXct", "POSIXt", "POSIXlt")
