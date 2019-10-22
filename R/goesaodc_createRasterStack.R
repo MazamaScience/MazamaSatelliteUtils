@@ -63,7 +63,6 @@
 #'
 #' rasterVis::levelplot(rasterStack)
 #'  }
-#' }
 #' @rdname goesaodc_createRasterStack
 
 goesaodc_createRasterStack <- function(
