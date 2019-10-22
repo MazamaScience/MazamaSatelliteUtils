@@ -1,3 +1,5 @@
+#' @export
+#' 
 #' @title goesaodc_createRasterStack()
 #'
 #' @param satID ID of the source GOES satellite (G16 or G17).
