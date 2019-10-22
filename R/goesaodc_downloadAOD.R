@@ -113,8 +113,9 @@ goesaodc_downloadAOD <- function(
     }, silent = FALSE)
     if ( "try-error" %in% class(result) ) {
       err_msg <- geterrmessage()
-      if ( MazamaCoreUtils::logger.isInitialized() ) 
+      if ( MazamaCoreUtils::logger.isInitialized() ) {
         MazamaCoreUtils::logger.warn(err_msg)
+      }
     } else {
       print(paste0("Downloaded ", file))
     }
