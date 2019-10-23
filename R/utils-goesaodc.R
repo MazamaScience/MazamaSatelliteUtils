@@ -90,7 +90,7 @@ goesaodc_getCoordGrid <- function(nc) {
     a <- sin(x)^2 + cos(x)^2 * (cos(y)^2 + (r_eq^2 / r_pol^2) * sin(y)^2)
     b <- -2 * H * cos(x) * cos(y)
     c <- H^2 - r_eq^2
-    r_s <- (-b - sqrt(b^2 - 4 * a * c)) / (2 * a)
+    suppressWarnings( r_s <- (-b - sqrt(b^2 - 4 * a * c)) / (2 * a) )
     
     # Satellite coordinates
     sx <- r_s * cos(x) * cos(y)
@@ -98,8 +98,8 @@ goesaodc_getCoordGrid <- function(nc) {
     sz <- r_s * cos(x) * sin(y)
     
     # Coordinates in degrees
-    suppressWarnings( lon <- ((lambda0 - atan(sy / (H - sx))) * 180) / pi )
-    suppressWarnings( lat <- (atan((r_eq^2 / r_pol^2) * (sz / sqrt((H - sx)^2 + sy^2))) * 180) / pi )
+    lon <- ((lambda0 - atan(sy / (H - sx))) * 180) / pi 
+    lat <- (atan((r_eq^2 / r_pol^2) * (sz / sqrt((H - sx)^2 + sy^2))) * 180) / pi
                       
     return(list("lon" = lon, "lat" = lat))
     
