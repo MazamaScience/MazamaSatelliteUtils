@@ -37,7 +37,7 @@
 #'   "OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc",
 #'   package = "MazamaSatelliteUtils"
 #' )
-#' nc <- ncdf4::nc_open(netCDF)
+#' nc <- goesaodc_openFile(netCDF)
 #' rstr <- goesaodc_createRaster(nc, res = 0.1, dqfLevel = 2)
 #' raster::plot(rstr, "AOD")
 #' maps::map("state", add = TRUE)

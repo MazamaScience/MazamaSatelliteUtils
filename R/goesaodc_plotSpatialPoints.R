@@ -23,9 +23,9 @@
 #' netCDF <- system.file("extdata", 
 #'                       "OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc", 
 #'                       package = "MazamaSatelliteUtils")
-#' nc <- ncdf4::nc_open(netCDF) 
+#' nc <- goesaodc_openFile(netCDF) 
 #' maps::map("state")
-#' sp <- goesaodc_createSpatialPoints(nc, dqfLevel = 1)
+#' sp <- goesaodc_createSpatialPoints(nc, dqfLevel = 2)
 #' goesaodc_plotSpatialPoints(sp, cex = 0.25, add = TRUE)
 #' }
 

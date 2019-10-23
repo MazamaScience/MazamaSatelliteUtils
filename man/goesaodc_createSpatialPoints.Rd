@@ -40,8 +40,8 @@ setSatelliteDataDir("~/Data/Satellite")
 netCDF <- system.file("extdata",
                       "OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc",
                       package = "MazamaSatelliteUtils")
-nc <- ncdf4::nc_open(netCDF)
-sp <- goesaodc_createSpatialPoints(nc, dqfLevel = 1)
+nc <- goesaodc_openFile(netCDF)
+sp <- goesaodc_createSpatialPoints(nc, dqfLevel = 2)
 maps::map("state")
 goesaodc_plotSpatialPoints(sp, cex = 0.3, add = TRUE)
 }

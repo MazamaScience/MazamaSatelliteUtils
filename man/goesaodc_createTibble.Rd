@@ -28,7 +28,7 @@ netCDF <- system.file(
   package = "MazamaSatelliteUtils"
 )
                      
-nc <- ncdf4::nc_open(netCDF)
+nc <- goesaodc_openFile(netCDF)
 
 tbl <- goesaodc_createTibble(nc)
 head(tbl)
