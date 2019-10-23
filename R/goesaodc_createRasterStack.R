@@ -51,7 +51,7 @@
 #' satID <- "G16"
 #' datetime <- "2019-08-12 09:00"
 #' endTime <- "2019-08-12 12:00"
-#' bbox = c(-124.56624, -116.46350, 41.99179, 46.29203)
+#' bbox <- c(-124.56624, -116.46350, 41.99179, 46.29203) # Oregon
 #' dqfLevel <- 2
 #' timezone <- "America/Los_Angeles"
 #'
@@ -61,7 +61,7 @@
 #' endTime = endTime,
 #' bbox = bbox,
 #' dqfLevel = dqfLevel,
-#' timezone <- timezone)
+#' timezone = timezone)
 #'
 #' rasterVis::levelplot(rasterStack)
 #'  }
@@ -117,37 +117,36 @@ goesaodc_createRasterStack <- function(
   zList <- c()
   
   for (nc_file in fileList) {
-    nc <- goesaodc_openFile(nc_file)
-    result <- try({
-  
-    goes_raster <- goesaodc_createRaster(nc,
-                                         res = res,
-                                         bbox = bbox,
-                                         dqfLevel = dqfLevel )
-    
-    } , silent = TRUE)
-    if ( "Error" %in% class(result) ) {
-      err_msg <- geterrmessage()
-      print(err_msg)
-    } else {
     # ---- Create layer names and Z values -------------------------------------
     time <- goesaodc_getStartTime(nc_file)
     name <- strftime(time, format = "%H:%M:%S", tz = "UTC")
     zValue <- strftime(time, format = "%Y%m%d%H%M%S", tz = "UTC")
-    
-    # ---- Update the name and Z-value lists -----------------------------------
-    nameList <- append(nameList, name)
-    zList <- append(zList, zValue)
-    
-    # ---- Add to the rasterStack the raster created from this .nc file --------
-    aod_raster <- goes_raster[[var]] # just keep the variable specified
-    rasterStack <- raster::stack(rasterStack, aod_raster) # add to the stack
-    print(paste0("Stacked: ", nc_file))
+    result <- try({
+      # ---- Attempt to create a raster from the .nc file data -----------------
+      nc <- goesaodc_openFile(nc_file)
+      goes_raster <- goesaodc_createRaster(nc,
+                                           res = res,
+                                           bbox = bbox,
+                                           dqfLevel = dqfLevel )
+    } , silent = TRUE)
+    if ( "Error" %in% class(result) ) {
+      # ---- Warn but don't stop -----------------------------------------------
+      err_msg <- geterrmessage()
+      MazamaCoreUtils::logger.warn(err_msg)
+    } else {
+      # ---- Update the name and Z-value lists ---------------------------------
+      nameList <- append(nameList, name)
+      zList <- append(zList, zValue)
+      # ---- Add to the rasterStack the raster created from this .nc file ------
+      aod_raster <- goes_raster[[var]] # just keep the variable specified
+      rasterStack <- raster::stack(rasterStack, aod_raster) # add to the stack
+      print(paste0("Stacked: ", nc_file))
     }
-  # ---- Write the Z-values and names to the rsaterStack -----------------------
+  }
+    
+  # ---- Write the Z-values and names to the rasterStack ---------------------
   rasterStack <- raster::setZ(rasterStack, zList)
   names(rasterStack) <- nameList
-  }
   
   return(rasterStack)
   

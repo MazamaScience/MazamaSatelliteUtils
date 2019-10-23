@@ -69,7 +69,7 @@ MazamaCoreUtils::initializeLogging(logDir = "~/Data/Logs")
 satID <- "G16"
 datetime <- "2019-08-12 09:00"
 endTime <- "2019-08-12 12:00"
-bbox = c(-124.56624, -116.46350, 41.99179, 46.29203)
+bbox <- c(-124.56624, -116.46350, 41.99179, 46.29203) # Oregon
 dqfLevel <- 2
 timezone <- "America/Los_Angeles"
 
@@ -79,7 +79,7 @@ datetime = datetime,
 endTime = endTime,
 bbox = bbox,
 dqfLevel = dqfLevel,
-timezone <- timezone)
+timezone = timezone)
 
 rasterVis::levelplot(rasterStack)
  }
