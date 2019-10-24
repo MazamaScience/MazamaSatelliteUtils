@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Create a RasterStack for a specified hour — goesaodc_createHourlyRasterStack • MazamaSatelliteUtils</title>
+<title>goesaodc_createRasterStack() — goesaodc_createRasterStack • MazamaSatelliteUtils</title>
 
 
 <!-- jquery -->
@@ -35,17 +35,17 @@
 
 
 
-<meta property="og:title" content="Create a RasterStack for a specified hour — goesaodc_createHourlyRasterStack" />
-<meta property="og:description" content="Create a RasterStack from GOES AOD data files for the 
+<meta property="og:title" content="goesaodc_createRasterStack() — goesaodc_createRasterStack" />
+<meta property="og:description" content="Create a RasterStack from GOES AOD data files for the
 date and hour specified by datetime. Each RasterLayer contains
-data from one Advanced Baseline Imager (ABI) scan during the specified time 
+data from one Advanced Baseline Imager (ABI) scan during the specified time
 period.
-If data for the specified time period is not found in the directory specified 
+If data for the specified time period is not found in the directory specified
 by setSatelliteDataDir(), it will be downloaded in order to create the
 RasterStack.
 The Z axis of the RasterStack is a character vector where each element
-is the time stamp of the scan and has the format YYYYMMDDHHMMSS. This can be 
-accessed using the raster::getZ() function. Names of the 
+is the time stamp of the scan and has the format YYYYMMDDHHMMSS. This can be
+accessed using the raster::getZ() function. Names of the
 RasterStack are also time stamps of the scan, of the format XHH.MM.SS.
 The dqfLevel parameter can take a value of:
 
@@ -56,7 +56,7 @@ The dqfLevel parameter can take a value of:
 
 
 The bbox parameter can be a vector of floats in c(lonLo, lonHi, latLo,
-latHi) order or the return value from sp::bbox() or 
+latHi) order or the return value from sp::bbox() or
 raster::extent()." />
 <meta name="twitter:card" content="summary" />
 
@@ -124,22 +124,22 @@ raster::extent()." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Create a RasterStack for a specified hour</h1>
+    <h1>goesaodc_createRasterStack()</h1>
     
-    <div class="hidden name"><code>goesaodc_createHourlyRasterStack.Rd</code></div>
+    <div class="hidden name"><code>goesaodc_createRasterStack.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Create a <code>RasterStack</code> from GOES AOD data files for the 
+    <p>Create a <code>RasterStack</code> from GOES AOD data files for the
 date and hour specified by <code>datetime</code>. Each <code>RasterLayer</code> contains
-data from one Advanced Baseline Imager (ABI) scan during the specified time 
+data from one Advanced Baseline Imager (ABI) scan during the specified time
 period.</p>
-<p>If data for the specified time period is not found in the directory specified 
+<p>If data for the specified time period is not found in the directory specified
 by <code><a href='setSatelliteDataDir.html'>setSatelliteDataDir()</a></code>, it will be downloaded in order to create the
 <code>RasterStack</code>.</p>
 <p>The Z axis of the <code>RasterStack</code> is a character vector where each element
-is the time stamp of the scan and has the format YYYYMMDDHHMMSS. This can be 
-accessed using the <code><a href='https://rdrr.io/pkg/raster/man/zvalues.html'>raster::getZ()</a></code> function. Names of the 
+is the time stamp of the scan and has the format YYYYMMDDHHMMSS. This can be
+accessed using the <code><a href='https://rdrr.io/pkg/raster/man/zvalues.html'>raster::getZ()</a></code> function. Names of the
 <code>RasterStack</code> are also time stamps of the scan, of the format XHH.MM.SS.</p>
 <p>The <code>dqfLevel</code> parameter can take a value of:</p>
 <ul>
@@ -150,13 +150,13 @@ accessed using the <code><a href='https://rdrr.io/pkg/raster/man/zvalues.html'>r
 </ul>
 
 <p>The <code>bbox</code> parameter can be a vector of floats in c(lonLo, lonHi, latLo,
-latHi) order or the return value from <code><a href='https://rdrr.io/pkg/sp/man/bbox.html'>sp::bbox()</a></code> or 
+latHi) order or the return value from <code><a href='https://rdrr.io/pkg/sp/man/bbox.html'>sp::bbox()</a></code> or
 <code><a href='https://rdrr.io/pkg/raster/man/extent.html'>raster::extent()</a></code>.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>goesaodc_createHourlyRasterStack</span>(<span class='kw'>satID</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>datetime</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"AOD"</span>, <span class='kw'>res</span> <span class='kw'>=</span> <span class='fl'>0.1</span>, <span class='kw'>bbox</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>125</span>, -<span class='fl'>65</span>, <span class='fl'>24</span>, <span class='fl'>50</span>),
-  <span class='kw'>dqfLevel</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>timezone</span> <span class='kw'>=</span> <span class='st'>"UTC"</span>)</pre>
+    <pre class="usage"><span class='fu'>goesaodc_createRasterStack</span>(<span class='kw'>satID</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>datetime</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>endTime</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"AOD"</span>, <span class='kw'>res</span> <span class='kw'>=</span> <span class='fl'>0.1</span>, <span class='kw'>bbox</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>125</span>, -<span class='fl'>65</span>, <span class='fl'>24</span>,
+  <span class='fl'>50</span>), <span class='kw'>dqfLevel</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>timezone</span> <span class='kw'>=</span> <span class='st'>"UTC"</span>, <span class='kw'>julian</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -167,19 +167,23 @@ latHi) order or the return value from <code><a href='https://rdrr.io/pkg/sp/man/
     </tr>
     <tr>
       <th>datetime</th>
-      <td><p>desired datetime in any Ymd H [MS] format or <code>POSIXct</code></p></td>
+      <td><p>Desired datetime in any Ymd H [MS] format or <code>POSIXct</code>.</p></td>
+    </tr>
+    <tr>
+      <th>endTime</th>
+      <td><p>Desired ending time in any Ymd H [MS] format or <code>POSIXct</code></p></td>
     </tr>
     <tr>
       <th>var</th>
-      <td><p>variable ("AOD, "DQF" or "ID")</p></td>
+      <td><p>GOES data variable ("AOD, "DQF" or "ID"). Default: "AOD"</p></td>
     </tr>
     <tr>
       <th>res</th>
-      <td><p>resolution of raster in degrees</p></td>
+      <td><p>resolution of raster in degrees. Default: 0.1</p></td>
     </tr>
     <tr>
       <th>bbox</th>
-      <td><p>Bounding box for the region of interest.</p></td>
+      <td><p>Bounding box for raster, Default: c(-125, -65, 24, 50) CONUS</p></td>
     </tr>
     <tr>
       <th>dqfLevel</th>
@@ -187,7 +191,12 @@ latHi) order or the return value from <code><a href='https://rdrr.io/pkg/sp/man/
     </tr>
     <tr>
       <th>timezone</th>
-      <td><p>timezone in which to interpret the <code>datetime</code>.</p></td>
+      <td><p>timezone for <code>datetime</code> and optionally <code>endTime</code>.</p></td>
+    </tr>
+    <tr>
+      <th>julian</th>
+      <td><p>Logical specifying if <code>datetime</code> (and optionally
+<code>endTime</code>) are Julian formatted</p></td>
     </tr>
     </table>
 
@@ -196,39 +205,29 @@ latHi) order or the return value from <code><a href='https://rdrr.io/pkg/sp/man/
     <p>RasterStack</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
-<span class='co'>### EXTENTS BASED ON PASSED IN FLOATS</span>
+    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
 <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>MazamaSatelliteUtils</span>)
 <span class='fu'><a href='setSatelliteDataDir.html'>setSatelliteDataDir</a></span>(<span class='st'>"~/Data/Satellite"</span>)
 
-<span class='no'>bbox_us</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>125</span>, -<span class='fl'>65</span>, <span class='fl'>24</span>, <span class='fl'>50</span>) <span class='co'># CONUS</span>
+<span class='kw pkg'>MazamaCoreUtils</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/MazamaCoreUtils/man/initializeLogging.html'>initializeLogging</a></span>(<span class='kw'>logDir</span> <span class='kw'>=</span> <span class='st'>"~/Data/Logs"</span>)
 
-<span class='no'>rasterStack</span> <span class='kw'>&lt;-</span> <span class='fu'>goesaodc_createHourlyRasterStack</span>(
-<span class='kw'>satID</span> <span class='kw'>=</span> <span class='st'>"G16"</span>,
-<span class='kw'>datetime</span> <span class='kw'>=</span> <span class='st'>"2019-09-06 16"</span>,
-<span class='kw'>bbox</span> <span class='kw'>=</span> <span class='no'>bbox_us</span>,
-<span class='kw'>dqfLevel</span> <span class='kw'>=</span> <span class='fl'>2</span>,
-<span class='kw'>res</span> <span class='kw'>=</span> <span class='fl'>0.2</span>)
+<span class='no'>satID</span> <span class='kw'>&lt;-</span> <span class='st'>"G16"</span>
+<span class='no'>datetime</span> <span class='kw'>&lt;-</span> <span class='st'>"2019-08-12 09:00"</span>
+<span class='no'>endTime</span> <span class='kw'>&lt;-</span> <span class='st'>"2019-08-12 12:00"</span>
+<span class='no'>bbox</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>124.56624</span>, -<span class='fl'>116.46350</span>, <span class='fl'>41.99179</span>, <span class='fl'>46.29203</span>) <span class='co'># Oregon</span>
+<span class='no'>dqfLevel</span> <span class='kw'>&lt;-</span> <span class='fl'>2</span>
+<span class='no'>timezone</span> <span class='kw'>&lt;-</span> <span class='st'>"America/Los_Angeles"</span>
 
-<span class='kw pkg'>rasterVis</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/rasterVis/man/levelplot-methods.html'>levelplot</a></span>(<span class='no'>rasterStack</span>)</div><div class='img'><img src='goesaodc_createHourlyRasterStack-1.png' alt='' width='700' height='433' /></div><div class='input'>
-<span class='co'>#### EXTENTS BASED ON sp::bbox OF OREGON</span>
-<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>MazamaSpatialUtils</span>)</div><div class='output co'>#&gt; <span class='message'>Loading required package: sp</span></div><div class='input'>
-<span class='fu'><a href='https://rdrr.io/pkg/MazamaSpatialUtils/man/setSpatialDataDir.html'>setSpatialDataDir</a></span>(<span class='st'>"~/Data/Spatial"</span>)
-<span class='fu'><a href='https://rdrr.io/pkg/MazamaSpatialUtils/man/loadSpatialData.html'>loadSpatialData</a></span>(<span class='st'>"USCensusStates"</span>)
+<span class='no'>rasterStack</span> <span class='kw'>&lt;-</span> <span class='fu'>goesaodc_createRasterStack</span>(
+<span class='kw'>satID</span> <span class='kw'>=</span> <span class='no'>satID</span>,
+<span class='kw'>datetime</span> <span class='kw'>=</span> <span class='no'>datetime</span>,
+<span class='kw'>endTime</span> <span class='kw'>=</span> <span class='no'>endTime</span>,
+<span class='kw'>bbox</span> <span class='kw'>=</span> <span class='no'>bbox</span>,
+<span class='kw'>dqfLevel</span> <span class='kw'>=</span> <span class='no'>dqfLevel</span>,
+<span class='kw'>timezone</span> <span class='kw'>=</span> <span class='no'>timezone</span>)
 
-<span class='no'>oregon</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>USCensusStates</span>, <span class='no'>stateCode</span> <span class='kw'>==</span> <span class='st'>"OR"</span>)
-<span class='no'>bbox_oregon</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>sp</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/sp/man/bbox.html'>bbox</a></span>(<span class='no'>oregon</span>)
-
-<span class='no'>rasterStack</span> <span class='kw'>&lt;-</span> <span class='fu'>goesaodc_createHourlyRasterStack</span>(
-<span class='kw'>satID</span> <span class='kw'>=</span> <span class='st'>"G17"</span>,
-<span class='kw'>datetime</span> <span class='kw'>=</span> <span class='st'>"2019-09-06 09"</span>,
-<span class='kw'>timezone</span> <span class='kw'>=</span> <span class='st'>"America/Los_Angeles"</span>,
-<span class='kw'>bbox</span> <span class='kw'>=</span> <span class='no'>bbox_oregon</span>,
-<span class='kw'>res</span> <span class='kw'>=</span> <span class='fl'>0.1</span>,
-<span class='kw'>dqfLevel</span> <span class='kw'>=</span> <span class='fl'>2</span>)
-
-<span class='kw pkg'>rasterVis</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/rasterVis/man/levelplot-methods.html'>levelplot</a></span>(<span class='no'>rasterStack</span>)</div><div class='img'><img src='goesaodc_createHourlyRasterStack-2.png' alt='' width='700' height='433' /></div><div class='input'># }
-</div></pre>
+<span class='kw pkg'>rasterVis</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/rasterVis/man/levelplot-methods.html'>levelplot</a></span>(<span class='no'>rasterStack</span>)
+ }</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

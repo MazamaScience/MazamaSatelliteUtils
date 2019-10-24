@@ -286,8 +286,12 @@ by, again, defining an hour or date of interest. Let's stay with our current
 hour:
 
 ```{r create_rasterStack}
-rstrStack <- goesaodc_createHourlyRasterStack("G16", startdate = datetime,
-                                              bbox = bbox_oregon, res = 0.08)
+rstrStack <- goesaodc_createHourlyRasterStack(
+  satID = "G16", 
+  datetime = datetime,
+  bbox = bbox_oregon, 
+  dqfLevel = 3,
+  res = 0.08)
 ```
 
 This raster stack now contains individual layers for each downloaded dataset. We

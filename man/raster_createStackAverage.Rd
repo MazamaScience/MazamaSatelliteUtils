@@ -32,17 +32,21 @@ loadSpatialData("USCensusStates")
 # Take average for Oregon on July 31, 2019 at 9am (the Milepost 97 Fire)
 oregon <- subset(USCensusStates, stateCode == "OR")
 bbox_oregon <- sp::bbox(oregon)
-date <- lubridate::ymd_h("2019-08-01 16", tz = "UTC")
+datetime <- lubridate::ymd_h("2019-08-01 16", tz = "UTC")
 
-rstrStack <- goesaodc_createHourlyRasterStack(startdate = date, 
-                                              bbox = bbox_oregon,
-                                              res = 0.5)
+rstrStack <- goesaodc_createHourlyRasterStack(
+  satID = "G16",
+  datetime = datetime, 
+  bbox = bbox_oregon,
+  res = 0.5,
+  dqfLevel = 2
+)
 avg <- raster_createStackAverage(rstrStack, na.rm = TRUE)
 
 # Plot average AOD raster and state border
 pal_aod <- colorRampPalette(c("lightgoldenrod1", "red3"))
 title <- paste0("Average AOD (", 
-                strftime(date, "\%Y-\%m-\%d \%I\%p", tz = "America/Los_Angeles"), 
+                strftime(datetime, "\%Y-\%m-\%d \%I\%p", tz = "America/Los_Angeles"), 
                 " PDT)")
 plot(avg, col = pal_aod(50), main = title)
 plot(oregon, add = TRUE)

@@ -32,16 +32,20 @@
 #' loadSpatialData("USCensusStates")
 #' 
 #' # Oregon on August 1, 2019 at 12pm (Milepost 97 Fire)
-#' startdate <- lubridate::ymd_h("2019-08-01 19", tz = "UTC")
+#' datetime <- lubridate::ymd_h("2019-08-01 19", tz = "UTC")
 #' oregon <- subset(USCensusStates, stateCode == "OR")
 #' bbox_oregon <- sp::bbox(oregon)
 #' lon <- -123.245
 #' lat <- 42.861
 #' 
 #' # Gather all the raster layers for the given hour into a stack
-#' rasterStack <- goesaodc_createHourlyRasterStack(startdate = startdate, 
-#'                                                 bbox = bbox_oregon,
-#'                                                 res = 0.05)
+#' rasterStack <- goesaodc_createHourlyRasterStack(
+#'   satID = "G16",
+#'   datetime = datetime, 
+#'   bbox = bbox_oregon,
+#'   res = 0.05,
+#'   dqfLevel = 2
+#' )
 #' 
 #' rasterAvg <- raster::mean(rasterStack, na.rm = TRUE)
 #' tb <- raster_createLocationTimeseries(rasterStack = rasterStack,
@@ -57,7 +61,7 @@
 #' plot(oregon, add = TRUE)
 #' points(x = c(lon), y = c(lat), cex = 2.0, pch = 3, lwd = 1.5)
 #' plot(x = tb$datetime, y = tb$aod, pch = 15, cex = 1,
-#'      main = startdate, xlab = "Time", ylab = "AOD")
+#'      main = datetime, xlab = "Time", ylab = "AOD")
 #' }
 
 raster_createLocationTimeseries <- function(

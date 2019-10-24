@@ -1,6 +1,6 @@
 context("test-goesaodc_downloadaod")
 
-test_that("fails on when passed incorrect parameters", {
+test_that("fails when passed incorrect parameters", {
   
   # date of format: YYMMDDHH
   expect_error({

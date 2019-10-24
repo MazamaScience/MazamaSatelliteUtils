@@ -39,9 +39,10 @@
 <meta property="og:description" content="Download all GOES 16 or 17 NetCDF files for the given
 datetime to the directory specified by setSatelliteDataDir().
 If datetime is specified to the hour and fullDay is not
-explicitly set to TRUE', only files for that hour will be downloaded. If
-datetime is specified only to the day, all files for that day will
-be downloaded. NOTE that all times are assumed to be in UTC timezone." />
+explicitly set to TRUE', only files for that hour will be downloaded. If the
+optional endTime is specified, all files that exist for the time 
+period between datetime and endTime will be downloaded. If 
+timezone is not specified, &quot;UTC&quot; timezone is assumed." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -74,7 +75,7 @@ be downloaded. NOTE that all times are assumed to be in UTC timezone." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MazamaSatelliteUtils</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.8</span>
       </span>
     </div>
 
@@ -117,14 +118,15 @@ be downloaded. NOTE that all times are assumed to be in UTC timezone." />
     <p>Download all GOES 16 or 17 NetCDF files for the given
 <code>datetime</code> to the directory specified by <code><a href='setSatelliteDataDir.html'>setSatelliteDataDir()</a></code>.
 If <code>datetime</code> is specified to the hour and <code>fullDay</code> is not
-explicitly set to TRUE', only files for that hour will be downloaded. If
-<code>datetime</code> is specified only to the day, all files for that day will
-be downloaded. NOTE that all times are assumed to be in UTC timezone.</p>
+explicitly set to TRUE', only files for that hour will be downloaded. If the
+optional <code>endTime</code> is specified, all files that exist for the time 
+period between <code>datetime</code> and <code>endTime</code> will be downloaded. If 
+<code>timezone</code> is not specified, "UTC" timezone is assumed.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>goesaodc_downloadAOD</span>(<span class='kw'>satID</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>datetime</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>jdate</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>baseUrl</span> <span class='kw'>=</span> <span class='st'>"https://tools-1.airfire.org/Satellite/"</span>, <span class='kw'>quiet</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>fullDay</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='fu'>goesaodc_downloadAOD</span>(<span class='kw'>satID</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>datetime</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>endTime</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>timezone</span> <span class='kw'>=</span> <span class='st'>"UTC"</span>, <span class='kw'>julian</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>baseUrl</span> <span class='kw'>=</span> <span class='st'>"https://tools-1.airfire.org/Satellite/"</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -135,25 +137,24 @@ be downloaded. NOTE that all times are assumed to be in UTC timezone.</p>
     </tr>
     <tr>
       <th>datetime</th>
-      <td><p>desired date in any Ymd [H] format or <code>POSIXct</code></p></td>
+      <td><p>Desired datetime in any Ymd H [MS] format or <code>POSIXct</code></p></td>
     </tr>
     <tr>
-      <th>jdate</th>
-      <td><p>desired date in as a Julian date string, i.e. as seen in the
-netcdf filenames</p></td>
+      <th>endTime</th>
+      <td><p>Desired ending time in any Ymd H [MS] format or <code>POSIXct</code></p></td>
+    </tr>
+    <tr>
+      <th>timezone</th>
+      <td><p>Timezone used to interpret <code>datetime</code> and <code>endTime</code></p></td>
+    </tr>
+    <tr>
+      <th>julian</th>
+      <td><p>Logical specifying if <code>datetime</code> (and optionally 
+<code>endTime</code>) are Julian formatted</p></td>
     </tr>
     <tr>
       <th>baseUrl</th>
-      <td><p>base URL for data queries</p></td>
-    </tr>
-    <tr>
-      <th>quiet</th>
-      <td><p>if TRUE, suppress status messages and progress bar</p></td>
-    </tr>
-    <tr>
-      <th>fullDay</th>
-      <td><p>if TRUE downloads all files for a day, even if a specific hour
-has been specified in the <code>datetime</code>. Set to FALSE by default.</p></td>
+      <td><p>Base URL for data queries.</p></td>
     </tr>
     </table>
 
@@ -169,9 +170,18 @@ has been specified in the <code>datetime</code>. Set to FALSE by default.</p></t
 <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>MazamaSatelliteUtils</span>)
 <span class='fu'><a href='setSatelliteDataDir.html'>setSatelliteDataDir</a></span>(<span class='st'>"~/Data/Satellite"</span>)
 
-<span class='fu'>goesaodc_downloadAOD</span>(<span class='kw'>satID</span> <span class='kw'>=</span><span class='st'>"G16"</span>, <span class='kw'>datetime</span> <span class='kw'>=</span> <span class='st'>"2019-05-16 16"</span>)
+<span class='fu'>goesaodc_downloadAOD</span>(<span class='kw'>satID</span> <span class='kw'>=</span> <span class='st'>"G17"</span>,
+<span class='kw'>datetime</span> <span class='kw'>=</span> <span class='st'>"2019-09-06 18"</span>)
 
-<span class='fu'>goesaodc_downloadAOD</span>(<span class='kw'>satID</span> <span class='kw'>=</span> <span class='st'>"G17"</span>, <span class='kw'>jdate</span> <span class='kw'>=</span> <span class='st'>"201924918"</span>)
+<span class='fu'>goesaodc_downloadAOD</span>(<span class='kw'>satID</span> <span class='kw'>=</span> <span class='st'>"G16"</span>,
+<span class='kw'>datetime</span> <span class='kw'>=</span> <span class='st'>"2019-09-06 08:00"</span>,
+<span class='kw'>endTime</span> <span class='kw'>=</span> <span class='st'>"2019-09-06 12:00"</span>,
+<span class='kw'>timezone</span> <span class='kw'>=</span> <span class='st'>"America/Los_Angeles"</span>)
+
+<span class='fu'>goesaodc_downloadAOD</span>(<span class='kw'>satID</span> <span class='kw'>=</span> <span class='st'>"G16"</span>,
+<span class='kw'>datetime</span> <span class='kw'>=</span> <span class='st'>"201924915"</span>,
+<span class='kw'>julian</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
+
 <span class='co'># }</span></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
