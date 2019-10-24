@@ -44,26 +44,27 @@
 #' @examples
 #' \dontrun{
 #' library(MazamaSatelliteUtils)
-#' library(MazamaSpatialUtils)
-#'
 #' setSatelliteDataDir("~/Data/Satellite")
-#' setSpatialDataDir("~/Data/Spatial")
-#' loadSpatialData("USCensusStates")
+#' library(MazamaSpatialUtils)
+#' MazamaCoreUtils::initializeLogging(logDir = "~/Data/Logs")
 #'
 #' # Define the region of interest (Milepost 97 Fire in Oregon)
-#' oregon <- subset(USCensusStates, stateCode == "OR")
-#' bbox_oregon <- sp::bbox(oregon)
+#' bbox_oregon <- c(-124.56624, -116.46350, 41.99179, 46.29203)
 #' longitude <- -123.245
 #' latitude <-   42.861
 #'
-#' dateLocal <- lubridate::ymd("2019-08-01", tz = "America/Los_Angeles")
+#' datetime <- MazamaCoreUtils::parseDatetime(datetime = "2019-09-06 09", 
+#' timezone = "America/Los_Angeles")
+#' 
+#' dqfLevel <- 2
 #'
 #' dayStack <- goesaodc_createDaytimeRasterStack(
 #'   satID = "G16",
-#'   dateLocal,
-#'   longitude = -123.32,
-#'   latitude = 42.88,
-#'   bbox = bbox_oregon
+#'   datetime = datetime,
+#'   longitude = longitude,
+#'   latitude = latitude,
+#'   bbox = bbox_oregon,
+#'   dqfLevel = dqfLevel
 #' )
 #' 
 #' tb <- raster_createLocationTimeseries(dayStack,
@@ -73,10 +74,10 @@
 #'
 #' plot(x = tb$datetime, y = tb$aod,
 #'      pch = 15, cex = 0.8, col = rgb(red = 0, green = 0, blue = 0, alpha = 0.8),
-#'      main = dateLocal, xlab = "Time (PDT)", ylab = "AOD")
+#'      main = datetime, xlab = "Time (PDT)", ylab = "AOD")
 #' }
 
-goesaodc_createDaytimeRasterStack <- function(
+  goesaodc_createDaytimeRasterStack <- function(
   satID = NULL,
   datetime = NULL,
   longitude = NULL,
@@ -92,6 +93,12 @@ goesaodc_createDaytimeRasterStack <- function(
   
   MazamaCoreUtils::stopIfNull(satID)
   MazamaCoreUtils::stopIfNull(datetime)
+  
+  # VALIDATE IS TIME BEING PASSED IN IS ALREADY A POSIX TIME WITH timezone
+  time_classes <- c("POSIXct", "POSIXt", "POSIXlt")
+  if ( class(datetime)[1] %in% time_classes ) {
+    timezone <- attr(datetime,"tzone")
+  }
   
   datetime <- MazamaCoreUtils::parseDatetime(datetime, timezone)
   
@@ -119,43 +126,46 @@ goesaodc_createDaytimeRasterStack <- function(
   hours <- seq.POSIXt(from = sunriseHourUTC, to = sunsetHourUTC, by = "hour")
   hours <- strftime(hours, format = "%Y-%m-%d %H:%M:%S", tz = "UTC")
   
-  # ----- Create a single-day rasterStack --------------------------------------
+  # ----- Create a rasterStack of hourly stacks from sunrise to sunset ---------
   
-  # Create a rasterStack for each hour and add them all to one "day" rasterStack
   dayStack <- raster::stack()
   
+  # Container to hold all the hourly Z values
+  timeSlices <- c()
+  
   for (hour in hours) {
-    
     result <- try({
-      
       hourStack <- goesaodc_createHourlyRasterStack(
         satID = satID,
         datetime = hour,
         var = var,
-        res = 0.1,
+        res = res,
         bbox = bbox,
-        dqfLevel = dqfLevel
-      )
+        dqfLevel = dqfLevel)
       
-      # Combine the rasters and timestamps of the day and hour stacks
-      zDay <- raster::getZ(dayStack)
-      zHour <- raster::getZ(hourStack)
-      
-      dayStack <- raster::stack(dayStack, hourStack)
-      dayStack <- raster::setZ(dayStack, c(zDay, zHour))
-      
-    }, silent = TRUE)
-    
+  } , silent = TRUE)
     if ( "try-error" %in% class(result) ) {
-      stop(result)
+      err_msg <- geterrmessage()
+      if ( stringr::str_detect(err_msg, "No data for selected region") ) {
+        # Warn but don't stop
+        if ( MazamaCoreUtils::logger.isInitialized() ) {
+          MazamaCoreUtils::logger.warn("No data found for hour %s", hour)
+        }
+      } else {
+        stop(result)
+      }
     } else {
-      print(paste0("Stacked hour: ", hour))
+      # Collect hour's Z values for later and add hourStack to dayStack 
+      zHour <- raster::getZ(hourStack)
+      timeSlices <- append(timeSlices, c(zHour))
+      dayStack <- raster::stack(dayStack, hourStack)
+      print(paste0("Stacked hour: ", hour, " UTC"))
     }
-    
   }
+  # ----- Write the full Z-value set to the dayStack ---------------------------
+  dayStack <- raster::setZ(dayStack, c(timeSlices))
   
   # ----- Return ---------------------------------------------------------------
-  
   return(dayStack)
   
 }

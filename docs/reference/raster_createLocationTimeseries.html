@@ -71,7 +71,7 @@ close to the coordinates." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MazamaSatelliteUtils</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.8</span>
       </span>
     </div>
 
@@ -173,16 +173,20 @@ is used)</p></td>
 <span class='fu'><a href='https://rdrr.io/pkg/MazamaSpatialUtils/man/loadSpatialData.html'>loadSpatialData</a></span>(<span class='st'>"USCensusStates"</span>)
 
 <span class='co'># Oregon on August 1, 2019 at 12pm (Milepost 97 Fire)</span>
-<span class='no'>startdate</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>lubridate</span><span class='kw ns'>::</span><span class='fu'><a href='http://lubridate.tidyverse.org/reference/ymd_hms.html'>ymd_h</a></span>(<span class='st'>"2019-08-01 19"</span>, <span class='kw'>tz</span> <span class='kw'>=</span> <span class='st'>"UTC"</span>)
+<span class='no'>datetime</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>lubridate</span><span class='kw ns'>::</span><span class='fu'><a href='http://lubridate.tidyverse.org/reference/ymd_hms.html'>ymd_h</a></span>(<span class='st'>"2019-08-01 19"</span>, <span class='kw'>tz</span> <span class='kw'>=</span> <span class='st'>"UTC"</span>)
 <span class='no'>oregon</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>USCensusStates</span>, <span class='no'>stateCode</span> <span class='kw'>==</span> <span class='st'>"OR"</span>)
 <span class='no'>bbox_oregon</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>sp</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/sp/man/bbox.html'>bbox</a></span>(<span class='no'>oregon</span>)
 <span class='no'>lon</span> <span class='kw'>&lt;-</span> -<span class='fl'>123.245</span>
 <span class='no'>lat</span> <span class='kw'>&lt;-</span> <span class='fl'>42.861</span>
 
 <span class='co'># Gather all the raster layers for the given hour into a stack</span>
-<span class='no'>rasterStack</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='goesaodc_createHourlyRasterStack.html'>goesaodc_createHourlyRasterStack</a></span>(<span class='kw'>startdate</span> <span class='kw'>=</span> <span class='no'>startdate</span>,
-                                                <span class='kw'>bbox</span> <span class='kw'>=</span> <span class='no'>bbox_oregon</span>,
-                                                <span class='kw'>res</span> <span class='kw'>=</span> <span class='fl'>0.05</span>)
+<span class='no'>rasterStack</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='goesaodc_createHourlyRasterStack.html'>goesaodc_createHourlyRasterStack</a></span>(
+  <span class='kw'>satID</span> <span class='kw'>=</span> <span class='st'>"G16"</span>,
+  <span class='kw'>datetime</span> <span class='kw'>=</span> <span class='no'>datetime</span>,
+  <span class='kw'>bbox</span> <span class='kw'>=</span> <span class='no'>bbox_oregon</span>,
+  <span class='kw'>res</span> <span class='kw'>=</span> <span class='fl'>0.05</span>,
+  <span class='kw'>dqfLevel</span> <span class='kw'>=</span> <span class='fl'>2</span>
+)
 
 <span class='no'>rasterAvg</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>raster</span><span class='kw ns'>::</span><span class='fu'>mean</span>(<span class='no'>rasterStack</span>, <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
 <span class='no'>tb</span> <span class='kw'>&lt;-</span> <span class='fu'>raster_createLocationTimeseries</span>(<span class='kw'>rasterStack</span> <span class='kw'>=</span> <span class='no'>rasterStack</span>,
@@ -198,7 +202,7 @@ is used)</p></td>
 <span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>oregon</span>, <span class='kw'>add</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
 <span class='fu'><a href='https://rdrr.io/r/graphics/points.html'>points</a></span>(<span class='kw'>x</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='no'>lon</span>), <span class='kw'>y</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='no'>lat</span>), <span class='kw'>cex</span> <span class='kw'>=</span> <span class='fl'>2.0</span>, <span class='kw'>pch</span> <span class='kw'>=</span> <span class='fl'>3</span>, <span class='kw'>lwd</span> <span class='kw'>=</span> <span class='fl'>1.5</span>)
 <span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='kw'>x</span> <span class='kw'>=</span> <span class='no'>tb</span>$<span class='no'>datetime</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='no'>tb</span>$<span class='no'>aod</span>, <span class='kw'>pch</span> <span class='kw'>=</span> <span class='fl'>15</span>, <span class='kw'>cex</span> <span class='kw'>=</span> <span class='fl'>1</span>,
-     <span class='kw'>main</span> <span class='kw'>=</span> <span class='no'>startdate</span>, <span class='kw'>xlab</span> <span class='kw'>=</span> <span class='st'>"Time"</span>, <span class='kw'>ylab</span> <span class='kw'>=</span> <span class='st'>"AOD"</span>)
+     <span class='kw'>main</span> <span class='kw'>=</span> <span class='no'>datetime</span>, <span class='kw'>xlab</span> <span class='kw'>=</span> <span class='st'>"Time"</span>, <span class='kw'>ylab</span> <span class='kw'>=</span> <span class='st'>"AOD"</span>)
 }</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

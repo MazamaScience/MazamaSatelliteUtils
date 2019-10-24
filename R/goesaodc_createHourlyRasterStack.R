@@ -45,16 +45,16 @@
 #' library(MazamaSatelliteUtils)
 #' setSatelliteDataDir("~/Data/Satellite")
 #' 
-#' bbox_us <- c(-124.848974, -66.885444, 24.396308, 49.384358) # US LOWER 48
+#' bbox_us <- c(-125, -65, 24, 50) # CONUS
 #' 
-#' rstrStack <- goesaodc_createHourlyRasterStack(
+#' rasterStack <- goesaodc_createHourlyRasterStack(
 #' satID = "G16", 
-#' datetime = "2019-09-06 16:00", 
+#' datetime = "2019-09-06 16", 
 #' bbox = bbox_us,
 #' dqfLevel = 2,
 #' res = 0.2)
 #' 
-#' rasterVis::levelplot(rstrStack)
+#' rasterVis::levelplot(rasterStack)
 #' 
 #' #### EXTENTS BASED ON sp::bbox OF OREGON
 #' library(MazamaSpatialUtils)
@@ -65,13 +65,15 @@
 #' oregon <- subset(USCensusStates, stateCode == "OR")
 #' bbox_oregon <- sp::bbox(oregon)
 #' 
-#' rstrStack <- goesaodc_createHourlyRasterStack(
-#' satId = "G17", 
-#' datetime = "2019-09-06 16", 
+#' rasterStack <- goesaodc_createHourlyRasterStack(
+#' satID = "G17", 
+#' datetime = "2019-09-06 09",
+#' timezone = "America/Los_Angeles", 
 #' bbox = bbox_oregon,
+#' res = 0.1,
 #' dqfLevel = 2)
 #' 
-#' rasterVis::levelplot(rstrStack)
+#' rasterVis::levelplot(rasterStack)
 #' }
 
 goesaodc_createHourlyRasterStack <- function(
@@ -79,70 +81,51 @@ goesaodc_createHourlyRasterStack <- function(
   datetime = NULL,
   var = "AOD",
   res = 0.1,
-  bbox = NULL,
+  bbox = c(-125, -65, 24, 50), # LIMIT TO CONUS BY DEFAULT
   dqfLevel = NULL,
-  timezone = "UTC"
+  timezone = 'UTC'
 ) {
   
-  # ----- Validate parameters --------------------------------------------------
+  # ---- Validate parameters ---------------------------------------------------
   
   MazamaCoreUtils::stopIfNull(satID)
   MazamaCoreUtils::stopIfNull(datetime)
+  MazamaCoreUtils::stopIfNull(dqfLevel)
   
-  satID <- toupper(satID)
-  if ( !(satID %in% c("G16", "G17")) ) {
-    stop("Parameter 'satID' must be either 'G16' or 'G17'")
+  # ---- Check for a POSIXt timezone -------------------------------------------
+  time_classes <- c("POSIXct", "POSIXt", "POSIXlt")
+  if ( class(datetime)[1] %in% time_classes ) {
+    timezone <- attr(datetime,"tzone")
+  }
+
+  # ---- Download GOES AOD Files -----------------------------------------------
+  goesaodc_downloadAOD(satID, datetime, timezone = timezone)
+  
+  # ---- Create lists of files, start times and names for layers ---------------
+  fileList <- goesaodc_listFiles(satID = satID, 
+                                 datetime = datetime, 
+                                 timezone = timezone)
+  timeList <- goesaodc_getStartTime(fileList)
+  nameList <- strftime(timeList, format = "%H:%M:%S", tz = "UTC")
+  zList <- strftime(timeList, format = "%Y%m%d%H%M%S", tz = "UTC")
+  
+  # ---- Create List of of AOD raster layers for hour and region ---------------
+  hourStack <- raster::stack()
+  
+  for (nc_file in fileList) {
+    nc <- goesaodc_openFile(nc_file)
+    
+    goes_raster <- goesaodc_createRaster(nc, 
+                                         res = res, 
+                                         bbox = bbox, 
+                                         dqfLevel = dqfLevel )
+    aod_raster <- goes_raster[[var]]
+    hourStack <- raster::stack(hourStack, aod_raster)
+    
   }
   
-  datetime <- MazamaCoreUtils::parseDatetime(datetime, timezone)
+  hourStack <- raster::setZ(hourStack, zList)
+  names(hourStack) <- nameList
 
-  # ----- Download GOES AOD Files ----------------------------------------------
-  
-  # make sure that files are downloaded
-  goesaodc_downloadAOD(satID, datetime)
-  
-  # ----- Create List of RasterLayers ------------------------------------------
-  
-  # create list of AOD raster layers for specified hour and region
-  rasterList <- 
-    goesaodc_listFiles(satID, datetime) %>%             # create list of filenames for specified hour
-    purrr::map(goesaodc_openFile) %>%                   # open each file in the list
-    purrr::map(goesaodc_createRaster,                   # rasterize each open file specified params
-               res = res,
-               bbox = bbox,                             
-               dqfLevel = dqfLevel) %>%  
-    purrr::map(function(rst) rst[[var]])                # select RasterLayer of specified variable
-  
-  # ----- Create RasterStack ---------------------------------------------------
-  
-  # Extents won't match exactly and raster::stack() needs them to, so
-  # find the largest extent necessary to encompass all RasterLayers in the
-  # list, and apply that new extent to each of the RasterLayers.
-  lonLo <- min(purrr::map_dbl(rasterList, function(rst) raster::extent(rst)@xmin))
-  lonHi <- max(purrr::map_dbl(rasterList, function(rst) raster::extent(rst)@xmax))
-  latLo <- min(purrr::map_dbl(rasterList, function(rst) raster::extent(rst)@ymin))
-  latHi <- max(purrr::map_dbl(rasterList, function(rst) raster::extent(rst)@ymax))
-  
-  ext <- raster::extent(c(lonLo, lonHi, latLo, latHi))
-  
-  rasterList <- purrr::map(rasterList, function(rst) raster::setExtent(rst, ext))
-  
-  # now create the stack
-  rasterStack <- raster::stack(rasterList)
-  
-  # assign times to the Z axis
-  times <-
-    goesaodc_listFiles(satID, datetime) %>%
-    purrr::map_chr(goesaodc_getStartString) %>%
-    purrr::map(lubridate::parse_date_time, orders = ("YjHMS"))
-  
-  Z <- purrr::map(times, strftime, format = "%Y%m%d%H%M%S", tz = "UTC")
-  
-  rasterStack <- raster::setZ(rasterStack, Z)
-  # NOTE: Why does this prepend "X" to the names?
-  names <- purrr::map(times, strftime, format = "%H:%M:%S", tz = "UTC")
-  names(rasterStack) <- names
-  
-  return(rasterStack)
-  
+  return(hourStack)
 }

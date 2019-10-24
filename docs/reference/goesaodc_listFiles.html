@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>List downloaded GOES AOD files for a specified date and hour — goesaodc_listFiles • MazamaSatelliteUtils</title>
+<title>List available GOES AOD files for a specified date and hour — goesaodc_listFiles • MazamaSatelliteUtils</title>
 
 
 <!-- jquery -->
@@ -35,12 +35,14 @@
 
 
 
-<meta property="og:title" content="List downloaded GOES AOD files for a specified date and hour — goesaodc_listFiles" />
+<meta property="og:title" content="List available GOES AOD files for a specified date and hour — goesaodc_listFiles" />
 <meta property="og:description" content="Retrieve a list of GOES AOD files available in the
-satelliteDataDir for a specified date and hour.
-Note that all files for a particular hour will be returned even if the
+satelliteDataDir or at baseUrl for a specified date and hour.
+NOTE: All files for a particular hour will be returned even if the
 incoming startdate or jdate is specified to the minute or
-second." />
+second.  By default, the local directory set by SetSatelliteDir is 
+searched. useRemote = TRUE will search baseURL for all files 
+that are available within the specified timeframe." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -73,7 +75,7 @@ second." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MazamaSatelliteUtils</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.8</span>
       </span>
     </div>
 
@@ -107,21 +109,24 @@ second." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>List downloaded GOES AOD files for a specified date and hour</h1>
+    <h1>List available GOES AOD files for a specified date and hour</h1>
     
     <div class="hidden name"><code>goesaodc_listFiles.Rd</code></div>
     </div>
 
     <div class="ref-description">
     <p>Retrieve a list of GOES AOD files available in the
-<code>satelliteDataDir</code> for a specified date and hour.</p>
-<p>Note that all files for a particular hour will be returned even if the
+<code>satelliteDataDir</code> or at <code>baseUrl</code> for a specified date and hour.</p>
+<p>NOTE: All files for a particular hour will be returned even if the
 incoming <code>startdate</code> or <code>jdate</code> is specified to the minute or
-second.</p>
+second.  By default, the local directory set by <code>SetSatelliteDir</code> is 
+searched. <code>useRemote = TRUE</code> will search <code>baseURL</code> for all files 
+that are available within the specified timeframe.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>goesaodc_listFiles</span>(<span class='kw'>satID</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>startdate</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>jdate</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>fullDay</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='fu'>goesaodc_listFiles</span>(<span class='kw'>satID</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>datetime</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>endTime</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>useRemote</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>timezone</span> <span class='kw'>=</span> <span class='st'>"UTC"</span>, <span class='kw'>julian</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>baseUrl</span> <span class='kw'>=</span> <span class='st'>"https://tools-1.airfire.org/Satellite/"</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -131,17 +136,30 @@ second.</p>
       <td><p>ID of the source GOES satellite (G16 or G17).</p></td>
     </tr>
     <tr>
-      <th>startdate</th>
-      <td><p>desired date in any Ymd [H] format or <code>POSIXct</code></p></td>
+      <th>datetime</th>
+      <td><p>Desired datetime in any Ymd H [MS] format or <code>POSIXct</code></p></td>
     </tr>
     <tr>
-      <th>jdate</th>
-      <td><p>desired date in as a Julian date string, i.e. as seen in the
-netcdf filenames</p></td>
+      <th>endTime</th>
+      <td><p>Desired ending time in any Ymd H [MS] format or <code>POSIXct</code></p></td>
     </tr>
     <tr>
-      <th>fullDay</th>
-      <td><p>Specifies that the user wants an entire day's worth of data</p></td>
+      <th>useRemote</th>
+      <td><p>Logical specifying whether to look for files in 
+<code><a href='getSatelliteDataDir.html'>getSatelliteDataDir()</a></code> or <code>baseUrl</code>.</p></td>
+    </tr>
+    <tr>
+      <th>timezone</th>
+      <td><p>Timezone used to interpret <code>datetime</code> and <code>endTime</code></p></td>
+    </tr>
+    <tr>
+      <th>julian</th>
+      <td><p>Logical specifying if <code>datetime</code> (and optionally 
+<code>endTime</code>) are Julian formatted</p></td>
+    </tr>
+    <tr>
+      <th>baseUrl</th>
+      <td><p>Base URL for data queries.</p></td>
     </tr>
     </table>
 
@@ -154,45 +172,168 @@ netcdf filenames</p></td>
 <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>MazamaSatelliteUtils</span>)
 <span class='fu'><a href='setSatelliteDataDir.html'>setSatelliteDataDir</a></span>(<span class='st'>"~/Data/Satellite"</span>)
 
-<span class='no'>date_with_hour</span> <span class='kw'>&lt;-</span> <span class='st'>"2019-09-06 16"</span>
-<span class='fu'>goesaodc_listFiles</span>(<span class='kw'>satID</span> <span class='kw'>=</span> <span class='st'>"G16"</span>, <span class='kw'>startdate</span> <span class='kw'>=</span> <span class='no'>date_with_hour</span>)</div><div class='output co'>#&gt;  [1] "OR_ABI-L2-AODC-M6_G16_s20192491601094_e20192491603467_c20192491610121.nc"
-#&gt;  [2] "OR_ABI-L2-AODC-M6_G16_s20192491606094_e20192491608467_c20192491615088.nc"
-#&gt;  [3] "OR_ABI-L2-AODC-M6_G16_s20192491611094_e20192491613467_c20192491620114.nc"
-#&gt;  [4] "OR_ABI-L2-AODC-M6_G16_s20192491616094_e20192491618467_c20192491625131.nc"
-#&gt;  [5] "OR_ABI-L2-AODC-M6_G16_s20192491621094_e20192491623467_c20192491630089.nc"
-#&gt;  [6] "OR_ABI-L2-AODC-M6_G16_s20192491626094_e20192491628467_c20192491635120.nc"
-#&gt;  [7] "OR_ABI-L2-AODC-M6_G16_s20192491631094_e20192491633467_c20192491640112.nc"
-#&gt;  [8] "OR_ABI-L2-AODC-M6_G16_s20192491636094_e20192491638467_c20192491645095.nc"
-#&gt;  [9] "OR_ABI-L2-AODC-M6_G16_s20192491641094_e20192491643467_c20192491650101.nc"
-#&gt; [10] "OR_ABI-L2-AODC-M6_G16_s20192491646094_e20192491648467_c20192491655131.nc"
-#&gt; [11] "OR_ABI-L2-AODC-M6_G16_s20192491651094_e20192491653467_c20192491700096.nc"
-#&gt; [12] "OR_ABI-L2-AODC-M6_G16_s20192491656094_e20192491658467_c20192491705115.nc"</div><div class='input'>
-<span class='no'>jdate</span> <span class='kw'>&lt;-</span> <span class='st'>"201924916"</span>
-<span class='fu'>goesaodc_listFiles</span>(<span class='kw'>satID</span> <span class='kw'>=</span> <span class='st'>"G17"</span>, <span class='kw'>jdate</span> <span class='kw'>=</span> <span class='no'>jdate</span>, <span class='kw'>fullDay</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</div><div class='output co'>#&gt;  [1] "OR_ABI-L2-AODC-M6_G17_s20192491801196_e20192491803569_c20192491805437.nc"
-#&gt;  [2] "OR_ABI-L2-AODC-M6_G17_s20192491806196_e20192491808569_c20192491810456.nc"
-#&gt;  [3] "OR_ABI-L2-AODC-M6_G17_s20192491811196_e20192491813569_c20192491815453.nc"
-#&gt;  [4] "OR_ABI-L2-AODC-M6_G17_s20192491816196_e20192491818569_c20192491820468.nc"
-#&gt;  [5] "OR_ABI-L2-AODC-M6_G17_s20192491821196_e20192491823569_c20192491825491.nc"
-#&gt;  [6] "OR_ABI-L2-AODC-M6_G17_s20192491826196_e20192491828569_c20192491830494.nc"
-#&gt;  [7] "OR_ABI-L2-AODC-M6_G17_s20192491831196_e20192491833569_c20192491835517.nc"
-#&gt;  [8] "OR_ABI-L2-AODC-M6_G17_s20192491836196_e20192491838569_c20192491840517.nc"
-#&gt;  [9] "OR_ABI-L2-AODC-M6_G17_s20192491841196_e20192491843569_c20192491845528.nc"
-#&gt; [10] "OR_ABI-L2-AODC-M6_G17_s20192491846196_e20192491848569_c20192491850525.nc"
-#&gt; [11] "OR_ABI-L2-AODC-M6_G17_s20192491851196_e20192491853569_c20192491855529.nc"
-#&gt; [12] "OR_ABI-L2-AODC-M6_G17_s20192491856196_e20192491858569_c20192491900549.nc"</div><div class='input'>
-<span class='no'>day_only</span> <span class='kw'>&lt;-</span> <span class='st'>"2019-09-06"</span>
-<span class='fu'>goesaodc_listFiles</span>(<span class='kw'>satID</span> <span class='kw'>=</span> <span class='st'>"G16"</span>, <span class='kw'>startdate</span> <span class='kw'>=</span> <span class='no'>day_only</span>)</div><div class='output co'>#&gt;  [1] "OR_ABI-L2-AODC-M6_G16_s20192491601094_e20192491603467_c20192491610121.nc"
-#&gt;  [2] "OR_ABI-L2-AODC-M6_G16_s20192491606094_e20192491608467_c20192491615088.nc"
-#&gt;  [3] "OR_ABI-L2-AODC-M6_G16_s20192491611094_e20192491613467_c20192491620114.nc"
-#&gt;  [4] "OR_ABI-L2-AODC-M6_G16_s20192491616094_e20192491618467_c20192491625131.nc"
-#&gt;  [5] "OR_ABI-L2-AODC-M6_G16_s20192491621094_e20192491623467_c20192491630089.nc"
-#&gt;  [6] "OR_ABI-L2-AODC-M6_G16_s20192491626094_e20192491628467_c20192491635120.nc"
-#&gt;  [7] "OR_ABI-L2-AODC-M6_G16_s20192491631094_e20192491633467_c20192491640112.nc"
-#&gt;  [8] "OR_ABI-L2-AODC-M6_G16_s20192491636094_e20192491638467_c20192491645095.nc"
-#&gt;  [9] "OR_ABI-L2-AODC-M6_G16_s20192491641094_e20192491643467_c20192491650101.nc"
-#&gt; [10] "OR_ABI-L2-AODC-M6_G16_s20192491646094_e20192491648467_c20192491655131.nc"
-#&gt; [11] "OR_ABI-L2-AODC-M6_G16_s20192491651094_e20192491653467_c20192491700096.nc"
-#&gt; [12] "OR_ABI-L2-AODC-M6_G16_s20192491656094_e20192491658467_c20192491705115.nc"</div><div class='input'># }
+ <span class='fu'>goesaodc_listFiles</span>(
+ <span class='kw'>satID</span> <span class='kw'>=</span> <span class='st'>"G16"</span>,
+ <span class='kw'>datetime</span> <span class='kw'>=</span> <span class='st'>"2019-09-06 06:00"</span>,
+ <span class='kw'>endTime</span> <span class='kw'>=</span> <span class='st'>"2019-09-06 18:00"</span>,
+ <span class='kw'>timezone</span> <span class='kw'>=</span> <span class='st'>"America/Los_Angeles"</span>,
+ <span class='kw'>useRemote</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+ )</div><div class='output co'>#&gt;   [1] "OR_ABI-L2-AODC-M6_G16_s20192491301093_e20192491303466_c20192491310120.nc"
+#&gt;   [2] "OR_ABI-L2-AODC-M6_G16_s20192491306093_e20192491308466_c20192491315092.nc"
+#&gt;   [3] "OR_ABI-L2-AODC-M6_G16_s20192491311093_e20192491313466_c20192491320109.nc"
+#&gt;   [4] "OR_ABI-L2-AODC-M6_G16_s20192491316093_e20192491318466_c20192491325115.nc"
+#&gt;   [5] "OR_ABI-L2-AODC-M6_G16_s20192491321093_e20192491323466_c20192491330118.nc"
+#&gt;   [6] "OR_ABI-L2-AODC-M6_G16_s20192491326093_e20192491328466_c20192491335103.nc"
+#&gt;   [7] "OR_ABI-L2-AODC-M6_G16_s20192491331093_e20192491333466_c20192491340118.nc"
+#&gt;   [8] "OR_ABI-L2-AODC-M6_G16_s20192491336093_e20192491338466_c20192491345081.nc"
+#&gt;   [9] "OR_ABI-L2-AODC-M6_G16_s20192491341093_e20192491343466_c20192491350104.nc"
+#&gt;  [10] "OR_ABI-L2-AODC-M6_G16_s20192491346093_e20192491348466_c20192491355108.nc"
+#&gt;  [11] "OR_ABI-L2-AODC-M6_G16_s20192491351093_e20192491353466_c20192491400106.nc"
+#&gt;  [12] "OR_ABI-L2-AODC-M6_G16_s20192491356093_e20192491358466_c20192491405105.nc"
+#&gt;  [13] "OR_ABI-L2-AODC-M6_G16_s20192491401093_e20192491403466_c20192491410135.nc"
+#&gt;  [14] "OR_ABI-L2-AODC-M6_G16_s20192491406093_e20192491408466_c20192491415092.nc"
+#&gt;  [15] "OR_ABI-L2-AODC-M6_G16_s20192491411093_e20192491413466_c20192491420120.nc"
+#&gt;  [16] "OR_ABI-L2-AODC-M6_G16_s20192491416093_e20192491418466_c20192491425128.nc"
+#&gt;  [17] "OR_ABI-L2-AODC-M6_G16_s20192491421093_e20192491423466_c20192491430114.nc"
+#&gt;  [18] "OR_ABI-L2-AODC-M6_G16_s20192491426093_e20192491428466_c20192491435109.nc"
+#&gt;  [19] "OR_ABI-L2-AODC-M6_G16_s20192491431093_e20192491433466_c20192491440123.nc"
+#&gt;  [20] "OR_ABI-L2-AODC-M6_G16_s20192491436093_e20192491438466_c20192491445090.nc"
+#&gt;  [21] "OR_ABI-L2-AODC-M6_G16_s20192491441093_e20192491443466_c20192491450106.nc"
+#&gt;  [22] "OR_ABI-L2-AODC-M6_G16_s20192491446093_e20192491448466_c20192491455129.nc"
+#&gt;  [23] "OR_ABI-L2-AODC-M6_G16_s20192491451093_e20192491453466_c20192491500114.nc"
+#&gt;  [24] "OR_ABI-L2-AODC-M6_G16_s20192491456093_e20192491458466_c20192491505098.nc"
+#&gt;  [25] "OR_ABI-L2-AODC-M6_G16_s20192491501093_e20192491503466_c20192491510124.nc"
+#&gt;  [26] "OR_ABI-L2-AODC-M6_G16_s20192491506093_e20192491508466_c20192491515087.nc"
+#&gt;  [27] "OR_ABI-L2-AODC-M6_G16_s20192491511094_e20192491513466_c20192491520123.nc"
+#&gt;  [28] "OR_ABI-L2-AODC-M6_G16_s20192491516094_e20192491518466_c20192491525124.nc"
+#&gt;  [29] "OR_ABI-L2-AODC-M6_G16_s20192491521094_e20192491523467_c20192491530105.nc"
+#&gt;  [30] "OR_ABI-L2-AODC-M6_G16_s20192491526094_e20192491528467_c20192491535106.nc"
+#&gt;  [31] "OR_ABI-L2-AODC-M6_G16_s20192491531094_e20192491533467_c20192491540114.nc"
+#&gt;  [32] "OR_ABI-L2-AODC-M6_G16_s20192491536094_e20192491538467_c20192491545088.nc"
+#&gt;  [33] "OR_ABI-L2-AODC-M6_G16_s20192491541094_e20192491543467_c20192491550116.nc"
+#&gt;  [34] "OR_ABI-L2-AODC-M6_G16_s20192491546094_e20192491548467_c20192491555121.nc"
+#&gt;  [35] "OR_ABI-L2-AODC-M6_G16_s20192491551094_e20192491553467_c20192491600096.nc"
+#&gt;  [36] "OR_ABI-L2-AODC-M6_G16_s20192491556094_e20192491558467_c20192491605110.nc"
+#&gt;  [37] "OR_ABI-L2-AODC-M6_G16_s20192491601094_e20192491603467_c20192491610121.nc"
+#&gt;  [38] "OR_ABI-L2-AODC-M6_G16_s20192491606094_e20192491608467_c20192491615088.nc"
+#&gt;  [39] "OR_ABI-L2-AODC-M6_G16_s20192491611094_e20192491613467_c20192491620114.nc"
+#&gt;  [40] "OR_ABI-L2-AODC-M6_G16_s20192491616094_e20192491618467_c20192491625131.nc"
+#&gt;  [41] "OR_ABI-L2-AODC-M6_G16_s20192491621094_e20192491623467_c20192491630089.nc"
+#&gt;  [42] "OR_ABI-L2-AODC-M6_G16_s20192491626094_e20192491628467_c20192491635120.nc"
+#&gt;  [43] "OR_ABI-L2-AODC-M6_G16_s20192491631094_e20192491633467_c20192491640112.nc"
+#&gt;  [44] "OR_ABI-L2-AODC-M6_G16_s20192491636094_e20192491638467_c20192491645095.nc"
+#&gt;  [45] "OR_ABI-L2-AODC-M6_G16_s20192491641094_e20192491643467_c20192491650101.nc"
+#&gt;  [46] "OR_ABI-L2-AODC-M6_G16_s20192491646094_e20192491648467_c20192491655131.nc"
+#&gt;  [47] "OR_ABI-L2-AODC-M6_G16_s20192491651094_e20192491653467_c20192491700096.nc"
+#&gt;  [48] "OR_ABI-L2-AODC-M6_G16_s20192491656094_e20192491658467_c20192491705115.nc"
+#&gt;  [49] "OR_ABI-L2-AODC-M6_G16_s20192491701094_e20192491703467_c20192491710110.nc"
+#&gt;  [50] "OR_ABI-L2-AODC-M6_G16_s20192491706094_e20192491708467_c20192491715102.nc"
+#&gt;  [51] "OR_ABI-L2-AODC-M6_G16_s20192491711095_e20192491713467_c20192491720125.nc"
+#&gt;  [52] "OR_ABI-L2-AODC-M6_G16_s20192491716095_e20192491718467_c20192491725125.nc"
+#&gt;  [53] "OR_ABI-L2-AODC-M6_G16_s20192491721095_e20192491723468_c20192491730105.nc"
+#&gt;  [54] "OR_ABI-L2-AODC-M6_G16_s20192491726095_e20192491728468_c20192491735127.nc"
+#&gt;  [55] "OR_ABI-L2-AODC-M6_G16_s20192491731095_e20192491733468_c20192491740122.nc"
+#&gt;  [56] "OR_ABI-L2-AODC-M6_G16_s20192491736095_e20192491738468_c20192491745098.nc"
+#&gt;  [57] "OR_ABI-L2-AODC-M6_G16_s20192491741095_e20192491743468_c20192491750108.nc"
+#&gt;  [58] "OR_ABI-L2-AODC-M6_G16_s20192491746095_e20192491748468_c20192491755131.nc"
+#&gt;  [59] "OR_ABI-L2-AODC-M6_G16_s20192491751095_e20192491753468_c20192491800111.nc"
+#&gt;  [60] "OR_ABI-L2-AODC-M6_G16_s20192491756095_e20192491758468_c20192491805104.nc"
+#&gt;  [61] "OR_ABI-L2-AODC-M6_G16_s20192491801095_e20192491803468_c20192491810129.nc"
+#&gt;  [62] "OR_ABI-L2-AODC-M6_G16_s20192491806095_e20192491808468_c20192491815101.nc"
+#&gt;  [63] "OR_ABI-L2-AODC-M6_G16_s20192491811095_e20192491813468_c20192491820128.nc"
+#&gt;  [64] "OR_ABI-L2-AODC-M6_G16_s20192491816095_e20192491818468_c20192491825122.nc"
+#&gt;  [65] "OR_ABI-L2-AODC-M6_G16_s20192491821095_e20192491823468_c20192491830111.nc"
+#&gt;  [66] "OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc"
+#&gt;  [67] "OR_ABI-L2-AODC-M6_G16_s20192491831095_e20192491833468_c20192491840122.nc"
+#&gt;  [68] "OR_ABI-L2-AODC-M6_G16_s20192491836095_e20192491838468_c20192491845095.nc"
+#&gt;  [69] "OR_ABI-L2-AODC-M6_G16_s20192491841095_e20192491843468_c20192491850120.nc"
+#&gt;  [70] "OR_ABI-L2-AODC-M6_G16_s20192491846095_e20192491848468_c20192491855133.nc"
+#&gt;  [71] "OR_ABI-L2-AODC-M6_G16_s20192491851095_e20192491853468_c20192491900103.nc"
+#&gt;  [72] "OR_ABI-L2-AODC-M6_G16_s20192491856095_e20192491858468_c20192491905110.nc"
+#&gt;  [73] "OR_ABI-L2-AODC-M6_G16_s20192491901095_e20192491903468_c20192491910119.nc"
+#&gt;  [74] "OR_ABI-L2-AODC-M6_G16_s20192491906095_e20192491908468_c20192491915112.nc"
+#&gt;  [75] "OR_ABI-L2-AODC-M6_G16_s20192491911096_e20192491913468_c20192491919214.nc"
+#&gt;  [76] "OR_ABI-L2-AODC-M6_G16_s20192491916096_e20192491918468_c20192491923198.nc"
+#&gt;  [77] "OR_ABI-L2-AODC-M6_G16_s20192491921096_e20192491923469_c20192491927063.nc"
+#&gt;  [78] "OR_ABI-L2-AODC-M6_G16_s20192491926096_e20192491928469_c20192491931399.nc"
+#&gt;  [79] "OR_ABI-L2-AODC-M6_G16_s20192491931096_e20192491933469_c20192491936389.nc"
+#&gt;  [80] "OR_ABI-L2-AODC-M6_G16_s20192491936096_e20192491938469_c20192491941380.nc"
+#&gt;  [81] "OR_ABI-L2-AODC-M6_G16_s20192491941096_e20192491943469_c20192491946332.nc"
+#&gt;  [82] "OR_ABI-L2-AODC-M6_G16_s20192491946096_e20192491948469_c20192491951448.nc"
+#&gt;  [83] "OR_ABI-L2-AODC-M6_G16_s20192491951096_e20192491953469_c20192491956325.nc"
+#&gt;  [84] "OR_ABI-L2-AODC-M6_G16_s20192491956096_e20192491958469_c20192492001307.nc"
+#&gt;  [85] "OR_ABI-L2-AODC-M6_G16_s20192492001096_e20192492003469_c20192492006360.nc"
+#&gt;  [86] "OR_ABI-L2-AODC-M6_G16_s20192492006096_e20192492008469_c20192492011372.nc"
+#&gt;  [87] "OR_ABI-L2-AODC-M6_G16_s20192492011096_e20192492013469_c20192492016332.nc"
+#&gt;  [88] "OR_ABI-L2-AODC-M6_G16_s20192492016096_e20192492018469_c20192492021445.nc"
+#&gt;  [89] "OR_ABI-L2-AODC-M6_G16_s20192492021096_e20192492023469_c20192492026317.nc"
+#&gt;  [90] "OR_ABI-L2-AODC-M6_G16_s20192492026096_e20192492028469_c20192492031299.nc"
+#&gt;  [91] "OR_ABI-L2-AODC-M6_G16_s20192492031096_e20192492033469_c20192492036320.nc"
+#&gt;  [92] "OR_ABI-L2-AODC-M6_G16_s20192492036096_e20192492038469_c20192492041335.nc"
+#&gt;  [93] "OR_ABI-L2-AODC-M6_G16_s20192492041096_e20192492043469_c20192492046270.nc"
+#&gt;  [94] "OR_ABI-L2-AODC-M6_G16_s20192492046096_e20192492048469_c20192492051349.nc"
+#&gt;  [95] "OR_ABI-L2-AODC-M6_G16_s20192492051096_e20192492053469_c20192492056309.nc"
+#&gt;  [96] "OR_ABI-L2-AODC-M6_G16_s20192492056096_e20192492058469_c20192492101269.nc"
+#&gt;  [97] "OR_ABI-L2-AODC-M6_G16_s20192492101096_e20192492103469_c20192492106337.nc"
+#&gt;  [98] "OR_ABI-L2-AODC-M6_G16_s20192492106096_e20192492108469_c20192492111398.nc"
+#&gt;  [99] "OR_ABI-L2-AODC-M6_G16_s20192492111096_e20192492113469_c20192492116300.nc"
+#&gt; [100] "OR_ABI-L2-AODC-M6_G16_s20192492116096_e20192492118469_c20192492121346.nc"
+#&gt; [101] "OR_ABI-L2-AODC-M6_G16_s20192492121097_e20192492123469_c20192492126248.nc"
+#&gt; [102] "OR_ABI-L2-AODC-M6_G16_s20192492126097_e20192492128469_c20192492131198.nc"
+#&gt; [103] "OR_ABI-L2-AODC-M6_G16_s20192492131097_e20192492133469_c20192492136246.nc"
+#&gt; [104] "OR_ABI-L2-AODC-M6_G16_s20192492136097_e20192492138470_c20192492141214.nc"
+#&gt; [105] "OR_ABI-L2-AODC-M6_G16_s20192492141097_e20192492143470_c20192492146200.nc"
+#&gt; [106] "OR_ABI-L2-AODC-M6_G16_s20192492146097_e20192492148470_c20192492151204.nc"
+#&gt; [107] "OR_ABI-L2-AODC-M6_G16_s20192492151097_e20192492153470_c20192492156167.nc"
+#&gt; [108] "OR_ABI-L2-AODC-M6_G16_s20192492156097_e20192492158470_c20192492201139.nc"
+#&gt; [109] "OR_ABI-L2-AODC-M6_G16_s20192492201097_e20192492203470_c20192492206207.nc"
+#&gt; [110] "OR_ABI-L2-AODC-M6_G16_s20192492206097_e20192492208470_c20192492211149.nc"
+#&gt; [111] "OR_ABI-L2-AODC-M6_G16_s20192492211097_e20192492213470_c20192492216112.nc"
+#&gt; [112] "OR_ABI-L2-AODC-M6_G16_s20192492216097_e20192492218470_c20192492221321.nc"
+#&gt; [113] "OR_ABI-L2-AODC-M6_G16_s20192492221097_e20192492223470_c20192492226091.nc"
+#&gt; [114] "OR_ABI-L2-AODC-M6_G16_s20192492226097_e20192492228470_c20192492231115.nc"
+#&gt; [115] "OR_ABI-L2-AODC-M6_G16_s20192492231097_e20192492233470_c20192492236133.nc"
+#&gt; [116] "OR_ABI-L2-AODC-M6_G16_s20192492236097_e20192492238470_c20192492241231.nc"
+#&gt; [117] "OR_ABI-L2-AODC-M6_G16_s20192492241097_e20192492243470_c20192492246231.nc"
+#&gt; [118] "OR_ABI-L2-AODC-M6_G16_s20192492246097_e20192492248470_c20192492251356.nc"
+#&gt; [119] "OR_ABI-L2-AODC-M6_G16_s20192492251097_e20192492253470_c20192492256396.nc"
+#&gt; [120] "OR_ABI-L2-AODC-M6_G16_s20192492256097_e20192492258470_c20192492301590.nc"
+#&gt; [121] "OR_ABI-L2-AODC-M6_G16_s20192492301097_e20192492303470_c20192492306531.nc"
+#&gt; [122] "OR_ABI-L2-AODC-M6_G16_s20192492306097_e20192492308470_c20192492311210.nc"
+#&gt; [123] "OR_ABI-L2-AODC-M6_G16_s20192492311097_e20192492313470_c20192492316185.nc"
+#&gt; [124] "OR_ABI-L2-AODC-M6_G16_s20192492316097_e20192492318470_c20192492321436.nc"
+#&gt; [125] "OR_ABI-L2-AODC-M6_G16_s20192492321097_e20192492323470_c20192492326333.nc"
+#&gt; [126] "OR_ABI-L2-AODC-M6_G16_s20192492326097_e20192492328470_c20192492331254.nc"
+#&gt; [127] "OR_ABI-L2-AODC-M6_G16_s20192492331098_e20192492333470_c20192492335582.nc"
+#&gt; [128] "OR_ABI-L2-AODC-M6_G16_s20192492336098_e20192492338470_c20192492341053.nc"
+#&gt; [129] "OR_ABI-L2-AODC-M6_G16_s20192492341098_e20192492343470_c20192492346088.nc"
+#&gt; [130] "OR_ABI-L2-AODC-M6_G16_s20192492346098_e20192492348470_c20192492351376.nc"
+#&gt; [131] "OR_ABI-L2-AODC-M6_G16_s20192492351098_e20192492353471_c20192492356190.nc"
+#&gt; [132] "OR_ABI-L2-AODC-M6_G16_s20192492356098_e20192492358471_c20192500001041.nc"
+#&gt; [133] "OR_ABI-L2-AODC-M6_G16_s20192500001098_e20192500003471_c20192500006231.nc"
+#&gt; [134] "OR_ABI-L2-AODC-M6_G16_s20192500006098_e20192500008471_c20192500011414.nc"
+#&gt; [135] "OR_ABI-L2-AODC-M6_G16_s20192500011098_e20192500013471_c20192500016335.nc"
+#&gt; [136] "OR_ABI-L2-AODC-M6_G16_s20192500016098_e20192500018471_c20192500021182.nc"
+#&gt; [137] "OR_ABI-L2-AODC-M6_G16_s20192500021098_e20192500023471_c20192500025421.nc"
+#&gt; [138] "OR_ABI-L2-AODC-M6_G16_s20192500026098_e20192500028471_c20192500030401.nc"
+#&gt; [139] "OR_ABI-L2-AODC-M6_G16_s20192500031098_e20192500033471_c20192500035519.nc"
+#&gt; [140] "OR_ABI-L2-AODC-M6_G16_s20192500036098_e20192500038471_c20192500040453.nc"
+#&gt; [141] "OR_ABI-L2-AODC-M6_G16_s20192500041098_e20192500043471_c20192500045047.nc"
+#&gt; [142] "OR_ABI-L2-AODC-M6_G16_s20192500046098_e20192500048471_c20192500049450.nc"
+#&gt; [143] "OR_ABI-L2-AODC-M6_G16_s20192500051098_e20192500053471_c20192500054591.nc"
+#&gt; [144] "OR_ABI-L2-AODC-M6_G16_s20192500056098_e20192500058471_c20192500100083.nc"
+#&gt; [145] "OR_ABI-L2-AODC-M6_G16_s20192500101098_e20192500103471_c20192500105112.nc"
+#&gt; [146] "OR_ABI-L2-AODC-M6_G16_s20192500106098_e20192500108471_c20192500110287.nc"
+#&gt; [147] "OR_ABI-L2-AODC-M6_G16_s20192500111098_e20192500113471_c20192500115330.nc"
+#&gt; [148] "OR_ABI-L2-AODC-M6_G16_s20192500116098_e20192500118471_c20192500120334.nc"
+#&gt; [149] "OR_ABI-L2-AODC-M6_G16_s20192500121098_e20192500123471_c20192500125387.nc"
+#&gt; [150] "OR_ABI-L2-AODC-M6_G16_s20192500126098_e20192500128471_c20192500130365.nc"
+#&gt; [151] "OR_ABI-L2-AODC-M6_G16_s20192500131098_e20192500133471_c20192500135220.nc"
+#&gt; [152] "OR_ABI-L2-AODC-M6_G16_s20192500136098_e20192500138471_c20192500139504.nc"
+#&gt; [153] "OR_ABI-L2-AODC-M6_G16_s20192500141098_e20192500143471_c20192500144411.nc"
+#&gt; [154] "OR_ABI-L2-AODC-M6_G16_s20192500146098_e20192500148471_c20192500149409.nc"
+#&gt; [155] "OR_ABI-L2-AODC-M6_G16_s20192500151099_e20192500153471_c20192500154417.nc"
+#&gt; [156] "OR_ABI-L2-AODC-M6_G16_s20192500156099_e20192500158471_c20192500159373.nc"</div><div class='input'># }
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

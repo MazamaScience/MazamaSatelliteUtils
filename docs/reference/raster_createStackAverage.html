@@ -69,7 +69,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MazamaSatelliteUtils</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.8</span>
       </span>
     </div>
 
@@ -146,17 +146,21 @@ that do not always have values</p></td>
 <span class='co'># Take average for Oregon on July 31, 2019 at 9am (the Milepost 97 Fire)</span>
 <span class='no'>oregon</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>USCensusStates</span>, <span class='no'>stateCode</span> <span class='kw'>==</span> <span class='st'>"OR"</span>)
 <span class='no'>bbox_oregon</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>sp</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/sp/man/bbox.html'>bbox</a></span>(<span class='no'>oregon</span>)
-<span class='no'>date</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>lubridate</span><span class='kw ns'>::</span><span class='fu'><a href='http://lubridate.tidyverse.org/reference/ymd_hms.html'>ymd_h</a></span>(<span class='st'>"2019-08-01 16"</span>, <span class='kw'>tz</span> <span class='kw'>=</span> <span class='st'>"UTC"</span>)
+<span class='no'>datetime</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>lubridate</span><span class='kw ns'>::</span><span class='fu'><a href='http://lubridate.tidyverse.org/reference/ymd_hms.html'>ymd_h</a></span>(<span class='st'>"2019-08-01 16"</span>, <span class='kw'>tz</span> <span class='kw'>=</span> <span class='st'>"UTC"</span>)
 
-<span class='no'>rstrStack</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='goesaodc_createHourlyRasterStack.html'>goesaodc_createHourlyRasterStack</a></span>(<span class='kw'>startdate</span> <span class='kw'>=</span> <span class='no'>date</span>,
-                                              <span class='kw'>bbox</span> <span class='kw'>=</span> <span class='no'>bbox_oregon</span>,
-                                              <span class='kw'>res</span> <span class='kw'>=</span> <span class='fl'>0.5</span>)
+<span class='no'>rstrStack</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='goesaodc_createHourlyRasterStack.html'>goesaodc_createHourlyRasterStack</a></span>(
+  <span class='kw'>satID</span> <span class='kw'>=</span> <span class='st'>"G16"</span>,
+  <span class='kw'>datetime</span> <span class='kw'>=</span> <span class='no'>datetime</span>,
+  <span class='kw'>bbox</span> <span class='kw'>=</span> <span class='no'>bbox_oregon</span>,
+  <span class='kw'>res</span> <span class='kw'>=</span> <span class='fl'>0.5</span>,
+  <span class='kw'>dqfLevel</span> <span class='kw'>=</span> <span class='fl'>2</span>
+)
 <span class='no'>avg</span> <span class='kw'>&lt;-</span> <span class='fu'>raster_createStackAverage</span>(<span class='no'>rstrStack</span>, <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
 
 <span class='co'># Plot average AOD raster and state border</span>
 <span class='no'>pal_aod</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/grDevices/colorRamp.html'>colorRampPalette</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"lightgoldenrod1"</span>, <span class='st'>"red3"</span>))
 <span class='no'>title</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span>(<span class='st'>"Average AOD ("</span>,
-                <span class='fu'><a href='https://rdrr.io/r/base/strptime.html'>strftime</a></span>(<span class='no'>date</span>, <span class='st'>"%Y-%m-%d %I%p"</span>, <span class='kw'>tz</span> <span class='kw'>=</span> <span class='st'>"America/Los_Angeles"</span>),
+                <span class='fu'><a href='https://rdrr.io/r/base/strptime.html'>strftime</a></span>(<span class='no'>datetime</span>, <span class='st'>"%Y-%m-%d %I%p"</span>, <span class='kw'>tz</span> <span class='kw'>=</span> <span class='st'>"America/Los_Angeles"</span>),
                 <span class='st'>" PDT)"</span>)
 <span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>avg</span>, <span class='kw'>col</span> <span class='kw'>=</span> <span class='fu'>pal_aod</span>(<span class='fl'>50</span>), <span class='kw'>main</span> <span class='kw'>=</span> <span class='no'>title</span>)
 <span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>oregon</span>, <span class='kw'>add</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)

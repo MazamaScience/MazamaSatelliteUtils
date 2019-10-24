@@ -1,21 +1,19 @@
 #' @export
 #' 
-#' @title check if specified \code{datetime} is during the daylight hours of 
-#' the specified \code{region}
+#' @title Determine whether times are during daylight within a region
 #' 
-#' @param datetime desired datetime in any Y-m-d H [MS] format or \code{POSIXct}
-#' @param bbox bounding box for region of interest
-#' @param timezone timezone in which to interpret the \code{datetime}
+#' @param datetime Desired datetime in any Y-m-d H [MS] format or \code{POSIXct}.
+#' @param timezone Timezone in which to interpret the \code{datetime}.
+#' @param bbox Bounding box for region of interest.
 #' 
-#' 
-#' @return logical
+#' @return Logical vector.
 #' 
 #' @examples 
 #' \donttest{
 #' library(MazamaSatelliteUtils)
 #' setSatelliteDataDir("~/Data/Satellite")
 #' 
-#' # BBOX AS CREATED BY SP
+#' # BBOX AS CREATED BY sp::bbox()
 #' 
 #' library(MazamaSpatialUtils)
 #' 
@@ -26,13 +24,16 @@
 #' isDaylight(
 #'   datetime = "2019-09-06 12",
 #'   bbox = mx_bbox,
-#'   timezone = "UTC") 
+#'   timezone = "UTC"
+#' ) 
 #' 
-#' # BBOX AS DEFINED BY CALLING ON raster::extent
+#' # BBOX AS CREATED BY raster::extent()
+#' 
 #' G16_filepath <- system.file(
 #'   "extdata", 
 #'   "OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc", 
-#'   package = "MazamaSatelliteUtils")
+#'   package = "MazamaSatelliteUtils"
+#' )
 #' 
 #' nc <- ncdf4::nc_open(G16_filepath)
 #' 
@@ -48,18 +49,20 @@
 
 isDaylight <- function(
   datetime = NULL,
-  bbox = NULL,
-  timezone = "UTC"
+  timezone = "UTC",
+  bbox = c(-125, -65, 24, 50) # CONUS
 ) {
   
   # ----- Validate parameters --------------------------------------------------
   
   MazamaCoreUtils::stopIfNull(datetime)
+  MazamaCoreUtils::stopIfNull(timezone)
   MazamaCoreUtils::stopIfNull(bbox)
   
-  datetime <- MazamaCoreUtils::parseDatetime(datetime, timezone)
+  datetime <- MazamaCoreUtils::parseDatetime(datetime, timezone = timezone)
   
   # ----- Extract boundaries ---------------------------------------------------
+  
   boundaries <- bboxToVector(bbox)
   w <- boundaries[1]
   e <- boundaries[2]
@@ -90,12 +93,10 @@ isDaylight <- function(
   sunrise <- sunriseDF[, 2] 
   sunset <- sunsetDF[, 2]
   
-  # ----- check if datetime is during daylight hours ---------------------------
+  daylightMask <- datetime > sunrise & datetime < sunset
   
-  if ( datetime > sunrise && datetime < sunset ) {
-    return(TRUE)
-  } else {
-    return(FALSE)
-  }
+  # ----- Return ---------------------------------------------------------------
+  
+  return(daylightMask)
   
 }

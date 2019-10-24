@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Get raster value at a point — getValue • MazamaSatelliteUtils</title>
+<title>Get the scan start time from a GOES AODC netCDF file name — goesaodc_getStartTime • MazamaSatelliteUtils</title>
 
 
 <!-- jquery -->
@@ -35,8 +35,8 @@
 
 
 
-<meta property="og:title" content="Get raster value at a point — getValue" />
-<meta property="og:description" content="Get raster value at a point." />
+<meta property="og:title" content="Get the scan start time from a GOES AODC netCDF file name — goesaodc_getStartTime" />
+<meta property="og:description" content="Get the scan start time from a GOES AODC netCDF file name" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -103,37 +103,29 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Get raster value at a point</h1>
+    <h1>Get the scan start time from a GOES AODC netCDF file name</h1>
     
-    <div class="hidden name"><code>getValue.Rd</code></div>
+    <div class="hidden name"><code>goesaodc_getStartTime.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Get raster value at a point.</p>
+    <p>Get the scan start time from a GOES AODC netCDF file name</p>
     </div>
 
-    <pre class="usage"><span class='fu'>getValue</span>(<span class='no'>raster</span>, <span class='no'>x</span>, <span class='no'>y</span>)</pre>
+    <pre class="usage"><span class='fu'>goesaodc_getStartTime</span>(<span class='no'>file</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>raster</th>
-      <td><p><code>RasterLayer</code> object</p></td>
-    </tr>
-    <tr>
-      <th>x</th>
-      <td><p>longitude value (deg E)</p></td>
-    </tr>
-    <tr>
-      <th>y</th>
-      <td><p>latitude value (deg N)</p></td>
+      <th>file</th>
+      <td><p>GOES AOD netCDF file name</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Value of raster cell covering the point.</p>
+    <p>The scan start time.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

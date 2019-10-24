@@ -37,7 +37,7 @@
 #'   "OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc",
 #'   package = "MazamaSatelliteUtils"
 #' )
-#' nc <- ncdf4::nc_open(netCDF)
+#' nc <- goesaodc_openFile(netCDF)
 #' rstr <- goesaodc_createRaster(nc, res = 0.1, dqfLevel = 2)
 #' raster::plot(rstr, "AOD")
 #' maps::map("state", add = TRUE)
@@ -74,6 +74,11 @@ goesaodc_createRaster <- function(
   
   # Assemble the correct filepath based on satID and Data directory
   filePath <- file.path(getSatelliteDataDir(), gridFile)
+  
+  # Check that grids are present
+  if ( !file.exists(filePath) ) {
+    stop(paste0(filePath, " not found. Run 'installGoesGrids()."))
+  }
   
   # Test for grid existence and if found, load it. Stop with appropriate message
   # if missing

@@ -2,44 +2,53 @@
 % Please edit documentation in R/goesaodc_listFiles.R
 \name{goesaodc_listFiles}
 \alias{goesaodc_listFiles}
-\title{List downloaded GOES AOD files for a specified date and hour}
+\title{List available GOES AOD files for a specified date and hour}
 \usage{
-goesaodc_listFiles(satID = NULL, startdate = NULL, jdate = NULL,
-  fullDay = FALSE)
+goesaodc_listFiles(satID = NULL, datetime = NULL, endTime = NULL,
+  useRemote = FALSE, timezone = "UTC", julian = FALSE,
+  baseUrl = "https://tools-1.airfire.org/Satellite/")
 }
 \arguments{
 \item{satID}{ID of the source GOES satellite (G16 or G17).}
 
-\item{startdate}{desired date in any Ymd [H] format or \code{POSIXct}}
+\item{datetime}{Desired datetime in any Ymd H [MS] format or \code{POSIXct}}
 
-\item{jdate}{desired date in as a Julian date string, i.e. as seen in the
-netcdf filenames}
+\item{endTime}{Desired ending time in any Ymd H [MS] format or \code{POSIXct}}
 
-\item{fullDay}{Specifies that the user wants an entire day's worth of data}
+\item{useRemote}{Logical specifying whether to look for files in 
+\code{getSatelliteDataDir()} or \code{baseUrl}.}
+
+\item{timezone}{Timezone used to interpret \code{datetime} and \code{endTime}}
+
+\item{julian}{Logical specifying if \code{datetime} (and optionally 
+\code{endTime}) are Julian formatted}
+
+\item{baseUrl}{Base URL for data queries.}
 }
 \value{
 Vector of filenames.
 }
 \description{
 Retrieve a list of GOES AOD files available in the
-\code{satelliteDataDir} for a specified date and hour.
+\code{satelliteDataDir} or at \code{baseUrl} for a specified date and hour.
 
-Note that all files for a particular hour will be returned even if the
+NOTE: All files for a particular hour will be returned even if the
 incoming \code{startdate} or \code{jdate} is specified to the minute or
-second.
+second.  By default, the local directory set by \code{SetSatelliteDir} is 
+searched. \code{useRemote = TRUE} will search \code{baseURL} for all files 
+that are available within the specified timeframe.
 }
 \examples{
 \donttest{
 library(MazamaSatelliteUtils)
 setSatelliteDataDir("~/Data/Satellite")
 
-date_with_hour <- "2019-09-06 16"
-goesaodc_listFiles(satID = "G16", startdate = date_with_hour)
-
-jdate <- "201924916"
-goesaodc_listFiles(satID = "G17", jdate = jdate, fullDay = TRUE)
-
-day_only <- "2019-09-06"
-goesaodc_listFiles(satID = "G16", startdate = day_only)
+ goesaodc_listFiles(
+ satID = "G16",
+ datetime = "2019-09-06 06:00",
+ endTime = "2019-09-06 18:00",
+ timezone = "America/Los_Angeles",
+ useRemote = TRUE,
+ )
 }
 }

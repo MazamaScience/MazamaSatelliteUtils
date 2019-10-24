@@ -70,7 +70,7 @@ spatialPointsDataFrame" />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MazamaSatelliteUtils</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.8</span>
       </span>
     </div>
 
@@ -167,8 +167,8 @@ spatialPointsDataFrame</p>
 <span class='fu'>setetSatelliteDataDir</span>(<span class='st'>"~/Data/Satellite"</span>)</div><div class='output co'>#&gt; <span class='error'>Error in setetSatelliteDataDir("~/Data/Satellite"): could not find function "setetSatelliteDataDir"</span></div><div class='input'><span class='no'>netCDF</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>"extdata"</span>,
                       <span class='st'>"OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc"</span>,
                       <span class='kw'>package</span> <span class='kw'>=</span> <span class='st'>"MazamaSatelliteUtils"</span>)
-<span class='no'>nc</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>ncdf4</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/ncdf4/man/nc_open.html'>nc_open</a></span>(<span class='no'>netCDF</span>)
-<span class='kw pkg'>maps</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/maps/man/map.html'>map</a></span>(<span class='st'>"state"</span>)</div><div class='input'><span class='no'>sp</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='goesaodc_createSpatialPoints.html'>goesaodc_createSpatialPoints</a></span>(<span class='no'>nc</span>, <span class='kw'>dqfLevel</span> <span class='kw'>=</span> <span class='fl'>1</span>)
+<span class='no'>nc</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='goesaodc_openFile.html'>goesaodc_openFile</a></span>(<span class='no'>netCDF</span>)
+<span class='kw pkg'>maps</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/maps/man/map.html'>map</a></span>(<span class='st'>"state"</span>)</div><div class='input'><span class='no'>sp</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='goesaodc_createSpatialPoints.html'>goesaodc_createSpatialPoints</a></span>(<span class='no'>nc</span>, <span class='kw'>dqfLevel</span> <span class='kw'>=</span> <span class='fl'>2</span>)
 <span class='fu'>goesaodc_plotSpatialPoints</span>(<span class='no'>sp</span>, <span class='kw'>cex</span> <span class='kw'>=</span> <span class='fl'>0.25</span>, <span class='kw'>add</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</div><div class='img'><img src='goesaodc_plotSpatialPoints-1.png' alt='' width='700' height='433' /></div><div class='input'># }
 </div></pre>
   </div>

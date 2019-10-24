@@ -90,7 +90,7 @@ goesaodc_getCoordGrid <- function(nc) {
     a <- sin(x)^2 + cos(x)^2 * (cos(y)^2 + (r_eq^2 / r_pol^2) * sin(y)^2)
     b <- -2 * H * cos(x) * cos(y)
     c <- H^2 - r_eq^2
-    r_s <- (-b - sqrt(b^2 - 4 * a * c)) / (2 * a)
+    suppressWarnings( r_s <- (-b - sqrt(b^2 - 4 * a * c)) / (2 * a) )
     
     # Satellite coordinates
     sx <- r_s * cos(x) * cos(y)
@@ -98,9 +98,9 @@ goesaodc_getCoordGrid <- function(nc) {
     sz <- r_s * cos(x) * sin(y)
     
     # Coordinates in degrees
-    lon <- ((lambda0 - atan(sy / (H - sx))) * 180) / pi
+    lon <- ((lambda0 - atan(sy / (H - sx))) * 180) / pi 
     lat <- (atan((r_eq^2 / r_pol^2) * (sz / sqrt((H - sx)^2 + sy^2))) * 180) / pi
-    
+                      
     return(list("lon" = lon, "lat" = lat))
     
   }
@@ -140,34 +140,52 @@ goesaodc_getProjection <- function(
 #' 
 #' @return logical
 #' 
-goesaodc_isGoesProjection <- function(
-  nc
-) {
+goesaodc_isGoesProjection <- function(nc) 
+  {
   projection <- goesaodc_getProjection(nc)
   satelliteDataDir <- getSatelliteDataDir()
-  goesEastGrid <- get(load(file.path(satelliteDataDir, "goesEastGrid.rda")))
-  goesWestGrid <- get(load(file.path(satelliteDataDir, "goesWestGrid.rda")))
-  isGoesEast <- all(unlist(projection) == unlist(goesEastGrid$projection))
-  isGoesWest <- all(unlist(projection) == unlist(goesWestGrid$projection))
+  tryCatch(
+    expr = {
+      goesEastGrid <- get(load(file.path(satelliteDataDir, "goesEastGrid.rda")))
+      goesWestGrid <- get(load(file.path(satelliteDataDir, "goesWestGrid.rda")))
+      isGoesEast <- all(unlist(projection) == unlist(goesEastGrid$projection))
+      isGoesWest <- all(unlist(projection) == unlist(goesWestGrid$projection))
+    },
+    error = function(e){
+      stop(e)
+    },
+    warning = function(w){
+      stop(w)
+    }
+  )  
   return(isGoesEast || isGoesWest)
-}
+  }
 
 
 #' @export
 #' 
-#' @title Get the scan start time string from a GOES AODC netCDF file name
+#' @title Get the scan start time from a GOES AODC netCDF file name
 #' @param file GOES AOD netCDF file name
 #' 
-#' @description Get the scan start time string from a GOES AODC netCDF file name
+#' @description Get the scan start time from a GOES AODC netCDF file name
 #' 
-#' @return The scan start time string in Julian days.
+#' @return The scan start time.
 #' 
-goesaodc_getStartString <- function(
+goesaodc_getStartTime <- function(
   file
 ) {
-  stringr::str_split(file, "_") %>% 
-    unlist() %>% 
-    dplyr::nth(-3) %>% 
+  # Example file name:
+  #  OR_ABI-L2-AODC-M4_G17_s20192481500215_e20192481505115_c20192481507046.nc
+  
+  # Extract the "s..." part and strip of the 's' and the fractional seconds 
+  # to get a nicely parseable "YjHMS".
+  
+  start_string <- stringr::str_split_fixed(file, "_", 6)[,4] %>%
     stringr::str_sub(2, -2)
+  
+  start_time <- MazamaCoreUtils::parseDatetime(start_string, timezone = "UTC", julian = TRUE)
+  
+  return(start_time)
 }
+
 

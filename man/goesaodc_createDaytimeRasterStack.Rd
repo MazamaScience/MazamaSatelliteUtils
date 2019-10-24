@@ -61,26 +61,27 @@ latHi) order or the return value from \code{sp::bbox()} or
 \examples{
 \dontrun{
 library(MazamaSatelliteUtils)
-library(MazamaSpatialUtils)
-
 setSatelliteDataDir("~/Data/Satellite")
-setSpatialDataDir("~/Data/Spatial")
-loadSpatialData("USCensusStates")
+library(MazamaSpatialUtils)
+MazamaCoreUtils::initializeLogging(logDir = "~/Data/Logs")
 
 # Define the region of interest (Milepost 97 Fire in Oregon)
-oregon <- subset(USCensusStates, stateCode == "OR")
-bbox_oregon <- sp::bbox(oregon)
+bbox_oregon <- c(-124.56624, -116.46350, 41.99179, 46.29203)
 longitude <- -123.245
 latitude <-   42.861
 
-dateLocal <- lubridate::ymd("2019-08-01", tz = "America/Los_Angeles")
+datetime <- MazamaCoreUtils::parseDatetime(datetime = "2019-09-06 09", 
+timezone = "America/Los_Angeles")
+
+dqfLevel <- 2
 
 dayStack <- goesaodc_createDaytimeRasterStack(
   satID = "G16",
-  dateLocal,
-  longitude = -123.32,
-  latitude = 42.88,
-  bbox = bbox_oregon
+  datetime = datetime,
+  longitude = longitude,
+  latitude = latitude,
+  bbox = bbox_oregon,
+  dqfLevel = dqfLevel
 )
 
 tb <- raster_createLocationTimeseries(dayStack,
@@ -90,6 +91,6 @@ tb <- raster_createLocationTimeseries(dayStack,
 
 plot(x = tb$datetime, y = tb$aod,
      pch = 15, cex = 0.8, col = rgb(red = 0, green = 0, blue = 0, alpha = 0.8),
-     main = dateLocal, xlab = "Time (PDT)", ylab = "AOD")
+     main = datetime, xlab = "Time (PDT)", ylab = "AOD")
 }
 }

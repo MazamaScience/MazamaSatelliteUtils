@@ -1,3 +1,15 @@
+# MazamaSatelliteUtils 0.2.8
+
+* Added optional `endtime` argument to `goesaodc_listFiles()` and 
+`goesaodc_downloadAOD()`.
+* Various internal refactoring.
+* Improved examples.
+
+# MazamaSatelliteUtils 0.2.7
+
+* Adding proper vectorization to `isDaylight()`.
+* Added `goesaodc_listLocalFiles()` and `goesaodc_listRemoteFiles()`.
+
 # MazamaSatelliteUtils 0.2.6
 
 Added new `bboxToVector()` function to support the creation of bounnding box
