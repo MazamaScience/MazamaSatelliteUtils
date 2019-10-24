@@ -15,23 +15,25 @@
 #'
 #' setSatelliteDataDir("~/Data/Satellite")
 #'
-#' netCDF <- system.file(
+#' ncFile <- system.file(
 #'   "extdata", 
 #'   "OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc", 
 #'   package = "MazamaSatelliteUtils"
 #' )
 #'                      
-#' nc <- goesaodc_openFile(netCDF)
+#' nc <- goesaodc_openFile(ncFile)
 #'
 #' tbl <- goesaodc_createTibble(nc)
 #' head(tbl)
 #' }
 
 goesaodc_createTibble <- function(
-  nc
+  nc = NULL
 ) {
   
   # ----- Validate parameters --------------------------------------------------
+  
+  MazamaCoreUtils::stopIfNull(nc)
   
   # Check that nc has GOES projection
   if ( !goesaodc_isGoesProjection(nc) ) {

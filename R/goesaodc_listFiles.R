@@ -135,10 +135,10 @@ goesaodc_listFiles <- function(
 if ( FALSE ) {
   
   satID <- "G16"
-  datetime <- "2019-09-06 06:00"
-  endTime <- "2019-09-06 18:00"
+  datetime <- 20190906# "2019-09-06 06:00"
+  endTime <- NULL#"2019-09-06 18:00"
   timezone <- "America/Los_Angeles"
-  useRemote <- TRUE
+  useRemote <- FALSE
   baseUrl <- "https://tools-1.airfire.org/Satellite/"
   
   goesaodc_listFiles(
@@ -147,5 +147,7 @@ if ( FALSE ) {
     endTime = endTime,
     timezone = timezone,
     useRemote = useRemote,
-    baseUrl = baseUrl) 
+    baseUrl = baseUrl
+  )
+  
 } 
