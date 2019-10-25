@@ -34,7 +34,11 @@ goesaodc_openFile <- function(
   dataDir = getSatelliteDataDir()
 ) {
   
+  # ----- Validate parameters --------------------------------------------------
+  
   MazamaCoreUtils::stopIfNull(filename)
+  
+  # ----- Open nc handle -------------------------------------------------------
   
   # Check if internal package file is being used
   if ( stringr::str_detect(filename, "extdata") ) { 
@@ -48,6 +52,8 @@ goesaodc_openFile <- function(
   
   # Let nc_open error messages bubble up 
   nc <- ncdf4::nc_open(fullPath)
+  
+  # ----- Return ---------------------------------------------------------------
   
   return(nc)
   

@@ -44,7 +44,7 @@
 #' }
 
 goesaodc_createRaster <- function(
-  nc,
+  nc = NULL,
   res = 0.1,
   fun = mean,
   bbox = NULL,
@@ -52,6 +52,8 @@ goesaodc_createRaster <- function(
 ) {
   
   # ----- Validate parameters --------------------------------------------------
+  
+  MazamaCoreUtils::stopIfNull()
   
   # Check that nc has GOES projection
   if ( !goesaodc_isGoesProjection(nc) ) {
