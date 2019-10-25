@@ -4,7 +4,7 @@
 \alias{goesaodc_createTibble}
 \title{Create a tibble from ncdf4 handle}
 \usage{
-goesaodc_createTibble(nc)
+goesaodc_createTibble(nc = NULL)
 }
 \arguments{
 \item{nc}{ncdf4 handle}
@@ -22,13 +22,13 @@ library(MazamaSatelliteUtils)
 
 setSatelliteDataDir("~/Data/Satellite")
 
-netCDF <- system.file(
+ncFile <- system.file(
   "extdata", 
   "OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc", 
   package = "MazamaSatelliteUtils"
 )
                      
-nc <- goesaodc_openFile(netCDF)
+nc <- goesaodc_openFile(ncFile)
 
 tbl <- goesaodc_createTibble(nc)
 head(tbl)

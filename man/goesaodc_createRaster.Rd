@@ -4,8 +4,8 @@
 \alias{goesaodc_createRaster}
 \title{Create a RasterBrick of GOES data}
 \usage{
-goesaodc_createRaster(nc, res = 0.1, fun = mean, bbox = NULL,
-  dqfLevel = NULL)
+goesaodc_createRaster(nc = NULL, res = 0.1, fun = mean,
+  bbox = NULL, dqfLevel = NULL)
 }
 \arguments{
 \item{nc}{ncdf4 handle}

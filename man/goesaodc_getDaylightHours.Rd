@@ -2,29 +2,44 @@
 % Please edit documentation in R/goesaodc_getDaylightHours.R
 \name{goesaodc_getDaylightHours}
 \alias{goesaodc_getDaylightHours}
-\title{goesaodc_getDaylightHours}
+\title{Calculates the sunrise and sunset hours for a specific date and 
+location}
 \usage{
 goesaodc_getDaylightHours(datetime = NULL, latitude = NULL,
   longitude = NULL, timezone = NULL, bbox = NULL, julian = FALSE)
 }
 \arguments{
-\item{datetime}{Default: NULL}
+\item{datetime}{specific date for which daylight hours are requested}
 
-\item{latitude}{Default: NULL}
+\item{latitude}{geographic latitude, in decimal degrees, for point of 
+interest}
 
-\item{longitude}{Default: NULL}
+\item{longitude}{geographic longitude, in decimal degrees, for point of 
+interest}
 
-\item{timezone}{Default: NULL}
+\item{timezone}{timezone in which to interpret the \code{datetime}}
 
-\item{julian}{Default: FALSE}
+\item{bbox}{Bounding box for the region of interest}
+
+\item{julian}{logical, optional format to specify \code{datetime} parameter}
 }
 \value{
 day_info List which contains sunrise and sunset times as POSIXt 
 values
 }
 \description{
-Returns the sunrise and sunset hours for a location, timezone, 
-or bounding box.
+Returns the sunrise and sunset hours for a specific date and 
+location based on sun ephemerides calculations.  Location can be specified 
+via any of the following methods.
+
+\itemize{
+\item{}{Olson timezone, either as part of a POSIXt datetime, or specified 
+via the \code{timezone} parameter}
+\item{}{Geographic Bounding Box, either as a vector of floats in 
+\code{c(lonLo, lonHi, latLo,latHi)} order, or the return value from 
+\code{sp::bbox()}, or \code{raster::extent()} }
+\item{}{Longitude and Latitude specified in decimal degrees}
+}
 }
 \examples{
 \dontrun{
@@ -47,4 +62,5 @@ dayInfo <- goesaodc_getDaylightHours(
 datetime = "2019-09-06",
 timezone = "America/Los_Angeles")
 }
+
 }
