@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Get metadata list from metadata string in .nc file — maiac_getMetadata • MazamaSatelliteUtils</title>
+<title>Bounding box for the 48 contiguous United States — bbox_CONUS • MazamaSatelliteUtils</title>
 
 
 <!-- jquery -->
@@ -35,8 +35,8 @@
 
 
 
-<meta property="og:title" content="Get metadata list from metadata string in .nc file — maiac_getMetadata" />
-<meta property="og:description" content="Get metadata list from metadata string in .nc file" />
+<meta property="og:title" content="Bounding box for the 48 contiguous United States — bbox_CONUS" />
+<meta property="og:description" content="Shorthand for c(-125, -65, 24, 50)" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -103,43 +103,31 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Get metadata list from metadata string in .nc file</h1>
+    <h1>Bounding box for the 48 contiguous United States</h1>
     
-    <div class="hidden name"><code>maiac_getMetadata.Rd</code></div>
+    <div class="hidden name"><code>bbox_CONUS.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Get metadata list from metadata string in .nc file</p>
+    <p>Shorthand for <code><a href='https://rdrr.io/r/base/c.html'>c(-125, -65, 24, 50)</a></code></p>
     </div>
 
-    <pre class="usage"><span class='fu'>maiac_getMetadata</span>(<span class='no'>filePath</span>)</pre>
+    <pre class="usage"><span class='no'>bbox_CONUS</span></pre>
 
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>filePath</th>
-      <td><p>path to .nc file</p></td>
-    </tr>
-    </table>
 
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+    <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
 
-    <p>metadata list</p>
+    <p>A vector with 4 numerics.</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='no'>hdfPath</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='maiac_downloadNorthAmerica.html'>maiac_downloadNorthAmerica</a></span>(<span class='st'>"h01v04"</span>, <span class='fl'>20171009</span>, <span class='fl'>2150</span>)
-<span class='no'>ncdfPath</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='maiac_2nc4.html'>maiac_2nc4</a></span>(<span class='no'>hdfPath</span>)
-<span class='fu'>maiac_getMetadata</span>(<span class='no'>ncdfPath</span>)
-}</div></pre>
+    <p>bbox_CONUS</p>
+
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-      <li><a href="#value">Value</a></li>
-      <li><a href="#examples">Examples</a></li>
+      <li><a href="#format">Format</a></li>
+      <li><a href="#details">Details</a></li>
     </ul>
 
   </div>

@@ -69,7 +69,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MazamaSatelliteUtils</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.9</span>
       </span>
     </div>
 
@@ -112,8 +112,7 @@
     <p>Determine whether times are during daylight within a region</p>
     </div>
 
-    <pre class="usage"><span class='fu'>isDaylight</span>(<span class='kw'>datetime</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>timezone</span> <span class='kw'>=</span> <span class='st'>"UTC"</span>, <span class='kw'>bbox</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>125</span>, -<span class='fl'>65</span>, <span class='fl'>24</span>,
-  <span class='fl'>50</span>))</pre>
+    <pre class="usage"><span class='fu'>isDaylight</span>(<span class='kw'>datetime</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>timezone</span> <span class='kw'>=</span> <span class='st'>"UTC"</span>, <span class='kw'>bbox</span> <span class='kw'>=</span> <span class='no'>bbox_CONUS</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -128,7 +127,7 @@
     </tr>
     <tr>
       <th>bbox</th>
-      <td><p>Bounding box for region of interest.</p></td>
+      <td><p>Bounding box for region of interest, Default <code>bbox_CONUS</code>.</p></td>
     </tr>
     </table>
 

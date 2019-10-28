@@ -4,7 +4,7 @@
 #' 
 #' @param datetime Desired datetime in any Y-m-d H [MS] format or \code{POSIXct}.
 #' @param timezone Timezone in which to interpret the \code{datetime}.
-#' @param bbox Bounding box for region of interest.
+#' @param bbox Bounding box for region of interest, Default \code{bbox_CONUS}.
 #' 
 #' @return Logical vector.
 #' 
@@ -50,7 +50,7 @@
 isDaylight <- function(
   datetime = NULL,
   timezone = "UTC",
-  bbox = c(-125, -65, 24, 50) # CONUS
+  bbox = bbox_CONUS # package data
 ) {
   
   # ----- Validate parameters --------------------------------------------------

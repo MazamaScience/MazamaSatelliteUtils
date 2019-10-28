@@ -5,17 +5,13 @@
 \title{Create a daytime RasterStack for a specified date}
 \usage{
 goesaodc_createDaytimeRasterStack(satID = NULL, datetime = NULL,
-  longitude = NULL, latitude = NULL, var = "AOD", res = 0.1,
-  bbox = NULL, dqfLevel = NULL, timezone = "UTC")
+  var = "AOD", res = 0.1, bbox = NULL, dqfLevel = NULL,
+  timezone = NULL)
 }
 \arguments{
 \item{satID}{ID of the source GOES satellite (G16 or G17).}
 
 \item{datetime}{Desired datetime in any Ymd H [MS] format or \code{POSIXct}.}
-
-\item{longitude}{Target longitude used to calcualte daylight hours.}
-
-\item{latitude}{Target latitude used to calculate daylight hours.}
 
 \item{var}{variable ("AOD, "DQF" or "ID")}
 
@@ -60,37 +56,40 @@ latHi) order or the return value from \code{sp::bbox()} or
 }
 \examples{
 \dontrun{
+
 library(MazamaSatelliteUtils)
-setSatelliteDataDir("~/Data/Satellite")
 library(MazamaSpatialUtils)
-MazamaCoreUtils::initializeLogging(logDir = "~/Data/Logs")
 
-# Define the region of interest (Milepost 97 Fire in Oregon)
-bbox_oregon <- c(-124.56624, -116.46350, 41.99179, 46.29203)
-longitude <- -123.245
-latitude <-   42.861
+setSatelliteDataDir("~/Data/Satellite")
+setSpatialDataDir("~/Data/Spatial")
 
-datetime <- MazamaCoreUtils::parseDatetime(datetime = "2019-09-06 09", 
-timezone = "America/Los_Angeles")
+loadSpatialData("USCensusStates")
 
-dqfLevel <- 2
+calif <- subset(USCensusStates, stateCode == "CA")
+
+bbox_ca   <- sp::bbox(calif)
+satID     <- "G16"
+datetime  <- "2019-10-23"
+timezone  <- "America/Los_Angeles"
+dqfLevel  <- 2
+latitude  <- 38.448611 
+longitude <- -122.704722
 
 dayStack <- goesaodc_createDaytimeRasterStack(
-  satID = "G16",
+  satID = satID,
   datetime = datetime,
-  longitude = longitude,
-  latitude = latitude,
-  bbox = bbox_oregon,
+  timezone = timezone,
+  bbox = bbox_ca,
   dqfLevel = dqfLevel
 )
 
 tb <- raster_createLocationTimeseries(dayStack,
                                       longitude = longitude,
                                       latitude = latitude,
-                                      bbox = bbox_oregon)
+                                      bbox = bbox_ca)
 
 plot(x = tb$datetime, y = tb$aod,
      pch = 15, cex = 0.8, col = rgb(red = 0, green = 0, blue = 0, alpha = 0.8),
-     main = datetime, xlab = "Time (PDT)", ylab = "AOD")
+     main = "Santa Rosa, 2019-10-23", xlab = "Time (UTC)", ylab = "AOD")
 }
 }

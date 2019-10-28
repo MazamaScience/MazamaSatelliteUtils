@@ -90,7 +90,7 @@ raster::extent()." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MazamaSatelliteUtils</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.9</span>
       </span>
     </div>
 
@@ -155,8 +155,8 @@ latHi) order or the return value from <code><a href='https://rdrr.io/pkg/sp/man/
     </div>
 
     <pre class="usage"><span class='fu'>goesaodc_createDaytimeRasterStack</span>(<span class='kw'>satID</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>datetime</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>longitude</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>latitude</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"AOD"</span>, <span class='kw'>res</span> <span class='kw'>=</span> <span class='fl'>0.1</span>,
-  <span class='kw'>bbox</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>dqfLevel</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>timezone</span> <span class='kw'>=</span> <span class='st'>"UTC"</span>)</pre>
+  <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"AOD"</span>, <span class='kw'>res</span> <span class='kw'>=</span> <span class='fl'>0.1</span>, <span class='kw'>bbox</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>dqfLevel</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>timezone</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -168,14 +168,6 @@ latHi) order or the return value from <code><a href='https://rdrr.io/pkg/sp/man/
     <tr>
       <th>datetime</th>
       <td><p>Desired datetime in any Ymd H [MS] format or <code>POSIXct</code>.</p></td>
-    </tr>
-    <tr>
-      <th>longitude</th>
-      <td><p>Target longitude used to calcualte daylight hours.</p></td>
-    </tr>
-    <tr>
-      <th>latitude</th>
-      <td><p>Target latitude used to calculate daylight hours.</p></td>
     </tr>
     <tr>
       <th>var</th>
@@ -205,38 +197,41 @@ latHi) order or the return value from <code><a href='https://rdrr.io/pkg/sp/man/
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
+
 <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>MazamaSatelliteUtils</span>)
-<span class='fu'><a href='setSatelliteDataDir.html'>setSatelliteDataDir</a></span>(<span class='st'>"~/Data/Satellite"</span>)
 <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>MazamaSpatialUtils</span>)
-<span class='kw pkg'>MazamaCoreUtils</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/MazamaCoreUtils/man/initializeLogging.html'>initializeLogging</a></span>(<span class='kw'>logDir</span> <span class='kw'>=</span> <span class='st'>"~/Data/Logs"</span>)
 
-<span class='co'># Define the region of interest (Milepost 97 Fire in Oregon)</span>
-<span class='no'>bbox_oregon</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>124.56624</span>, -<span class='fl'>116.46350</span>, <span class='fl'>41.99179</span>, <span class='fl'>46.29203</span>)
-<span class='no'>longitude</span> <span class='kw'>&lt;-</span> -<span class='fl'>123.245</span>
-<span class='no'>latitude</span> <span class='kw'>&lt;-</span>   <span class='fl'>42.861</span>
+<span class='fu'><a href='setSatelliteDataDir.html'>setSatelliteDataDir</a></span>(<span class='st'>"~/Data/Satellite"</span>)
+<span class='fu'><a href='https://rdrr.io/pkg/MazamaSpatialUtils/man/setSpatialDataDir.html'>setSpatialDataDir</a></span>(<span class='st'>"~/Data/Spatial"</span>)
 
-<span class='no'>datetime</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>MazamaCoreUtils</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/MazamaCoreUtils/man/parseDatetime.html'>parseDatetime</a></span>(<span class='kw'>datetime</span> <span class='kw'>=</span> <span class='st'>"2019-09-06 09"</span>,
-<span class='kw'>timezone</span> <span class='kw'>=</span> <span class='st'>"America/Los_Angeles"</span>)
+<span class='fu'><a href='https://rdrr.io/pkg/MazamaSpatialUtils/man/loadSpatialData.html'>loadSpatialData</a></span>(<span class='st'>"USCensusStates"</span>)
 
-<span class='no'>dqfLevel</span> <span class='kw'>&lt;-</span> <span class='fl'>2</span>
+<span class='no'>calif</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>USCensusStates</span>, <span class='no'>stateCode</span> <span class='kw'>==</span> <span class='st'>"CA"</span>)
+
+<span class='no'>bbox_ca</span>   <span class='kw'>&lt;-</span> <span class='kw pkg'>sp</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/sp/man/bbox.html'>bbox</a></span>(<span class='no'>calif</span>)
+<span class='no'>satID</span>     <span class='kw'>&lt;-</span> <span class='st'>"G16"</span>
+<span class='no'>datetime</span>  <span class='kw'>&lt;-</span> <span class='st'>"2019-10-23"</span>
+<span class='no'>timezone</span>  <span class='kw'>&lt;-</span> <span class='st'>"America/Los_Angeles"</span>
+<span class='no'>dqfLevel</span>  <span class='kw'>&lt;-</span> <span class='fl'>2</span>
+<span class='no'>latitude</span>  <span class='kw'>&lt;-</span> <span class='fl'>38.448611</span>
+<span class='no'>longitude</span> <span class='kw'>&lt;-</span> -<span class='fl'>122.704722</span>
 
 <span class='no'>dayStack</span> <span class='kw'>&lt;-</span> <span class='fu'>goesaodc_createDaytimeRasterStack</span>(
-  <span class='kw'>satID</span> <span class='kw'>=</span> <span class='st'>"G16"</span>,
+  <span class='kw'>satID</span> <span class='kw'>=</span> <span class='no'>satID</span>,
   <span class='kw'>datetime</span> <span class='kw'>=</span> <span class='no'>datetime</span>,
-  <span class='kw'>longitude</span> <span class='kw'>=</span> <span class='no'>longitude</span>,
-  <span class='kw'>latitude</span> <span class='kw'>=</span> <span class='no'>latitude</span>,
-  <span class='kw'>bbox</span> <span class='kw'>=</span> <span class='no'>bbox_oregon</span>,
+  <span class='kw'>timezone</span> <span class='kw'>=</span> <span class='no'>timezone</span>,
+  <span class='kw'>bbox</span> <span class='kw'>=</span> <span class='no'>bbox_ca</span>,
   <span class='kw'>dqfLevel</span> <span class='kw'>=</span> <span class='no'>dqfLevel</span>
 )
 
 <span class='no'>tb</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='raster_createLocationTimeseries.html'>raster_createLocationTimeseries</a></span>(<span class='no'>dayStack</span>,
                                       <span class='kw'>longitude</span> <span class='kw'>=</span> <span class='no'>longitude</span>,
                                       <span class='kw'>latitude</span> <span class='kw'>=</span> <span class='no'>latitude</span>,
-                                      <span class='kw'>bbox</span> <span class='kw'>=</span> <span class='no'>bbox_oregon</span>)
+                                      <span class='kw'>bbox</span> <span class='kw'>=</span> <span class='no'>bbox_ca</span>)
 
 <span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='kw'>x</span> <span class='kw'>=</span> <span class='no'>tb</span>$<span class='no'>datetime</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='no'>tb</span>$<span class='no'>aod</span>,
      <span class='kw'>pch</span> <span class='kw'>=</span> <span class='fl'>15</span>, <span class='kw'>cex</span> <span class='kw'>=</span> <span class='fl'>0.8</span>, <span class='kw'>col</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/grDevices/rgb.html'>rgb</a></span>(<span class='kw'>red</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>green</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>blue</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>alpha</span> <span class='kw'>=</span> <span class='fl'>0.8</span>),
-     <span class='kw'>main</span> <span class='kw'>=</span> <span class='no'>datetime</span>, <span class='kw'>xlab</span> <span class='kw'>=</span> <span class='st'>"Time (PDT)"</span>, <span class='kw'>ylab</span> <span class='kw'>=</span> <span class='st'>"AOD"</span>)
+     <span class='kw'>main</span> <span class='kw'>=</span> <span class='st'>"Santa Rosa, 2019-10-23"</span>, <span class='kw'>xlab</span> <span class='kw'>=</span> <span class='st'>"Time (UTC)"</span>, <span class='kw'>ylab</span> <span class='kw'>=</span> <span class='st'>"AOD"</span>)
 }</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

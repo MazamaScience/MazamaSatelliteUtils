@@ -104,3 +104,18 @@ setSatelliteDataDir <- function(dataDir) {
   return(invisible(old))
 }
 
+
+# ----- Internal Data ----------------------------------------------------------
+
+#' bbox_CONUS
+#'
+#' @export
+#' @docType data
+#' @name bbox_CONUS
+#' @title Bounding box for the 48 contiguous United States
+#' @format A vector with 4 numerics.
+#' @description
+#' Shorthand for \code{c(-125, -65, 24, 50)}
+
+bbox_CONUS <- c(-125, -65, 24, 50)
+

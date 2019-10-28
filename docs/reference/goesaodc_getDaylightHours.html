@@ -6,7 +6,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Get metadata list from metadata string in .nc file — maiac_getMetadata • MazamaSatelliteUtils</title>
+<title>Calculates the sunrise and sunset hours for a specific date and 
+location — goesaodc_getDaylightHours • MazamaSatelliteUtils</title>
 
 
 <!-- jquery -->
@@ -35,8 +36,20 @@
 
 
 
-<meta property="og:title" content="Get metadata list from metadata string in .nc file — maiac_getMetadata" />
-<meta property="og:description" content="Get metadata list from metadata string in .nc file" />
+<meta property="og:title" content="Calculates the sunrise and sunset hours for a specific date and 
+location — goesaodc_getDaylightHours" />
+<meta property="og:description" content="Returns the sunrise and sunset hours for a specific date and 
+location based on sun ephemerides calculations.  Location can be specified 
+via any of the following methods.
+
+Olson timezone, either as part of a POSIXt datetime, or specified 
+via the timezone parameter
+Geographic Bounding Box, either as a vector of floats in 
+c(lonLo, lonHi, latLo,latHi) order, or the return value from 
+sp::bbox(), or raster::extent()
+Longitude and Latitude specified in decimal degrees
+
+" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -103,36 +116,87 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Get metadata list from metadata string in .nc file</h1>
+    <h1>Calculates the sunrise and sunset hours for a specific date and 
+location</h1>
     
-    <div class="hidden name"><code>maiac_getMetadata.Rd</code></div>
+    <div class="hidden name"><code>goesaodc_getDaylightHours.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Get metadata list from metadata string in .nc file</p>
+    <p>Returns the sunrise and sunset hours for a specific date and 
+location based on sun ephemerides calculations.  Location can be specified 
+via any of the following methods.</p>
+<ul>
+<li><p>Olson timezone, either as part of a POSIXt datetime, or specified 
+via the <code>timezone</code> parameter</p></li>
+<li><p>Geographic Bounding Box, either as a vector of floats in 
+<code><a href='https://rdrr.io/r/base/c.html'>c(lonLo, lonHi, latLo,latHi)</a></code> order, or the return value from 
+<code><a href='https://rdrr.io/pkg/sp/man/bbox.html'>sp::bbox()</a></code>, or <code><a href='https://rdrr.io/pkg/raster/man/extent.html'>raster::extent()</a></code></p></li>
+<li><p>Longitude and Latitude specified in decimal degrees</p></li>
+</ul>
+
     </div>
 
-    <pre class="usage"><span class='fu'>maiac_getMetadata</span>(<span class='no'>filePath</span>)</pre>
+    <pre class="usage"><span class='fu'>goesaodc_getDaylightHours</span>(<span class='kw'>datetime</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>timezone</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>bbox</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>latitude</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>longitude</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>julian</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>filePath</th>
-      <td><p>path to .nc file</p></td>
+      <th>datetime</th>
+      <td><p>specific date for which daylight hours are requested</p></td>
+    </tr>
+    <tr>
+      <th>timezone</th>
+      <td><p>timezone in which to interpret the <code>datetime</code></p></td>
+    </tr>
+    <tr>
+      <th>bbox</th>
+      <td><p>Bounding box for the region of interest, Default: CONUS</p></td>
+    </tr>
+    <tr>
+      <th>latitude</th>
+      <td><p>geographic latitude, in decimal degrees, for point of 
+interest</p></td>
+    </tr>
+    <tr>
+      <th>longitude</th>
+      <td><p>geographic longitude, in decimal degrees, for point of 
+interest</p></td>
+    </tr>
+    <tr>
+      <th>julian</th>
+      <td><p>logical, optional format to specify <code>datetime</code> parameter</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>metadata list</p>
+    <p>day_info List which contains sunrise and sunset times as POSIXt 
+values</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='no'>hdfPath</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='maiac_downloadNorthAmerica.html'>maiac_downloadNorthAmerica</a></span>(<span class='st'>"h01v04"</span>, <span class='fl'>20171009</span>, <span class='fl'>2150</span>)
-<span class='no'>ncdfPath</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='maiac_2nc4.html'>maiac_2nc4</a></span>(<span class='no'>hdfPath</span>)
-<span class='fu'>maiac_getMetadata</span>(<span class='no'>ncdfPath</span>)
-}</div></pre>
+    <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
+<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>MazamaSatelliteUtils</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>MazamaSpatialUtils</span>)
+
+<span class='co'># EX 1. Get Sunrise and Sunset by Lat/Lon and Datetime</span>
+<span class='no'>dayInfo</span> <span class='kw'>&lt;-</span> <span class='fu'>goesaodc_getDaylightHours</span>(
+<span class='kw'>datetime</span> <span class='kw'>=</span> <span class='st'>"2019-09-06"</span>,
+<span class='kw'>longitude</span> <span class='kw'>=</span> -<span class='fl'>123.245</span>,
+<span class='kw'>latitude</span> <span class='kw'>=</span> <span class='fl'>42.861</span>)
+
+<span class='co'># EX 2. Get Sunrise and Sunset by BBOX and datetime</span>
+<span class='no'>dayInfo</span> <span class='kw'>&lt;-</span> <span class='fu'>goesaodc_getDaylightHours</span>(
+<span class='kw'>datetime</span> <span class='kw'>=</span> <span class='st'>"2019-09-06"</span>,
+<span class='kw'>bbox</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>124.566</span>, -<span class='fl'>116.463</span>, <span class='fl'>41.991</span>, <span class='fl'>46.292</span>)) <span class='co'># Oregon</span>
+
+<span class='co'># EX 3. Get Sunrise and Sunset by Datetime and Timezone</span>
+<span class='no'>dayInfo</span> <span class='kw'>&lt;-</span> <span class='fu'>goesaodc_getDaylightHours</span>(
+<span class='kw'>datetime</span> <span class='kw'>=</span> <span class='st'>"2019-09-06"</span>,
+<span class='kw'>timezone</span> <span class='kw'>=</span> <span class='st'>"America/Los_Angeles"</span>)
+<span class='co'># }</span></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

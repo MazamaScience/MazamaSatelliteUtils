@@ -4,15 +4,14 @@
 \alias{isDaylight}
 \title{Determine whether times are during daylight within a region}
 \usage{
-isDaylight(datetime = NULL, timezone = "UTC", bbox = c(-125, -65, 24,
-  50))
+isDaylight(datetime = NULL, timezone = "UTC", bbox = bbox_CONUS)
 }
 \arguments{
 \item{datetime}{Desired datetime in any Y-m-d H [MS] format or \code{POSIXct}.}
 
 \item{timezone}{Timezone in which to interpret the \code{datetime}.}
 
-\item{bbox}{Bounding box for region of interest.}
+\item{bbox}{Bounding box for region of interest, Default \code{bbox_CONUS}.}
 }
 \value{
 Logical vector.

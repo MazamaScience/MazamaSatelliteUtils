@@ -1,3 +1,8 @@
+# MazamaSatelliteUtils 0.2.9
+
+* New `goesaodc_getDaylightHours()` funciton.
+* More tests and improved examples.
+
 # MazamaSatelliteUtils 0.2.8
 
 * Added optional `endtime` argument to `goesaodc_listFiles()` and 
