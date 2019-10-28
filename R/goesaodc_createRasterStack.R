@@ -121,18 +121,18 @@ goesaodc_createRasterStack <- function(
     time <- goesaodc_getStartTime(nc_file)
     name <- strftime(time, format = "%H:%M:%S", tz = "UTC")
     zValue <- strftime(time, format = "%Y%m%d%H%M%S", tz = "UTC")
+    
+    nc <- goesaodc_openFile(nc_file)
     result <- try({
       # ---- Attempt to create a raster from the .nc file data -----------------
-      nc <- goesaodc_openFile(nc_file)
       goes_raster <- goesaodc_createRaster(nc,
                                            res = res,
                                            bbox = bbox,
                                            dqfLevel = dqfLevel )
-    } , silent = TRUE)
-    if ( "Error" %in% class(result) ) {
-      # ---- Warn but don't stop -----------------------------------------------
-      err_msg <- geterrmessage()
-      MazamaCoreUtils::logger.warn(err_msg)
+    }, silent = TRUE)
+    if ( class(result) == "try-error" && 
+         "No data for selected region" %in% attr(result, "condition")) {
+      print(sprintf("No data present at %s UTC", name))
     } else {
       # ---- Update the name and Z-value lists ---------------------------------
       nameList <- append(nameList, name)
@@ -143,10 +143,10 @@ goesaodc_createRasterStack <- function(
       print(paste0("Stacked: ", nc_file))
     }
   }
-    
   # ---- Write the Z-values and names to the rasterStack ---------------------
   rasterStack <- raster::setZ(rasterStack, zList)
   names(rasterStack) <- nameList
+  
   
   return(rasterStack)
   

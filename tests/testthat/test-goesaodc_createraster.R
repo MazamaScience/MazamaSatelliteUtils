@@ -1,5 +1,6 @@
 context("test-goesaodc_createraster")
 
+# ---- TO DO: Get this block in a generic setup file ---------------------------
 library(MazamaSatelliteUtils)
 setSatelliteDataDir("~/Data/Satellite")
 bbox_or <- c(-124.56624, -116.46350, 41.99179, 46.29203) # Oregon
@@ -8,15 +9,13 @@ netCDF <- system.file("extdata",
                          package = "MazamaSatelliteUtils")
    
 nc <- goesaodc_openFile(netCDF)
+# ----- END TO DO --------------------------------------------------------------
 
 test_that("function runs", {
-
    expect_error(goesaodc_createRaster(nc, 
                                       res = 0.1, 
                                       dqfLevel = 2,
-                                      bbox = bbox_or),
- NA)
-
+                                      bbox = bbox_or), NA)
 }
 
 )  # END OF TEST

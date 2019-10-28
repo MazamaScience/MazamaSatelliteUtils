@@ -43,50 +43,51 @@
 #'
 #' @examples
 #' \dontrun{
-#' library(MazamaSatelliteUtils)
-#' setSatelliteDataDir("~/Data/Satellite")
-#' library(MazamaSpatialUtils)
-#' MazamaCoreUtils::initializeLogging(logDir = "~/Data/Logs")
-#'
-#' # Define the region of interest (Milepost 97 Fire in Oregon)
-#' bbox_oregon <- c(-124.56624, -116.46350, 41.99179, 46.29203)
-#' longitude <- -123.245
-#' latitude <-   42.861
-#'
-#' datetime <- MazamaCoreUtils::parseDatetime(datetime = "2019-09-06 09", 
-#' timezone = "America/Los_Angeles")
 #' 
-#' dqfLevel <- 2
+#' library(MazamaSatelliteUtils)
+#' library(MazamaSpatialUtils)
+#' 
+#' setSatelliteDataDir("~/Data/Satellite")
+#' setSpatialDataDir("~/Data/Spatial")
+#' 
+#' loadSpatialData("USCensusStates")
+#' 
+#' calif <- subset(USCensusStates, stateCode == "CA")
+#' 
+#' bbox_ca   <- sp::bbox(calif)
+#' satID     <- "G16"
+#' datetime  <- "2019-10-23"
+#' timezone  <- "America/Los_Angeles"
+#' dqfLevel  <- 2
+#' latitude  <- 38.448611 
+#' longitude <- -122.704722
 #'
 #' dayStack <- goesaodc_createDaytimeRasterStack(
-#'   satID = "G16",
+#'   satID = satID,
 #'   datetime = datetime,
-#'   longitude = longitude,
-#'   latitude = latitude,
-#'   bbox = bbox_oregon,
+#'   timezone = timezone,
+#'   bbox = bbox_ca,
 #'   dqfLevel = dqfLevel
 #' )
 #' 
 #' tb <- raster_createLocationTimeseries(dayStack,
 #'                                       longitude = longitude,
 #'                                       latitude = latitude,
-#'                                       bbox = bbox_oregon)
+#'                                       bbox = bbox_ca)
 #'
 #' plot(x = tb$datetime, y = tb$aod,
 #'      pch = 15, cex = 0.8, col = rgb(red = 0, green = 0, blue = 0, alpha = 0.8),
-#'      main = datetime, xlab = "Time (PDT)", ylab = "AOD")
+#'      main = "Santa Rosa, 2019-10-23", xlab = "Time (UTC)", ylab = "AOD")
 #' }
 
   goesaodc_createDaytimeRasterStack <- function(
   satID = NULL,
   datetime = NULL,
-  longitude = NULL,
-  latitude = NULL,
   var = "AOD",
   res = 0.1,
   bbox = NULL,
   dqfLevel = NULL,
-  timezone = "UTC"
+  timezone = NULL
 ) {
   
   # ----- Validate parameters --------------------------------------------------
@@ -100,70 +101,16 @@
     timezone <- attr(datetime,"tzone")
   }
   
-  datetime <- MazamaCoreUtils::parseDatetime(datetime, timezone)
+  daylight <- goesaodc_getDaylightHours(datetime = datetime, 
+                                        timezone = timezone)
   
-  # ----- Calculate daylight hours ---------------------------------------------
+  sunrise <- daylight$sunrise
+  sunset <- daylight$sunset
   
-  timezone <- MazamaSpatialUtils::getTimezone(longitude, latitude,
-                                              countryCodes = c("US"))
-  
-  # Gather local timeinfo for the requested datetime
-  timeInfo <- PWFSLSmoke::timeInfo(datetime,
-                                   longitude = longitude,
-                                   latitude = latitude,
-                                   timezone = timezone)
-  
-  # Now that we have the local sunrise and sunset times for the date we convert
-  # them back to UTC times
-  sunriseUTC <- lubridate::with_tz(timeInfo$sunrise, tzone = "UTC")
-  sunsetUTC <- lubridate::with_tz(timeInfo$sunset, tzone = "UTC")
-  
-  # Round and contract the boundary hours
-  sunriseHourUTC <- lubridate::ceiling_date(sunriseUTC, unit = "hour")
-  sunsetHourUTC <- lubridate::floor_date(sunsetUTC, unit = "hour")
-  
-  # Get all the UTC hours between the local sunrise and sunset hours
-  hours <- seq.POSIXt(from = sunriseHourUTC, to = sunsetHourUTC, by = "hour")
-  hours <- strftime(hours, format = "%Y-%m-%d %H:%M:%S", tz = "UTC")
-  
-  # ----- Create a rasterStack of hourly stacks from sunrise to sunset ---------
-  
-  dayStack <- raster::stack()
-  
-  # Container to hold all the hourly Z values
-  timeSlices <- c()
-  
-  for (hour in hours) {
-    result <- try({
-      hourStack <- goesaodc_createHourlyRasterStack(
-        satID = satID,
-        datetime = hour,
-        var = var,
-        res = res,
-        bbox = bbox,
-        dqfLevel = dqfLevel)
-      
-  } , silent = TRUE)
-    if ( "try-error" %in% class(result) ) {
-      err_msg <- geterrmessage()
-      if ( stringr::str_detect(err_msg, "No data for selected region") ) {
-        # Warn but don't stop
-        if ( MazamaCoreUtils::logger.isInitialized() ) {
-          MazamaCoreUtils::logger.warn("No data found for hour %s", hour)
-        }
-      } else {
-        stop(result)
-      }
-    } else {
-      # Collect hour's Z values for later and add hourStack to dayStack 
-      zHour <- raster::getZ(hourStack)
-      timeSlices <- append(timeSlices, c(zHour))
-      dayStack <- raster::stack(dayStack, hourStack)
-      print(paste0("Stacked hour: ", hour, " UTC"))
-    }
-  }
-  # ----- Write the full Z-value set to the dayStack ---------------------------
-  dayStack <- raster::setZ(dayStack, c(timeSlices))
+  dayStack <- goesaodc_createRasterStack(satID = satID, 
+                                         datetime = sunrise,
+                                         endTime = sunset,
+                                         dqfLevel = dqfLevel)
   
   # ----- Return ---------------------------------------------------------------
   return(dayStack)
