@@ -114,7 +114,7 @@ This information is sufficient to plot as points or create a raster object." />
 This information is sufficient to plot as points or create a raster object.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>goesaodc_createTibble</span>(<span class='no'>nc</span>)</pre>
+    <pre class="usage"><span class='fu'>goesaodc_createTibble</span>(<span class='kw'>nc</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -135,13 +135,13 @@ This information is sufficient to plot as points or create a raster object.</p>
 
 <span class='fu'><a href='setSatelliteDataDir.html'>setSatelliteDataDir</a></span>(<span class='st'>"~/Data/Satellite"</span>)
 
-<span class='no'>netCDF</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(
+<span class='no'>ncFile</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(
   <span class='st'>"extdata"</span>,
   <span class='st'>"OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc"</span>,
   <span class='kw'>package</span> <span class='kw'>=</span> <span class='st'>"MazamaSatelliteUtils"</span>
 )
 
-<span class='no'>nc</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='goesaodc_openFile.html'>goesaodc_openFile</a></span>(<span class='no'>netCDF</span>)
+<span class='no'>nc</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='goesaodc_openFile.html'>goesaodc_openFile</a></span>(<span class='no'>ncFile</span>)
 
 <span class='no'>tbl</span> <span class='kw'>&lt;-</span> <span class='fu'>goesaodc_createTibble</span>(<span class='no'>nc</span>)
 <span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span>(<span class='no'>tbl</span>)</div><div class='output co'>#&gt; <span style='color: #555555;'># A tibble: 6 x 4</span><span>

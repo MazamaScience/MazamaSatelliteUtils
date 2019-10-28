@@ -164,7 +164,8 @@ spatialPointsDataFrame</p>
     <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
 <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>MazamaSatelliteUtils</span>)
 
-<span class='fu'>setetSatelliteDataDir</span>(<span class='st'>"~/Data/Satellite"</span>)</div><div class='output co'>#&gt; <span class='error'>Error in setetSatelliteDataDir("~/Data/Satellite"): could not find function "setetSatelliteDataDir"</span></div><div class='input'><span class='no'>netCDF</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>"extdata"</span>,
+<span class='fu'><a href='setSatelliteDataDir.html'>setSatelliteDataDir</a></span>(<span class='st'>"~/Data/Satellite"</span>)
+<span class='no'>netCDF</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>"extdata"</span>,
                       <span class='st'>"OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc"</span>,
                       <span class='kw'>package</span> <span class='kw'>=</span> <span class='st'>"MazamaSatelliteUtils"</span>)
 <span class='no'>nc</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='goesaodc_openFile.html'>goesaodc_openFile</a></span>(<span class='no'>netCDF</span>)

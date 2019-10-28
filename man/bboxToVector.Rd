@@ -20,7 +20,36 @@ the return value from \code{sp::bbox()} or \code{raster::extent()}.
 }
 \examples{
 \donttest{
-# USE SAMPLE CODE FROM isDaylight.R
+library(MazamaSpatialUtils)
+library(MazamaSatelliteUtils)
+
+setSpatialDataDir("~/Data/Spatial")
+loadSpatialData("USCensusStates")
+setSatelliteDataDir("~/Data/Satellite")
+
+oregon <- subset(USCensusStates, stateCode == "OR")
+bbox <- sp::bbox(oregon)
+
+ncFile <- system.file(
+  "extdata",
+  "OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc",
+  package = "MazamaSatelliteUtils"
+)
+nc <- goesaodc_openFile(ncFile)
+
+raster <- goesaodc_createRaster(nc, res = 0.1, dqfLevel = 2)
+extent <- raster::extent(raster)
+
+# Convert bbox
+bbox
+bboxToVector(bbox)
+
+# Convert extent
+extent
+bboxToVector(extent)
+
+# Convert low/hi mixup
+bboxToVector(c(-116, -124, 42, 46))
 }
 
 }

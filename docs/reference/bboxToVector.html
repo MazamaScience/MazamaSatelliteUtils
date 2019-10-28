@@ -134,9 +134,38 @@ the return value from <code><a href='https://rdrr.io/pkg/sp/man/bbox.html'>sp::b
     <p>a vector of floats in c(lonLo, lonHi, latLo, latHi) order.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'># \donttest{
-# USE SAMPLE CODE FROM isDaylight.R
-# }
+    <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
+<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>MazamaSpatialUtils</span>)</div><div class='output co'>#&gt; <span class='message'>Loading required package: sp</span></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>MazamaSatelliteUtils</span>)
+
+<span class='fu'><a href='https://rdrr.io/pkg/MazamaSpatialUtils/man/setSpatialDataDir.html'>setSpatialDataDir</a></span>(<span class='st'>"~/Data/Spatial"</span>)
+<span class='fu'><a href='https://rdrr.io/pkg/MazamaSpatialUtils/man/loadSpatialData.html'>loadSpatialData</a></span>(<span class='st'>"USCensusStates"</span>)
+<span class='fu'><a href='setSatelliteDataDir.html'>setSatelliteDataDir</a></span>(<span class='st'>"~/Data/Satellite"</span>)
+
+<span class='no'>oregon</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>USCensusStates</span>, <span class='no'>stateCode</span> <span class='kw'>==</span> <span class='st'>"OR"</span>)
+<span class='no'>bbox</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>sp</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/sp/man/bbox.html'>bbox</a></span>(<span class='no'>oregon</span>)
+
+<span class='no'>ncFile</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(
+  <span class='st'>"extdata"</span>,
+  <span class='st'>"OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc"</span>,
+  <span class='kw'>package</span> <span class='kw'>=</span> <span class='st'>"MazamaSatelliteUtils"</span>
+)
+<span class='no'>nc</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='goesaodc_openFile.html'>goesaodc_openFile</a></span>(<span class='no'>ncFile</span>)
+
+<span class='no'>raster</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='goesaodc_createRaster.html'>goesaodc_createRaster</a></span>(<span class='no'>nc</span>, <span class='kw'>res</span> <span class='kw'>=</span> <span class='fl'>0.1</span>, <span class='kw'>dqfLevel</span> <span class='kw'>=</span> <span class='fl'>2</span>)
+<span class='no'>extent</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>raster</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/raster/man/extent.html'>extent</a></span>(<span class='no'>raster</span>)
+
+<span class='co'># Convert bbox</span>
+<span class='no'>bbox</span></div><div class='output co'>#&gt;          min        max
+#&gt; x -124.56624 -116.46350
+#&gt; y   41.99179   46.29203</div><div class='input'><span class='fu'>bboxToVector</span>(<span class='no'>bbox</span>)</div><div class='output co'>#&gt; [1] -124.56624 -116.46350   41.99179   46.29203</div><div class='input'>
+<span class='co'># Convert extent</span>
+<span class='no'>extent</span></div><div class='output co'>#&gt; class      : Extent 
+#&gt; xmin       : -151.6543 
+#&gt; xmax       : -52.95426 
+#&gt; ymin       : 14.54026 
+#&gt; ymax       : 56.64026 </div><div class='input'><span class='fu'>bboxToVector</span>(<span class='no'>extent</span>)</div><div class='output co'>#&gt; [1] -151.65426  -52.95426   14.54026   56.64026</div><div class='input'>
+<span class='co'># Convert low/hi mixup</span>
+<span class='fu'>bboxToVector</span>(<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>116</span>, -<span class='fl'>124</span>, <span class='fl'>42</span>, <span class='fl'>46</span>))</div><div class='output co'>#&gt; [1] -124 -116   42   46</div><div class='input'># }
 
 </div></pre>
   </div>

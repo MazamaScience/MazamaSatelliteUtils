@@ -19,7 +19,7 @@
 #' \donttest{
 #' library(MazamaSatelliteUtils)
 #' 
-#' setetSatelliteDataDir("~/Data/Satellite")
+#' setSatelliteDataDir("~/Data/Satellite")
 #' netCDF <- system.file("extdata", 
 #'                       "OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc", 
 #'                       package = "MazamaSatelliteUtils")
