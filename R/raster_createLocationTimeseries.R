@@ -3,8 +3,8 @@
 #' @title Create a Tibble for a location's AOD readings at a given hour
 #' 
 #' @param rasterStack a RasterStack with a RasterLayer for every data snapshot.
-#' @param longitude longitude of the location.
-#' @param latitude latitude of the location.
+#' @param longitude Longitude of the location of interest in decimal degrees E.
+#' @param latitude Latitude of the location of interest in decimal degrees N.
 #' @param bbox bounding box for the rasters.
 #' @param method determines how a value is extracted from the location if a
 #' buffer is not used. Can be set to either "simple", which returns the exact 

@@ -11,9 +11,9 @@ raster_createLocationTimeseries(rasterStack = NULL, longitude = NULL,
 \arguments{
 \item{rasterStack}{a RasterStack with a RasterLayer for every data snapshot.}
 
-\item{longitude}{longitude of the location.}
+\item{longitude}{Longitude of the location of interest in decimal degrees E.}
 
-\item{latitude}{latitude of the location.}
+\item{latitude}{Latitude of the location of interest in decimal degrees N.}
 
 \item{bbox}{bounding box for the rasters.}
 

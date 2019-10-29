@@ -1,6 +1,6 @@
 # MazamaSatelliteUtils 0.2.9
 
-* New `goesaodc_getDaylightHours()` funciton.
+* New `getDaylightHours()` function.
 * More tests and improved examples.
 
 # MazamaSatelliteUtils 0.2.8

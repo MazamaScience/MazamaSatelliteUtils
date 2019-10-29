@@ -99,8 +99,8 @@ goesaodc_createDaytimeRasterStack <- function(
     timezone <- attr(datetime,"tzone")
   }
   
-  daylight <- goesaodc_getDaylightHours(datetime = datetime, 
-                                        timezone = timezone)
+  daylight <- getDaylightHours(datetime = datetime, 
+                               timezone = timezone)
   
   sunrise <- daylight$sunrise
   sunset <- daylight$sunset
