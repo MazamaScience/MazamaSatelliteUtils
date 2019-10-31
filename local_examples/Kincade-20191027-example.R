@@ -21,6 +21,7 @@ setSatelliteDataDir("~/Data/Satellite")
 # )
 
 files <- goesaodc_downloadAOD("G17", 2019102714, timezone = "America/Los_Angeles")
+files <- goesaodc_listFiles("G17", 2019102714, timezone = "America/Los_Angeles")
 
 nc <- goesaodc_openFile(basename(files[1]))
 
