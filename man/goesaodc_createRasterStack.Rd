@@ -6,7 +6,8 @@
 \usage{
 goesaodc_createRasterStack(satID = NULL, datetime = NULL,
   endTime = NULL, var = "AOD", res = 0.1, bbox = c(-125, -65, 24,
-  50), dqfLevel = NULL, timezone = "UTC", julian = FALSE)
+  50), dqfLevel = NULL, timezone = "UTC", julian = FALSE,
+  fileList = NULL)
 }
 \arguments{
 \item{satID}{ID of the source GOES satellite (G16 or G17).}
@@ -27,6 +28,9 @@ goesaodc_createRasterStack(satID = NULL, datetime = NULL,
 
 \item{julian}{Logical specifying if \code{datetime} (and optionally
 \code{endTime}) are Julian formatted}
+
+\item{fileList}{optional list of files to stack. Useful when working with 
+custom time ranges.}
 }
 \value{
 RasterStack
@@ -63,8 +67,6 @@ latHi) order or the return value from \code{sp::bbox()} or
 \dontrun{
 library(MazamaSatelliteUtils)
 setSatelliteDataDir("~/Data/Satellite")
-
-MazamaCoreUtils::initializeLogging(logDir = "~/Data/Logs")
 
 satID <- "G16"
 datetime <- "2019-08-12 09:00"
