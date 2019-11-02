@@ -126,7 +126,7 @@ goesaodc_createRasterStack <- function(
   
   for (nc_file in fileList) {
     # ---- Create layer names and Z values -------------------------------------
-    time <- goesaodc_getStartTime(nc_file)
+    time <- goesaodc_convertFilenameToDatetime(nc_file)
     name <- strftime(time, format = "%H:%M:%S", tz = "UTC")
     zValue <- strftime(time, format = "%Y%m%d%H%M%S", tz = "UTC")
     

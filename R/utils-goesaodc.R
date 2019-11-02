@@ -171,7 +171,7 @@ goesaodc_isGoesProjection <- function(nc)
 #' 
 #' @return The scan start time.
 #' 
-goesaodc_getStartTime <- function(
+goesaodc_convertFilenameToDatetime <- function(
   file
 ) {
   # Example file name:
