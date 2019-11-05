@@ -12,6 +12,8 @@
 #' @param timezone timezone for \code{datetime} and optionally \code{endTime}.
 #' @param julian Logical specifying if \code{datetime} (and optionally
 #' \code{endTime}) are Julian formatted
+#' @param fileList optional list of files to stack. Useful when working with 
+#' custom time ranges. 
 #'
 #' @description  Create a \code{RasterStack} from GOES AOD data files for the
 #' date and hour specified by \code{datetime}. Each \code{RasterLayer} contains
@@ -46,8 +48,6 @@
 #' library(MazamaSatelliteUtils)
 #' setSatelliteDataDir("~/Data/Satellite")
 #'
-#' MazamaCoreUtils::initializeLogging(logDir = "~/Data/Logs")
-#'
 #' satID <- "G16"
 #' datetime <- "2019-08-12 09:00"
 #' endTime <- "2019-08-12 12:00"
@@ -76,7 +76,8 @@ goesaodc_createRasterStack <- function(
   bbox = c(-125, -65, 24, 50), # LIMIT TO CONUS BY DEFAULT
   dqfLevel = NULL,
   timezone = 'UTC',
-  julian = FALSE
+  julian = FALSE,
+  fileList = NULL
 ) {
   # ---- Check that mandatory parameters are present ---------------------------
   MazamaCoreUtils::stopIfNull(satID)
@@ -103,11 +104,18 @@ goesaodc_createRasterStack <- function(
     endTime <- MazamaCoreUtils::parseDatetime(endTime, timezone, julian = julian)
   }
   
-  # ---- Download GOES AOD Files -----------------------------------------------
-  goesaodc_downloadAOD(satID, datetime, endTime, timezone = timezone)
-  
-  # ---- Create list of nc files to process ------------------------------------
-  fileList <- goesaodc_listFiles(satID, datetime, endTime, timezone = timezone)
+  # ---- Create list of nc files to process, if one isn't already passed in ----
+  if ( is.null(fileList) ) {
+    
+    # ---- Download GOES AOD Files ---------------------------------------------
+    goesaodc_downloadAOD(satID, datetime, endTime, timezone = timezone)
+    
+    # ---- Read the local SatelliteDir for files that match parameters ---------
+    fileList <- goesaodc_listFiles(satID = satID, 
+                                   datetime = datetime, 
+                                   endTime = endTime, 
+                                   timezone = timezone)
+  }
   
   # ---- Create List of of AOD raster layers for hour and region ---------------
   rasterStack <- raster::stack()
@@ -118,7 +126,7 @@ goesaodc_createRasterStack <- function(
   
   for (nc_file in fileList) {
     # ---- Create layer names and Z values -------------------------------------
-    time <- goesaodc_getStartTime(nc_file)
+    time <- goesaodc_convertFilenameToDatetime(nc_file)
     name <- strftime(time, format = "%H:%M:%S", tz = "UTC")
     zValue <- strftime(time, format = "%Y%m%d%H%M%S", tz = "UTC")
     
