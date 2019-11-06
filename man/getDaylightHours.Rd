@@ -6,7 +6,7 @@
 location}
 \usage{
 getDaylightHours(datetime = NULL, longitude = NULL, latitude = NULL,
-  bbox = NULL, timezone = NULL, julian = FALSE)
+  bbox = NULL, timezone = NULL, isJulian = FALSE)
 }
 \arguments{
 \item{datetime}{Specific date for which daylight hours are requested.}
@@ -19,7 +19,7 @@ getDaylightHours(datetime = NULL, longitude = NULL, latitude = NULL,
 
 \item{timezone}{Timezone in which to interpret the \code{datetime}.}
 
-\item{julian}{Logical value determining whether datetime should be 
+\item{isJulian}{Logical value determining whether datetime should be 
 interpreted as a Julian date with day of year as a decimal number.}
 }
 \value{

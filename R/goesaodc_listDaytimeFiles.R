@@ -16,7 +16,7 @@
 #' @param useRemote Logical specifying whether to look for files in 
 #' \code{getSatelliteDataDir()} or \code{baseUrl}.
 #' @param timezone Timezone in which to interpret the \code{datetime}.
-#' @param julian Logical value determining whether datetime should be 
+#' @param isJulian Logical value determining whether datetime should be 
 #' interpreted as a Julian date with day of year as a decimal number.
 #' 
 #' @return Vector of filenames.
@@ -62,7 +62,7 @@ goesaodc_listDaytimeFiles <- function(
   bbox = NULL,
   useRemote = FALSE,
   timezone = NULL,
-  julian = FALSE
+  isJulian = FALSE
 ) {
   
   # ---- Get the sunrise and sunset times --------------------------------------
@@ -71,7 +71,7 @@ goesaodc_listDaytimeFiles <- function(
                                 longitude = longitude,
                                 latitude = latitude,
                                 bbox = bbox,
-                                julian = julian)
+                                isJulian = isJulian)
   
   sunrise <- day_hours$sunrise  # POSIXt return
   sunset <- day_hours$sunset    # POSIXt return

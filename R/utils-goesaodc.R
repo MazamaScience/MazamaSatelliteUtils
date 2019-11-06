@@ -183,7 +183,7 @@ goesaodc_convertFilenameToDatetime <- function(
   start_string <- stringr::str_split_fixed(file, "_", 6)[,4] %>%
     stringr::str_sub(2, -2)
   
-  start_time <- MazamaCoreUtils::parseDatetime(start_string, timezone = "UTC", julian = TRUE)
+  start_time <- MazamaCoreUtils::parseDatetime(start_string, timezone = "UTC", isJulian = TRUE)
   
   return(start_time)
 }

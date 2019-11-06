@@ -34,7 +34,7 @@
 #' @param latitude Latitude of the location of interest in decimal degrees N.
 #' @param bbox Bounding box for the region of interest, Default: CONUS.
 #' @param timezone Timezone in which to interpret the \code{datetime}.
-#' @param julian Logical value determining whether datetime should be 
+#' @param isJulian Logical value determining whether datetime should be 
 #' interpreted as a Julian date with day of year as a decimal number.
 #' @return List containing \code{POSIXct} \code{sunrise} and \code{sunset} times 
 #' for the specified date.
@@ -72,7 +72,7 @@ getDaylightHours <- function(
   latitude = NULL,
   bbox = NULL,
   timezone = NULL,
-  julian = FALSE
+  isJulian = FALSE
 ) {
   
   # ---- Validate Parameters ---------------------------------------------------
@@ -135,7 +135,7 @@ getDaylightHours <- function(
   # Ensure we have a POSIXt datetime
   datetime <- MazamaCoreUtils::parseDatetime(datetime = datetime, 
                                              timezone = timezone, 
-                                             julian = julian)
+                                             isJulian = isJulian)
   
   # ----- Calculate ephemeris from bbox ----------------------------------------
   

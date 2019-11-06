@@ -7,7 +7,7 @@ location during the hours between sunlight and sunset.}
 \usage{
 goesaodc_listDaytimeFiles(satID = NULL, datetime = NULL,
   longitude = NULL, latitude = NULL, bbox = NULL,
-  useRemote = FALSE, timezone = NULL, julian = FALSE)
+  useRemote = FALSE, timezone = NULL, isJulian = FALSE)
 }
 \arguments{
 \item{satID}{ID of the source GOES satellite (G16 or G17).}
@@ -25,7 +25,7 @@ goesaodc_listDaytimeFiles(satID = NULL, datetime = NULL,
 
 \item{timezone}{Timezone in which to interpret the \code{datetime}.}
 
-\item{julian}{Logical value determining whether datetime should be 
+\item{isJulian}{Logical value determining whether datetime should be 
 interpreted as a Julian date with day of year as a decimal number.}
 }
 \value{

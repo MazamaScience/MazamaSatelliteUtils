@@ -5,7 +5,7 @@
 \title{Download GOES-16 or GOES-17 AOD data}
 \usage{
 goesaodc_downloadAOD(satID = NULL, datetime = NULL, endTime = NULL,
-  timezone = "UTC", julian = FALSE,
+  timezone = "UTC", isJulian = FALSE,
   baseUrl = "https://tools-1.airfire.org/Satellite/")
 }
 \arguments{
@@ -17,7 +17,7 @@ goesaodc_downloadAOD(satID = NULL, datetime = NULL, endTime = NULL,
 
 \item{timezone}{Timezone used to interpret \code{datetime} and \code{endTime}}
 
-\item{julian}{Logical specifying if \code{datetime} (and optionally 
+\item{isJulian}{Logical specifying if \code{datetime} (and optionally 
 \code{endTime}) are Julian formatted}
 
 \item{baseUrl}{Base URL for data queries.}
@@ -49,7 +49,7 @@ timezone = "America/Los_Angeles")
 
 goesaodc_downloadAOD(satID = "G16",
 datetime = "201924915",
-julian = TRUE)
+isJulian = TRUE)
 
 }
 }
