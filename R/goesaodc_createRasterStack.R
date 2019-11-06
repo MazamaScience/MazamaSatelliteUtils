@@ -10,7 +10,7 @@
 #' @param bbox Bounding box for raster, Default: c(-125, -65, 24, 50) CONUS
 #' @param dqfLevel Data quality flag level.
 #' @param timezone timezone for \code{datetime} and optionally \code{endTime}.
-#' @param julian Logical specifying if \code{datetime} (and optionally
+#' @param isJulian Logical specifying if \code{datetime} (and optionally
 #' \code{endTime}) are Julian formatted
 #' @param fileList optional list of files to stack. Useful when working with 
 #' custom time ranges. 
@@ -76,7 +76,7 @@ goesaodc_createRasterStack <- function(
   bbox = c(-125, -65, 24, 50), # LIMIT TO CONUS BY DEFAULT
   dqfLevel = NULL,
   timezone = 'UTC',
-  julian = FALSE,
+  isJulian = FALSE,
   fileList = NULL
 ) {
   # ---- Check that mandatory parameters are present ---------------------------
@@ -98,10 +98,10 @@ goesaodc_createRasterStack <- function(
   # ---- Parse incoming times with MazamaCoreUtils -----------------------------
   datetime <- MazamaCoreUtils::parseDatetime(datetime = datetime,
                                              timezone = timezone,
-                                             julian = julian)
+                                             isJulian = isJulian)
   
   if ( !is.null(endTime) ) {
-    endTime <- MazamaCoreUtils::parseDatetime(endTime, timezone, julian = julian)
+    endTime <- MazamaCoreUtils::parseDatetime(endTime, timezone, isJulian = isJulian)
   }
   
   # ---- Create list of nc files to process, if one isn't already passed in ----
