@@ -72,8 +72,13 @@ goesaodc_downloadAOD <- function(
                               useRemote = TRUE)
   
   # ---- Force a stop() if there are no files available for this time ----------
-  if (rlang::is_empty(remoteFiles)) {
+  if ( rlang::is_empty(remoteFiles) ) {
     stop("There is no data available for this time.")
+  }
+  
+  # ---- Force a stop() if more than 24hrs of data are requested ---------------
+  if ( length(remoteFiles) > 288 ) {
+    stop("More than 24 hours of data requested.")
   }
   
   
