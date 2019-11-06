@@ -5,8 +5,8 @@ satID <- "G16"
 datetime <- "2019-09-06 09"
 endTime <- "2019-09-06 10"
 timezone <- "America/Los_Angeles"
-jdate <- "20192490900"
-jdate_end <- "20192491000"
+jdate <- "2019249090000"
+jdate_end <- "2019249100000"
 
 # ---- FAIL AS EXPECTED --------------------------------------------------------
 test_that("fails when passed incorrect parameters", {
@@ -26,8 +26,16 @@ test_that("fails when passed incorrect parameters", {
   
   # no satID given
   expect_error(
-    goesaodc_downloadAOD(datetime = "2019-09-06 18"),
+    goesaodc_downloadAOD(datetime = datetime),
     regexp = "argument 'satID' must not be NULL."
+  )
+  
+  # More than 24 hours of data requested
+  expect_error(
+    goesaodc_downloadAOD(satID = satID,
+                         datetime = "2019-09-06",
+                         endTime = "2019-09-08"),
+    regexp = "More than 24 hours of data requested."
   )
   
 })
@@ -44,12 +52,13 @@ test_that("Basic file download works", {
     NA)
 })
 
-test_that("File download using JUlian format dates works", {
+test_that("File download using Julian date format", {
   
   expect_error( goesaodc_downloadAOD(
     satID = satID,
     datetime = jdate,
     endTime = jdate_end,
-    timezone = timezone),
+    timezone = timezone,
+    isJulian = TRUE),
     NA)
 })

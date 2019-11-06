@@ -36,14 +36,12 @@ test_that("remote files are listed correctly for daytime with Julian date", {
   )
   
 })
-# ----- Download 2 hours of data -----------------------------------------------
-# NOTE - This is bad practice, I should just "touch" a couple files in the data
-# dir with the right strings in the filename as part of the setup and then
-# delete them in teardown.
 
-goesaodc_downloadAOD(satID = "G16", 
-                     datetime = "2019-08-12 16", 
-                     endTime = "2019-08-12 17")
+# ----- Download data for the day-----------------------------------------------
+
+goesaodc_downloadDaytimeAOD(satID = "G16", 
+                     datetime = "2019-09-06 16",
+                     timezone = timezone)
 
 # ---------------------------------------------------------------------------- #
 test_that("local files are listed correctly for daytime", {
@@ -51,11 +49,11 @@ test_that("local files are listed correctly for daytime", {
   expect_equal(
     length( 
       goesaodc_listDaytimeFiles(
-        satID="G16", 
-        datetime="2019-09-06", 
-        timezone="America/Los_Angeles", 
-        useRemote=FALSE)),
-    24
+        satID = "G16", 
+        datetime = "2019-09-06 16",
+        timezone = "America/Los_Angeles", 
+        useRemote = FALSE)),
+    168
   )
   
 })

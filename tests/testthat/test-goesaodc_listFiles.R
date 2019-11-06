@@ -72,7 +72,8 @@ test_that("local files are listed correctly using Julian format dates", {
         satID = satID, 
         datetime = jdate,
         endTime = jdate_end,
-        timezone = timezone)
+        timezone = timezone,
+        isJulian = TRUE)
     ),
     24
   )
