@@ -29,7 +29,7 @@
 #' head(tbl)
 #' 
 #' # Tibble based on BBOX filtered extent of tibble
-#' library(MazamaSatellite)
+#' library(MazamaSatelliteUtils)
 #' 
 #' ncFile <- system.file(
 #'   "extdata", 
