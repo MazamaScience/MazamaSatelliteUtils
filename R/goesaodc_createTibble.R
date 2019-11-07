@@ -85,13 +85,25 @@ goesaodc_createTibble <- function(
     stop("Grid file not found. Run 'installGoesGrids()' first")
   }  
   
-  
-  # ---- Create varList to store values needed to create Tibble ----------------
+  # Create varList to store values needed to create Tibble
   varList <- list()
   
-  # ---- If BBOX present, filter based on its extents --------------------------
+  # ---- Create Tibble ---------------------------------------------------
   
-  if ( !is.null(bbox) ) {
+  # Build full extent Tibble
+  if ( is.null(bbox) ) { 
+    
+    # Get lon and lat from grid file
+    varList[["lon"]] <- as.numeric( goesGrid$longitude )
+    varList[["lat"]] <- as.numeric( goesGrid$latitude )
+    
+    # Get AOD and DQF from netCDF
+    varList[["AOD"]] <- as.numeric(ncdf4::ncvar_get(nc, "AOD"))
+    varList[["DQF"]] <- as.numeric(ncdf4::ncvar_get(nc, "DQF"))
+    
+  } else {
+    
+    # Build filtered tibble based on BBOX coordinates
     bbox <- bboxToVector(bbox)
     
     lonLo <- bbox[1]
@@ -113,21 +125,21 @@ goesaodc_createTibble <- function(
     gridMask[is.na(gridMask)] <- FALSE
     
     suppressWarnings({
-    # Find the first row in each column inside the bbox
-    iLos <- apply(gridMask, 2, function(x) { min(which(x)) })
-    iLo <- min(iLos) # lots of Inf but that's OK
-    
-    # Last row
-    iHis <- apply(gridMask, 2, function(x) { max(which(x)) })
-    iHi <- max(iHis) # lots of -Inf but that's OK
-    
-    # First column
-    jLos <- apply(gridMask, 1, function(x) { min(which(x)) })
-    jLo <- min(jLos) # lots of Inf but that's OK
-    
-    # Last column
-    jHis <- apply(gridMask, 1, function(x) { max(which(x)) })
-    jHi <- max(jHis) # lots of -Inf but that's OK
+      # Find the first row in each column inside the bbox
+      iLos <- apply(gridMask, 2, function(x) { min(which(x)) })
+      iLo <- min(iLos) # lots of Inf but that's OK
+      
+      # Last row
+      iHis <- apply(gridMask, 2, function(x) { max(which(x)) })
+      iHi <- max(iHis) # lots of -Inf but that's OK
+      
+      # First column
+      jLos <- apply(gridMask, 1, function(x) { min(which(x)) })
+      jLo <- min(jLos) # lots of Inf but that's OK
+      
+      # Last column
+      jHis <- apply(gridMask, 1, function(x) { max(which(x)) })
+      jHi <- max(jHis) # lots of -Inf but that's OK
     })
     
     # Convert to the variables we pass to ncvar_get()
@@ -164,15 +176,6 @@ goesaodc_createTibble <- function(
       collapse_degen = TRUE,
       raw_datavals = FALSE
     ))
-  } else { # ---- Original, unfiltered code ------------------------------------
-  
-  # Get lon and lat from grid file
-  varList[["lon"]] <- as.numeric( goesGrid$longitude )
-  varList[["lat"]] <- as.numeric( goesGrid$latitude )
-  
-  # Get AOD and DQF from netCDF
-  varList[["AOD"]] <- as.numeric(ncdf4::ncvar_get(nc, "AOD"))
-  varList[["DQF"]] <- as.numeric(ncdf4::ncvar_get(nc, "DQF"))
   }
   
   # Create a tibble with all columns but removing rows if any of the columns
