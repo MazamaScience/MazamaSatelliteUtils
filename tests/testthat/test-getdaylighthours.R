@@ -28,6 +28,11 @@ test_that("Correct daylight sunrise and sunset hours are calculated", {
   tz_test_data <- getDaylightHours(datetime = "2019-09-06", 
                                    timezone = "America/Los_Angeles")
   
+  # ---- GET DAYLIGHT HOURS WITH JULIAN FORMAT DATETIME AND TIMEZONE -----------
+  julian_test_data <- getDaylightHours(datetime = "2019249",
+                                       timezone = "America/Los_Angeles",
+                                       isJulian = TRUE)
+  
   # --- GET DAYLIGHT HOURS WITH POSIXt ALONE -----------------------------------
   posix_test_data <- getDaylightHours(posix_t)
   
@@ -59,6 +64,15 @@ test_that("Correct daylight sunrise and sunset hours are calculated", {
                                         tz_test_data$sunset,
                                         units = "mins"))
   
+  # ---- JULIAN TIME DIFFS -----------------------------------------------------
+  julian_sunrise_diff <- as.numeric(difftime(ll_dayInfo$sunrise,
+                                         julian_test_data$sunrise,
+                                         units = "mins"))
+  
+  julian_sunset_diff <- as.numeric(difftime(ll_dayInfo$sunset,
+                                        julian_test_data$sunset,
+                                        units = "mins"))
+  
   # ---- POSIX TIME DIFF (SHOULD BE EQUAL TO TZ TIME ---------------------------                                         
   posix_sunrise_diff <- as.numeric(difftime(tz_test_data$sunrise,
                                             posix_test_data$sunrise,
@@ -78,6 +92,10 @@ test_that("Correct daylight sunrise and sunset hours are calculated", {
   # ---- TIMEZONE ASSERTIONS ---------------------------------------------------
   expect_lt(tz_sunrise_diff, 60)
   expect_lt(tz_sunset_diff, 60)
+  
+  # ---- JULIAN DATE ASSERTIONS ------------------------------------------------
+  expect_lt(julian_sunrise_diff, 60)
+  expect_lt(julian_sunset_diff, 60)
   
   # ---- POSIXt ASSERTIONS -----------------------------------------------------
   expect_equal(posix_sunrise_diff, 0)

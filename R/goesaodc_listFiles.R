@@ -8,7 +8,7 @@
 #' @param useRemote Logical specifying whether to look for files in 
 #' \code{getSatelliteDataDir()} or \code{baseUrl}.
 #' @param timezone Timezone used to interpret \code{datetime} and \code{endTime}
-#' @param julian Logical specifying if \code{datetime} (and optionally 
+#' @param isJulian Logical specifying if \code{datetime} (and optionally 
 #' \code{endTime}) are Julian formatted
 #' @param baseUrl Base URL for data queries.
 #' 
@@ -44,7 +44,7 @@ goesaodc_listFiles <- function(
   endTime = NULL,
   useRemote = FALSE,
   timezone = "UTC",
-  julian = FALSE,
+  isJulian = FALSE,
   baseUrl = "https://tools-1.airfire.org/Satellite/"
 ) {
   
@@ -66,10 +66,10 @@ goesaodc_listFiles <- function(
   # ---- Parse incoming times with MazamaCoreUtils -----------------------------
   datetime <- MazamaCoreUtils::parseDatetime(datetime = datetime, 
                                              timezone = timezone, 
-                                             julian = julian)
+                                             isJulian = isJulian)
   
   if ( !is.null(endTime) ) {
-   endTime <- MazamaCoreUtils::parseDatetime(endTime, timezone, julian = julian)
+   endTime <- MazamaCoreUtils::parseDatetime(endTime, timezone, isJulian = isJulian)
   }
   
   # ---- Create satUrl for remote searching

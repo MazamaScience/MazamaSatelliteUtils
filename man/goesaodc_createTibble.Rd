@@ -4,10 +4,12 @@
 \alias{goesaodc_createTibble}
 \title{Create a tibble from ncdf4 handle}
 \usage{
-goesaodc_createTibble(nc = NULL)
+goesaodc_createTibble(nc = NULL, bbox = NULL)
 }
 \arguments{
 \item{nc}{ncdf4 handle}
+
+\item{bbox}{geographic extents to limit data ingestion from NetCDF}
 }
 \value{
 Tibble (dataframe) with NetCDF variables and associated locations.
@@ -18,6 +20,7 @@ This information is sufficient to plot as points or create a raster object.
 }
 \examples{
 \donttest{
+# Tibble based on full extent of Gridfile
 library(MazamaSatelliteUtils)
 
 setSatelliteDataDir("~/Data/Satellite")
@@ -32,5 +35,24 @@ nc <- goesaodc_openFile(ncFile)
 
 tbl <- goesaodc_createTibble(nc)
 head(tbl)
+
+# Tibble based on BBOX filtered extent of tibble
+library(MazamaSatelliteUtils)
+
+ncFile <- system.file(
+  "extdata", 
+  "OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc", 
+  package = "MazamaSatelliteUtils"
+)
+
+nc <- goesaodc_openFile(ncFile)
+
+kincade_bbox <- c(-124, -120, 36, 39)
+
+filtered_tbl <- goesaodc_createTibble(
+  nc,
+  bbox = kincade_bbox
+)
+
 }
 }

@@ -6,7 +6,7 @@
 #' @param datetime Desired datetime in any Ymd H [MS] format or \code{POSIXct}
 #' @param endTime Desired ending time in any Ymd H [MS] format or \code{POSIXct}
 #' @param timezone Timezone used to interpret \code{datetime} and \code{endTime}
-#' @param julian Logical specifying if \code{datetime} (and optionally 
+#' @param isJulian Logical specifying if \code{datetime} (and optionally 
 #' \code{endTime}) are Julian formatted
 #' @param baseUrl Base URL for data queries.
 #'
@@ -37,7 +37,7 @@
 #' 
 #' goesaodc_downloadAOD(satID = "G16",
 #' datetime = "201924915",
-#' julian = TRUE)
+#' isJulian = TRUE)
 #'
 #' }
 
@@ -46,7 +46,7 @@ goesaodc_downloadAOD <- function(
   datetime = NULL,
   endTime = NULL,
   timezone = "UTC",
-  julian = FALSE,
+  isJulian = FALSE,
   baseUrl = "https://tools-1.airfire.org/Satellite/"
 ) {
   
@@ -68,12 +68,17 @@ goesaodc_downloadAOD <- function(
                               datetime = datetime, 
                               endTime = endTime, 
                               timezone = timezone,
-                              julian = julian,
+                              isJulian = isJulian,
                               useRemote = TRUE)
   
   # ---- Force a stop() if there are no files available for this time ----------
-  if (rlang::is_empty(remoteFiles)) {
+  if ( rlang::is_empty(remoteFiles) ) {
     stop("There is no data available for this time.")
+  }
+  
+  # ---- Force a stop() if more than 24hrs of data are requested ---------------
+  if ( length(remoteFiles) > 288 ) {
+    stop("More than 24 hours of data requested.")
   }
   
   
@@ -82,7 +87,7 @@ goesaodc_downloadAOD <- function(
                              datetime = datetime, 
                              endTime = endTime, 
                              timezone = timezone,
-                             julian = julian,
+                             isJulian = isJulian,
                              useRemote = FALSE)
   
   # ---- Create the offset by set comparison of the 2 sets of files ------------

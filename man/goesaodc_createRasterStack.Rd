@@ -6,7 +6,7 @@
 \usage{
 goesaodc_createRasterStack(satID = NULL, datetime = NULL,
   endTime = NULL, var = "AOD", res = 0.1, bbox = c(-125, -65, 24,
-  50), dqfLevel = NULL, timezone = "UTC", julian = FALSE,
+  50), dqfLevel = NULL, timezone = "UTC", isJulian = FALSE,
   fileList = NULL)
 }
 \arguments{
@@ -26,7 +26,7 @@ goesaodc_createRasterStack(satID = NULL, datetime = NULL,
 
 \item{timezone}{timezone for \code{datetime} and optionally \code{endTime}.}
 
-\item{julian}{Logical specifying if \code{datetime} (and optionally
+\item{isJulian}{Logical specifying if \code{datetime} (and optionally
 \code{endTime}) are Julian formatted}
 
 \item{fileList}{optional list of files to stack. Useful when working with 

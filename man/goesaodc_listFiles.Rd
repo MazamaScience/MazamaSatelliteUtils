@@ -5,7 +5,7 @@
 \title{List available GOES AOD files for a specified date and hour}
 \usage{
 goesaodc_listFiles(satID = NULL, datetime = NULL, endTime = NULL,
-  useRemote = FALSE, timezone = "UTC", julian = FALSE,
+  useRemote = FALSE, timezone = "UTC", isJulian = FALSE,
   baseUrl = "https://tools-1.airfire.org/Satellite/")
 }
 \arguments{
@@ -20,7 +20,7 @@ goesaodc_listFiles(satID = NULL, datetime = NULL, endTime = NULL,
 
 \item{timezone}{Timezone used to interpret \code{datetime} and \code{endTime}}
 
-\item{julian}{Logical specifying if \code{datetime} (and optionally 
+\item{isJulian}{Logical specifying if \code{datetime} (and optionally 
 \code{endTime}) are Julian formatted}
 
 \item{baseUrl}{Base URL for data queries.}

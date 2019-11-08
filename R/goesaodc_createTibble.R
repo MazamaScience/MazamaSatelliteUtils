@@ -3,6 +3,7 @@
 #' @title Create a tibble from ncdf4 handle
 #' 
 #' @param nc ncdf4 handle
+#' @param bbox geographic extents to limit data ingestion from NetCDF
 #' 
 #' @description Create a tibble with columns: AOD, DQF, lon and lat.
 #' This information is sufficient to plot as points or create a raster object.
@@ -11,6 +12,7 @@
 #
 #' @examples
 #' \donttest{
+#' # Tibble based on full extent of Gridfile
 #' library(MazamaSatelliteUtils)
 #'
 #' setSatelliteDataDir("~/Data/Satellite")
@@ -25,10 +27,30 @@
 #'
 #' tbl <- goesaodc_createTibble(nc)
 #' head(tbl)
+#' 
+#' # Tibble based on BBOX filtered extent of tibble
+#' library(MazamaSatelliteUtils)
+#' 
+#' ncFile <- system.file(
+#'   "extdata", 
+#'   "OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc", 
+#'   package = "MazamaSatelliteUtils"
+#' )
+#'
+#' nc <- goesaodc_openFile(ncFile)
+#' 
+#' kincade_bbox <- c(-124, -120, 36, 39)
+#' 
+#' filtered_tbl <- goesaodc_createTibble(
+#'   nc,
+#'   bbox = kincade_bbox
+#' )
+#' 
 #' }
 
 goesaodc_createTibble <- function(
-  nc = NULL
+  nc = NULL, 
+  bbox = NULL
 ) {
   
   # ----- Validate parameters --------------------------------------------------
@@ -63,17 +85,98 @@ goesaodc_createTibble <- function(
     stop("Grid file not found. Run 'installGoesGrids()' first")
   }  
   
-  # ----- Create tibble --------------------------------------------------------
-  
+  # Create varList to store values needed to create Tibble
   varList <- list()
   
-  # Get lon and lat from grid file
-  varList[["lon"]] <- as.numeric( goesGrid$longitude )
-  varList[["lat"]] <- as.numeric( goesGrid$latitude )
+  # ---- Create Tibble ---------------------------------------------------
   
-  # Get AOD and DQF from netCDF
-  varList[["AOD"]] <- as.numeric(ncdf4::ncvar_get(nc, "AOD"))
-  varList[["DQF"]] <- as.numeric(ncdf4::ncvar_get(nc, "DQF"))
+  # Build full extent Tibble
+  if ( is.null(bbox) ) { 
+    
+    # Get lon and lat from grid file
+    varList[["lon"]] <- as.numeric( goesGrid$longitude )
+    varList[["lat"]] <- as.numeric( goesGrid$latitude )
+    
+    # Get AOD and DQF from netCDF
+    varList[["AOD"]] <- as.numeric(ncdf4::ncvar_get(nc, "AOD"))
+    varList[["DQF"]] <- as.numeric(ncdf4::ncvar_get(nc, "DQF"))
+    
+  } else {
+    
+    # Build filtered tibble based on BBOX coordinates
+    bbox <- bboxToVector(bbox)
+    
+    lonLo <- bbox[1]
+    lonHi <- bbox[2]
+    latLo <- bbox[3]
+    latHi <- bbox[4]
+    
+    # Matrices of the same dimensions as AOD and DQF
+    lonMatrix <- goesGrid$longitude
+    latMatrix <- goesGrid$latitude
+    
+    # Create a matrix of logicals identifying grid cells within bbox_oregon
+    gridMask <-
+      lonMatrix >= lonLo &
+      lonMatrix <= lonHi &
+      latMatrix >= latLo &
+      latMatrix <= latHi
+    
+    gridMask[is.na(gridMask)] <- FALSE
+    
+    suppressWarnings({
+      # Find the first row in each column inside the bbox
+      iLos <- apply(gridMask, 2, function(x) { min(which(x)) })
+      iLo <- min(iLos) # lots of Inf but that's OK
+      
+      # Last row
+      iHis <- apply(gridMask, 2, function(x) { max(which(x)) })
+      iHi <- max(iHis) # lots of -Inf but that's OK
+      
+      # First column
+      jLos <- apply(gridMask, 1, function(x) { min(which(x)) })
+      jLo <- min(jLos) # lots of Inf but that's OK
+      
+      # Last column
+      jHis <- apply(gridMask, 1, function(x) { max(which(x)) })
+      jHi <- max(jHis) # lots of -Inf but that's OK
+    })
+    
+    # Convert to the variables we pass to ncvar_get()
+    start_x <- iLo
+    count_x <- iHi - iLo + 1
+    
+    start_y <- jLo
+    count_y <- jHi - jLo + 1
+    
+    # Get subset lons and lats from the original grid file
+    varList[["lon"]] <- as.numeric( lonMatrix[iLo:iHi,jLo:jHi] )
+    varList[["lat"]] <- as.numeric( latMatrix[iLo:iHi,jLo:jHi] )
+    
+    # Get AOD using start and count arguments
+    varList[["AOD"]] <- as.numeric(ncdf4::ncvar_get(
+      nc,
+      varid = "AOD",
+      start = c(start_x, start_y),
+      count = c(count_x, count_y),
+      verbose = FALSE,
+      signedbyte = TRUE,
+      collapse_degen = TRUE,
+      raw_datavals = FALSE
+    ))
+    
+    # Get DQF using start and count arguments
+    varList[["DQF"]] <- as.numeric(ncdf4::ncvar_get(
+      nc,
+      varid = "DQF",
+      start = c(start_x, start_y),
+      count = c(count_x, count_y),
+      verbose = FALSE,
+      signedbyte = TRUE,
+      collapse_degen = TRUE,
+      raw_datavals = FALSE
+    ))
+  }
   
   # Create a tibble with all columns but removing rows if any of the columns
   # are missing.
@@ -86,12 +189,3 @@ goesaodc_createTibble <- function(
   
 }
 
-# NOTE: The DQF column of the returned tibble contains NAs. However, it looks
-# NOTE: like the rows with NA for DQF also have NA for AOD, so I am going to
-# NOTE: assume that dropping rows with NA DQF is ok downstream. I checked this
-# NOTE: with:
-# NOTE: 
-# NOTE: mask <- is.na(tbl$DQF)
-# NOTE: summary(tbl$AOD[mask])
-# NOTE: Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
-# NOTE: NA      NA      NA     NaN      NA      NA   24840
