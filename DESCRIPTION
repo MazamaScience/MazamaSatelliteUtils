@@ -20,13 +20,13 @@ Author: Jonathan Callahan [aut, cre],
     Roger Andre [aut]
 Maintainer: Jonathan Callahan <jonathan@mazamascience.com>
 Depends:
-    R (>= 3.1.0)
+    R (>= 3.3.3)
 Imports:
     dplyr,
     lubridate,
     magrittr,
     maptools,
-    MazamaCoreUtils (>= 0.3.10),
+    MazamaCoreUtils (>= 0.4.0),
     ncdf4,
     purrr,
     raster,
