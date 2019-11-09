@@ -5,8 +5,8 @@
 \title{Create a quick plot of a GOES AOD SpatialPointsDataFrame}
 \usage{
 goesaodc_plotSpatialPoints(spatialPoints, var = "AOD", n = 1e+05,
-  colBins = 5, breaks = NULL, pch = 15, cex = 0.5,
-  paletteName = "YlOrRd", add = FALSE)
+  colBins = 5, breaks = NULL, paletteName = "YlOrRd", pch = 15,
+  cex = 0.5, add = FALSE)
 }
 \arguments{
 \item{spatialPoints}{SpatialPointsDataFrame}
@@ -19,11 +19,11 @@ goesaodc_plotSpatialPoints(spatialPoints, var = "AOD", n = 1e+05,
 
 \item{breaks}{vector of color breaks}
 
+\item{paletteName}{RColorBrewer palette name}
+
 \item{pch}{plot character}
 
 \item{cex}{plot symbol scale factor}
-
-\item{paletteName}{RColorBrewer palette name}
 
 \item{add}{logical specifying whether to create a new plot or add to existing}
 }

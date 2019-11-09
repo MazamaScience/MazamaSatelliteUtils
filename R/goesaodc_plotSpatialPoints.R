@@ -35,9 +35,9 @@ goesaodc_plotSpatialPoints <- function(
   n = 1e5,
   colBins = 5,
   breaks = NULL,
+  paletteName = "YlOrRd",
   pch = 15,
   cex = 0.5,
-  paletteName = "YlOrRd",
   add = FALSE
   # TODO: color reverse?
 ) {

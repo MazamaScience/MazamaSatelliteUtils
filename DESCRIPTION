@@ -20,7 +20,7 @@ Author: Jonathan Callahan [aut, cre],
     Roger Andre [aut]
 Maintainer: Jonathan Callahan <jonathan@mazamascience.com>
 Depends:
-    R (>= 3.3.3)
+    R (>= 3.3)
 Imports:
     dplyr,
     lubridate,

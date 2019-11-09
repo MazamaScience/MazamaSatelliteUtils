@@ -39,12 +39,15 @@
 #' }
 
 goesaodc_createSpatialPoints <- function(
-  nc,
+  nc = NULL,
   bbox = NULL,
   dqfLevel = NULL
 ) {
   
   # ----- Validate parameters --------------------------------------------------
+  
+  MazamaCoreUtils::stopIfNull(nc)
+  MazamaCoreUtils::stopIfNull(dqfLevel)
   
   if ( !is.null(dqfLevel) ) {
     if ( !(dqfLevel %in% c(0, 1, 2, 3)) ) {
@@ -54,15 +57,16 @@ goesaodc_createSpatialPoints <- function(
   
   # ----- Filter data ----------------------------------------------------------
   
-  # create tibble
-  tbl <- goesaodc_createTibble(nc)
+  # Create tibble
+  tbl <- goesaodc_createTibble(nc, bbox)
 
+  # Filter based on DQF
   if ( !is.null(dqfLevel) ) {
     tbl <- dplyr::filter(tbl, .data$DQF <= dqfLevel)
   }
   
+  # Filter based on bbox
   if ( !is.null(bbox) ) {
-    
     boundaries <- bboxToVector(bbox)
     lonLo <- boundaries[1]
     lonHi <- boundaries[2]
@@ -77,6 +81,7 @@ goesaodc_createSpatialPoints <- function(
       dplyr::filter(.data$lat <= latHi)
   }
   
+  # Sanity check
   if ( nrow(tbl) == 0 )
     stop("No data for selected region")
   

@@ -90,8 +90,9 @@ goesaodc_createTibble <- function(
   
   # ---- Create Tibble ---------------------------------------------------
   
-  # Build full extent Tibble
   if ( is.null(bbox) ) { 
+    
+    # Build FULL EXTENT tibble
     
     # Get lon and lat from grid file
     varList[["lon"]] <- as.numeric( goesGrid$longitude )
@@ -104,6 +105,7 @@ goesaodc_createTibble <- function(
   } else {
     
     # Build filtered tibble based on BBOX coordinates
+    
     bbox <- bboxToVector(bbox)
     
     lonLo <- bbox[1]
