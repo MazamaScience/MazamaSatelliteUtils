@@ -6,7 +6,7 @@
 \usage{
 maiac_downloadNorthAmerica(tileNumber = NULL, date = NULL,
   time = NULL, julianDate = NULL, product = "MAIACAAOT",
-  baseUrl = "https://portal.nccs.nasa.gov/datashare/maiac/DataRelease/NorthAmerica_2000-2016/")
+  baseUrl = NULL)
 }
 \arguments{
 \item{tileNumber}{number code for tile (eg h01v04).}

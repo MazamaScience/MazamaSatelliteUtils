@@ -5,8 +5,7 @@
 \title{Download or load MAIAC data and return data as a dataframe}
 \usage{
 maiac_loadRawDataframe(tileNumber = NULL, date = NULL, time = NULL,
-  julianDate = NULL, product = "MAIACAAOT",
-  baseUrl = "https://portal.nccs.nasa.gov/datashare/maiac/DataRelease/NorthAmerica_2000-2016/")
+  julianDate = NULL, product = "MAIACAAOT", baseUrl = NULL)
 }
 \arguments{
 \item{tileNumber}{number code for tile (eg h01v04).}
