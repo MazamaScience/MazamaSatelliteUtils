@@ -5,3 +5,5 @@ library(MazamaSpatialUtils)
 
 setSatelliteDataDir("~/Data/Satellite")
 setSpatialDataDir("~/Data/Spatial")
+
+installGoesGrids()

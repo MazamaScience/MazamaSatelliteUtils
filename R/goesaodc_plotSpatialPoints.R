@@ -20,9 +20,15 @@
 #' library(MazamaSatelliteUtils)
 #' 
 #' setSatelliteDataDir("~/Data/Satellite")
-#' netCDF <- system.file("extdata", 
-#'                       "OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc", 
-#'                       package = "MazamaSatelliteUtils")
+#' 
+#' goesaodc_downloadAOD(
+#'   satID = "G16", 
+#'   datetime = "201924918", 
+#'   timezone = "UTC", 
+#'   isJulian = TRUE)
+#'   
+#' netCDF <- "OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc"
+#' 
 #' nc <- goesaodc_openFile(netCDF) 
 #' maps::map("state")
 #' sp <- goesaodc_createSpatialPoints(nc, dqfLevel = 2)
