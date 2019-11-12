@@ -1,0 +1,66 @@
+#' @export
+#' 
+#' @title Creates a GOES grid in satelliteDataDir
+#' 
+#' @param nc open .nc filehandle created with \code{goesaodc_openFile()}
+#' @param grid_filepath filepath location for either goesEastGrid.rda or 
+#' goesWestGrid.rda
+#' 
+#' @description Creates data files with geolocation information for GOES-16 
+#' (East) or GOES-17 (West) satellite products.  Takes an open .nc filehandle
+#'  and reads projection and coordinate grid information from it to create
+#' a GOES East or West grids in the directory previously set with 
+#' \code{setSatelliteDataDir()}.
+#' 
+#' @examples
+#' \donttest{
+#' library(MazamaSatelliteUtils)
+#' 
+#' setSatelliteDataDir("~/Data/Satellite")
+#' outputDir <- getSatelliteDataDir()
+#' 
+#' nc_file <- goesaodc_listFiles(satID = "G16", 
+#'   datetime = "201924918",
+#'   timezone = "UTC",
+#'    isJulian = TRUE)[1]
+#'    
+#' nc <- goesaodc_openFile(nc_file)
+#' G16_filepath <- file.path(outputDir, "goesEastGrid.rda")
+#' 
+#' createGoesGrid(nc, G16_filepath)
+#' 
+#' } 
+
+createGoesGrid <- function (
+  
+  nc = NULL,
+  grid_filepath = NULL
+  
+) {
+  
+  MazamaCoreUtils::stopIfNull(nc)
+  MazamaCoreUtils::stopIfNull(grid_filepath)
+  
+  # Get the projection information
+  projection <- goesaodc_getProjection(nc)
+  
+  # Get the grid dimensions
+  nrow <- length(ncvar_get(nc, varid = "x"))
+  ncol <- length(ncvar_get(nc, varid = "y"))
+  
+  # Create a tibble where each AOD value has an associated location
+  coordGrid <- goesaodc_getCoordGrid(nc)
+  longitude <- coordGrid$lon
+  latitude <- coordGrid$lat
+  
+  # Create a list with longitude and latitude matrices
+  goesGrid <- list(
+    longitude = matrix(longitude, nrow = nrow, ncol = ncol),
+    latitude = matrix(latitude, nrow = nrow, ncol = ncol), 
+    projection = projection
+  )  
+  
+  save(goesGrid, file = grid_filepath)
+
+  return(invisible( c(grid_filepath) ))
+}

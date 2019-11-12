@@ -3,6 +3,7 @@
 export("%>%")
 export(bboxToVector)
 export(bbox_CONUS)
+export(createGoesGrid)
 export(getAttributes)
 export(getDaylightHours)
 export(getSatelliteDataDir)

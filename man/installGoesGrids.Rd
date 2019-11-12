@@ -2,21 +2,18 @@
 % Please edit documentation in R/installGoesGrids.R
 \name{installGoesGrids}
 \alias{installGoesGrids}
-\title{Create GOES grids in satelliteDataDir}
+\title{Installs GOES grids in satelliteDataDir}
 \usage{
 installGoesGrids()
 }
 \description{
 Creates data files with geolocation information for GOES-16 
 (East) and GOES-17 (West) satellite products.  Checks for the presence of
-GOES 16 & GOES 17 .nc (NetCDF) files in /inst/extdata. If present, it
-will read projection and coordinate grid information from them and create
-GOES East and West grids in the directory previously set with 
-\code{setSatelliteDataDir()}.
-
-TODO: Function currently generates warinings:
-"In sqrt(b^2 - 4 * a * c) : NaNs produced"
-Check that we can safely ignore them, or even suppressWarningMessages({ ... })
+GOES 16 & GOES 17 .nc (NetCDF) files in directory previously set by 
+\code{setSatelliteDataDir}. If present, will read projection and 
+coordinate grid information from them and create GOES East and West grids in 
+that directory.  If .nc files are missing, will download appropriate ones 
+and use them to create the grids.
 }
 \examples{
 \donttest{
@@ -25,4 +22,7 @@ library(MazamaSatelliteUtils)
 setSatelliteDataDir("~/Data/Satellite")
 installGoesGrids()
 } 
+}
+\seealso{
+\code{\link{createGoesGrid}}
 }
