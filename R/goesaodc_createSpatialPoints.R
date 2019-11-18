@@ -35,11 +35,13 @@
 #'   datetime = "201924918", 
 #'   timezone = "UTC", 
 #'   isJulian = TRUE)
+#'   
+#' kincade_bbox <- c(-124, -120, 36, 39)   
 #'
 #' netCDF <- "OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc"
 #' nc <- goesaodc_openFile(netCDF)
-#' sp <- goesaodc_createSpatialPoints(nc, dqfLevel = 2)
-#' maps::map("state")
+#' sp <- goesaodc_createSpatialPoints(nc, dqfLevel = 2, bbox = kincade_bbox)
+#' maps::map(database = "state", regions = c("california"))
 #' goesaodc_plotSpatialPoints(sp, cex = 0.3, add = TRUE)
 #' }
 
@@ -60,7 +62,7 @@ goesaodc_createSpatialPoints <- function(
   # ----- Filter data ----------------------------------------------------------
   
   # create tibble
-  tbl <- goesaodc_createTibble(nc)
+  tbl <- goesaodc_createTibble(nc, bbox)
 
   if ( !is.null(dqfLevel) ) {
     tbl <- dplyr::filter(tbl, .data$DQF <= dqfLevel)
