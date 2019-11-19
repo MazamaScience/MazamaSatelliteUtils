@@ -5,8 +5,7 @@
 \title{Download North America MAIAC swath data}
 \usage{
 maiac_loadRaster(tileNumber = NULL, date = NULL, time = NULL,
-  julianDate = NULL, product = "MAIACAAOT",
-  baseUrl = "https://portal.nccs.nasa.gov/datashare/maiac/DataRelease/NorthAmerica_2000-2016/",
+  julianDate = NULL, product = "MAIACAAOT", baseUrl = NULL,
   filePath = NULL, params = "Optical_Depth_055",
   converterPath = "./executables/h4toncff_nc4")
 }

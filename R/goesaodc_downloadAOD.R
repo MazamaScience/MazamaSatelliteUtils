@@ -8,6 +8,8 @@
 #' @param timezone Timezone used to interpret \code{datetime} and \code{endTime}
 #' @param isJulian Logical specifying if \code{datetime} (and optionally 
 #' \code{endTime}) are Julian formatted
+#' @param verbose Logical parameter specifying whether download status should be
+#'  shown.
 #' @param baseUrl Base URL for data queries.
 #'
 #' @description Download all GOES 16 or 17 NetCDF files for the given
@@ -47,6 +49,7 @@ goesaodc_downloadAOD <- function(
   endTime = NULL,
   timezone = "UTC",
   isJulian = FALSE,
+  verbose = FALSE,
   baseUrl = "https://tools-1.airfire.org/Satellite/"
 ) {
   
@@ -122,7 +125,9 @@ goesaodc_downloadAOD <- function(
         MazamaCoreUtils::logger.warn(err_msg)
       }
     } else {
-      print(paste0("Downloaded ", file))
+      if (verbose == TRUE) {
+        print(paste0("Downloaded ", file))
+      }
     }
   }
   

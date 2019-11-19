@@ -1,17 +1,15 @@
 #' @export
 #' 
-#' @title Create GOES grids in satelliteDataDir
+#' @title Installs GOES grids in satelliteDataDir
 #' @description Creates data files with geolocation information for GOES-16 
 #' (East) and GOES-17 (West) satellite products.  Checks for the presence of
-#' GOES 16 & GOES 17 .nc (NetCDF) files in /inst/extdata. If present, it
-#' will read projection and coordinate grid information from them and create
-#' GOES East and West grids in the directory previously set with 
-#' \code{setSatelliteDataDir()}.
+#' GOES 16 & GOES 17 .nc (NetCDF) files in directory previously set by 
+#' \code{setSatelliteDataDir}. If present, will read projection and 
+#' coordinate grid information from them and create GOES East and West grids in 
+#' that directory.  If .nc files are missing, will download appropriate ones 
+#' and use them to create the grids.
 #' 
-#' TODO: Function currently generates warinings:
-#' "In sqrt(b^2 - 4 * a * c) : NaNs produced"
-#' Check that we can safely ignore them, or even suppressWarningMessages({ ... })
-#' 
+#' @seealso \code{\link{createGoesGrid}}
 #' 
 #' @examples
 #' \donttest{
@@ -23,10 +21,10 @@
 
 installGoesGrids <- function(
 ) {
-
+  
   outputDir <- getSatelliteDataDir()
   
-  # ----- GOES-16 --------------------------------------------------------------
+  # ---- Check for GOES-16 grid -----------------------------------------------
   
   filename <- "goesEastGrid.rda"
   G16_filepath <- file.path(outputDir, filename)
@@ -36,46 +34,26 @@ installGoesGrids <- function(
     message(sprintf("Found %s", G16_filepath))
     
   } else {
-    
+    # ---- Download G16 .nc files and create goesEastGrid.rda ------------------ 
     message(sprintf("Creating %s ...", G16_filepath))
+    goesaodc_downloadAOD(satID = "G16", 
+                         datetime = "201924918",
+                         timezone = "UTC",
+                         isJulian = TRUE)
     
-    # Get a NetCDF handle for the package internal GOES-16 dataset
-    nc_filepath <- system.file(
-      "extdata", 
-      "OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc", 
-      package = "MazamaSatelliteUtils"
-    )
-    if ( file.exists(nc_filepath) ) {
-      nc <- ncdf4::nc_open(nc_filepath)
-    } else {
-      stop(paste0("GOES-16 example file missing from package data."))
-    }
+    nc_file <- goesaodc_listFiles(satID = "G16", 
+                                  datetime = "201924918",
+                                  timezone = "UTC",
+                                  isJulian = TRUE)[1]
     
-    # Get the projection information
-    projection <- goesaodc_getProjection(nc)
+    nc <- goesaodc_openFile(nc_file)
+    createGoesGrid(nc, G16_filepath)
     
-    # Get the grid dimensions
-    nrow <- length(ncvar_get(nc, varid = "x"))
-    ncol <- length(ncvar_get(nc, varid = "y"))
-    
-    # Create a tibble where each AOD value has an associated location
-    coordGrid <- goesaodc_getCoordGrid(nc)
-    longitude <- coordGrid$lon
-    latitude <- coordGrid$lat
-    
-    # Create a list with longitude and latitude matrices
-    goesEastGrid <- list(
-      longitude = matrix(longitude, nrow = nrow, ncol = ncol),
-      latitude = matrix(latitude, nrow = nrow, ncol = ncol), 
-      projection = projection
-    )  
-    
-    save(goesEastGrid, file = G16_filepath)
     message(paste0("... done!"))
     
   }
   
-  # ----- GOES-17 --------------------------------------------------------------
+  # ---- Check for GOES-17 grid -----------------------------------------------
   
   filename <- "goesWestGrid.rda"
   G17_filepath <- file.path(outputDir, filename)
@@ -85,41 +63,20 @@ installGoesGrids <- function(
     message(sprintf("Found %s", G17_filepath))
     
   } else {
-    
+  # ---- Download G17 .nc files and create goesEastGrid.rda ------------------
     message(sprintf("Creating %s ...", G17_filepath))
+    goesaodc_downloadAOD(satID = "G17", 
+                         datetime = "201924918",
+                         timezone = "UTC",
+                         isJulian = TRUE)
     
-    # Get a NetCDF handle for the package internal GOES-17 dataset
-    nc_filepath <- system.file(
-      "extdata", 
-      "OR_ABI-L2-AODC-M6_G17_s20192491826196_e20192491828569_c20192491830494.nc", 
-      package = "MazamaSatelliteUtils"
-    )
-    if ( file.exists(nc_filepath) ) {
-      nc <- ncdf4::nc_open(nc_filepath)
-    } else {
-      stop(paste0("GOES-17 example file missing from package data."))
-    }
-
-    # Get the projection information
-    projection <- goesaodc_getProjection(nc)
+    nc_file <- goesaodc_listFiles(satID = "G17", 
+                                  datetime = "201924918",
+                                  timezone = "UTC",
+                                  isJulian = TRUE)[1]
     
-    # Get the grid dimensions
-    nrow <- length(ncvar_get(nc, varid = "x"))
-    ncol <- length(ncvar_get(nc, varid = "y"))
-    
-    # Create a tibble where each AOD value has an associated location
-    coordGrid <- goesaodc_getCoordGrid(nc)
-    longitude <- coordGrid$lon
-    latitude <- coordGrid$lat
-    
-    # Create a list with longitude and latitude matrices
-    goesWestGrid <- list(
-      longitude = matrix(longitude, nrow = nrow, ncol = ncol),
-      latitude = matrix(latitude, nrow = nrow, ncol = ncol), 
-      projection = projection
-    ) 
-    
-    save(goesWestGrid, file = G17_filepath)
+    nc <- goesaodc_openFile(nc_file)
+    createGoesGrid(nc, G17_filepath)
     message(paste0("... done!"))
     
   }

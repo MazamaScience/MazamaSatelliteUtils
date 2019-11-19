@@ -15,6 +15,7 @@
 #' @param timezone Timezone in which to interpret the \code{datetime}.
 #' @param isJulian Logical value determining whether datetime should be 
 #' interpreted as a Julian date with day of year as a decimal number.
+#' @param verbose Logical specifies whether to show status of file download.
 #' 
 #' @return Vector of filenames.
 #' 
@@ -44,7 +45,8 @@ goesaodc_downloadDaytimeAOD <- function (
   latitude = NULL,
   bbox = NULL,
   timezone = NULL,
-  isJulian = FALSE
+  isJulian = FALSE,
+  verbose = FALSE
 ) {
   
   # ---- Get the sunrise and sunset times --------------------------------------
@@ -63,6 +65,7 @@ goesaodc_downloadDaytimeAOD <- function (
   goesaodc_downloadAOD(
     satID = satID,
     datetime = sunrise,
-    endTime = sunset)
+    endTime = sunset,
+    verbose = verbose)
   
 }

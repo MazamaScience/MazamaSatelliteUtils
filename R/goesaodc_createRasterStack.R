@@ -14,6 +14,7 @@
 #' \code{endTime}) are Julian formatted
 #' @param fileList optional list of files to stack. Useful when working with 
 #' custom time ranges. 
+#' @param verbose Logical specifies whether to print stacking information.
 #'
 #' @description  Create a \code{RasterStack} from GOES AOD data files for the
 #' date and hour specified by \code{datetime}. Each \code{RasterLayer} contains
@@ -77,7 +78,8 @@ goesaodc_createRasterStack <- function(
   dqfLevel = NULL,
   timezone = 'UTC',
   isJulian = FALSE,
-  fileList = NULL
+  fileList = NULL,
+  verbose = FALSE
 ) {
   # ---- Check that mandatory parameters are present ---------------------------
   MazamaCoreUtils::stopIfNull(satID)
@@ -108,7 +110,11 @@ goesaodc_createRasterStack <- function(
   if ( is.null(fileList) ) {
     
     # ---- Download GOES AOD Files ---------------------------------------------
-    goesaodc_downloadAOD(satID, datetime, endTime, timezone = timezone)
+    goesaodc_downloadAOD(satID = satID, 
+                         datetime = datetime, 
+                         endTime = endTime, 
+                         timezone = timezone, 
+                         verbose = verbose)
     
     # ---- Read the local SatelliteDir for files that match parameters ---------
     fileList <- goesaodc_listFiles(satID = satID, 
@@ -148,7 +154,9 @@ goesaodc_createRasterStack <- function(
       # ---- Add to the rasterStack the raster created from this .nc file ------
       aod_raster <- goes_raster[[var]] # just keep the variable specified
       rasterStack <- raster::stack(rasterStack, aod_raster) # add to the stack
-      print(paste0("Stacked: ", nc_file))
+      if ( verbose == TRUE) {
+        print(paste0("Stacked: ", nc_file))
+      }
     }
   }
   # ---- Write the Z-values and names to the rasterStack ---------------------

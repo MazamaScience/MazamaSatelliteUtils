@@ -9,6 +9,7 @@
 #' @param bbox Bounding box for the region of interest.
 #' @param dqfLevel Data quality flag level.
 #' @param timezone timezone in which to interpret the \code{datetime}.
+#' @param verbose show progress of raster stacking. 
 #'
 #' @description Create a \code{RasterStack} from GOES AOD data files for the
 #' date specified by \code{datetime}. Each \code{RasterLayer} contains
@@ -85,7 +86,8 @@ goesaodc_createDaytimeRasterStack <- function(
   res = 0.1,
   bbox = NULL,
   dqfLevel = NULL,
-  timezone = NULL
+  timezone = NULL,
+  verbose = FALSE
 ) {
   
   # ----- Validate parameters --------------------------------------------------
@@ -108,7 +110,8 @@ goesaodc_createDaytimeRasterStack <- function(
   dayStack <- goesaodc_createRasterStack(satID = satID, 
                                          datetime = sunrise,
                                          endTime = sunset,
-                                         dqfLevel = dqfLevel)
+                                         dqfLevel = dqfLevel,
+                                         verbose = verbose)
   
   # ----- Return ---------------------------------------------------------------
   return(dayStack)

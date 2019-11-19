@@ -40,13 +40,16 @@ isDaylight(
 
 # BBOX AS CREATED BY raster::extent()
 
-G16_filepath <- system.file(
-  "extdata", 
-  "OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc", 
-  package = "MazamaSatelliteUtils"
-)
+goesaodc_downloadAOD(
+  satID = "G16", 
+  datetime = "201924918", 
+  timezone = "UTC", 
+  isJulian = TRUE)
+  
+G16_filepath <- 
+  "OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc"
 
-nc <- ncdf4::nc_open(G16_filepath)
+nc <- goesaodc_openFile(G16_filepath)
 
 raster <- goesaodc_createRaster(nc, res = 0.1, dqfLevel = 2)
 
