@@ -69,7 +69,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MazamaSatelliteUtils</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.10</span>
       </span>
     </div>
 
@@ -155,13 +155,16 @@
 )</div><div class='output co'>#&gt; [1] TRUE</div><div class='input'>
 <span class='co'># BBOX AS CREATED BY raster::extent()</span>
 
-<span class='no'>G16_filepath</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(
-  <span class='st'>"extdata"</span>,
-  <span class='st'>"OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc"</span>,
-  <span class='kw'>package</span> <span class='kw'>=</span> <span class='st'>"MazamaSatelliteUtils"</span>
-)
+<span class='fu'><a href='goesaodc_downloadAOD.html'>goesaodc_downloadAOD</a></span>(
+  <span class='kw'>satID</span> <span class='kw'>=</span> <span class='st'>"G16"</span>,
+  <span class='kw'>datetime</span> <span class='kw'>=</span> <span class='st'>"201924918"</span>,
+  <span class='kw'>timezone</span> <span class='kw'>=</span> <span class='st'>"UTC"</span>,
+  <span class='kw'>isJulian</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
 
-<span class='no'>nc</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>ncdf4</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/ncdf4/man/nc_open.html'>nc_open</a></span>(<span class='no'>G16_filepath</span>)
+<span class='no'>G16_filepath</span> <span class='kw'>&lt;-</span>
+  <span class='st'>"OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc"</span>
+
+<span class='no'>nc</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='goesaodc_openFile.html'>goesaodc_openFile</a></span>(<span class='no'>G16_filepath</span>)
 
 <span class='no'>raster</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='goesaodc_createRaster.html'>goesaodc_createRaster</a></span>(<span class='no'>nc</span>, <span class='kw'>res</span> <span class='kw'>=</span> <span class='fl'>0.1</span>, <span class='kw'>dqfLevel</span> <span class='kw'>=</span> <span class='fl'>2</span>)
 

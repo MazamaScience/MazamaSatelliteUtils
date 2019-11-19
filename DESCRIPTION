@@ -1,6 +1,6 @@
 Type: Package
 Package: MazamaSatelliteUtils
-Version: 0.2.9
+Version: 0.2.10
 Title: Utilities for Working with Model and Satellite Data as Rasters
 Authors@R: c(
     person("Jonathan", "Callahan", email="jonathan.s.callahan@gmail.com", role=c("aut","cre")),
@@ -22,6 +22,7 @@ Maintainer: Jonathan Callahan <jonathan@mazamascience.com>
 Depends:
     R (>= 3.3)
 Imports:
+    abind,
     dplyr,
     lubridate,
     magrittr,

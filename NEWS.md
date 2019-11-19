@@ -1,3 +1,7 @@
+# MazamaSatelliteUtils 0.2.10
+
+* New `goesaodc_createNativeGrid()` function
+
 # MazamaSatelliteUtils 0.2.9
 
 * New `getDaylightHours()` function.

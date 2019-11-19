@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Create a tibble from ncdf4 handle — goesaodc_createTibble • MazamaSatelliteUtils</title>
+<title>Create a nativeGrid object — goesaodc_createNativeGrid • MazamaSatelliteUtils</title>
 
 
 <!-- jquery -->
@@ -35,9 +35,15 @@
 
 
 
-<meta property="og:title" content="Create a tibble from ncdf4 handle — goesaodc_createTibble" />
-<meta property="og:description" content="Create a tibble with columns: AOD, DQF, lon and lat.
-This information is sufficient to plot as points or create a raster object." />
+<meta property="og:title" content="Create a nativeGrid object — goesaodc_createNativeGrid" />
+<meta property="og:description" content="Creates a nativeGrid object with a list of list of 
+2-D arrays for: lon, lat, AOD, and DQF. The arrays are defined 
+in native i, j coordinates and are thus curvilinear as opposed to 
+rectilinear geospatial coordinates.s
+The nc parameter can be either a single netcdf handle or a list
+of handles. If a list of handles is provided, grid cell values for AOD and
+DQF will be averaged across all nc handles. This  &quot;native grid&quot; averaging 
+provides a simple way to convert 5-minute data into an hourly average." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -104,17 +110,24 @@ This information is sufficient to plot as points or create a raster object." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Create a tibble from ncdf4 handle</h1>
+    <h1>Create a nativeGrid object</h1>
     
-    <div class="hidden name"><code>goesaodc_createTibble.Rd</code></div>
+    <div class="hidden name"><code>goesaodc_createNativeGrid.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Create a tibble with columns: AOD, DQF, lon and lat.
-This information is sufficient to plot as points or create a raster object.</p>
+    <p>Creates a <em>nativeGrid</em> object with a list of list of 
+2-D arrays for: lon, lat, AOD, and DQF. The arrays are defined 
+in native i, j coordinates and are thus curvilinear as opposed to 
+rectilinear geospatial coordinates.s</p>
+<p>The <code>nc</code> parameter can be either a single netcdf handle or a list
+of handles. If a list of handles is provided, grid cell values for AOD and
+DQF will be averaged across all nc handles. This  "native grid" averaging 
+provides a simple way to convert 5-minute data into an hourly average.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>goesaodc_createTibble</span>(<span class='kw'>nc</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>bbox</span> <span class='kw'>=</span> <span class='no'>bbox_CONUS</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='fu'>goesaodc_createNativeGrid</span>(<span class='kw'>nc</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>bbox</span> <span class='kw'>=</span> <span class='no'>bbox_CONUS</span>,
+  <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -135,48 +148,44 @@ This information is sufficient to plot as points or create a raster object.</p>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Tibble (dataframe) with NetCDF variables and associated locations.</p>
+    <p>List with lon, lat, AOD and DQF arrays.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
-<span class='co'># Tibble based on full extent of Gridfile</span>
+<span class='co'># Process full extent of Gridfile</span>
 <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>MazamaSatelliteUtils</span>)
 
 <span class='fu'><a href='setSatelliteDataDir.html'>setSatelliteDataDir</a></span>(<span class='st'>"~/Data/Satellite"</span>)
 
 <span class='fu'><a href='goesaodc_downloadAOD.html'>goesaodc_downloadAOD</a></span>(
-  <span class='kw'>satID</span> <span class='kw'>=</span> <span class='st'>"G16"</span>,
-  <span class='kw'>datetime</span> <span class='kw'>=</span> <span class='st'>"201924918"</span>,
-  <span class='kw'>timezone</span> <span class='kw'>=</span> <span class='st'>"UTC"</span>,
-  <span class='kw'>isJulian</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
+  <span class='kw'>satID</span> <span class='kw'>=</span> <span class='st'>"G17"</span>,
+  <span class='kw'>datetime</span> <span class='kw'>=</span> <span class='st'>"2019-10-27 14:00"</span>,
+  <span class='kw'>timezone</span> <span class='kw'>=</span> <span class='st'>"UTC"</span>
+)
 
-<span class='no'>ncFile</span> <span class='kw'>&lt;-</span> <span class='st'>"OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc"</span>
+<span class='no'>files</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='goesaodc_listFiles.html'>goesaodc_listFiles</a></span>(<span class='st'>"G17"</span>, <span class='st'>"2019-10-27 14:00"</span>, <span class='kw'>timezone</span> <span class='kw'>=</span> <span class='st'>"America/Los_Angeles"</span>)
 
-<span class='no'>nc</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='goesaodc_openFile.html'>goesaodc_openFile</a></span>(<span class='no'>ncFile</span>)
+<span class='no'>ncList</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>()
+<span class='kw'>for</span> ( <span class='no'>file</span> <span class='kw'>in</span> <span class='no'>files</span> ) {
+  <span class='no'>label</span> <span class='kw'>&lt;-</span>
+    <span class='no'>file</span> <span class='kw'>%&gt;%</span>
+    <span class='fu'><a href='goesaodc_convertFilenameToDatetime.html'>goesaodc_convertFilenameToDatetime</a></span>() <span class='kw'>%&gt;%</span>
+    <span class='kw pkg'>MazamaCoreUtils</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/MazamaCoreUtils/man/timeStamp.html'>timeStamp</a></span>(<span class='kw'>unit</span> <span class='kw'>=</span> <span class='st'>"sec"</span>, <span class='kw'>timezone</span> <span class='kw'>=</span> <span class='st'>"UTC"</span>)
+  <span class='no'>ncList</span><span class='kw'>[[</span><span class='no'>label</span>]] <span class='kw'>&lt;-</span> <span class='fu'><a href='goesaodc_openFile.html'>goesaodc_openFile</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/basename.html'>basename</a></span>(<span class='no'>file</span>))
+}
 
-<span class='no'>tbl</span> <span class='kw'>&lt;-</span> <span class='fu'>goesaodc_createTibble</span>(<span class='no'>nc</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span>(<span class='no'>tbl</span>)</div><div class='output co'>#&gt; <span style='color: #555555;'># A tibble: 6 x 4</span><span>
-#&gt;     lon   lat   AOD   DQF
-#&gt;   </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span>
-#&gt; </span><span style='color: #555555;'>1</span><span> -</span><span style='color: #BB0000;'>76.1</span><span>  50.0 0.271     2
-#&gt; </span><span style='color: #555555;'>2</span><span> -</span><span style='color: #BB0000;'>75.6</span><span>  50.0 0.911     2
-#&gt; </span><span style='color: #555555;'>3</span><span> -</span><span style='color: #BB0000;'>75.5</span><span>  50.0 0.907     2
-#&gt; </span><span style='color: #555555;'>4</span><span> -</span><span style='color: #BB0000;'>75.3</span><span>  50.0 0.139     2
-#&gt; </span><span style='color: #555555;'>5</span><span> -</span><span style='color: #BB0000;'>75.2</span><span>  50.0 0.147     2
-#&gt; </span><span style='color: #555555;'>6</span><span> -</span><span style='color: #BB0000;'>75.0</span><span>  50.0 0.764     2</div><div class='input'>
-<span class='co'># Tibble based on BBOX filtered extent of tibble</span>
-<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>MazamaSatelliteUtils</span>)
+<span class='no'>kincade_bbox</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>124</span>, -<span class='fl'>120</span>, <span class='fl'>36</span>, <span class='fl'>39</span>)
 
-<span class='no'>ncFile</span> <span class='kw'>&lt;-</span> <span class='st'>"OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc"</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/layout.html'>layout</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='fl'>2</span>)))
 
-<span class='no'>nc</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='goesaodc_openFile.html'>goesaodc_openFile</a></span>(<span class='no'>ncFile</span>)
+<span class='no'>nativeGrid</span> <span class='kw'>&lt;-</span> <span class='fu'>goesaodc_createNativeGrid</span>(<span class='no'>ncList</span>[<span class='fl'>1</span>], <span class='no'>kincade_bbox</span>)
+<span class='fu'><a href='https://rdrr.io/r/graphics/image.html'>image</a></span>(<span class='no'>nativeGrid</span>$<span class='no'>AOD</span>[,<span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>ncol</a></span>(<span class='no'>nativeGrid</span>$<span class='no'>AOD</span>):<span class='fl'>1</span>])
+<span class='fu'><a href='https://rdrr.io/r/graphics/title.html'>title</a></span>(<span class='st'>"Single timestep"</span>)
 
-<span class='co'># 2019 Kincade fire in Sonoma county</span>
-<span class='no'>bbox</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>124</span>, -<span class='fl'>120</span>, <span class='fl'>36</span>, <span class='fl'>39</span>)
-
-<span class='no'>filtered_tbl</span> <span class='kw'>&lt;-</span> <span class='fu'>goesaodc_createTibble</span>(<span class='no'>nc</span>, <span class='no'>bbox</span>)
-
-<span class='co'># }</span></div></span></pre>
+<span class='no'>nativeGrid</span> <span class='kw'>&lt;-</span> <span class='fu'>goesaodc_createNativeGrid</span>(<span class='no'>ncList</span>, <span class='no'>kincade_bbox</span>)
+<span class='fu'><a href='https://rdrr.io/r/graphics/image.html'>image</a></span>(<span class='no'>nativeGrid</span>$<span class='no'>AOD</span>[,<span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>ncol</a></span>(<span class='no'>nativeGrid</span>$<span class='no'>AOD</span>):<span class='fl'>1</span>])</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/title.html'>title</a></span>(<span class='st'>"Average of 12 timesteps"</span>)</div><div class='img'><img src='goesaodc_createNativeGrid-1.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='fu'><a href='https://rdrr.io/r/graphics/layout.html'>layout</a></span>(<span class='fl'>1</span>)
+<span class='co'># }</span></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

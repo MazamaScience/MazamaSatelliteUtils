@@ -75,7 +75,7 @@ timezone is not specified, &quot;UTC&quot; timezone is assumed." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MazamaSatelliteUtils</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.10</span>
       </span>
     </div>
 
@@ -125,7 +125,7 @@ period between <code>datetime</code> and <code>endTime</code> will be downloaded
     </div>
 
     <pre class="usage"><span class='fu'>goesaodc_downloadAOD</span>(<span class='kw'>satID</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>datetime</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>endTime</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>timezone</span> <span class='kw'>=</span> <span class='st'>"UTC"</span>, <span class='kw'>julian</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>timezone</span> <span class='kw'>=</span> <span class='st'>"UTC"</span>, <span class='kw'>isJulian</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
   <span class='kw'>baseUrl</span> <span class='kw'>=</span> <span class='st'>"https://tools-1.airfire.org/Satellite/"</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -148,9 +148,14 @@ period between <code>datetime</code> and <code>endTime</code> will be downloaded
       <td><p>Timezone used to interpret <code>datetime</code> and <code>endTime</code></p></td>
     </tr>
     <tr>
-      <th>julian</th>
+      <th>isJulian</th>
       <td><p>Logical specifying if <code>datetime</code> (and optionally 
 <code>endTime</code>) are Julian formatted</p></td>
+    </tr>
+    <tr>
+      <th>verbose</th>
+      <td><p>Logical parameter specifying whether download status should be
+shown.</p></td>
     </tr>
     <tr>
       <th>baseUrl</th>
@@ -180,7 +185,7 @@ period between <code>datetime</code> and <code>endTime</code> will be downloaded
 
 <span class='fu'>goesaodc_downloadAOD</span>(<span class='kw'>satID</span> <span class='kw'>=</span> <span class='st'>"G16"</span>,
 <span class='kw'>datetime</span> <span class='kw'>=</span> <span class='st'>"201924915"</span>,
-<span class='kw'>julian</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
+<span class='kw'>isJulian</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
 
 <span class='co'># }</span></div></pre>
   </div>

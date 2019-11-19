@@ -2,22 +2,31 @@
 % Please edit documentation in R/goesaodc_createNativeGrid.R
 \name{goesaodc_createNativeGrid}
 \alias{goesaodc_createNativeGrid}
-\title{Creates list of tibbles from a list of .nc files}
+\title{Create a nativeGrid object}
 \usage{
-goesaodc_createNativeGrid(nc_files = NULL, bbox = NULL)
+goesaodc_createNativeGrid(nc = NULL, bbox = bbox_CONUS,
+  verbose = FALSE)
 }
 \arguments{
-\item{bbox}{geographic extents to limit data ingestion from NetCDF files to}
+\item{nc}{ncdf4 handle or a list of handles.}
 
-\item{ncFiles}{ncdf4 handle}
+\item{bbox}{Geographic extent of area of interest; Defaults to CONUS.}
+
+\item{verbose}{Logical flag to increase messages while processing data.}
 }
 \value{
-list of Tibbles (dataframe) with NetCDF variables and associated 
-locations. List names correspond to timestamps of files in input list.
+List with lon, lat, AOD and DQF arrays.
 }
 \description{
-Create a list of tibbles with columns: AOD, DQF, lon and lat.
-This information is sufficient to plot as points or create a raster object.
+Creates a \emph{nativeGrid} object with a list of list of 
+2-D arrays for: lon, lat, AOD, and DQF. The arrays are defined 
+in native i, j coordinates and are thus curvilinear as opposed to 
+rectilinear geospatial coordinates.s
+
+The \code{nc} parameter can be either a single netcdf handle or a list
+of handles. If a list of handles is provided, grid cell values for AOD and
+DQF will be averaged across all nc handles. This  "native grid" averaging 
+provides a simple way to convert 5-minute data into an hourly average.
 }
 \examples{
 \donttest{
@@ -27,32 +36,34 @@ library(MazamaSatelliteUtils)
 setSatelliteDataDir("~/Data/Satellite")
 
 goesaodc_downloadAOD(
-  satID = "G16", 
-  datetime = "201930019",
-  endtime = "2019300211", 
-  timezone = "UTC", 
-  isJulian = TRUE)
+  satID = "G17", 
+  datetime = "2019-10-27 14:00",
+  timezone = "UTC"
+)
 
-my_files <- c("OR_ABI-L2-AODC-M6_G16_s20193001901344_e20193001904117_c20193001907158.nc")
+files <- goesaodc_listFiles("G17", "2019-10-27 14:00", timezone = "America/Los_Angeles")
 
-tbl_list <- goesaodc_createNativeGrid(my_files)
-head(tbl_list)
-
-# Tibble based on BBOX filtered extent of tibble
-library(MazamaSatelliteUtils)
-
-setSatelliteDataDir("~/Data/Satellite")
-
-my_files <- c("OR_ABI-L2-AODC-M6_G16_s20193001901344_e20193001904117_c20193001907158.nc",
-              "OR_ABI-L2-AODC-M6_G17_s20193002116196_e20193002118569_c20193002121014.nc")
+ncList <- list()
+for ( file in files ) {
+  label <- 
+    file \%>\%
+    goesaodc_convertFilenameToDatetime() \%>\%
+    MazamaCoreUtils::timeStamp(unit = "sec", timezone = "UTC")
+  ncList[[label]] <- goesaodc_openFile(basename(file))
+}
 
 kincade_bbox <- c(-124, -120, 36, 39)
 
-filtered_list <- goesaodc_createNativeGrid(
-  my_files,
-  bbox = kincade_bbox)
-  
-head(filtered_list)
+layout(matrix(seq(2)))
 
+nativeGrid <- goesaodc_createNativeGrid(ncList[1], kincade_bbox)
+image(nativeGrid$AOD[,ncol(nativeGrid$AOD):1])
+title("Single timestep")
+
+nativeGrid <- goesaodc_createNativeGrid(ncList, kincade_bbox)
+image(nativeGrid$AOD[,ncol(nativeGrid$AOD):1])
+title("Average of 12 timesteps")
+
+layout(1)
 }
 }

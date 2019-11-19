@@ -4,12 +4,14 @@
 \alias{goesaodc_createTibble}
 \title{Create a tibble from ncdf4 handle}
 \usage{
-goesaodc_createTibble(nc = NULL, bbox = NULL)
+goesaodc_createTibble(nc = NULL, bbox = bbox_CONUS, verbose = FALSE)
 }
 \arguments{
-\item{nc}{ncdf4 handle}
+\item{nc}{ncdf4 handle or a list of handles.}
 
-\item{bbox}{geographic extents to limit data ingestion from NetCDF}
+\item{bbox}{Geographic extent of area of interest; Defaults to CONUS.}
+
+\item{verbose}{Logical flag to increase messages while processing data.}
 }
 \value{
 Tibble (dataframe) with NetCDF variables and associated locations.
@@ -45,12 +47,10 @@ ncFile <- "OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127
 
 nc <- goesaodc_openFile(ncFile)
 
-kincade_bbox <- c(-124, -120, 36, 39)
+# 2019 Kincade fire in Sonoma county
+bbox <- c(-124, -120, 36, 39)
 
-filtered_tbl <- goesaodc_createTibble(
-  nc,
-  bbox = kincade_bbox
-)
+filtered_tbl <- goesaodc_createTibble(nc, bbox)
 
 }
 }

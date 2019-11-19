@@ -67,7 +67,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MazamaSatelliteUtils</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.10</span>
       </span>
     </div>
 
@@ -146,6 +146,12 @@
       </tr><tr>
         
         <td>
+          <p><code><a href="createGoesGrid.html">createGoesGrid()</a></code> </p>
+        </td>
+        <td><p>Creates a GOES grid in satelliteDataDir</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="getAttributes.html">getAttributes()</a></code> </p>
         </td>
         <td><p>Returns attributes from a netCDF file</p></td>
@@ -171,9 +177,21 @@ location</p></td>
       </tr><tr>
         
         <td>
+          <p><code><a href="goesaodc_convertFilenameToDatetime.html">goesaodc_convertFilenameToDatetime()</a></code> </p>
+        </td>
+        <td><p>Get the scan start time from a GOES AODC netCDF file name</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="goesaodc_createDaytimeRasterStack.html">goesaodc_createDaytimeRasterStack()</a></code> </p>
         </td>
         <td><p>Create a daytime RasterStack for a specified date</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="goesaodc_createNativeGrid.html">goesaodc_createNativeGrid()</a></code> </p>
+        </td>
+        <td><p>Create a nativeGrid object</p></td>
       </tr><tr>
         
         <td>
@@ -207,6 +225,17 @@ location</p></td>
       </tr><tr>
         
         <td>
+          <p><code><a href="goesaodc_downloadDaytimeAOD.html">goesaodc_downloadDaytimeAOD()</a></code> </p>
+        </td>
+        <td><p>Download GOES-16 or GOES-17 AOD data for the daylight hours of a 
+specific date and location.
+
+#' @description Download all daylight files available to directory specified 
+with <code>setSatelliteDir</code>.  See <code>getDaylightHours()</code> for details 
+regarding how daylight hours are calculated.</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="goesaodc_getCoordBounds.html">goesaodc_getCoordBounds()</a></code> </p>
         </td>
         <td><p>Determines the x and y bounds (in radians) for a given netcdf handle</p></td>
@@ -226,15 +255,16 @@ netcdf handle</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="goesaodc_getStartTime.html">goesaodc_getStartTime()</a></code> </p>
-        </td>
-        <td><p>Get the scan start time from a GOES AODC netCDF file name</p></td>
-      </tr><tr>
-        
-        <td>
           <p><code><a href="goesaodc_isGoesProjection.html">goesaodc_isGoesProjection()</a></code> </p>
         </td>
         <td><p>Check if `nc` projection is GOES projection</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="goesaodc_listDaytimeFiles.html">goesaodc_listDaytimeFiles()</a></code> </p>
+        </td>
+        <td><p>List GOES AOD files that are available for a specific date and 
+location during the hours between sunlight and sunset.</p></td>
       </tr><tr>
         
         <td>
@@ -258,7 +288,7 @@ netcdf handle</p></td>
         <td>
           <p><code><a href="installGoesGrids.html">installGoesGrids()</a></code> </p>
         </td>
-        <td><p>Create GOES grids in satelliteDataDir</p></td>
+        <td><p>Installs GOES grids in satelliteDataDir</p></td>
       </tr><tr>
         
         <td>

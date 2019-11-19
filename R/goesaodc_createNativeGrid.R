@@ -1,15 +1,22 @@
 #' @export
 #' 
-#' @title Creates list of tibbles from a list of .nc files
+#' @title Create a nativeGrid object
 #' 
-#' @param ncFiles ncdf4 handle
-#' @param bbox geographic extents to limit data ingestion from NetCDF files to
+#' @param nc ncdf4 handle or a list of handles.
+#' @param bbox Geographic extent of area of interest; Defaults to CONUS.
+#' @param verbose Logical flag to increase messages while processing data.
 #' 
-#' @description Create a list of tibbles with columns: AOD, DQF, lon and lat.
-#' This information is sufficient to plot as points or create a raster object.
+#' @description Creates a \emph{nativeGrid} object with a list of list of 
+#' 2-D arrays for: lon, lat, AOD, and DQF. The arrays are defined 
+#' in native i, j coordinates and are thus curvilinear as opposed to 
+#' rectilinear geospatial coordinates.s
 #' 
-#' @return list of Tibbles (dataframe) with NetCDF variables and associated 
-#' locations. List names correspond to timestamps of files in input list.
+#' The \code{nc} parameter can be either a single netcdf handle or a list
+#' of handles. If a list of handles is provided, grid cell values for AOD and
+#' DQF will be averaged across all nc handles. This  "native grid" averaging 
+#' provides a simple way to convert 5-minute data into an hourly average.
+#' 
+#' @return List with lon, lat, AOD and DQF arrays.
 #
 #' @examples
 #' \donttest{
@@ -19,191 +26,261 @@
 #' setSatelliteDataDir("~/Data/Satellite")
 #' 
 #' goesaodc_downloadAOD(
-#'   satID = "G16", 
-#'   datetime = "201930019",
-#'   endtime = "2019300211", 
-#'   timezone = "UTC", 
-#'   isJulian = TRUE)
+#'   satID = "G17", 
+#'   datetime = "2019-10-27 14:00",
+#'   timezone = "UTC"
+#' )
 #'
-#' my_files <- c("OR_ABI-L2-AODC-M6_G16_s20193001901344_e20193001904117_c20193001907158.nc")
+#' files <- goesaodc_listFiles("G17", "2019-10-27 14:00", timezone = "America/Los_Angeles")
 #' 
-#' tbl_list <- goesaodc_createNativeGrid(my_files)
-#' head(tbl_list)
-#' 
-#' # Tibble based on BBOX filtered extent of tibble
-#' library(MazamaSatelliteUtils)
-#' 
-#' setSatelliteDataDir("~/Data/Satellite")
-#' 
-#' my_files <- c("OR_ABI-L2-AODC-M6_G16_s20193001901344_e20193001904117_c20193001907158.nc",
-#'               "OR_ABI-L2-AODC-M6_G17_s20193002116196_e20193002118569_c20193002121014.nc")
+#' ncList <- list()
+#' for ( file in files ) {
+#'   label <- 
+#'     file %>%
+#'     goesaodc_convertFilenameToDatetime() %>%
+#'     MazamaCoreUtils::timeStamp(unit = "sec", timezone = "UTC")
+#'   ncList[[label]] <- goesaodc_openFile(basename(file))
+#' }
 #'
 #' kincade_bbox <- c(-124, -120, 36, 39)
 #' 
-#' filtered_list <- goesaodc_createNativeGrid(
-#'   my_files,
-#'   bbox = kincade_bbox)
-#'   
-#' head(filtered_list)
+#' layout(matrix(seq(2)))
 #' 
+#' nativeGrid <- goesaodc_createNativeGrid(ncList[1], kincade_bbox)
+#' image(nativeGrid$AOD[,ncol(nativeGrid$AOD):1])
+#' title("Single timestep")
+#' 
+#' nativeGrid <- goesaodc_createNativeGrid(ncList, kincade_bbox)
+#' image(nativeGrid$AOD[,ncol(nativeGrid$AOD):1])
+#' title("Average of 12 timesteps")
+#'
+#' layout(1)
 #' }
 
 goesaodc_createNativeGrid <- function (
-  nc_files = NULL,
-  bbox = NULL
+  nc = NULL,
+  bbox = bbox_CONUS,
+  verbose = FALSE
 ) {
-
+  
   # ----- Validate parameters --------------------------------------------------
   
-  MazamaCoreUtils::stopIfNull(nc_files)
+  MazamaCoreUtils::stopIfNull(nc)
+  MazamaCoreUtils::stopIfNull(bbox)
   
-  tibbleList <- list()
+  if ( "list" %in% class(nc) ) {
+    ncList <- nc
+  } else if ( "ncdf4" %in% class(nc) ) {
+    ncList <- list(nc)
+  } else {
+    stop("Parameter 'nc' must be of type 'list' or 'ncdf4'")
+  }
   
-  for ( i in seq_along(nc_files) ) {
+  # Guarantee they all refer to the same satellite
+  satIDs <- sapply(
+    ncList,
+    function(x) { ncdf4::ncatt_get(x, varid = 0, attname = "platform_ID")$value }
+  )
+  
+  if ( length(unique(satIDs)) > 1 )
+    stop("Parameter 'nc' includes data from more than one satellite")
+  
+  satID <- unique(satIDs)
+  
+  # ----- Get grid data --------------------------------------------------------
+  
+  # Choose which gridFile to load based on satID
+  if ( satID == "G16") {
+    gridFile <- "goesEastGrid.rda"
+  } else if ( satID == "G17" ) {
+    gridFile <- "goesWestGrid.rda"
+  }
+  
+  # Assemble the correct filepath based on satID and Data directory
+  filePath <- file.path(getSatelliteDataDir(), gridFile)
+  
+  # Test for grid existence and if found, load it.
+  if ( file.exists(filePath) ) {
+    goesGrid <- get(load(filePath))
+  } else {
+    stop("Grid file not found. Run 'installGoesGrids()' first")
+  }  
+  
+  # ----- Createa a grid mask ---------------------------------------------------
+  
+  bbox <- bboxToVector(bbox)
+  
+  lonLo <- bbox[1]
+  lonHi <- bbox[2]
+  latLo <- bbox[3]
+  latHi <- bbox[4]
+  
+  # Matrices of the same dimensions as AOD and DQF
+  lonMatrix <- goesGrid$lon
+  latMatrix <- goesGrid$lat
+  
+  # Create a matrix of logicals identifying grid cells within bbox
+  gridMask <-
+    lonMatrix >= lonLo &
+    lonMatrix <= lonHi &
+    latMatrix >= latLo &
+    latMatrix <= latHi
+  
+  gridMask[is.na(gridMask)] <- FALSE
+  
+  # ----- Find the i,j bounding box in curvilinear grid space ------------------
+  
+  # Suppress "no non-missing arguments" warnings
+  suppressWarnings({
     
-    # Create varList to store values extracted from .nc file
-    varList <- list()
+    # Find the first row in each column inside the bbox
+    iLos <- apply(gridMask, 2, function(x) { min(which(x), na.rm = TRUE) })
+    iLo <- min(iLos) # lots of Inf but that's OK
     
-    print(paste0("Working on ", nc_files[i], " ..."))
-    nc <- goesaodc_openFile(nc_files[i])
+    # Last row
+    iHis <- apply(gridMask, 2, function(x) { max(which(x), na.rm = TRUE) })
+    iHi <- max(iHis) # lots of -Inf but that's OK
     
-    # Check that nc has GOES projection
-    if ( !goesaodc_isGoesProjection(nc) ) {
-      stop("Parameter 'nc' does not have standard GOES-R projection information.")
-    }
+    # First column
+    jLos <- apply(gridMask, 1, function(x) { min(which(x), na.rm = TRUE) })
+    jLo <- min(jLos) # lots of Inf but that's OK
     
-    # ----- Get grid data --------------------------------------------------------
+    # Last column
+    jHis <- apply(gridMask, 1, function(x) { max(which(x), na.rm = TRUE) })
+    jHi <- max(jHis) # lots of -Inf but that's OK
     
-    # Get satID from netCDF, will be either "G16" or "G17"
-    satID <- ncdf4::ncatt_get(nc, varid = 0, attname = "platform_ID")$value
+  })
+  
+  # Convert to the variables we pass to ncvar_get()
+  start_x <- iLo
+  count_x <- iHi - iLo + 1
+  
+  start_y <- jLo
+  count_y <- jHi - jLo + 1
+  
+  # ----- Create a list of 'nativeGrid' objects --------------------------------
+  
+  nativeGridList <- list()
+  
+  for ( nc in ncList ) {
     
-    # Choose which gridFile to load based on satID
-    if ( satID == "G16") {
-      gridFile <- "goesEastGrid.rda"
-    } else if ( satID == "G17" ) {
-      gridFile <- "goesWestGrid.rda"
-    }
+    # ----- Create a 'nativeGrid' object ---------------------------------------
     
-    # Assemble the correct filepath based on satID and Data directory
-    filePath <- file.path(getSatelliteDataDir(), gridFile)
+    nativeGrid <- list()
     
-    # Test for grid existence and if found, load it. Stop with appropriate message
-    # if missing
-    if ( file.exists(filePath) ) {
-      goesGrid <- get(load(filePath))
-    } else {
-      stop("Grid file not found. Run 'installGoesGrids()' first")
-    }  
+    # Get subset lons and lats from the original grid file
+    nativeGrid[["lon"]] <- lonMatrix[iLo:iHi,jLo:jHi]
+    nativeGrid[["lat"]] <- latMatrix[iLo:iHi,jLo:jHi]
     
-    # ---- Create Tibble ---------------------------------------------------
+    # Get AOD using start and count arguments
+    nativeGrid[["AOD"]] <- ncdf4::ncvar_get(
+      nc, 
+      varid = "AOD",
+      start = c(start_x, start_y),
+      count = c(count_x, count_y),
+      verbose = FALSE,
+      signedbyte = TRUE,
+      collapse_degen = TRUE,
+      raw_datavals = FALSE
+    )
     
-    # Build full extent Tibble
-    if ( is.null(bbox) ) { 
-      
-      # Get lon and lat from grid file
-      varList[["lon"]] <- as.numeric( goesGrid$longitude )
-      varList[["lat"]] <- as.numeric( goesGrid$latitude )
-      
-      # Get AOD and DQF from netCDF
-      varList[["AOD"]] <- as.numeric(ncdf4::ncvar_get(nc, "AOD"))
-      varList[["DQF"]] <- as.numeric(ncdf4::ncvar_get(nc, "DQF"))
-      
-    } else {
-      
-      # Build filtered tibble based on BBOX coordinates
-      bbox <- bboxToVector(bbox)
-      
-      lonLo <- bbox[1]
-      lonHi <- bbox[2]
-      latLo <- bbox[3]
-      latHi <- bbox[4]
-      
-      # Matrices of the same dimensions as AOD and DQF
-      lonMatrix <- goesGrid$longitude
-      latMatrix <- goesGrid$latitude
-      
-      # Create a matrix of logicals identifying grid cells within bbox_oregon
-      gridMask <-
-        lonMatrix >= lonLo &
-        lonMatrix <= lonHi &
-        latMatrix >= latLo &
-        latMatrix <= latHi
-      
-      gridMask[is.na(gridMask)] <- FALSE
-      
-      suppressWarnings({
-        # Find the first row in each column inside the bbox
-        iLos <- apply(gridMask, 2, function(x) { min(which(x)) })
-        iLo <- min(iLos) # lots of Inf but that's OK
-        
-        # Last row
-        iHis <- apply(gridMask, 2, function(x) { max(which(x)) })
-        iHi <- max(iHis) # lots of -Inf but that's OK
-        
-        # First column
-        jLos <- apply(gridMask, 1, function(x) { min(which(x)) })
-        jLo <- min(jLos) # lots of Inf but that's OK
-        
-        # Last column
-        jHis <- apply(gridMask, 1, function(x) { max(which(x)) })
-        jHi <- max(jHis) # lots of -Inf but that's OK
-      })
-      
-      # Convert to the variables we pass to ncvar_get()
-      start_x <- iLo
-      count_x <- iHi - iLo + 1
-      
-      start_y <- jLo
-      count_y <- jHi - jLo + 1
-      
-      # Get subset lons and lats from the original grid file
-      varList[["lon"]] <- as.numeric( lonMatrix[iLo:iHi,jLo:jHi] )
-      varList[["lat"]] <- as.numeric( latMatrix[iLo:iHi,jLo:jHi] )
-      
-      # Get AOD using start and count arguments
-      varList[["AOD"]] <- as.numeric(ncdf4::ncvar_get(
-        nc,
-        varid = "AOD",
-        start = c(start_x, start_y),
-        count = c(count_x, count_y),
-        verbose = FALSE,
-        signedbyte = TRUE,
-        collapse_degen = TRUE,
-        raw_datavals = FALSE
-      ))
-      
-      # Get DQF using start and count arguments
-      varList[["DQF"]] <- as.numeric(ncdf4::ncvar_get(
-        nc,
-        varid = "DQF",
-        start = c(start_x, start_y),
-        count = c(count_x, count_y),
-        verbose = FALSE,
-        signedbyte = TRUE,
-        collapse_degen = TRUE,
-        raw_datavals = FALSE
-      ))
-    }
+    # Get DQF using start and count arguments
+    nativeGrid[["DQF"]] <- ncdf4::ncvar_get(
+      nc, 
+      varid = "DQF",
+      start = c(start_x, start_y),
+      count = c(count_x, count_y),
+      verbose = FALSE,
+      signedbyte = TRUE,
+      collapse_degen = TRUE,
+      raw_datavals = FALSE
+    )
     
-    ncdf4::nc_close(nc) # Close the .nc filehandle
+    label <- ncdf4::ncatt_get(nc, varid = 0)$time_coverage_start
     
-    # Create a label from file's timestamp
-    label <-
-      goesaodc_convertFilenameToDatetime(nc_files[i]) %>%
-      strftime(format = "%Y%m%d%H%M", timezone = "UTC")
-    
-    # Filter out the na's if full extent (too restrictive)
-    if ( is.null(bbox) ) {
-      tbl <-
-        tibble::as_tibble(varList) %>% tidyr::drop_na()
-    } else {
-      tbl <- tibble::as_tibble(varList)
-    }
-    
-    # Store the tibble in the tibbleList with a timestamp as label/key
-    tibbleList[[label]] <- tbl 
+    nativeGridList[[label]] <- nativeGrid
     
   }
-  return(tibbleList)
+  
+  # DEBUGGING
+  # Plot the native grid for a cheap movie (note that we need to reverse j)
+  
+  if ( FALSE ) {
+    
+    for ( nativeGrid in nativeGridList ) {
+      image(nativeGrid$AOD[,ncol(nativeGrid$AOD):1])
+    }
+    
+  }
+  
+  # ----- Calcualte the average AOD and DQF ------------------------------------
+  
+  nativeGrid <- nativeGridList[[1]]
+  
+  if ( length(nativeGridList) > 1 ) {
+    
+    # Create lists containing only 2-D arrays
+    AODList <- nativeGridList %>% purrr::map(~ .x$AOD)
+    DQFList <- nativeGridList %>% purrr::map(~ .x$DQF)
+    
+    # Create 3-D arrays
+    stackedAODArray <- abind::abind(AODList, rev.along = 0)
+    stackedDQFArray <- abind::abind(DQFList, rev.along = 0)
+    
+    # Calculate the mean at every x-y location
+    AOD_mean <- apply(stackedAODArray, c(1,2), mean, na.rm = TRUE)
+    DQF_mean <- apply(stackedDQFArray, c(1,2), mean, na.rm = TRUE)
+    
+    nativeGrid$AOD <- AOD_mean
+    nativeGrid$DQF <- DQF_mean
+    
+  }
+  
+  # DEBUGGING
+  if ( FALSE ) {
+    image(nativeGrid$AOD[,ncol(nativeGrid$AOD):1])
+  }
+  
+  # ----- Return ---------------------------------------------------------------
+  
+  return(nativeGrid)
+  
+}
+
+# ===== DEBUGGING ==============================================================
+
+if ( FALSE ) {
+  
+  library(MazamaSpatialUtils)
+  setSpatialDataDir("~/Data/Spatial")
+  loadSpatialData("USCensusStates")
+  loadSpatialData("USCensusCounties")
+  
+  library(MazamaSatelliteUtils)
+  setSatelliteDataDir("~/Data/Satellite")
+  
+  # nc file
+  #files <- goesaodc_downloadAOD("G17", 2019102714, timezone = "America/Los_Angeles")
+  files <- goesaodc_listFiles("G17", "2019-10-27 14:00", timezone = "America/Los_Angeles")
+
+  ncList <- list()
+  for ( file in files ) {
+    label <- 
+      file %>%
+      goesaodc_convertFilenameToDatetime() %>%
+      MazamaCoreUtils::timeStamp(unit = "sec", timezone = "UTC")
+    ncList[[label]] <- goesaodc_openFile(basename(file))
+  }
+  
+
+  # bbox
+  ca <- subset(USCensusStates, stateCode == "CA")
+  bbox <- bbox(ca) %>% bboxToVector()
+  
+  verbose <- TRUE
+  
+  nativeGrid <- goesaodc_createNativeGrid(ncList, bbox, verbose = FALSE)
+  
+  image(nativeGrid$AOD[,ncol(nativeGrid$AOD):1])
   
 }

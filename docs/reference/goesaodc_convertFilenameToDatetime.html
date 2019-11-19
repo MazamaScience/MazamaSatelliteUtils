@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Create a quick plot of a GOES AOD SpatialPointsDataFrame — goesaodc_plotSpatialPoints • MazamaSatelliteUtils</title>
+<title>Get the scan start time from a GOES AODC netCDF file name — goesaodc_convertFilenameToDatetime • MazamaSatelliteUtils</title>
 
 
 <!-- jquery -->
@@ -35,9 +35,8 @@
 
 
 
-<meta property="og:title" content="Create a quick plot of a GOES AOD SpatialPointsDataFrame — goesaodc_plotSpatialPoints" />
-<meta property="og:description" content="Quickly subsample and plot points in a GOES AOD 
-spatialPointsDataFrame" />
+<meta property="og:title" content="Get the scan start time from a GOES AODC netCDF file name — goesaodc_convertFilenameToDatetime" />
+<meta property="og:description" content="Get the scan start time from a GOES AODC netCDF file name" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -104,85 +103,36 @@ spatialPointsDataFrame" />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Create a quick plot of a GOES AOD SpatialPointsDataFrame</h1>
+    <h1>Get the scan start time from a GOES AODC netCDF file name</h1>
     
-    <div class="hidden name"><code>goesaodc_plotSpatialPoints.Rd</code></div>
+    <div class="hidden name"><code>goesaodc_convertFilenameToDatetime.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Quickly subsample and plot points in a GOES AOD 
-spatialPointsDataFrame</p>
+    <p>Get the scan start time from a GOES AODC netCDF file name</p>
     </div>
 
-    <pre class="usage"><span class='fu'>goesaodc_plotSpatialPoints</span>(<span class='no'>spatialPoints</span>, <span class='kw'>var</span> <span class='kw'>=</span> <span class='st'>"AOD"</span>, <span class='kw'>n</span> <span class='kw'>=</span> <span class='fl'>1e+05</span>,
-  <span class='kw'>colBins</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>breaks</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>paletteName</span> <span class='kw'>=</span> <span class='st'>"YlOrRd"</span>, <span class='kw'>pch</span> <span class='kw'>=</span> <span class='fl'>15</span>,
-  <span class='kw'>cex</span> <span class='kw'>=</span> <span class='fl'>0.5</span>, <span class='kw'>add</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='fu'>goesaodc_convertFilenameToDatetime</span>(<span class='no'>file</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>spatialPoints</th>
-      <td><p>SpatialPointsDataFrame</p></td>
-    </tr>
-    <tr>
-      <th>var</th>
-      <td><p>Variable to plot</p></td>
-    </tr>
-    <tr>
-      <th>n</th>
-      <td><p>Sample size</p></td>
-    </tr>
-    <tr>
-      <th>colBins</th>
-      <td><p>number of color bins</p></td>
-    </tr>
-    <tr>
-      <th>breaks</th>
-      <td><p>vector of color breaks</p></td>
-    </tr>
-    <tr>
-      <th>paletteName</th>
-      <td><p>RColorBrewer palette name</p></td>
-    </tr>
-    <tr>
-      <th>pch</th>
-      <td><p>plot character</p></td>
-    </tr>
-    <tr>
-      <th>cex</th>
-      <td><p>plot symbol scale factor</p></td>
-    </tr>
-    <tr>
-      <th>add</th>
-      <td><p>logical specifying whether to create a new plot or add to existing</p></td>
+      <th>file</th>
+      <td><p>GOES AOD netCDF file name</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
-<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>MazamaSatelliteUtils</span>)
+    <p>The scan start time.</p>
 
-<span class='fu'><a href='setSatelliteDataDir.html'>setSatelliteDataDir</a></span>(<span class='st'>"~/Data/Satellite"</span>)
-
-<span class='fu'><a href='goesaodc_downloadAOD.html'>goesaodc_downloadAOD</a></span>(
-  <span class='kw'>satID</span> <span class='kw'>=</span> <span class='st'>"G16"</span>,
-  <span class='kw'>datetime</span> <span class='kw'>=</span> <span class='st'>"201924918"</span>,
-  <span class='kw'>timezone</span> <span class='kw'>=</span> <span class='st'>"UTC"</span>,
-  <span class='kw'>isJulian</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
-
-<span class='no'>netCDF</span> <span class='kw'>&lt;-</span> <span class='st'>"OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc"</span>
-
-<span class='no'>nc</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='goesaodc_openFile.html'>goesaodc_openFile</a></span>(<span class='no'>netCDF</span>)
-<span class='kw pkg'>maps</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/maps/man/map.html'>map</a></span>(<span class='st'>"state"</span>)</div><div class='img'><img src='goesaodc_plotSpatialPoints-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='no'>sp</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='goesaodc_createSpatialPoints.html'>goesaodc_createSpatialPoints</a></span>(<span class='no'>nc</span>, <span class='kw'>dqfLevel</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='output co'>#&gt; <span class='error'>Error in MazamaCoreUtils::stopIfNull(bbox): argument 'bbox' must not be NULL.</span></div><div class='input'><span class='fu'>goesaodc_plotSpatialPoints</span>(<span class='no'>sp</span>, <span class='kw'>cex</span> <span class='kw'>=</span> <span class='fl'>0.25</span>, <span class='kw'>add</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</div><div class='output co'>#&gt; <span class='error'>Error in nrow(spatialPoints): object 'sp' not found</span></div><div class='input'># }
-</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-      <li><a href="#examples">Examples</a></li>
+      <li><a href="#value">Value</a></li>
     </ul>
 
   </div>

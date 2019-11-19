@@ -1,9 +1,11 @@
 #' @export
+#' @importFrom rlang .data
 #' 
 #' @title Create a tibble from ncdf4 handle
 #' 
-#' @param nc ncdf4 handle
-#' @param bbox geographic extents to limit data ingestion from NetCDF
+#' @param nc ncdf4 handle or a list of handles.
+#' @param bbox Geographic extent of area of interest; Defaults to CONUS.
+#' @param verbose Logical flag to increase messages while processing data.
 #' 
 #' @description Create a tibble with columns: AOD, DQF, lon and lat.
 #' This information is sufficient to plot as points or create a raster object.
@@ -37,153 +39,69 @@
 #'
 #' nc <- goesaodc_openFile(ncFile)
 #' 
-#' kincade_bbox <- c(-124, -120, 36, 39)
+#' # 2019 Kincade fire in Sonoma county
+#' bbox <- c(-124, -120, 36, 39)
 #' 
-#' filtered_tbl <- goesaodc_createTibble(
-#'   nc,
-#'   bbox = kincade_bbox
-#' )
+#' filtered_tbl <- goesaodc_createTibble(nc, bbox)
 #' 
 #' }
 
 goesaodc_createTibble <- function(
   nc = NULL, 
-  bbox = NULL
+  bbox = bbox_CONUS,
+  verbose = FALSE
 ) {
   
   # ----- Validate parameters --------------------------------------------------
   
   MazamaCoreUtils::stopIfNull(nc)
+  MazamaCoreUtils::stopIfNull(bbox)
   
   # Check that nc has GOES projection
   if ( !goesaodc_isGoesProjection(nc) ) {
     stop("Parameter 'nc' does not have standard GOES-R projection information.")
   }
-  
-  # ----- Get grid data --------------------------------------------------------
-  
-  # Get satID from netCDF, will be either "G16" or "G17"
-  satID <- ncdf4::ncatt_get(nc, varid = 0, attname = "platform_ID")$value
-  
-  # Choose which gridFile to load based on satID
-  if ( satID == "G16") {
-    gridFile <- "goesEastGrid.rda"
-  } else if ( satID == "G17" ) {
-    gridFile <- "goesWestGrid.rda"
+
+  if ( "list" %in% class(nc) ) {
+    ncList <- nc
+  } else if ( "ncdf4" %in% class(nc) ) {
+    ncList <- list(nc)
+  } else {
+    stop("Parameter 'nc' must be of type 'list' or 'ncdf4'")
   }
   
-  # Assemble the correct filepath based on satID and Data directory
-  filePath <- file.path(getSatelliteDataDir(), gridFile)
+  # ----- Assemble the tibble --------------------------------------------------
   
-  # Test for grid existence and if found, load it. Stop with appropriate message
-  # if missing
-  if ( file.exists(filePath) ) {
-    goesGrid <- get(load(filePath))
-  } else {
-    stop("Grid file not found. Run 'installGoesGrids()' first")
-  }  
+  # Get data on the native, satellite grid
+  # NOTE:  If nc is a list, AOD and DQF will represent an average
+  nativeGrid <- goesaodc_createNativeGrid(ncList, bbox, verbose)
   
-  # Create varList to store values needed to create Tibble
+  # Build the tibble
   varList <- list()
+  varList[["lon"]] <- as.numeric(nativeGrid$lon)
+  varList[["lat"]] <- as.numeric(nativeGrid$lat)
+  varList[["AOD"]] <- as.numeric(nativeGrid$AOD)
+  varList[["DQF"]] <- as.numeric(nativeGrid$DQF)
   
-  # ---- Create Tibble ---------------------------------------------------
-  
-  if ( is.null(bbox) ) { 
-    
-    # Build FULL EXTENT tibble
-    
-    # Get lon and lat from grid file
-    varList[["lon"]] <- as.numeric( goesGrid$longitude )
-    varList[["lat"]] <- as.numeric( goesGrid$latitude )
-    
-    # Get AOD and DQF from netCDF
-    varList[["AOD"]] <- as.numeric(ncdf4::ncvar_get(nc, "AOD"))
-    varList[["DQF"]] <- as.numeric(ncdf4::ncvar_get(nc, "DQF"))
-    
-  } else {
-    
-    # Build filtered tibble based on BBOX coordinates
-    
-    bbox <- bboxToVector(bbox)
-    
-    lonLo <- bbox[1]
-    lonHi <- bbox[2]
-    latLo <- bbox[3]
-    latHi <- bbox[4]
-    
-    # Matrices of the same dimensions as AOD and DQF
-    lonMatrix <- goesGrid$longitude
-    latMatrix <- goesGrid$latitude
-    
-    # Create a matrix of logicals identifying grid cells within bbox_oregon
-    gridMask <-
-      lonMatrix >= lonLo &
-      lonMatrix <= lonHi &
-      latMatrix >= latLo &
-      latMatrix <= latHi
-    
-    gridMask[is.na(gridMask)] <- FALSE
-    
-    suppressWarnings({
-      # Find the first row in each column inside the bbox
-      iLos <- apply(gridMask, 2, function(x) { min(which(x)) })
-      iLo <- min(iLos) # lots of Inf but that's OK
-      
-      # Last row
-      iHis <- apply(gridMask, 2, function(x) { max(which(x)) })
-      iHi <- max(iHis) # lots of -Inf but that's OK
-      
-      # First column
-      jLos <- apply(gridMask, 1, function(x) { min(which(x)) })
-      jLo <- min(jLos) # lots of Inf but that's OK
-      
-      # Last column
-      jHis <- apply(gridMask, 1, function(x) { max(which(x)) })
-      jHi <- max(jHis) # lots of -Inf but that's OK
-    })
-    
-    # Convert to the variables we pass to ncvar_get()
-    start_x <- iLo
-    count_x <- iHi - iLo + 1
-    
-    start_y <- jLo
-    count_y <- jHi - jLo + 1
-    
-    # Get subset lons and lats from the original grid file
-    varList[["lon"]] <- as.numeric( lonMatrix[iLo:iHi,jLo:jHi] )
-    varList[["lat"]] <- as.numeric( latMatrix[iLo:iHi,jLo:jHi] )
-    
-    # Get AOD using start and count arguments
-    varList[["AOD"]] <- as.numeric(ncdf4::ncvar_get(
-      nc,
-      varid = "AOD",
-      start = c(start_x, start_y),
-      count = c(count_x, count_y),
-      verbose = FALSE,
-      signedbyte = TRUE,
-      collapse_degen = TRUE,
-      raw_datavals = FALSE
-    ))
-    
-    # Get DQF using start and count arguments
-    varList[["DQF"]] <- as.numeric(ncdf4::ncvar_get(
-      nc,
-      varid = "DQF",
-      start = c(start_x, start_y),
-      count = c(count_x, count_y),
-      verbose = FALSE,
-      signedbyte = TRUE,
-      collapse_degen = TRUE,
-      raw_datavals = FALSE
-    ))
-  }
-  
-  # Create a tibble with all columns but removing rows if any of the columns
-  # are missing.
-  # TODO:  tidyr::drop_na() may be too restrictive for multiple data columns.
+  # NOTE:  Use tidyr::drop_na() to drop records with ANY missing values
   tbl <-
     tibble::as_tibble(varList) %>%
     tidyr::drop_na()
+  
+  # NOTE:  Using the bounding box during nativeGrid ingest results in extra
+  # NOTE:  records because the nativeGrid is curvilinear. We limit the records
+  # NOTE:  to the requested bbox here.
+  
+  # Guarantee W, E, S, N order
+  bbox <- bboxToVector(bbox)
+  tbl <-
+    tbl %>%
+    dplyr::filter(.data$lon >= bbox[1] &
+                    .data$lon <= bbox[2] &
+                    .data$lat >= bbox[3] &
+                    .data$lat <= bbox[4])
+    
+  # ----- Return ---------------------------------------------------------------
   
   return(tbl)
   

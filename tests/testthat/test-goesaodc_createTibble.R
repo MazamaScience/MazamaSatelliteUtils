@@ -40,9 +40,10 @@ test_that("tibble bbox filtering is correct", {
   min_lat <- min(filter_tbl$lat)
   max_lat <- max(filter_tbl$lat)
   
-  expect_lt(min_lon, kincade_bbox[1])
-  expect_gt(max_lon, kincade_bbox[2])
-  expect_lt(min_lat, kincade_bbox[3])
-  expect_gt(max_lat, kincade_bbox[4])
+  # createTibble() should toss out anything outside the bbox
+  expect_lte(kincade_bbox[1], min_lon)
+  expect_gte(kincade_bbox[2], max_lon)
+  expect_lte(kincade_bbox[3], min_lat)
+  expect_gte(kincade_bbox[4], max_lat)
 
 })

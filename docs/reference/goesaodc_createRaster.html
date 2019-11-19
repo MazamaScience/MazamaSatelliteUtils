@@ -82,7 +82,7 @@ raster::extent()." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MazamaSatelliteUtils</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.10</span>
       </span>
     </div>
 
@@ -175,11 +175,15 @@ latHi) order or the return value from <code><a href='https://rdrr.io/pkg/sp/man/
 <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>MazamaSatelliteUtils</span>)
 
 <span class='fu'><a href='setSatelliteDataDir.html'>setSatelliteDataDir</a></span>(<span class='st'>"~/Data/Satellite"</span>)
-<span class='no'>netCDF</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(
-  <span class='st'>"extdata"</span>,
-  <span class='st'>"OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc"</span>,
-  <span class='kw'>package</span> <span class='kw'>=</span> <span class='st'>"MazamaSatelliteUtils"</span>
-)
+
+<span class='fu'><a href='goesaodc_downloadAOD.html'>goesaodc_downloadAOD</a></span>(
+  <span class='kw'>satID</span> <span class='kw'>=</span> <span class='st'>"G16"</span>,
+  <span class='kw'>datetime</span> <span class='kw'>=</span> <span class='st'>"201924918"</span>,
+  <span class='kw'>timezone</span> <span class='kw'>=</span> <span class='st'>"UTC"</span>,
+  <span class='kw'>isJulian</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
+
+<span class='no'>netCDF</span> <span class='kw'>&lt;-</span> <span class='st'>"OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc"</span>
+
 <span class='no'>nc</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='goesaodc_openFile.html'>goesaodc_openFile</a></span>(<span class='no'>netCDF</span>)
 <span class='no'>rstr</span> <span class='kw'>&lt;-</span> <span class='fu'>goesaodc_createRaster</span>(<span class='no'>nc</span>, <span class='kw'>res</span> <span class='kw'>=</span> <span class='fl'>0.1</span>, <span class='kw'>dqfLevel</span> <span class='kw'>=</span> <span class='fl'>2</span>)
 <span class='kw pkg'>raster</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/raster/man/plot.html'>plot</a></span>(<span class='no'>rstr</span>, <span class='st'>"AOD"</span>)</div><div class='input'><span class='kw pkg'>maps</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/maps/man/map.html'>map</a></span>(<span class='st'>"state"</span>, <span class='kw'>add</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</div><div class='img'><img src='goesaodc_createRaster-1.png' alt='' width='700' height='433' /></div><div class='input'># }
