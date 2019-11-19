@@ -24,11 +24,16 @@ maiac_loadRaster <- function(
   time = NULL,
   julianDate = NULL,
   product = "MAIACAAOT",
-  baseUrl = "https://portal.nccs.nasa.gov/datashare/maiac/DataRelease/NorthAmerica_2000-2016/",
+  baseUrl = NULL,
   filePath = NULL,
   params = "Optical_Depth_055",
   converterPath = "./executables/h4toncff_nc4"
 ) {
+  
+  # Glue the BaseURL back together 
+  portal_url <- "https://portal.nccs.nasa.gov/"
+  maiac_url <- "datashare/maiac/DataRelease/NorthAmerica_2000-2016/"
+  baseURL <- paste0(portal_url, maiac_url)
   
   # Load data
   

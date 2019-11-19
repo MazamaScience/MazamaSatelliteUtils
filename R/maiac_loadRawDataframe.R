@@ -19,8 +19,13 @@ maiac_loadRawDataframe <- function(
   time = NULL,
   julianDate = NULL,
   product = "MAIACAAOT",
-  baseUrl="https://portal.nccs.nasa.gov/datashare/maiac/DataRelease/NorthAmerica_2000-2016/"
+  baseUrl = NULL
 ) {
+  
+  # Glue the BaseURL back together 
+  portal_url <- "https://portal.nccs.nasa.gov/"
+  maiac_url <- "datashare/maiac/DataRelease/NorthAmerica_2000-2016/"
+  baseURL <- paste0(portal_url, maiac_url)
   
   hdffilePath <- maiac_downloadNorthAmerica(tileNumber, date, time, 
                                             julianDate, product, baseUrl)

@@ -16,12 +16,14 @@
 #' library(MazamaSatelliteUtils)
 #'
 #' setSatelliteDataDir("~/Data/Satellite")
+#' 
+#' goesaodc_downloadAOD(
+#'   satID = "G16", 
+#'   datetime = "201924918", 
+#'   timezone = "UTC", 
+#'   isJulian = TRUE)
 #'
-#' ncFile <- system.file(
-#'   "extdata", 
-#'   "OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc", 
-#'   package = "MazamaSatelliteUtils"
-#' )
+#' ncFile <- "OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc"
 #'                      
 #' nc <- goesaodc_openFile(ncFile)
 #'
@@ -31,11 +33,7 @@
 #' # Tibble based on BBOX filtered extent of tibble
 #' library(MazamaSatelliteUtils)
 #' 
-#' ncFile <- system.file(
-#'   "extdata", 
-#'   "OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc", 
-#'   package = "MazamaSatelliteUtils"
-#' )
+#' ncFile <- "OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc"
 #'
 #' nc <- goesaodc_openFile(ncFile)
 #' 

@@ -5,7 +5,7 @@
 \title{Download GOES-16 or GOES-17 AOD data}
 \usage{
 goesaodc_downloadAOD(satID = NULL, datetime = NULL, endTime = NULL,
-  timezone = "UTC", isJulian = FALSE,
+  timezone = "UTC", isJulian = FALSE, verbose = FALSE,
   baseUrl = "https://tools-1.airfire.org/Satellite/")
 }
 \arguments{
@@ -19,6 +19,9 @@ goesaodc_downloadAOD(satID = NULL, datetime = NULL, endTime = NULL,
 
 \item{isJulian}{Logical specifying if \code{datetime} (and optionally 
 \code{endTime}) are Julian formatted}
+
+\item{verbose}{Logical parameter specifying whether download status should be
+shown.}
 
 \item{baseUrl}{Base URL for data queries.}
 }

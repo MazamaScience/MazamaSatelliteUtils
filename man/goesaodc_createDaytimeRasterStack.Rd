@@ -6,7 +6,7 @@
 \usage{
 goesaodc_createDaytimeRasterStack(satID = NULL, datetime = NULL,
   var = "AOD", res = 0.1, bbox = NULL, dqfLevel = NULL,
-  timezone = NULL)
+  timezone = NULL, verbose = FALSE)
 }
 \arguments{
 \item{satID}{ID of the source GOES satellite (G16 or G17).}
@@ -22,6 +22,8 @@ goesaodc_createDaytimeRasterStack(satID = NULL, datetime = NULL,
 \item{dqfLevel}{Data quality flag level.}
 
 \item{timezone}{timezone in which to interpret the \code{datetime}.}
+
+\item{verbose}{show progress of raster stacking.}
 }
 \value{
 RasterStack

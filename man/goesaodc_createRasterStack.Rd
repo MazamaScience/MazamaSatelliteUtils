@@ -7,7 +7,7 @@
 goesaodc_createRasterStack(satID = NULL, datetime = NULL,
   endTime = NULL, var = "AOD", res = 0.1, bbox = c(-125, -65, 24,
   50), dqfLevel = NULL, timezone = "UTC", isJulian = FALSE,
-  fileList = NULL)
+  fileList = NULL, verbose = FALSE)
 }
 \arguments{
 \item{satID}{ID of the source GOES satellite (G16 or G17).}
@@ -31,6 +31,8 @@ goesaodc_createRasterStack(satID = NULL, datetime = NULL,
 
 \item{fileList}{optional list of files to stack. Useful when working with 
 custom time ranges.}
+
+\item{verbose}{Logical specifies whether to print stacking information.}
 }
 \value{
 RasterStack
