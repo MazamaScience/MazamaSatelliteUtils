@@ -40,11 +40,15 @@ if ( interactive() ) {
   library(optparse)
   
   option_list <- list(
+    
     make_option(
       c("-t", "--datetime"), 
       default = NULL, 
       help = "datetime of interest specified to the hour [default = \"%default\"]"
     ),
+    
+    # TODO:  # Add support for bbox as a string: "w,e,s,n"
+    
     make_option(
       c("-s", "--stateCode"), 
       default = NULL, 
@@ -106,6 +110,9 @@ if (opt$version) {
 # ----- Validate parameters ----------------------------------------------------
 
 MazamaCoreUtils::stopIfNull(opt$datetime)
+
+# TODO:  # Either bbox or stateCode must exist
+
 MazamaCoreUtils::stopIfNull(opt$stateCode)
 
 if ( opt$frameRate < 0 || 
@@ -155,6 +162,10 @@ result <- try({
     loadSpatialData("USCensusStates")
     setSatelliteDataDir("~/Data/Satellite")
     
+    # TODO:  # Interpret bbox argument coming in as a string: "w,e,s,n"
+    
+    # TODO:  # Use bbox if not NULL else state
+    
     # Load state boundries
     state <- subset(USCensusStates, stateCode == opt$stateCode)
     bbox <- sp::bbox(state)
@@ -162,6 +173,8 @@ result <- try({
     # TODO:  # Calculate timezone from bbox
     
     timezone = "America/Los_Angeles"
+    
+    # TODO:  # Support full days if local time hour is midnight
     
     # Parse the incoming datetime
     datetime <- 
@@ -172,6 +185,8 @@ result <- try({
 
     if ( opt$verbose )
       logger.trace("Creating video for %s ...", strftime(datetime, "%Y-%m-%d %H:%M:%S %Z"))
+    
+    # TODO:  # Ensure we only download and use daylight hours
     
     # Download the satellite scans for this hour
     downloadedFiles <- goesaodc_downloadAOD(
@@ -252,7 +267,7 @@ result <- try({
         
         # Data plot
         
-        # TODO:  # Option to plot 10^AOD
+        # TODO:  # Use goesaodc_areaPlot() when it becomes available
         
         par(bg = 'gray')
         plot(state, main =  strftime(scanTimeLocal, "%Y-%m-%d %H:%M:%S %Z"))
