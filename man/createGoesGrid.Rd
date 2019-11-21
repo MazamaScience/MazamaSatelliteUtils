@@ -29,7 +29,7 @@ outputDir <- getSatelliteDataDir()
 nc_file <- goesaodc_listFiles(satID = "G16", 
   datetime = "201924918",
   timezone = "UTC",
-   isJulian = TRUE)[1]
+  isJulian = TRUE)[1]
    
 nc <- goesaodc_openFile(nc_file)
 G16_filepath <- file.path(outputDir, "goesEastGrid.rda")

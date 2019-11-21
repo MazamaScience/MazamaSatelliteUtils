@@ -28,7 +28,7 @@
 #' goesaodc_downloadAOD(
 #'   satID = "G17", 
 #'   datetime = "2019-10-27 14:00",
-#'   timezone = "UTC"
+#'   timezone = "America/Los_Angeles"
 #' )
 #'
 #' files <- goesaodc_listFiles("G17", "2019-10-27 14:00", timezone = "America/Los_Angeles")

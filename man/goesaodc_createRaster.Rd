@@ -46,16 +46,27 @@ library(MazamaSatelliteUtils)
 setSatelliteDataDir("~/Data/Satellite")
 
 goesaodc_downloadAOD(
-  satID = "G16", 
-  datetime = "201924918", 
-  timezone = "UTC", 
-  isJulian = TRUE)
+  satID = "G17", 
+  datetime = "2019-10-27 16", 
+  timezone = "UTC",
+  verbose = TRUE 
+  )
 
-netCDF <- "OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc"
- 
+netCDF <- "OR_ABI-L2-AODC-M6_G17_s20193001616196_e20193001618569_c20193001621030.nc"
 nc <- goesaodc_openFile(netCDF)
-rstr <- goesaodc_createRaster(nc, res = 0.1, dqfLevel = 2)
-raster::plot(rstr, "AOD")
-maps::map("state", add = TRUE)
+
+bbox <- c(-129, -110, 29, 50)
+
+rstr <- goesaodc_createRaster(
+  nc, 
+  res = 0.05, 
+  dqfLevel = 3, 
+  bbox = bbox
+  )
+  
+west <- c("washington", "oregon", "california", "nevada", "idaho")
+maps::map(database = "state", regions = west)   
+raster::plot(rstr, "AOD", col=rev(heat.colors(5)))
+maps::map(database = "state", regions = west, add = TRUE)
 }
 }

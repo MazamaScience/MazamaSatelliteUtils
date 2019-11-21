@@ -24,7 +24,7 @@
 #' 
 #' @examples
 #' \dontrun{
-#' # Library setup
+#' 
 #' library(MazamaSatelliteUtils)
 #' library(MazamaSpatialUtils)
 #' setSatelliteDataDir("~/Data/Satellite")
@@ -39,12 +39,13 @@
 #' lat <- 42.861
 #' 
 #' # Gather all the raster layers for the given hour into a stack
-#' rasterStack <- goesaodc_createHourlyRasterStack(
+#' rasterStack <- goesaodc_createRasterStack(
 #'   satID = "G16",
 #'   datetime = datetime, 
 #'   bbox = bbox_oregon,
 #'   res = 0.05,
-#'   dqfLevel = 2
+#'   dqfLevel = 2,
+#'   verbose = TRUE
 #' )
 #' 
 #' rasterAvg <- raster::mean(rasterStack, na.rm = TRUE)
