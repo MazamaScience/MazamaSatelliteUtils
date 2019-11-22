@@ -34,20 +34,24 @@ spatialPointsDataFrame
 \examples{
 \donttest{
 library(MazamaSatelliteUtils)
-
 setSatelliteDataDir("~/Data/Satellite")
 
 goesaodc_downloadAOD(
-  satID = "G16", 
-  datetime = "201924918", 
-  timezone = "UTC", 
-  isJulian = TRUE)
+  satID = "G17", 
+  datetime = "2019-10-27 10", 
+  timezone = "America/Los_Angeles" 
+  )
   
-netCDF <- "OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc"
+kincade_bbox <- c(-126, -119, 35, 40)   
 
-nc <- goesaodc_openFile(netCDF) 
-maps::map("state")
-sp <- goesaodc_createSpatialPoints(nc, dqfLevel = 2)
-goesaodc_plotSpatialPoints(sp, cex = 0.25, add = TRUE)
+netCDF <- goesaodc_listFiles(
+  satID = "G17", 
+  datetime = "2019-10-27 10", 
+  timezone = "America/Los_Angeles")[1]
+  
+nc <- goesaodc_openFile(netCDF)
+sp <- goesaodc_createSpatialPoints(nc, dqfLevel = 3, bbox = kincade_bbox)
+maps::map(database = "state", "regions" = c("california"), xlim = c(-126, -113.5))
+goesaodc_plotSpatialPoints(sp, cex = 0.2, add = TRUE)
 }
 }

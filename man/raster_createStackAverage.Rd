@@ -34,11 +34,11 @@ oregon <- subset(USCensusStates, stateCode == "OR")
 bbox_oregon <- sp::bbox(oregon)
 datetime <- lubridate::ymd_h("2019-08-01 16", tz = "UTC")
 
-rstrStack <- goesaodc_createHourlyRasterStack(
+rstrStack <- goesaodc_createRasterStack(
   satID = "G16",
   datetime = datetime, 
   bbox = bbox_oregon,
-  res = 0.5,
+  res = 0.25,
   dqfLevel = 2
 )
 avg <- raster_createStackAverage(rstrStack, na.rm = TRUE)

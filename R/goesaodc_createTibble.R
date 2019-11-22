@@ -20,12 +20,15 @@
 #' setSatelliteDataDir("~/Data/Satellite")
 #' 
 #' goesaodc_downloadAOD(
-#'   satID = "G16", 
-#'   datetime = "201924918", 
-#'   timezone = "UTC", 
-#'   isJulian = TRUE)
+#'   satID = "G17", 
+#'   datetime = "2019-10-27 10", 
+#'   timezone = "America/Los_Angeles" 
+#'   )
 #'
-#' ncFile <- "OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc"
+#' ncFile <- goesaodc_listFiles(
+#'   satID = "G17", 
+#'   datetime = "2019-10-27 10", 
+#'   timezone = "America/Los_Angeles")[1]
 #'                      
 #' nc <- goesaodc_openFile(ncFile)
 #'
@@ -35,7 +38,10 @@
 #' # Tibble based on BBOX filtered extent of tibble
 #' library(MazamaSatelliteUtils)
 #' 
-#' ncFile <- "OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc"
+#' ncFile <- goesaodc_listFiles(
+#'   satID = "G17", 
+#'   datetime = "2019-10-27 10", 
+#'   timezone = "America/Los_Angeles")[1]
 #'
 #' nc <- goesaodc_openFile(ncFile)
 #' 
@@ -43,6 +49,7 @@
 #' bbox <- c(-124, -120, 36, 39)
 #' 
 #' filtered_tbl <- goesaodc_createTibble(nc, bbox)
+#' head(filtered_tbl)
 #' 
 #' }
 
