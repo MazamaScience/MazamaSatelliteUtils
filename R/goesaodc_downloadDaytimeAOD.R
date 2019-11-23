@@ -17,11 +17,10 @@
 #' interpreted as a Julian date with day of year as a decimal number.
 #' @param verbose Logical specifies whether to show status of file download.
 #' 
-#' @return Vector of filenames.
+#' @return Invisibly returns a vector of local files matching the requested \code{datetime}.
 #' 
 #' @examples 
 #' \donttest{
-#' 
 #' # List locally available files for a specific date by timezone
 #' 
 #' library(MazamaSatelliteUtils)
@@ -30,9 +29,10 @@
 #' setSatelliteDataDir("~/Data/Satellite")
 #' setSpatialDataDir("~/Data/Spatial")
 #' 
-#' goesaodc_downloadDaytimeAOD(satID = "G16",
-#' datetime = "2019-09-06", 
-#' timezone = "America/Los_Angeles")
+#' goesaodc_downloadDaytimeAOD(
+#'   satID = "G16",
+#'   datetime = "2019-09-06", 
+#'   timezone = "America/Los_Angeles")
 #' }
 #' 
 #' @rdname goesaodc_downloadDaytimeAOD
@@ -49,23 +49,42 @@ goesaodc_downloadDaytimeAOD <- function (
   verbose = FALSE
 ) {
   
+  # ---- Validate Parameters --------------------------------------------------
+  
+  MazamaCoreUtils::stopIfNull(satID)
+  MazamaCoreUtils::stopIfNull(datetime)
+  
+  satID <- toupper(satID)
+  if ( !(satID %in% c("G16", "G17")) )
+    stop("Must specify GOES satellite ID (G16 or G17)")
+  
+  # NOTE:  Additional parameter validation handled by downstream functions
+  
   # ---- Get the sunrise and sunset times --------------------------------------
-  day_hours <- getDaylightHours(datetime = datetime,
-                                longitude = longitude,
-                                latitude = latitude,
-                                bbox = bbox,
-                                timezone = timezone,
-                                isJulian = isJulian)
+  
+  day_hours <- getDaylightHours(
+    datetime = datetime,
+    longitude = longitude,
+    latitude = latitude,
+    bbox = bbox,
+    timezone = timezone,
+    isJulian = isJulian
+  )
   
   sunrise <- day_hours$sunrise  # POSIXt return
   sunset <- day_hours$sunset    # POSIXt return
   
-  # ---- Download files that exist for period between sunrise and sunset --
+  # ---- Download files --------------------------------------------------------
   
-  goesaodc_downloadAOD(
+  files <- goesaodc_downloadAOD(
     satID = satID,
     datetime = sunrise,
     endTime = sunset,
-    verbose = verbose)
+    verbose = verbose
+  )
+  
+  # ----- Return ---------------------------------------------------------------
+  
+  return(invisible(files))
   
 }

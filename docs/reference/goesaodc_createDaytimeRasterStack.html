@@ -90,7 +90,7 @@ raster::extent()." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MazamaSatelliteUtils</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.11</span>
       </span>
     </div>
 
@@ -208,34 +208,33 @@ latHi) order or the return value from <code><a href='https://rdrr.io/pkg/sp/man/
 <span class='fu'><a href='setSatelliteDataDir.html'>setSatelliteDataDir</a></span>(<span class='st'>"~/Data/Satellite"</span>)
 <span class='fu'><a href='https://rdrr.io/pkg/MazamaSpatialUtils/man/setSpatialDataDir.html'>setSpatialDataDir</a></span>(<span class='st'>"~/Data/Spatial"</span>)
 
-<span class='fu'><a href='https://rdrr.io/pkg/MazamaSpatialUtils/man/loadSpatialData.html'>loadSpatialData</a></span>(<span class='st'>"USCensusStates"</span>)
-
-<span class='no'>calif</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>USCensusStates</span>, <span class='no'>stateCode</span> <span class='kw'>==</span> <span class='st'>"CA"</span>)
-
-<span class='no'>bbox_ca</span>   <span class='kw'>&lt;-</span> <span class='kw pkg'>sp</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/sp/man/bbox.html'>bbox</a></span>(<span class='no'>calif</span>)
+<span class='no'>bbox</span>      <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>124</span>, -<span class='fl'>120</span>, <span class='fl'>36</span>, <span class='fl'>39</span>) <span class='co'># Kincade fire region</span>
 <span class='no'>satID</span>     <span class='kw'>&lt;-</span> <span class='st'>"G16"</span>
-<span class='no'>datetime</span>  <span class='kw'>&lt;-</span> <span class='st'>"2019-10-23"</span>
+<span class='no'>datetime</span>  <span class='kw'>&lt;-</span> <span class='st'>"2019-10-27"</span>
 <span class='no'>timezone</span>  <span class='kw'>&lt;-</span> <span class='st'>"America/Los_Angeles"</span>
 <span class='no'>dqfLevel</span>  <span class='kw'>&lt;-</span> <span class='fl'>2</span>
-<span class='no'>latitude</span>  <span class='kw'>&lt;-</span> <span class='fl'>38.448611</span>
-<span class='no'>longitude</span> <span class='kw'>&lt;-</span> -<span class='fl'>122.704722</span>
+
+<span class='no'>latitude</span>  <span class='kw'>&lt;-</span> <span class='fl'>38.245</span>   <span class='co'># \</span>
+                      <span class='co'>#  - Town of Tomales</span>
+<span class='no'>longitude</span> <span class='kw'>&lt;-</span> -<span class='fl'>122.906</span> <span class='co'># /</span>
 
 <span class='no'>dayStack</span> <span class='kw'>&lt;-</span> <span class='fu'>goesaodc_createDaytimeRasterStack</span>(
   <span class='kw'>satID</span> <span class='kw'>=</span> <span class='no'>satID</span>,
   <span class='kw'>datetime</span> <span class='kw'>=</span> <span class='no'>datetime</span>,
   <span class='kw'>timezone</span> <span class='kw'>=</span> <span class='no'>timezone</span>,
-  <span class='kw'>bbox</span> <span class='kw'>=</span> <span class='no'>bbox_ca</span>,
-  <span class='kw'>dqfLevel</span> <span class='kw'>=</span> <span class='no'>dqfLevel</span>
+  <span class='kw'>bbox</span> <span class='kw'>=</span> <span class='no'>bbox</span>,
+  <span class='kw'>dqfLevel</span> <span class='kw'>=</span> <span class='no'>dqfLevel</span>,
+  <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
 )
 
 <span class='no'>tb</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='raster_createLocationTimeseries.html'>raster_createLocationTimeseries</a></span>(<span class='no'>dayStack</span>,
                                       <span class='kw'>longitude</span> <span class='kw'>=</span> <span class='no'>longitude</span>,
                                       <span class='kw'>latitude</span> <span class='kw'>=</span> <span class='no'>latitude</span>,
-                                      <span class='kw'>bbox</span> <span class='kw'>=</span> <span class='no'>bbox_ca</span>)
+                                      <span class='kw'>bbox</span> <span class='kw'>=</span> <span class='no'>bbox</span>)
 
 <span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='kw'>x</span> <span class='kw'>=</span> <span class='no'>tb</span>$<span class='no'>datetime</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='no'>tb</span>$<span class='no'>aod</span>,
      <span class='kw'>pch</span> <span class='kw'>=</span> <span class='fl'>15</span>, <span class='kw'>cex</span> <span class='kw'>=</span> <span class='fl'>0.8</span>, <span class='kw'>col</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/grDevices/rgb.html'>rgb</a></span>(<span class='kw'>red</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>green</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>blue</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>alpha</span> <span class='kw'>=</span> <span class='fl'>0.8</span>),
-     <span class='kw'>main</span> <span class='kw'>=</span> <span class='st'>"Santa Rosa, 2019-10-23"</span>, <span class='kw'>xlab</span> <span class='kw'>=</span> <span class='st'>"Time (UTC)"</span>, <span class='kw'>ylab</span> <span class='kw'>=</span> <span class='st'>"AOD"</span>)
+     <span class='kw'>main</span> <span class='kw'>=</span> <span class='st'>"Tomales, CA - 2019-10-27"</span>, <span class='kw'>xlab</span> <span class='kw'>=</span> <span class='st'>"Time (UTC)"</span>, <span class='kw'>ylab</span> <span class='kw'>=</span> <span class='st'>"AOD"</span>)
 }</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

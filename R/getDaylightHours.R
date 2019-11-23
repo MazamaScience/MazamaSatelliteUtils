@@ -36,6 +36,7 @@
 #' @param timezone Timezone in which to interpret the \code{datetime}.
 #' @param isJulian Logical value determining whether datetime should be 
 #' interpreted as a Julian date with day of year as a decimal number.
+#' 
 #' @return List containing \code{POSIXct} \code{sunrise} and \code{sunset} times 
 #' for the specified date.
 #' 
@@ -44,25 +45,32 @@
 #' library(MazamaSatelliteUtils)
 #' library(MazamaSpatialUtils)
 #' 
-#' # EX 1. Get Sunrise and Sunset by Lat/Lon and Datetime
-#' daylight <- getDaylightHours(
+#' # Get sunrise and sunset by lat/lon and datetime
+#' getDaylightHours(
 #'   datetime = "2019-09-06", 
 #'   longitude = -123.245, 
 #'   latitude = 42.861
 #' )
 #' 
-#' # EX 2. Get Sunrise and Sunset by BBOX and datetime
-#' daylight <- getDaylightHours(
+#' # Get sunrise and sunset by bbox and datetime
+#' getDaylightHours(
 #'   datetime = "2019-09-06",
 #'   bbox = c(-124.566, -116.463, 41.991, 46.292)
 #' ) # Oregon
 #' 
-#' # EX 3. Get Sunrise and Sunset by Datetime and Timezone
-#' daylight <- getDaylightHours(
+#' # Get sunrise and sunset by datetime and timezone
+#' getDaylightHours(
 #'   datetime = "2019-09-06",
 #'   timezone = "America/Los_Angeles")
-#' }
 #' 
+#' # Get sunrise and sunset for a vector of datetimes
+#' getDaylightHours(
+#'   datetime = c("2019-06-21", "2019-09-23", "2019-12-22"),
+#'   longitude = -123.245, 
+#'   latitude = 42.861
+#' )
+#'}
+#'
 #' @rdname getDaylightHours
 #' 
 

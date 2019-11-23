@@ -69,7 +69,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MazamaSatelliteUtils</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.11</span>
       </span>
     </div>
 
@@ -148,11 +148,11 @@ that do not always have values</p></td>
 <span class='no'>bbox_oregon</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>sp</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/sp/man/bbox.html'>bbox</a></span>(<span class='no'>oregon</span>)
 <span class='no'>datetime</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>lubridate</span><span class='kw ns'>::</span><span class='fu'><a href='http://lubridate.tidyverse.org/reference/ymd_hms.html'>ymd_h</a></span>(<span class='st'>"2019-08-01 16"</span>, <span class='kw'>tz</span> <span class='kw'>=</span> <span class='st'>"UTC"</span>)
 
-<span class='no'>rstrStack</span> <span class='kw'>&lt;-</span> <span class='fu'>goesaodc_createHourlyRasterStack</span>(
+<span class='no'>rstrStack</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='goesaodc_createRasterStack.html'>goesaodc_createRasterStack</a></span>(
   <span class='kw'>satID</span> <span class='kw'>=</span> <span class='st'>"G16"</span>,
   <span class='kw'>datetime</span> <span class='kw'>=</span> <span class='no'>datetime</span>,
   <span class='kw'>bbox</span> <span class='kw'>=</span> <span class='no'>bbox_oregon</span>,
-  <span class='kw'>res</span> <span class='kw'>=</span> <span class='fl'>0.5</span>,
+  <span class='kw'>res</span> <span class='kw'>=</span> <span class='fl'>0.25</span>,
   <span class='kw'>dqfLevel</span> <span class='kw'>=</span> <span class='fl'>2</span>
 )
 <span class='no'>avg</span> <span class='kw'>&lt;-</span> <span class='fu'>raster_createStackAverage</span>(<span class='no'>rstrStack</span>, <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
