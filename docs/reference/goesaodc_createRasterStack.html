@@ -90,7 +90,7 @@ raster::extent()." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MazamaSatelliteUtils</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.11</span>
       </span>
     </div>
 
@@ -219,11 +219,11 @@ custom time ranges.</p></td>
 <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>MazamaSatelliteUtils</span>)
 <span class='fu'><a href='setSatelliteDataDir.html'>setSatelliteDataDir</a></span>(<span class='st'>"~/Data/Satellite"</span>)
 
-<span class='no'>satID</span> <span class='kw'>&lt;-</span> <span class='st'>"G16"</span>
-<span class='no'>datetime</span> <span class='kw'>&lt;-</span> <span class='st'>"2019-08-12 09:00"</span>
-<span class='no'>endTime</span> <span class='kw'>&lt;-</span> <span class='st'>"2019-08-12 12:00"</span>
-<span class='no'>bbox</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>124.56624</span>, -<span class='fl'>116.46350</span>, <span class='fl'>41.99179</span>, <span class='fl'>46.29203</span>) <span class='co'># Oregon</span>
-<span class='no'>dqfLevel</span> <span class='kw'>&lt;-</span> <span class='fl'>2</span>
+<span class='no'>satID</span> <span class='kw'>&lt;-</span> <span class='st'>"G17"</span>
+<span class='no'>datetime</span> <span class='kw'>&lt;-</span> <span class='st'>"2019-10-27 10"</span>
+<span class='no'>endTime</span> <span class='kw'>&lt;-</span> <span class='st'>"2019-10-27 11"</span>
+<span class='no'>bbox</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>124</span>, -<span class='fl'>120</span>, <span class='fl'>36</span>, <span class='fl'>39</span>) <span class='co'># Kincade fire region</span>
+<span class='no'>dqfLevel</span> <span class='kw'>&lt;-</span> <span class='fl'>3</span>
 <span class='no'>timezone</span> <span class='kw'>&lt;-</span> <span class='st'>"America/Los_Angeles"</span>
 
 <span class='no'>rasterStack</span> <span class='kw'>&lt;-</span> <span class='fu'>goesaodc_createRasterStack</span>(
@@ -232,9 +232,11 @@ custom time ranges.</p></td>
 <span class='kw'>endTime</span> <span class='kw'>=</span> <span class='no'>endTime</span>,
 <span class='kw'>bbox</span> <span class='kw'>=</span> <span class='no'>bbox</span>,
 <span class='kw'>dqfLevel</span> <span class='kw'>=</span> <span class='no'>dqfLevel</span>,
-<span class='kw'>timezone</span> <span class='kw'>=</span> <span class='no'>timezone</span>)
+<span class='kw'>timezone</span> <span class='kw'>=</span> <span class='no'>timezone</span>,
+<span class='kw'>res</span> <span class='kw'>=</span> <span class='fl'>0.075</span>,
+<span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
 
-<span class='kw pkg'>rasterVis</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/rasterVis/man/levelplot-methods.html'>levelplot</a></span>(<span class='no'>rasterStack</span>)
+<span class='kw pkg'>rasterVis</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/rasterVis/man/levelplot-methods.html'>levelplot</a></span>(<span class='no'>rasterStack</span>, <span class='kw'>par.settings</span><span class='kw'>=</span><span class='fu'>BuRdTheme</span>())
  }</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

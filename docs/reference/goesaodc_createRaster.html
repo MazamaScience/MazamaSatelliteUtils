@@ -82,7 +82,7 @@ raster::extent()." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MazamaSatelliteUtils</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.11</span>
       </span>
     </div>
 
@@ -177,16 +177,26 @@ latHi) order or the return value from <code><a href='https://rdrr.io/pkg/sp/man/
 <span class='fu'><a href='setSatelliteDataDir.html'>setSatelliteDataDir</a></span>(<span class='st'>"~/Data/Satellite"</span>)
 
 <span class='fu'><a href='goesaodc_downloadAOD.html'>goesaodc_downloadAOD</a></span>(
-  <span class='kw'>satID</span> <span class='kw'>=</span> <span class='st'>"G16"</span>,
-  <span class='kw'>datetime</span> <span class='kw'>=</span> <span class='st'>"201924918"</span>,
+  <span class='kw'>satID</span> <span class='kw'>=</span> <span class='st'>"G17"</span>,
+  <span class='kw'>datetime</span> <span class='kw'>=</span> <span class='st'>"2019-10-27 16"</span>,
   <span class='kw'>timezone</span> <span class='kw'>=</span> <span class='st'>"UTC"</span>,
-  <span class='kw'>isJulian</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
+  <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
+  )
 
-<span class='no'>netCDF</span> <span class='kw'>&lt;-</span> <span class='st'>"OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc"</span>
-
+<span class='no'>netCDF</span> <span class='kw'>&lt;-</span> <span class='st'>"OR_ABI-L2-AODC-M6_G17_s20193001616196_e20193001618569_c20193001621030.nc"</span>
 <span class='no'>nc</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='goesaodc_openFile.html'>goesaodc_openFile</a></span>(<span class='no'>netCDF</span>)
-<span class='no'>rstr</span> <span class='kw'>&lt;-</span> <span class='fu'>goesaodc_createRaster</span>(<span class='no'>nc</span>, <span class='kw'>res</span> <span class='kw'>=</span> <span class='fl'>0.1</span>, <span class='kw'>dqfLevel</span> <span class='kw'>=</span> <span class='fl'>2</span>)
-<span class='kw pkg'>raster</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/raster/man/plot.html'>plot</a></span>(<span class='no'>rstr</span>, <span class='st'>"AOD"</span>)</div><div class='input'><span class='kw pkg'>maps</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/maps/man/map.html'>map</a></span>(<span class='st'>"state"</span>, <span class='kw'>add</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</div><div class='img'><img src='goesaodc_createRaster-1.png' alt='' width='700' height='433' /></div><div class='input'># }
+
+<span class='no'>bbox</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>129</span>, -<span class='fl'>110</span>, <span class='fl'>29</span>, <span class='fl'>50</span>)
+
+<span class='no'>rstr</span> <span class='kw'>&lt;-</span> <span class='fu'>goesaodc_createRaster</span>(
+  <span class='no'>nc</span>,
+  <span class='kw'>res</span> <span class='kw'>=</span> <span class='fl'>0.05</span>,
+  <span class='kw'>dqfLevel</span> <span class='kw'>=</span> <span class='fl'>3</span>,
+  <span class='kw'>bbox</span> <span class='kw'>=</span> <span class='no'>bbox</span>
+  )
+
+<span class='no'>west</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"washington"</span>, <span class='st'>"oregon"</span>, <span class='st'>"california"</span>, <span class='st'>"nevada"</span>, <span class='st'>"idaho"</span>)
+<span class='kw pkg'>maps</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/maps/man/map.html'>map</a></span>(<span class='kw'>database</span> <span class='kw'>=</span> <span class='st'>"state"</span>, <span class='kw'>regions</span> <span class='kw'>=</span> <span class='no'>west</span>)</div><div class='img'><img src='goesaodc_createRaster-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='kw pkg'>raster</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/raster/man/plot.html'>plot</a></span>(<span class='no'>rstr</span>, <span class='st'>"AOD"</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/rev.html'>rev</a></span>(<span class='fu'><a href='https://rdrr.io/r/grDevices/palettes.html'>heat.colors</a></span>(<span class='fl'>5</span>)))</div><div class='input'><span class='kw pkg'>maps</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/maps/man/map.html'>map</a></span>(<span class='kw'>database</span> <span class='kw'>=</span> <span class='st'>"state"</span>, <span class='kw'>regions</span> <span class='kw'>=</span> <span class='no'>west</span>, <span class='kw'>add</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</div><div class='img'><img src='goesaodc_createRaster-2.png' alt='' width='700' height='433' /></div><div class='input'># }
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

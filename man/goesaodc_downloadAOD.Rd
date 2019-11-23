@@ -26,7 +26,7 @@ shown.}
 \item{baseUrl}{Base URL for data queries.}
 }
 \value{
-Vector of downloaded filepaths.
+Invisibly returns a vector of local files matching the requested \code{datetime}.
 }
 \description{
 Download all GOES 16 or 17 NetCDF files for the given
@@ -35,25 +35,37 @@ If \code{datetime} is specified to the hour and \code{fullDay} is not
 explicitly set to TRUE', only files for that hour will be downloaded. If the
 optional \code{endTime} is specified, all files that exist for the time 
 period between \code{datetime} and \code{endTime} will be downloaded. If 
-\code{timezone} is not specified, "UTC" timezone is assumed.
+\code{timezone} is not specified, "UTC" is assumed.
+
+The vector of files returned includes all files in \code{satelliteDataDir}
+that match the requested date whether they were download previously or with
+this call.
 }
 \examples{
 \donttest{
 library(MazamaSatelliteUtils)
 setSatelliteDataDir("~/Data/Satellite")
 
-goesaodc_downloadAOD(satID = "G17", 
-datetime = "2019-09-06 18") 
+# Single hour
+files <- goesaodc_downloadAOD("G17", "2019-09-06 18") 
+print(files)
 
-goesaodc_downloadAOD(satID = "G16",
-datetime = "2019-09-06 08:00",
-endTime = "2019-09-06 12:00",
-timezone = "America/Los_Angeles")
+# Specific time range
+files <- goesaodc_downloadAOD(
+  satID = "G16",
+  datetime = "2019-09-06 08:00",
+  endTime = "2019-09-06 12:00",
+  timezone = "America/Los_Angeles"
+)
+print(files)
 
-goesaodc_downloadAOD(satID = "G16",
-datetime = "201924915",
-isJulian = TRUE)
-
+# Julian timestamp
+files <- goesaodc_downloadAOD(
+  satID = "G16",
+  datetime = "201924915",
+  isJulian = TRUE
+)
+print(files)
 }
 }
 \seealso{

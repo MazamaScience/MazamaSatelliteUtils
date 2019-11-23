@@ -37,12 +37,7 @@
 
 <meta property="og:title" content="List available GOES AOD files for a specified date and hour — goesaodc_listFiles" />
 <meta property="og:description" content="Retrieve a list of GOES AOD files available in the
-satelliteDataDir or at baseUrl for a specified date and hour.
-NOTE: All files for a particular hour will be returned even if the
-incoming startdate or jdate is specified to the minute or
-second.  By default, the local directory set by SetSatelliteDir is 
-searched. useRemote = TRUE will search baseURL for all files 
-that are available within the specified timeframe." />
+satelliteDataDir or at baseUrl for a specified date and hour." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -75,7 +70,7 @@ that are available within the specified timeframe." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MazamaSatelliteUtils</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.11</span>
       </span>
     </div>
 
@@ -117,11 +112,6 @@ that are available within the specified timeframe." />
     <div class="ref-description">
     <p>Retrieve a list of GOES AOD files available in the
 <code>satelliteDataDir</code> or at <code>baseUrl</code> for a specified date and hour.</p>
-<p>NOTE: All files for a particular hour will be returned even if the
-incoming <code>startdate</code> or <code>jdate</code> is specified to the minute or
-second.  By default, the local directory set by <code>SetSatelliteDir</code> is 
-searched. <code>useRemote = TRUE</code> will search <code>baseURL</code> for all files 
-that are available within the specified timeframe.</p>
     </div>
 
     <pre class="usage"><span class='fu'>goesaodc_listFiles</span>(<span class='kw'>satID</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>datetime</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>endTime</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
@@ -166,19 +156,40 @@ that are available within the specified timeframe.</p>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>Vector of filenames.</p>
+    <h2 class="hasAnchor" id="note"><a class="anchor" href="#note"></a>Note</h2>
+
+    <p>All files for a particular hour will be returned even if the
+incoming <code>startdate</code> or <code>jdate</code> is specified to the minute or
+second.  By default, the local directory set by <code>setSatelliteDir()</code> is 
+searched. <code>useRemote = TRUE</code> will search <code>baseURL</code> for all files 
+that are available within the specified timeframe.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
 <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>MazamaSatelliteUtils</span>)
 <span class='fu'><a href='setSatelliteDataDir.html'>setSatelliteDataDir</a></span>(<span class='st'>"~/Data/Satellite"</span>)
 
- <span class='fu'>goesaodc_listFiles</span>(
- <span class='kw'>satID</span> <span class='kw'>=</span> <span class='st'>"G16"</span>,
- <span class='kw'>datetime</span> <span class='kw'>=</span> <span class='st'>"2019-09-06 06:00"</span>,
- <span class='kw'>endTime</span> <span class='kw'>=</span> <span class='st'>"2019-09-06 18:00"</span>,
- <span class='kw'>timezone</span> <span class='kw'>=</span> <span class='st'>"America/Los_Angeles"</span>,
- <span class='kw'>useRemote</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
- )</div><div class='output co'>#&gt;   [1] "OR_ABI-L2-AODC-M6_G16_s20192491301093_e20192491303466_c20192491310120.nc"
+<span class='co'># Local files for a UTC hour</span>
+<span class='fu'>goesaodc_listFiles</span>(<span class='st'>"G17"</span>, <span class='st'>"2019-09-06 18"</span>)</div><div class='output co'>#&gt;  [1] "OR_ABI-L2-AODC-M6_G17_s20192491801196_e20192491803569_c20192491805437.nc"
+#&gt;  [2] "OR_ABI-L2-AODC-M6_G17_s20192491806196_e20192491808569_c20192491810456.nc"
+#&gt;  [3] "OR_ABI-L2-AODC-M6_G17_s20192491811196_e20192491813569_c20192491815453.nc"
+#&gt;  [4] "OR_ABI-L2-AODC-M6_G17_s20192491816196_e20192491818569_c20192491820468.nc"
+#&gt;  [5] "OR_ABI-L2-AODC-M6_G17_s20192491821196_e20192491823569_c20192491825491.nc"
+#&gt;  [6] "OR_ABI-L2-AODC-M6_G17_s20192491826196_e20192491828569_c20192491830494.nc"
+#&gt;  [7] "OR_ABI-L2-AODC-M6_G17_s20192491831196_e20192491833569_c20192491835517.nc"
+#&gt;  [8] "OR_ABI-L2-AODC-M6_G17_s20192491836196_e20192491838569_c20192491840517.nc"
+#&gt;  [9] "OR_ABI-L2-AODC-M6_G17_s20192491841196_e20192491843569_c20192491845528.nc"
+#&gt; [10] "OR_ABI-L2-AODC-M6_G17_s20192491846196_e20192491848569_c20192491850525.nc"
+#&gt; [11] "OR_ABI-L2-AODC-M6_G17_s20192491851196_e20192491853569_c20192491855529.nc"
+#&gt; [12] "OR_ABI-L2-AODC-M6_G17_s20192491856196_e20192491858569_c20192491900549.nc"</div><div class='input'>
+<span class='co'># Remote files for a time range in local time</span>
+<span class='fu'>goesaodc_listFiles</span>(
+  <span class='kw'>satID</span> <span class='kw'>=</span> <span class='st'>"G16"</span>,
+  <span class='kw'>datetime</span> <span class='kw'>=</span> <span class='st'>"2019-09-06 06:00"</span>,
+  <span class='kw'>endTime</span> <span class='kw'>=</span> <span class='st'>"2019-09-06 18:00"</span>,
+  <span class='kw'>timezone</span> <span class='kw'>=</span> <span class='st'>"America/Los_Angeles"</span>,
+  <span class='kw'>useRemote</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
+)</div><div class='output co'>#&gt;   [1] "OR_ABI-L2-AODC-M6_G16_s20192491301093_e20192491303466_c20192491310120.nc"
 #&gt;   [2] "OR_ABI-L2-AODC-M6_G16_s20192491306093_e20192491308466_c20192491315092.nc"
 #&gt;   [3] "OR_ABI-L2-AODC-M6_G16_s20192491311093_e20192491313466_c20192491320109.nc"
 #&gt;   [4] "OR_ABI-L2-AODC-M6_G16_s20192491316093_e20192491318466_c20192491325115.nc"
@@ -341,6 +352,7 @@ that are available within the specified timeframe.</p>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
       <li><a href="#value">Value</a></li>
+      <li><a href="#note">Note</a></li>
       <li><a href="#examples">Examples</a></li>
     </ul>
 

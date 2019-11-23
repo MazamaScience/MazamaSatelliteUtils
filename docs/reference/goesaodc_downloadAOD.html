@@ -42,7 +42,10 @@ If datetime is specified to the hour and fullDay is not
 explicitly set to TRUE', only files for that hour will be downloaded. If the
 optional endTime is specified, all files that exist for the time 
 period between datetime and endTime will be downloaded. If 
-timezone is not specified, &quot;UTC&quot; timezone is assumed." />
+timezone is not specified, &quot;UTC&quot; is assumed.
+The vector of files returned includes all files in satelliteDataDir
+that match the requested date whether they were download previously or with
+this call." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -75,7 +78,7 @@ timezone is not specified, &quot;UTC&quot; timezone is assumed." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MazamaSatelliteUtils</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.11</span>
       </span>
     </div>
 
@@ -121,7 +124,10 @@ If <code>datetime</code> is specified to the hour and <code>fullDay</code> is no
 explicitly set to TRUE', only files for that hour will be downloaded. If the
 optional <code>endTime</code> is specified, all files that exist for the time 
 period between <code>datetime</code> and <code>endTime</code> will be downloaded. If 
-<code>timezone</code> is not specified, "UTC" timezone is assumed.</p>
+<code>timezone</code> is not specified, "UTC" is assumed.</p>
+<p>The vector of files returned includes all files in <code>satelliteDataDir</code>
+that match the requested date whether they were download previously or with
+this call.</p>
     </div>
 
     <pre class="usage"><span class='fu'>goesaodc_downloadAOD</span>(<span class='kw'>satID</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>datetime</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>endTime</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
@@ -165,7 +171,7 @@ shown.</p></td>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Vector of downloaded filepaths.</p>
+    <p>Invisibly returns a vector of local files matching the requested <code>datetime</code>.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p><code><a href='setSatelliteDataDir.html'>setSatelliteDataDir</a></code></p></div>
@@ -175,19 +181,106 @@ shown.</p></td>
 <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>MazamaSatelliteUtils</span>)
 <span class='fu'><a href='setSatelliteDataDir.html'>setSatelliteDataDir</a></span>(<span class='st'>"~/Data/Satellite"</span>)
 
-<span class='fu'>goesaodc_downloadAOD</span>(<span class='kw'>satID</span> <span class='kw'>=</span> <span class='st'>"G17"</span>,
-<span class='kw'>datetime</span> <span class='kw'>=</span> <span class='st'>"2019-09-06 18"</span>)
-
-<span class='fu'>goesaodc_downloadAOD</span>(<span class='kw'>satID</span> <span class='kw'>=</span> <span class='st'>"G16"</span>,
-<span class='kw'>datetime</span> <span class='kw'>=</span> <span class='st'>"2019-09-06 08:00"</span>,
-<span class='kw'>endTime</span> <span class='kw'>=</span> <span class='st'>"2019-09-06 12:00"</span>,
-<span class='kw'>timezone</span> <span class='kw'>=</span> <span class='st'>"America/Los_Angeles"</span>)
-
-<span class='fu'>goesaodc_downloadAOD</span>(<span class='kw'>satID</span> <span class='kw'>=</span> <span class='st'>"G16"</span>,
-<span class='kw'>datetime</span> <span class='kw'>=</span> <span class='st'>"201924915"</span>,
-<span class='kw'>isJulian</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
-
-<span class='co'># }</span></div></pre>
+<span class='co'># Single hour</span>
+<span class='no'>files</span> <span class='kw'>&lt;-</span> <span class='fu'>goesaodc_downloadAOD</span>(<span class='st'>"G17"</span>, <span class='st'>"2019-09-06 18"</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='no'>files</span>)</div><div class='output co'>#&gt;  [1] "OR_ABI-L2-AODC-M6_G17_s20192491801196_e20192491803569_c20192491805437.nc"
+#&gt;  [2] "OR_ABI-L2-AODC-M6_G17_s20192491806196_e20192491808569_c20192491810456.nc"
+#&gt;  [3] "OR_ABI-L2-AODC-M6_G17_s20192491811196_e20192491813569_c20192491815453.nc"
+#&gt;  [4] "OR_ABI-L2-AODC-M6_G17_s20192491816196_e20192491818569_c20192491820468.nc"
+#&gt;  [5] "OR_ABI-L2-AODC-M6_G17_s20192491821196_e20192491823569_c20192491825491.nc"
+#&gt;  [6] "OR_ABI-L2-AODC-M6_G17_s20192491826196_e20192491828569_c20192491830494.nc"
+#&gt;  [7] "OR_ABI-L2-AODC-M6_G17_s20192491831196_e20192491833569_c20192491835517.nc"
+#&gt;  [8] "OR_ABI-L2-AODC-M6_G17_s20192491836196_e20192491838569_c20192491840517.nc"
+#&gt;  [9] "OR_ABI-L2-AODC-M6_G17_s20192491841196_e20192491843569_c20192491845528.nc"
+#&gt; [10] "OR_ABI-L2-AODC-M6_G17_s20192491846196_e20192491848569_c20192491850525.nc"
+#&gt; [11] "OR_ABI-L2-AODC-M6_G17_s20192491851196_e20192491853569_c20192491855529.nc"
+#&gt; [12] "OR_ABI-L2-AODC-M6_G17_s20192491856196_e20192491858569_c20192491900549.nc"</div><div class='input'>
+<span class='co'># Specific time range</span>
+<span class='no'>files</span> <span class='kw'>&lt;-</span> <span class='fu'>goesaodc_downloadAOD</span>(
+  <span class='kw'>satID</span> <span class='kw'>=</span> <span class='st'>"G16"</span>,
+  <span class='kw'>datetime</span> <span class='kw'>=</span> <span class='st'>"2019-09-06 08:00"</span>,
+  <span class='kw'>endTime</span> <span class='kw'>=</span> <span class='st'>"2019-09-06 12:00"</span>,
+  <span class='kw'>timezone</span> <span class='kw'>=</span> <span class='st'>"America/Los_Angeles"</span>
+)
+<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='no'>files</span>)</div><div class='output co'>#&gt;  [1] "OR_ABI-L2-AODC-M6_G16_s20192491501093_e20192491503466_c20192491510124.nc"
+#&gt;  [2] "OR_ABI-L2-AODC-M6_G16_s20192491506093_e20192491508466_c20192491515087.nc"
+#&gt;  [3] "OR_ABI-L2-AODC-M6_G16_s20192491511094_e20192491513466_c20192491520123.nc"
+#&gt;  [4] "OR_ABI-L2-AODC-M6_G16_s20192491516094_e20192491518466_c20192491525124.nc"
+#&gt;  [5] "OR_ABI-L2-AODC-M6_G16_s20192491521094_e20192491523467_c20192491530105.nc"
+#&gt;  [6] "OR_ABI-L2-AODC-M6_G16_s20192491526094_e20192491528467_c20192491535106.nc"
+#&gt;  [7] "OR_ABI-L2-AODC-M6_G16_s20192491531094_e20192491533467_c20192491540114.nc"
+#&gt;  [8] "OR_ABI-L2-AODC-M6_G16_s20192491536094_e20192491538467_c20192491545088.nc"
+#&gt;  [9] "OR_ABI-L2-AODC-M6_G16_s20192491541094_e20192491543467_c20192491550116.nc"
+#&gt; [10] "OR_ABI-L2-AODC-M6_G16_s20192491546094_e20192491548467_c20192491555121.nc"
+#&gt; [11] "OR_ABI-L2-AODC-M6_G16_s20192491551094_e20192491553467_c20192491600096.nc"
+#&gt; [12] "OR_ABI-L2-AODC-M6_G16_s20192491556094_e20192491558467_c20192491605110.nc"
+#&gt; [13] "OR_ABI-L2-AODC-M6_G16_s20192491601094_e20192491603467_c20192491610121.nc"
+#&gt; [14] "OR_ABI-L2-AODC-M6_G16_s20192491606094_e20192491608467_c20192491615088.nc"
+#&gt; [15] "OR_ABI-L2-AODC-M6_G16_s20192491611094_e20192491613467_c20192491620114.nc"
+#&gt; [16] "OR_ABI-L2-AODC-M6_G16_s20192491616094_e20192491618467_c20192491625131.nc"
+#&gt; [17] "OR_ABI-L2-AODC-M6_G16_s20192491621094_e20192491623467_c20192491630089.nc"
+#&gt; [18] "OR_ABI-L2-AODC-M6_G16_s20192491626094_e20192491628467_c20192491635120.nc"
+#&gt; [19] "OR_ABI-L2-AODC-M6_G16_s20192491631094_e20192491633467_c20192491640112.nc"
+#&gt; [20] "OR_ABI-L2-AODC-M6_G16_s20192491636094_e20192491638467_c20192491645095.nc"
+#&gt; [21] "OR_ABI-L2-AODC-M6_G16_s20192491641094_e20192491643467_c20192491650101.nc"
+#&gt; [22] "OR_ABI-L2-AODC-M6_G16_s20192491646094_e20192491648467_c20192491655131.nc"
+#&gt; [23] "OR_ABI-L2-AODC-M6_G16_s20192491651094_e20192491653467_c20192491700096.nc"
+#&gt; [24] "OR_ABI-L2-AODC-M6_G16_s20192491656094_e20192491658467_c20192491705115.nc"
+#&gt; [25] "OR_ABI-L2-AODC-M6_G16_s20192491701094_e20192491703467_c20192491710110.nc"
+#&gt; [26] "OR_ABI-L2-AODC-M6_G16_s20192491706094_e20192491708467_c20192491715102.nc"
+#&gt; [27] "OR_ABI-L2-AODC-M6_G16_s20192491711095_e20192491713467_c20192491720125.nc"
+#&gt; [28] "OR_ABI-L2-AODC-M6_G16_s20192491716095_e20192491718467_c20192491725125.nc"
+#&gt; [29] "OR_ABI-L2-AODC-M6_G16_s20192491721095_e20192491723468_c20192491730105.nc"
+#&gt; [30] "OR_ABI-L2-AODC-M6_G16_s20192491726095_e20192491728468_c20192491735127.nc"
+#&gt; [31] "OR_ABI-L2-AODC-M6_G16_s20192491731095_e20192491733468_c20192491740122.nc"
+#&gt; [32] "OR_ABI-L2-AODC-M6_G16_s20192491736095_e20192491738468_c20192491745098.nc"
+#&gt; [33] "OR_ABI-L2-AODC-M6_G16_s20192491741095_e20192491743468_c20192491750108.nc"
+#&gt; [34] "OR_ABI-L2-AODC-M6_G16_s20192491746095_e20192491748468_c20192491755131.nc"
+#&gt; [35] "OR_ABI-L2-AODC-M6_G16_s20192491751095_e20192491753468_c20192491800111.nc"
+#&gt; [36] "OR_ABI-L2-AODC-M6_G16_s20192491756095_e20192491758468_c20192491805104.nc"
+#&gt; [37] "OR_ABI-L2-AODC-M6_G16_s20192491801095_e20192491803468_c20192491810129.nc"
+#&gt; [38] "OR_ABI-L2-AODC-M6_G16_s20192491806095_e20192491808468_c20192491815101.nc"
+#&gt; [39] "OR_ABI-L2-AODC-M6_G16_s20192491811095_e20192491813468_c20192491820128.nc"
+#&gt; [40] "OR_ABI-L2-AODC-M6_G16_s20192491816095_e20192491818468_c20192491825122.nc"
+#&gt; [41] "OR_ABI-L2-AODC-M6_G16_s20192491821095_e20192491823468_c20192491830111.nc"
+#&gt; [42] "OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc"
+#&gt; [43] "OR_ABI-L2-AODC-M6_G16_s20192491831095_e20192491833468_c20192491840122.nc"
+#&gt; [44] "OR_ABI-L2-AODC-M6_G16_s20192491836095_e20192491838468_c20192491845095.nc"
+#&gt; [45] "OR_ABI-L2-AODC-M6_G16_s20192491841095_e20192491843468_c20192491850120.nc"
+#&gt; [46] "OR_ABI-L2-AODC-M6_G16_s20192491846095_e20192491848468_c20192491855133.nc"
+#&gt; [47] "OR_ABI-L2-AODC-M6_G16_s20192491851095_e20192491853468_c20192491900103.nc"
+#&gt; [48] "OR_ABI-L2-AODC-M6_G16_s20192491856095_e20192491858468_c20192491905110.nc"
+#&gt; [49] "OR_ABI-L2-AODC-M6_G16_s20192491901095_e20192491903468_c20192491910119.nc"
+#&gt; [50] "OR_ABI-L2-AODC-M6_G16_s20192491906095_e20192491908468_c20192491915112.nc"
+#&gt; [51] "OR_ABI-L2-AODC-M6_G16_s20192491911096_e20192491913468_c20192491919214.nc"
+#&gt; [52] "OR_ABI-L2-AODC-M6_G16_s20192491916096_e20192491918468_c20192491923198.nc"
+#&gt; [53] "OR_ABI-L2-AODC-M6_G16_s20192491921096_e20192491923469_c20192491927063.nc"
+#&gt; [54] "OR_ABI-L2-AODC-M6_G16_s20192491926096_e20192491928469_c20192491931399.nc"
+#&gt; [55] "OR_ABI-L2-AODC-M6_G16_s20192491931096_e20192491933469_c20192491936389.nc"
+#&gt; [56] "OR_ABI-L2-AODC-M6_G16_s20192491936096_e20192491938469_c20192491941380.nc"
+#&gt; [57] "OR_ABI-L2-AODC-M6_G16_s20192491941096_e20192491943469_c20192491946332.nc"
+#&gt; [58] "OR_ABI-L2-AODC-M6_G16_s20192491946096_e20192491948469_c20192491951448.nc"
+#&gt; [59] "OR_ABI-L2-AODC-M6_G16_s20192491951096_e20192491953469_c20192491956325.nc"
+#&gt; [60] "OR_ABI-L2-AODC-M6_G16_s20192491956096_e20192491958469_c20192492001307.nc"</div><div class='input'>
+<span class='co'># Julian timestamp</span>
+<span class='no'>files</span> <span class='kw'>&lt;-</span> <span class='fu'>goesaodc_downloadAOD</span>(
+  <span class='kw'>satID</span> <span class='kw'>=</span> <span class='st'>"G16"</span>,
+  <span class='kw'>datetime</span> <span class='kw'>=</span> <span class='st'>"201924915"</span>,
+  <span class='kw'>isJulian</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
+)
+<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='no'>files</span>)</div><div class='output co'>#&gt;  [1] "OR_ABI-L2-AODC-M6_G16_s20192491501093_e20192491503466_c20192491510124.nc"
+#&gt;  [2] "OR_ABI-L2-AODC-M6_G16_s20192491506093_e20192491508466_c20192491515087.nc"
+#&gt;  [3] "OR_ABI-L2-AODC-M6_G16_s20192491511094_e20192491513466_c20192491520123.nc"
+#&gt;  [4] "OR_ABI-L2-AODC-M6_G16_s20192491516094_e20192491518466_c20192491525124.nc"
+#&gt;  [5] "OR_ABI-L2-AODC-M6_G16_s20192491521094_e20192491523467_c20192491530105.nc"
+#&gt;  [6] "OR_ABI-L2-AODC-M6_G16_s20192491526094_e20192491528467_c20192491535106.nc"
+#&gt;  [7] "OR_ABI-L2-AODC-M6_G16_s20192491531094_e20192491533467_c20192491540114.nc"
+#&gt;  [8] "OR_ABI-L2-AODC-M6_G16_s20192491536094_e20192491538467_c20192491545088.nc"
+#&gt;  [9] "OR_ABI-L2-AODC-M6_G16_s20192491541094_e20192491543467_c20192491550116.nc"
+#&gt; [10] "OR_ABI-L2-AODC-M6_G16_s20192491546094_e20192491548467_c20192491555121.nc"
+#&gt; [11] "OR_ABI-L2-AODC-M6_G16_s20192491551094_e20192491553467_c20192491600096.nc"
+#&gt; [12] "OR_ABI-L2-AODC-M6_G16_s20192491556094_e20192491558467_c20192491605110.nc"</div><div class='input'># }
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

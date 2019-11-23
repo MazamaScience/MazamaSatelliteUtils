@@ -70,7 +70,7 @@ This information is sufficient to plot as points or create a raster object." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MazamaSatelliteUtils</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.11</span>
       </span>
     </div>
 
@@ -145,12 +145,15 @@ This information is sufficient to plot as points or create a raster object.</p>
 <span class='fu'><a href='setSatelliteDataDir.html'>setSatelliteDataDir</a></span>(<span class='st'>"~/Data/Satellite"</span>)
 
 <span class='fu'><a href='goesaodc_downloadAOD.html'>goesaodc_downloadAOD</a></span>(
-  <span class='kw'>satID</span> <span class='kw'>=</span> <span class='st'>"G16"</span>,
-  <span class='kw'>datetime</span> <span class='kw'>=</span> <span class='st'>"201924918"</span>,
-  <span class='kw'>timezone</span> <span class='kw'>=</span> <span class='st'>"UTC"</span>,
-  <span class='kw'>isJulian</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
+  <span class='kw'>satID</span> <span class='kw'>=</span> <span class='st'>"G17"</span>,
+  <span class='kw'>datetime</span> <span class='kw'>=</span> <span class='st'>"2019-10-27 10"</span>,
+  <span class='kw'>timezone</span> <span class='kw'>=</span> <span class='st'>"America/Los_Angeles"</span>
+  )
 
-<span class='no'>ncFile</span> <span class='kw'>&lt;-</span> <span class='st'>"OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc"</span>
+<span class='no'>ncFile</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='goesaodc_listFiles.html'>goesaodc_listFiles</a></span>(
+  <span class='kw'>satID</span> <span class='kw'>=</span> <span class='st'>"G17"</span>,
+  <span class='kw'>datetime</span> <span class='kw'>=</span> <span class='st'>"2019-10-27 10"</span>,
+  <span class='kw'>timezone</span> <span class='kw'>=</span> <span class='st'>"America/Los_Angeles"</span>)[<span class='fl'>1</span>]
 
 <span class='no'>nc</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='goesaodc_openFile.html'>goesaodc_openFile</a></span>(<span class='no'>ncFile</span>)
 
@@ -158,16 +161,19 @@ This information is sufficient to plot as points or create a raster object.</p>
 <span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span>(<span class='no'>tbl</span>)</div><div class='output co'>#&gt; <span style='color: #555555;'># A tibble: 6 x 4</span><span>
 #&gt;     lon   lat   AOD   DQF
 #&gt;   </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span>
-#&gt; </span><span style='color: #555555;'>1</span><span> -</span><span style='color: #BB0000;'>76.1</span><span>  50.0 0.271     2
-#&gt; </span><span style='color: #555555;'>2</span><span> -</span><span style='color: #BB0000;'>75.6</span><span>  50.0 0.911     2
-#&gt; </span><span style='color: #555555;'>3</span><span> -</span><span style='color: #BB0000;'>75.5</span><span>  50.0 0.907     2
-#&gt; </span><span style='color: #555555;'>4</span><span> -</span><span style='color: #BB0000;'>75.3</span><span>  50.0 0.139     2
-#&gt; </span><span style='color: #555555;'>5</span><span> -</span><span style='color: #BB0000;'>75.2</span><span>  50.0 0.147     2
-#&gt; </span><span style='color: #555555;'>6</span><span> -</span><span style='color: #BB0000;'>75.0</span><span>  50.0 0.764     2</div><div class='input'>
+#&gt; </span><span style='color: #555555;'>1</span><span> -</span><span style='color: #BB0000;'>125.</span><span>  50.0 0.113     2
+#&gt; </span><span style='color: #555555;'>2</span><span> -</span><span style='color: #BB0000;'>125.</span><span>  50.0 0.667     2
+#&gt; </span><span style='color: #555555;'>3</span><span> -</span><span style='color: #BB0000;'>124.</span><span>  50.0 1.45      2
+#&gt; </span><span style='color: #555555;'>4</span><span> -</span><span style='color: #BB0000;'>125.</span><span>  49.9 0.138     2
+#&gt; </span><span style='color: #555555;'>5</span><span> -</span><span style='color: #BB0000;'>125.</span><span>  49.9 0.393     2
+#&gt; </span><span style='color: #555555;'>6</span><span> -</span><span style='color: #BB0000;'>125.</span><span>  50.0 0.849     2</div><div class='input'>
 <span class='co'># Tibble based on BBOX filtered extent of tibble</span>
 <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>MazamaSatelliteUtils</span>)
 
-<span class='no'>ncFile</span> <span class='kw'>&lt;-</span> <span class='st'>"OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc"</span>
+<span class='no'>ncFile</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='goesaodc_listFiles.html'>goesaodc_listFiles</a></span>(
+  <span class='kw'>satID</span> <span class='kw'>=</span> <span class='st'>"G17"</span>,
+  <span class='kw'>datetime</span> <span class='kw'>=</span> <span class='st'>"2019-10-27 10"</span>,
+  <span class='kw'>timezone</span> <span class='kw'>=</span> <span class='st'>"America/Los_Angeles"</span>)[<span class='fl'>1</span>]
 
 <span class='no'>nc</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='goesaodc_openFile.html'>goesaodc_openFile</a></span>(<span class='no'>ncFile</span>)
 
@@ -175,8 +181,17 @@ This information is sufficient to plot as points or create a raster object.</p>
 <span class='no'>bbox</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(-<span class='fl'>124</span>, -<span class='fl'>120</span>, <span class='fl'>36</span>, <span class='fl'>39</span>)
 
 <span class='no'>filtered_tbl</span> <span class='kw'>&lt;-</span> <span class='fu'>goesaodc_createTibble</span>(<span class='no'>nc</span>, <span class='no'>bbox</span>)
-
-<span class='co'># }</span></div></span></pre>
+<span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span>(<span class='no'>filtered_tbl</span>)</div><div class='output co'>#&gt; </span><span style='color: #555555;'># A tibble: 6 x 4</span><span>
+#&gt;     lon   lat    AOD   DQF
+#&gt;   </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span>  </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span>
+#&gt; </span><span style='color: #555555;'>1</span><span> -</span><span style='color: #BB0000;'>124.</span><span>  39.0 0.037</span><span style='text-decoration: underline;'>1</span><span>     1
+#&gt; </span><span style='color: #555555;'>2</span><span> -</span><span style='color: #BB0000;'>124.</span><span>  39.0 0.023</span><span style='text-decoration: underline;'>4</span><span>     1
+#&gt; </span><span style='color: #555555;'>3</span><span> -</span><span style='color: #BB0000;'>124.</span><span>  39.0 0.015</span><span style='text-decoration: underline;'>9</span><span>     1
+#&gt; </span><span style='color: #555555;'>4</span><span> -</span><span style='color: #BB0000;'>124.</span><span>  39.0 0.030</span><span style='text-decoration: underline;'>4</span><span>     1
+#&gt; </span><span style='color: #555555;'>5</span><span> -</span><span style='color: #BB0000;'>124.</span><span>  39.0 0.036</span><span style='text-decoration: underline;'>8</span><span>     0
+#&gt; </span><span style='color: #555555;'>6</span><span> -</span><span style='color: #BB0000;'>124.</span><span>  39.0 0.028</span><span style='text-decoration: underline;'>3</span><span>     1</div><div class='input'>
+# }
+</div></span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

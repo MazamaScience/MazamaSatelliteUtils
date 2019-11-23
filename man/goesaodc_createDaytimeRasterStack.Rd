@@ -65,33 +65,32 @@ library(MazamaSpatialUtils)
 setSatelliteDataDir("~/Data/Satellite")
 setSpatialDataDir("~/Data/Spatial")
 
-loadSpatialData("USCensusStates")
-
-calif <- subset(USCensusStates, stateCode == "CA")
-
-bbox_ca   <- sp::bbox(calif)
+bbox      <- c(-124, -120, 36, 39) # Kincade fire region
 satID     <- "G16"
-datetime  <- "2019-10-23"
+datetime  <- "2019-10-27"
 timezone  <- "America/Los_Angeles"
 dqfLevel  <- 2
-latitude  <- 38.448611 
-longitude <- -122.704722
+
+latitude  <- 38.245   # \\
+                      #  - Town of Tomales
+longitude <- -122.906 # /
 
 dayStack <- goesaodc_createDaytimeRasterStack(
   satID = satID,
   datetime = datetime,
   timezone = timezone,
-  bbox = bbox_ca,
-  dqfLevel = dqfLevel
+  bbox = bbox,
+  dqfLevel = dqfLevel,
+  verbose = TRUE
 )
 
 tb <- raster_createLocationTimeseries(dayStack,
                                       longitude = longitude,
                                       latitude = latitude,
-                                      bbox = bbox_ca)
+                                      bbox = bbox)
 
 plot(x = tb$datetime, y = tb$aod,
      pch = 15, cex = 0.8, col = rgb(red = 0, green = 0, blue = 0, alpha = 0.8),
-     main = "Santa Rosa, 2019-10-23", xlab = "Time (UTC)", ylab = "AOD")
+     main = "Tomales, CA - 2019-10-27", xlab = "Time (UTC)", ylab = "AOD")
 }
 }

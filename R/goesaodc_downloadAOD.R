@@ -18,9 +18,13 @@
 #' explicitly set to TRUE', only files for that hour will be downloaded. If the
 #' optional \code{endTime} is specified, all files that exist for the time 
 #' period between \code{datetime} and \code{endTime} will be downloaded. If 
-#' \code{timezone} is not specified, "UTC" timezone is assumed.
+#' \code{timezone} is not specified, "UTC" is assumed.
+#' 
+#' The vector of files returned includes all files in \code{satelliteDataDir}
+#' that match the requested date whether they were download previously or with
+#' this call.
 #'
-#' @return Vector of downloaded filepaths.
+#' @return Invisibly returns a vector of local files matching the requested \code{datetime}.
 #'
 #' @seealso \code{\link{setSatelliteDataDir}}
 #'
@@ -29,18 +33,26 @@
 #' library(MazamaSatelliteUtils)
 #' setSatelliteDataDir("~/Data/Satellite")
 #' 
-#' goesaodc_downloadAOD(satID = "G17", 
-#' datetime = "2019-09-06 18") 
+#' # Single hour
+#' files <- goesaodc_downloadAOD("G17", "2019-09-06 18") 
+#' print(files)
 #' 
-#' goesaodc_downloadAOD(satID = "G16",
-#' datetime = "2019-09-06 08:00",
-#' endTime = "2019-09-06 12:00",
-#' timezone = "America/Los_Angeles")
+#' # Specific time range
+#' files <- goesaodc_downloadAOD(
+#'   satID = "G16",
+#'   datetime = "2019-09-06 08:00",
+#'   endTime = "2019-09-06 12:00",
+#'   timezone = "America/Los_Angeles"
+#' )
+#' print(files)
 #' 
-#' goesaodc_downloadAOD(satID = "G16",
-#' datetime = "201924915",
-#' isJulian = TRUE)
-#'
+#' # Julian timestamp
+#' files <- goesaodc_downloadAOD(
+#'   satID = "G16",
+#'   datetime = "201924915",
+#'   isJulian = TRUE
+#' )
+#' print(files)
 #' }
 
 goesaodc_downloadAOD <- function(
@@ -66,59 +78,62 @@ goesaodc_downloadAOD <- function(
     endTime <- endTime
   }
   
-  # ----- Build the list of files we should have by listing from remote location
-  remoteFiles <- goesaodc_listFiles(satID = satID, 
-                              datetime = datetime, 
-                              endTime = endTime, 
-                              timezone = timezone,
-                              isJulian = isJulian,
-                              useRemote = TRUE)
+  # ----- Determine files to download ------------------------------------------
   
-  # ---- Force a stop() if there are no files available for this time ----------
-  if ( rlang::is_empty(remoteFiles) ) {
+  # List of files available from the remote location
+  remoteFiles <- goesaodc_listFiles(
+    satID = satID, 
+    datetime = datetime, 
+    endTime = endTime, 
+    timezone = timezone,
+    isJulian = isJulian,
+    useRemote = TRUE
+  )
+  
+  # Stop if there are no files available for this time
+  if ( rlang::is_empty(remoteFiles) )
     stop("There is no data available for this time.")
-  }
-  
-  # ---- Force a stop() if more than 24hrs of data are requested ---------------
-  if ( length(remoteFiles) > 288 ) {
+
+  # Stop if more than 24 hrs of data are requested
+  if ( length(remoteFiles) > 288 )
     stop("More than 24 hours of data requested.")
-  }
+
+  # List of local files
+  localFiles <- goesaodc_listFiles(
+    satID = satID, 
+    datetime = datetime, 
+    endTime = endTime, 
+    timezone = timezone,
+    isJulian = isJulian,
+    useRemote = FALSE
+  )
   
-  
-  # ---- Build a list of the local files we already have -----------------------
-  localFiles <- goesaodc_listFiles(satID = satID, 
-                             datetime = datetime, 
-                             endTime = endTime, 
-                             timezone = timezone,
-                             isJulian = isJulian,
-                             useRemote = FALSE)
-  
-  # ---- Create the offset by set comparison of the 2 sets of files ------------
+  # Files to download
   missingFiles <- setdiff(remoteFiles, localFiles)
   
-  # ---- Build the URLs for the missing files ----------------------------------
-  if (satID == "G16") {
+  # ---- Download missing files ------------------------------------------------
+  
+  satelliteDataDir <- getSatelliteDataDir()
+  
+  if ( satID == "G16" ) {
     satUrl <- paste0(baseUrl, "GOES-16/AODC")
-    
-  } else if (satID == "G17") {
+  } else if ( satID == "G17" ) {
     satUrl <- paste0(baseUrl, "GOES-17/AODC")
   }
   
-  # ---- Download missing files ------------------------------------------------
-  satelliteDataDir <- getSatelliteDataDir()
-  
-  downloadedFiles <- NULL
   for ( file in missingFiles ) {
+    
     filePath <- file.path(satelliteDataDir, file)
     fileUrl <- paste0(satUrl, "/", file)
+    
     result <- try({
       utils::download.file(fileUrl, 
                            destfile = filePath, 
                            quiet = TRUE, 
                            method = "auto", 
                            mode = "wb")
-      downloadedFiles <- c(downloadedFiles, filePath)
     }, silent = FALSE)
+    
     if ( "try-error" %in% class(result) ) {
       err_msg <- geterrmessage()
       if ( MazamaCoreUtils::logger.isInitialized() ) {
@@ -126,11 +141,24 @@ goesaodc_downloadAOD <- function(
       }
     } else {
       if (verbose == TRUE) {
-        print(paste0("Downloaded ", file))
+        message(paste0("Downloaded ", file))
       }
     }
+    
   }
+
+  # ----- Return ---------------------------------------------------------------
   
-  return(invisible(downloadedFiles))
+  # Updated list of local files
+  localFiles <- goesaodc_listFiles(
+    satID = satID, 
+    datetime = datetime, 
+    endTime = endTime, 
+    timezone = timezone,
+    isJulian = isJulian,
+    useRemote = FALSE
+  )
+  
+  return(invisible(localFiles))
   
 }

@@ -49,11 +49,11 @@
 #' library(MazamaSatelliteUtils)
 #' setSatelliteDataDir("~/Data/Satellite")
 #'
-#' satID <- "G16"
-#' datetime <- "2019-08-12 09:00"
-#' endTime <- "2019-08-12 12:00"
-#' bbox <- c(-124.56624, -116.46350, 41.99179, 46.29203) # Oregon
-#' dqfLevel <- 2
+#' satID <- "G17"
+#' datetime <- "2019-10-27 10"
+#' endTime <- "2019-10-27 11"
+#' bbox <- c(-124, -120, 36, 39) # Kincade fire region
+#' dqfLevel <- 3
 #' timezone <- "America/Los_Angeles"
 #'
 #' rasterStack <- goesaodc_createRasterStack(
@@ -62,9 +62,11 @@
 #' endTime = endTime,
 #' bbox = bbox,
 #' dqfLevel = dqfLevel,
-#' timezone = timezone)
+#' timezone = timezone,
+#' res = 0.075,
+#' verbose = TRUE)
 #'
-#' rasterVis::levelplot(rasterStack)
+#' rasterVis::levelplot(rasterStack, par.settings=BuRdTheme())
 #'  }
 #' @rdname goesaodc_createRasterStack
 

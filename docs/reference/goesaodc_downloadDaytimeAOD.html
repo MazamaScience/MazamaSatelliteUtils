@@ -83,7 +83,7 @@ regarding how daylight hours are calculated." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MazamaSatelliteUtils</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.11</span>
       </span>
     </div>
 
@@ -179,11 +179,10 @@ interpreted as a Julian date with day of year as a decimal number.</p></td>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Vector of filenames.</p>
+    <p>Invisibly returns a vector of local files matching the requested <code>datetime</code>.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
-
 <span class='co'># List locally available files for a specific date by timezone</span>
 
 <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>MazamaSatelliteUtils</span>)
@@ -192,9 +191,10 @@ interpreted as a Julian date with day of year as a decimal number.</p></td>
 <span class='fu'><a href='setSatelliteDataDir.html'>setSatelliteDataDir</a></span>(<span class='st'>"~/Data/Satellite"</span>)
 <span class='fu'><a href='https://rdrr.io/pkg/MazamaSpatialUtils/man/setSpatialDataDir.html'>setSpatialDataDir</a></span>(<span class='st'>"~/Data/Spatial"</span>)
 
-<span class='fu'>goesaodc_downloadDaytimeAOD</span>(<span class='kw'>satID</span> <span class='kw'>=</span> <span class='st'>"G16"</span>,
-<span class='kw'>datetime</span> <span class='kw'>=</span> <span class='st'>"2019-09-06"</span>,
-<span class='kw'>timezone</span> <span class='kw'>=</span> <span class='st'>"America/Los_Angeles"</span>)
+<span class='fu'>goesaodc_downloadDaytimeAOD</span>(
+  <span class='kw'>satID</span> <span class='kw'>=</span> <span class='st'>"G16"</span>,
+  <span class='kw'>datetime</span> <span class='kw'>=</span> <span class='st'>"2019-09-06"</span>,
+  <span class='kw'>timezone</span> <span class='kw'>=</span> <span class='st'>"America/Los_Angeles"</span>)
 <span class='co'># }</span></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
