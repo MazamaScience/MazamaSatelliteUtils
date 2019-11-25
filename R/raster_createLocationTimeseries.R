@@ -32,7 +32,8 @@
 #' loadSpatialData("USCensusStates")
 #' 
 #' # Oregon on August 1, 2019 at 12pm (Milepost 97 Fire)
-#' datetime <- lubridate::ymd_h("2019-08-01 19", tz = "UTC")
+#' datetime <- "2019-08-01 19"
+#' timezone <- "UTC"
 #' oregon <- subset(USCensusStates, stateCode == "OR")
 #' bbox_oregon <- sp::bbox(oregon)
 #' lon <- -123.245
@@ -41,7 +42,8 @@
 #' # Gather all the raster layers for the given hour into a stack
 #' rasterStack <- goesaodc_createRasterStack(
 #'   satID = "G16",
-#'   datetime = datetime, 
+#'   datetime = datetime,
+#'   timezone = timezone, 
 #'   bbox = bbox_oregon,
 #'   res = 0.05,
 #'   dqfLevel = 2,
@@ -80,7 +82,8 @@ raster_createLocationTimeseries <- function(
   
   # Format the timestamps
   timeStrings <- attributes(rasterStack)$z$time
-  datetime <- lubridate::parse_date_time(timeStrings, orders = "YmdHMS")
+  datetime <- MazamaCoreUtils::parseDatetime(timeStrings, 
+                                             timezone = "UTC")
   
   # Store the aggregated AOD value of the location in each layer of the stack
   aod <- c()

@@ -47,7 +47,8 @@ setSpatialDataDir("~/Data/Spatial")
 loadSpatialData("USCensusStates")
 
 # Oregon on August 1, 2019 at 12pm (Milepost 97 Fire)
-datetime <- lubridate::ymd_h("2019-08-01 19", tz = "UTC")
+datetime <- "2019-08-01 19"
+timezone <- "UTC"
 oregon <- subset(USCensusStates, stateCode == "OR")
 bbox_oregon <- sp::bbox(oregon)
 lon <- -123.245
@@ -56,7 +57,8 @@ lat <- 42.861
 # Gather all the raster layers for the given hour into a stack
 rasterStack <- goesaodc_createRasterStack(
   satID = "G16",
-  datetime = datetime, 
+  datetime = datetime,
+  timezone = timezone, 
   bbox = bbox_oregon,
   res = 0.05,
   dqfLevel = 2,
