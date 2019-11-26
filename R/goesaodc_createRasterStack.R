@@ -105,7 +105,9 @@ goesaodc_createRasterStack <- function(
                                              isJulian = isJulian)
   
   if ( !is.null(endTime) ) {
-    endTime <- MazamaCoreUtils::parseDatetime(endTime, timezone, isJulian = isJulian)
+    endTime <- MazamaCoreUtils::parseDatetime(datetime = endTime, 
+                                              timezone = timezone, 
+                                              isJulian = isJulian)
   }
   
   # ---- Create list of nc files to process, if one isn't already passed in ----

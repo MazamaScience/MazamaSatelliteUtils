@@ -44,21 +44,21 @@ test_that("fails when passed incorrect parameters", {
 
 test_that("Basic file download works", {
   
-  expect_error( goesaodc_downloadAOD(
-    satID = satID,
-    datetime = datetime,
-    endTime = endTime,
-    timezone = timezone),
+  expect_error( 
+    goesaodc_downloadAOD(satID = satID,
+                         datetime = datetime,
+                         endTime = endTime,
+                         timezone = timezone),
     NA)
 })
 
 test_that("File download using Julian date format", {
   
-  expect_error( goesaodc_downloadAOD(
-    satID = satID,
-    datetime = jdate,
-    endTime = jdate_end,
-    timezone = timezone,
-    isJulian = TRUE),
+  expect_error( 
+    goesaodc_downloadAOD(satID = satID,
+                         datetime = jdate,
+                         endTime = jdate_end,
+                         timezone = timezone,
+                         isJulian = TRUE),
     NA)
 })

@@ -1,3 +1,9 @@
+# MazamaSatelliteUtils 0.2.11
+
+* `goesaodc_downloadAOD()` and `goesaodc_downloadDaytimeAOD()` now return a 
+vector of all relevant files found in `satelliteDataDir/` rather than just those 
+that were downloaded.
+
 # MazamaSatelliteUtils 0.2.10
 
 * New `goesaodc_createNativeGrid()` function

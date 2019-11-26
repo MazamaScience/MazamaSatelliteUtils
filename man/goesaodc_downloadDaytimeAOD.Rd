@@ -32,7 +32,7 @@ interpreted as a Julian date with day of year as a decimal number.}
 \item{verbose}{Logical specifies whether to show status of file download.}
 }
 \value{
-Vector of filenames.
+Invisibly returns a vector of local files matching the requested \code{datetime}.
 }
 \description{
 Download GOES-16 or GOES-17 AOD data for the daylight hours of a 
@@ -44,7 +44,6 @@ regarding how daylight hours are calculated.
 }
 \examples{
 \donttest{
-
 # List locally available files for a specific date by timezone
 
 library(MazamaSatelliteUtils)
@@ -53,9 +52,10 @@ library(MazamaSpatialUtils)
 setSatelliteDataDir("~/Data/Satellite")
 setSpatialDataDir("~/Data/Spatial")
 
-goesaodc_downloadDaytimeAOD(satID = "G16",
-datetime = "2019-09-06", 
-timezone = "America/Los_Angeles")
+goesaodc_downloadDaytimeAOD(
+  satID = "G16",
+  datetime = "2019-09-06", 
+  timezone = "America/Los_Angeles")
 }
 
 }

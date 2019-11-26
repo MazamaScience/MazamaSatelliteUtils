@@ -31,10 +31,11 @@ Vector of filenames.
 \description{
 Retrieve a list of GOES AOD files available in the
 \code{satelliteDataDir} or at \code{baseUrl} for a specified date and hour.
-
-NOTE: All files for a particular hour will be returned even if the
+}
+\note{
+All files for a particular hour will be returned even if the
 incoming \code{startdate} or \code{jdate} is specified to the minute or
-second.  By default, the local directory set by \code{SetSatelliteDir} is 
+second.  By default, the local directory set by \code{setSatelliteDir()} is 
 searched. \code{useRemote = TRUE} will search \code{baseURL} for all files 
 that are available within the specified timeframe.
 }
@@ -43,12 +44,16 @@ that are available within the specified timeframe.
 library(MazamaSatelliteUtils)
 setSatelliteDataDir("~/Data/Satellite")
 
- goesaodc_listFiles(
- satID = "G16",
- datetime = "2019-09-06 06:00",
- endTime = "2019-09-06 18:00",
- timezone = "America/Los_Angeles",
- useRemote = TRUE,
- )
+# Local files for a UTC hour
+goesaodc_listFiles("G17", "2019-09-06 18") 
+
+# Remote files for a time range in local time
+goesaodc_listFiles(
+  satID = "G16",
+  datetime = "2019-09-06 06:00",
+  endTime = "2019-09-06 18:00",
+  timezone = "America/Los_Angeles",
+  useRemote = TRUE
+)
 }
 }

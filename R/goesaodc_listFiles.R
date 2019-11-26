@@ -16,9 +16,9 @@
 #' @description Retrieve a list of GOES AOD files available in the
 #' \code{satelliteDataDir} or at \code{baseUrl} for a specified date and hour.
 #'
-#' NOTE: All files for a particular hour will be returned even if the
+#' @note All files for a particular hour will be returned even if the
 #' incoming \code{startdate} or \code{jdate} is specified to the minute or
-#' second.  By default, the local directory set by \code{SetSatelliteDir} is 
+#' second.  By default, the local directory set by \code{setSatelliteDir()} is 
 #' searched. \code{useRemote = TRUE} will search \code{baseURL} for all files 
 #' that are available within the specified timeframe.
 #'
@@ -29,13 +29,17 @@
 #' library(MazamaSatelliteUtils)
 #' setSatelliteDataDir("~/Data/Satellite")
 #'
-#'  goesaodc_listFiles(
-#'  satID = "G16",
-#'  datetime = "2019-09-06 06:00",
-#'  endTime = "2019-09-06 18:00",
-#'  timezone = "America/Los_Angeles",
-#'  useRemote = TRUE,
-#'  )
+#' # Local files for a UTC hour
+#' goesaodc_listFiles("G17", "2019-09-06 18") 
+#' 
+#' # Remote files for a time range in local time
+#' goesaodc_listFiles(
+#'   satID = "G16",
+#'   datetime = "2019-09-06 06:00",
+#'   endTime = "2019-09-06 18:00",
+#'   timezone = "America/Los_Angeles",
+#'   useRemote = TRUE
+#' )
 #' }
 
 goesaodc_listFiles <- function(
@@ -48,31 +52,43 @@ goesaodc_listFiles <- function(
   baseUrl = "https://tools-1.airfire.org/Satellite/"
 ) {
   
-  # ---- Validate we have what we need -----------------------------------------
+  # ---- Validate Parameters --------------------------------------------------
+  
   MazamaCoreUtils::stopIfNull(satID)
   MazamaCoreUtils::stopIfNull(datetime)
   
-  # ---- Convert satID to uniform case -----------------------------------------
+  # Convert satID to uniform case
   satID <- toupper(satID)
   if ( !(satID %in% c("G16", "G17")) )
     stop("Must specify GOES satellite ID (G16 or G17)")
   
-  # ---- Check if a timezone has been passed in with a POSIXt ------------------
-  time_classes <- c("POSIXct", "POSIXt", "POSIXlt")
-  if ( class(datetime)[1] %in% time_classes ) {
-    timezone <- attr(datetime, "tzone")
+  # Use timezone from POSIXct datetime, or passed in timezone
+  if ( lubridate::is.POSIXt(datetime) ) {
+    timezone <- lubridate::tz(datetime)
+  } else {
+    if ( !timezone %in% OlsonNames() ) {
+      stop(sprintf("timezone \"%s\" is not recognized", timezone))
+    }
   }
   
-  # ---- Parse incoming times with MazamaCoreUtils -----------------------------
-  datetime <- MazamaCoreUtils::parseDatetime(datetime = datetime, 
-                                             timezone = timezone, 
-                                             isJulian = isJulian)
+  # ----- Prepare data ---------------------------------------------------------
+  
+  # Parse incoming times with MazamaCoreUtils
+  datetime <- MazamaCoreUtils::parseDatetime(
+    datetime, 
+    timezone = timezone, 
+    isJulian = isJulian
+  )
   
   if ( !is.null(endTime) ) {
-   endTime <- MazamaCoreUtils::parseDatetime(endTime, timezone, isJulian = isJulian)
+    endTime <- MazamaCoreUtils::parseDatetime(
+      endTime, 
+      timezone = timezone, 
+      isJulian = isJulian
+    )
   }
   
-  # ---- Create satUrl for remote searching
+  # Create satUrl for remote searching
   if ( useRemote ) {
     if ( satID == "G16" ) {
       satUrl <- paste0(baseUrl, "GOES-16/AODC")
@@ -83,19 +99,23 @@ goesaodc_listFiles <- function(
     }
   }
   
-  # ----- Assemble regex to search with ----------------------------------------
-  regex <- paste0( "OR_ABI-L2-AODC-M[0-9]_",
-                   satID,
-                   "_s[0-9]+_e[0-9]+_c[0-9]+\\.nc"
+  # Assemble regex to search with
+  regex <- paste0(
+    "OR_ABI-L2-AODC-M[0-9]_",
+    satID,
+    "_s[0-9]+_e[0-9]+_c[0-9]+\\.nc"
   )
   
-  # ---- Create a list of all appropriate nc files on disk ---------------------
-  if ( !useRemote) {
+  # ----- Create a list files --------------------------------------------------
+  
+  if ( !useRemote ) {
+    
+    # Create a list of all appropriate nc files on disk
     dataFiles <- list.files(getSatelliteDataDir(), pattern = regex)
     
-  # ---- Check remotely for available files and build filelist -----------------
   } else {
     
+    # Check remotely for available files and build filelist
     links <-
       xml2::read_html(satUrl) %>%
       xml2::xml_child("body") %>%
@@ -104,9 +124,10 @@ goesaodc_listFiles <- function(
       xml2::xml_attr("href")
     
     dataFiles <- links[ -(1:5) ]
+    
   }
   
-  # ----- Build a squence of hours ---------------------------------------------
+  # Build a squence of hours
   if ( is.null(endTime) ) {
     hours <- c(datetime)
   } else {
@@ -116,13 +137,15 @@ goesaodc_listFiles <- function(
   # Convert to UTC and create startPatterns for each requested hour
   startPatterns <- c(strftime(hours, "_s%Y%j%H", tz = "UTC"))
   
-  # ---- Match startPatterns to list of filenames ------------------------------
+  # Find files that match startPatterns
   indicesList <- list()
   for ( startPattern in startPatterns ) {
     indicesList[[startPattern]] <- 
       which(stringr::str_detect(dataFiles, startPattern))
   }
   indices <- as.numeric(unlist(indicesList))
+  
+  # ----- Return ---------------------------------------------------------------
   
   matchingFiles <- dataFiles[indices]
   
