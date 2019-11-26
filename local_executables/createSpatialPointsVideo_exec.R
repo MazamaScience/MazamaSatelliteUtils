@@ -1,6 +1,6 @@
 #!/usr/local/bin/Rscript
 
-# This Rscript generates a spatial points video of either AOD or DQF over a 
+# This Rscript generates a spatial points video of either AOD or DQF over a
 # single CONUS state. The timelapse covers a single hour at ~5 minute intervals.
 #
 # Test this script from the command line with:
@@ -22,6 +22,10 @@ if ( interactive() ) {
   
   # RStudio session
   opt <- list(
+    SpatialDataDir="~/Data/Spatial",
+    SatelliteDataDir="~/Data/Satellite",
+    fullDay = TRUE,
+    bbox = "-126,-119,30,40", # Kincade, extending out into Pacific
     datetime = "2019-10-27 14",       # Kincade fire near Sonoma, CA (local time)
     stateCode = "CA",
     satID = "G17",
@@ -32,7 +36,7 @@ if ( interactive() ) {
     outputDir = getwd(),
     logDir = getwd(),
     version = FALSE
-  )  
+  )
   
 } else {
   
@@ -41,18 +45,38 @@ if ( interactive() ) {
   
   option_list <- list(
     make_option(
-      c("-t", "--datetime"), 
-      default = NULL, 
+      c("--SpatialDataDir"),
+      default = NULL,
+      help = "Defines SpatialDataDir location [SpatialDataDir = \"%default\"]"
+    ),
+    make_option(
+      c("--SatelliteDataDir"),
+      default = NULL,
+      help = "Defines SatelliteDataDir location [SatelliteDataDir = \"%default\"]"
+    ),
+    make_option(
+      c("--fullDay"),
+      default = FALSE,
+      help = "Sets whether period should be entire range of daytime hours [fullDay = \"%default\"]"
+    ),
+    make_option(
+      c("--bbox"),
+      default = NULL,
+      help = "bbox argument as a string 'w,e,s,n' [bbox = \"%default\"]"
+    ),
+    make_option(
+      c("-t", "--datetime"),
+      default = NULL,
       help = "datetime of interest specified to the hour [default = \"%default\"]"
     ),
     make_option(
-      c("-s", "--stateCode"), 
-      default = NULL, 
+      c("-s", "--stateCode"),
+      default = NULL,
       help = "Two-character state code [default = \"%default\"]"
     ),
     make_option(
-      c("-x", "--var"), 
-      default = "AOD", 
+      c("-x", "--var"),
+      default = "AOD",
       help = "Variable displayed ('AOD' or 'DQF') [default = \"%default\"]"
     ),
     make_option(
@@ -71,24 +95,24 @@ if ( interactive() ) {
       help = "Frames per second [default = \"%default\"]"
     ),
     make_option(
-      c("-v","--verbose"), 
-      default = FALSE, 
+      c("-v","--verbose"),
+      default = FALSE,
       help = "Print extra output [default = \"%default\"]"
     ),
     make_option(
-      c("-o","--outputDir"), 
-      default = getwd(), 
+      c("-o","--outputDir"),
+      default = getwd(),
       help = "Output directory for generated video file [default = \"%default\"]"
     ),
     make_option(
-      c("-l","--logDir"), 
-      default = getwd(), 
+      c("-l","--logDir"),
+      default = getwd(),
       help = "Output directory for generated .log file [default = \"%default\"]"
     ),
     make_option(
-      c("-V","--version"), 
-      action = "store_true", 
-      default = FALSE, 
+      c("-V","--version"),
+      action = "store_true",
+      default = FALSE,
       help = "Print out version number [default = \"%default\"]"
     )
   )
@@ -108,7 +132,7 @@ if (opt$version) {
 MazamaCoreUtils::stopIfNull(opt$datetime)
 MazamaCoreUtils::stopIfNull(opt$stateCode)
 
-if ( opt$frameRate < 0 || 
+if ( opt$frameRate < 0 ||
      opt$frameRate != floor(opt$frameRate) )
   stop("Argument 'frameRate' must be a positive integer")
 
@@ -122,15 +146,15 @@ if ( !dir.exists(opt$logDir) )
 
 logger.setup(
   traceLog = file.path(opt$logDir, "createSpatialPointsVideo_TRACE.log"),
-  debugLog = file.path(opt$logDir, "createSpatialPointsVideo_DEBUG.log"), 
-  infoLog  = file.path(opt$logDir, "createSpatialPointsVideo_INFO.log"), 
+  debugLog = file.path(opt$logDir, "createSpatialPointsVideo_DEBUG.log"),
+  infoLog  = file.path(opt$logDir, "createSpatialPointsVideo_INFO.log"),
   errorLog = file.path(opt$logDir, "createSpatialPointsVideo_ERROR.log")
 )
 
 # For use at the very end
 errorLog <- file.path(opt$logDir, "createSpatialPointsVideo_ERROR.log")
 
-if ( interactive() ) 
+if ( interactive() )
   logger.setLevel(TRACE)
 
 # Silence other warning messages
@@ -149,49 +173,86 @@ result <- try({
   
   result <- try({
     
-    # TODO:  # Set directories using command line parameters
+    # Set directories using command line parameters
     
-    setSpatialDataDir("~/Data/Spatial")
+    setSpatialDataDir(opt$SpatialDataDir)
     loadSpatialData("USCensusStates")
-    setSatelliteDataDir("~/Data/Satellite")
+    setSatelliteDataDir(opt$SatelliteDataDir)
     
     # Load state boundries
     state <- subset(USCensusStates, stateCode == opt$stateCode)
-    bbox <- sp::bbox(state)
     
-    # TODO:  # Calculate timezone from bbox
+    # Parse out bbox vector
+    bbox <- as.numeric(unlist(strsplit(opt$bbox, ",")))
+    bbox <- bboxToVector(bbox)
     
-    timezone = "America/Los_Angeles"
+    # Get the bbox components
+    boundaries <- bboxToVector(bbox)
+    w <- boundaries[1]
+    e <- boundaries[2]
+    s <- boundaries[3]
+    n <- boundaries[4]
+    
+    mid_lon <- w + (e - w) / 2
+    mid_lat <- s + (n - s) / 2
+    
+    # Get the timezone in the bbox center
+    timezone <- MazamaSpatialUtils::getTimezone(lon = mid_lon,
+                                                lat = mid_lat,
+                                                countryCodes = c("US"),
+                                                useBuffering = TRUE)
     
     # Parse the incoming datetime
-    datetime <- 
+    datetime <-
       MazamaCoreUtils::parseDatetime(opt$datetime, timezone = timezone) %>%
       lubridate::floor_date(unit = "hour")
     
     videoTimeStamp <- MazamaCoreUtils::timeStamp(datetime, unit = "hour", timezone = timezone)
-
+    
     if ( opt$verbose )
       logger.trace("Creating video for %s ...", strftime(datetime, "%Y-%m-%d %H:%M:%S %Z"))
     
-    # Download the satellite scans for this hour
-    downloadedFiles <- goesaodc_downloadAOD(
-      satID = opt$satID, 
-      datetime = datetime,
-      endTime = NULL,
-      timezone = timezone,
-      isJulian = FALSE,
-      verbose = opt$verbose
-    )
-    
-    # Get the now local scan files
-    scanFiles <- goesaodc_listFiles(
-      satID = opt$satID, 
-      datetime = datetime,
-      endTime = NULL,
-      useRemote = FALSE,
-      timezone = timezone,
-      isJulian = FALSE
-    )
+    # Check whether to process an entire day
+    if ( opt$fullDay ) {
+      
+      # Download the satellite scans for entire day
+      downloadedFiles <- goesaodc_downloadDaytimeAOD(
+        satID = opt$satID,
+        datetime = datetime,
+        timezone = timezone,
+        verbose = opt$verbose
+      )
+      
+      # Get the local scan files for entire day
+      scanFiles <- goesaodc_listDaytimeFiles(
+        satID = opt$satID,
+        datetime = datetime,
+        timezone = timezone
+      )
+      
+    } else {
+      
+      # Download the satellite scans for this hour
+      downloadedFiles <- goesaodc_downloadAOD(
+        satID = opt$satID,
+        datetime = datetime,
+        endTime = NULL,
+        timezone = timezone,
+        isJulian = FALSE,
+        verbose = opt$verbose
+      )
+      
+      # Get the now local scan files
+      scanFiles <- goesaodc_listFiles(
+        satID = opt$satID,
+        datetime = datetime,
+        endTime = NULL,
+        useRemote = FALSE,
+        timezone = timezone,
+        isJulian = FALSE
+      )
+      
+    }
     
   }, silent = TRUE)
   
@@ -261,10 +322,10 @@ result <- try({
           var = opt$var,
           n = 1e5,
           colBins = NULL,
-          breaks = c(-3.0, -0.2, 0.1, 0.2, 0.4, 0.6, 0.8, 1.0, 1.5, 3.0), 
+          breaks = c(-3.0, -0.2, 0.1, 0.2, 0.4, 0.6, 0.8, 1.0, 1.5, 3.0),
           paletteName = "YlOrRd",
           pch = 15,
-          cex = 0.5, 
+          cex = 0.5,
           add = TRUE
         )
         plot(state, add = TRUE)
@@ -273,7 +334,7 @@ result <- try({
       
       if (opt$verbose)
         logger.trace("  End frame for %s", strftime(scanTimeLocal, "%H:%M:%S"))
-        
+      
       dev.off()
       
     }
@@ -290,7 +351,7 @@ result <- try({
   
   result <- try({
     
-    videoFile <- 
+    videoFile <-
       paste0(state$stateCode, "_", videoTimeStamp, "_DQF", opt$dqfLevel, ".mp4")
     
     videoFilePath <- file.path(opt$outputDir, videoFile)
@@ -298,9 +359,9 @@ result <- try({
     # Define system calls to ffmpeg to create video from frames
     cmd_cd <- paste0("cd ", tempdir())
     cmd_ffmpeg <- paste0(
-      "ffmpeg -loglevel quiet -r ", 
+      "ffmpeg -loglevel quiet -r ",
       opt$frameRate, " -f image2 -s 1280x720 -i ",
-      videoTimeStamp, "_%03d.png -vcodec libx264 -crf 25 ", 
+      videoTimeStamp, "_%03d.png -vcodec libx264 -crf 25 ",
       videoFilePath
     )
     cmd_rm <- "rm *.png"
@@ -338,7 +399,7 @@ if ( "try-error" %in% class(result) ) {
 } else {
   
   # Guarantee that an empty errorLog exists
-  if ( !file.exists(errorLog) ) 
+  if ( !file.exists(errorLog) )
     dummy <- file.create(errorLog)
   
   logger.info("Completed successfully!")
