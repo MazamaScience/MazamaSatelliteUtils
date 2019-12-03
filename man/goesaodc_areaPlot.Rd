@@ -11,6 +11,18 @@ goesaodc_areaPlot(ncList = NULL, box = bbox_CONUS, dqfLevel = 2,
 \arguments{
 \item{ncList}{ncdf4 handle or a list of handles.}
 
+\item{dqfLevel}{Sets the DQF level to filter to data to.}
+
+\item{exponentiate}{Logical, sets whether to scale the data values by 10^AOD}
+
+\item{col_state}{Color of state borders. Use "transparent" for no lines.}
+
+\item{col_county}{Color of county borders. Use "transparent" for no lines.}
+
+\item{lwd_state}{Line weight of state borders.}
+
+\item{lwd_county}{Line weight of county borders.}
+
 \item{bbox}{Geographic extent of area of interest; Defaults to CONUS.}
 }
 \description{
@@ -18,9 +30,6 @@ The goal of this plot is to get a quick look at available data
 within a region. A user might look at a single timestep or might pass in a 
 list of nc handles to see if native grid averaging over several time steps 
 significantly reduces the number missing data grid cells.
-
-Documentation should mention that you can use col = "transparent" to not show 
-state or county lines.
 }
 \examples{
 \dontrun{
@@ -35,7 +44,7 @@ setSatelliteDataDir("~/Data/Satellite")
 # Date and region of interest
 files <- goesaodc_downloadAOD(satID = "G17", 
   datetime = 2019102714, 
-  timezone = "America/Los_Angeles")
+  timezone = "America/Los_Angeles")[1]
   
 #' Kincade fire
 bbox <- c(-124, -120, 36, 39)
