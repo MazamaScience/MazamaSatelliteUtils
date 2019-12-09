@@ -30,18 +30,12 @@
 #' library(MazamaSatelliteUtils)
 #' setSatelliteDataDir("~/Data/Satellite")
 #'
-#' goesaodc_downloadAOD(
-#'   satID = "G17", 
-#'   datetime = "2019-10-27 10", 
-#'   timezone = "America/Los_Angeles" 
-#'   )
-#'   
-#' kincade_bbox <- c(-126, -119, 35, 40)   
-#'
-#' netCDF <- goesaodc_listFiles(
+#' netCDF <- goesaodc_downloadAOD(
 #'   satID = "G17", 
 #'   datetime = "2019-10-27 10", 
 #'   timezone = "America/Los_Angeles")[1]
+#'   
+#' kincade_bbox <- c(-126, -119, 35, 40)   
 #'   
 #' nc <- goesaodc_openFile(netCDF)
 #' sp <- goesaodc_createSpatialPoints(nc, dqfLevel = 3, bbox = kincade_bbox)

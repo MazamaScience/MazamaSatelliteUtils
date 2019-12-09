@@ -29,7 +29,7 @@ spatialPoints <- sp::SpatialPointsDataFrame(
 )
 
 # use 10^AOD
-spatialPoints@data$AOD <- 10^spatialPoints@data$AOD
+#spatialPoints@data$AOD <- 10^spatialPoints@data$AOD
 
 # ----- The proof is in the pudding --------------------------------------------
 maps::map('state', 'california', xlim = c(lonLo, lonHi), ylim = c(latLo, latHi))
@@ -37,7 +37,7 @@ usr <- par('usr')
 graphics::rect(usr[1], usr[3], usr[2], usr[4], col = "gray80")
 goesaodc_plotSpatialPoints(spatialPoints, add = TRUE,
                            cex = 0.5, n = 5e5,
-                           breaks = c(0,5,10,20,40,Inf),
+                           breaks = c(0,1,2,3,4,5),
                            colBins = 5,
                            paletteName = "YlOrRd")
 maps::map('county', 'california', col = "white", add = TRUE)

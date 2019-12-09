@@ -189,3 +189,45 @@ goesaodc_convertFilenameToDatetime <- function(
 }
 
 
+#' @export
+#' 
+#' @title Converts raw, signed short AOD values from GOES 16 & 17 NetCDF files
+#' @param aod_data raw, signed short AOD data from GOES .nc file
+#' @param conversion_factors AOD:'_FillValue', AOD:scale_factor, AOD:add_offset
+#' from AOD variable metadata in GOES .nc file
+#' 
+#' @description Performs a series of conversions to raw AOD values from .nc file
+#' #' \itemize{
+#' \item{0}{ -- Converts '_FillValue' entries to NA}
+#' \item{1}{ -- Converts signed short values into unsigned short values}
+#' \item{2}{ -- Applies AOD:scale_factor and AOD:add_offset to create correctly
+#' scaled AOD values}
+#' }
+#' 
+#' @return The scan start time.
+#' 
+
+goesaodc_scaleAOD <- function (
+  
+  aod_data,
+  conversion_factors
+  
+) {
+  
+  # Convert fill_values to NA
+  fill_values <- aod_data == conversion_factors$fill_value
+  aod_data[fill_values] <- NA
+  negative_values <- aod_data < 0
+  
+  # Convert the negative values to proper unsigned short values
+  negative_values <- which(aod_data < 0)
+  aod_data[negative_values] <- aod_data[negative_values] + 65536
+  
+  # Scale AOD data into proper range
+  aod_scale_factor <- conversion_factors$aod_scale_factor
+  aod_offset <- conversion_factors$aod_offset
+  
+  scaled_aod <- (aod_data * aod_scale_factor) + aod_offset
+  
+  return(scaled_aod)
+}

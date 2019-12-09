@@ -27,17 +27,12 @@ library(MazamaSatelliteUtils)
 
 setSatelliteDataDir("~/Data/Satellite")
 
-goesaodc_downloadAOD(
+ncFile <- goesaodc_downloadAOD(
   satID = "G17", 
   datetime = "2019-10-27 10", 
   timezone = "America/Los_Angeles" 
-  )
+  )[1]
 
-ncFile <- goesaodc_listFiles(
-  satID = "G17", 
-  datetime = "2019-10-27 10", 
-  timezone = "America/Los_Angeles")[1]
-                     
 nc <- goesaodc_openFile(ncFile)
 
 tbl <- goesaodc_createTibble(nc)
@@ -46,10 +41,11 @@ head(tbl)
 # Tibble based on BBOX filtered extent of tibble
 library(MazamaSatelliteUtils)
 
-ncFile <- goesaodc_listFiles(
+ncFile <- goesaodc_downloadAOD(
   satID = "G17", 
   datetime = "2019-10-27 10", 
-  timezone = "America/Los_Angeles")[1]
+  timezone = "America/Los_Angeles" 
+  )[1]
 
 nc <- goesaodc_openFile(ncFile)
 

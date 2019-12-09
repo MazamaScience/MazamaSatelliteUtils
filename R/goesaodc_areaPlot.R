@@ -1,5 +1,5 @@
 #' @export
-#' 
+#' @importFrom graphics par
 #' @title Create plots of AOD data available within a region
 #' 
 #' @param ncList ncdf4 handle or a list of handles.
@@ -50,7 +50,7 @@
 
 goesaodc_areaPlot <- function(
   ncList = NULL,  # a single or list of nc handles
-  box = bbox_CONUS,        
+  bbox = bbox_CONUS,        
   dqfLevel = 2,
   exponentiate = TRUE,
   col_state = "black",

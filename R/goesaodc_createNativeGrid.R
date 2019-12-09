@@ -173,16 +173,27 @@ goesaodc_createNativeGrid <- function (
     nativeGrid[["lat"]] <- latMatrix[iLo:iHi,jLo:jHi]
     
     # Get AOD using start and count arguments
-    nativeGrid[["AOD"]] <- ncdf4::ncvar_get(
+    raw_aod_data <- ncdf4::ncvar_get(
       nc, 
       varid = "AOD",
       start = c(start_x, start_y),
       count = c(count_x, count_y),
       verbose = FALSE,
-      signedbyte = TRUE,
+      signedbyte = FALSE,
       collapse_degen = TRUE,
-      raw_datavals = FALSE
+      raw_datavals = TRUE
     )
+    
+    # Get the fill, scaling and offset metadata
+    aod_metadata <- ncatt_get(nc, "AOD")
+    aod_conversion_factors <- list()
+    aod_conversion_factors$fill_value <- aod_metadata$'_FillValue'
+    aod_conversion_factors$aod_scale_factor <- aod_metadata$scale_factor
+    aod_conversion_factors$aod_offset <- aod_metadata$add_offset
+    
+    # Convert the AOD data and insert it into NativeGrid object
+    nativeGrid[["AOD"]] <- goesaodc_scaleAOD(raw_aod_data, 
+                                             aod_conversion_factors)
     
     # Get DQF using start and count arguments
     nativeGrid[["DQF"]] <- ncdf4::ncvar_get(
@@ -262,7 +273,7 @@ if ( FALSE ) {
   # nc file
   #files <- goesaodc_downloadAOD("G17", 2019102714, timezone = "America/Los_Angeles")
   files <- goesaodc_listFiles("G17", "2019-10-27 14:00", timezone = "America/Los_Angeles")
-
+  
   ncList <- list()
   for ( file in files ) {
     label <- 
@@ -272,7 +283,7 @@ if ( FALSE ) {
     ncList[[label]] <- goesaodc_openFile(basename(file))
   }
   
-
+  
   # bbox
   ca <- subset(USCensusStates, stateCode == "CA")
   bbox <- bbox(ca) %>% bboxToVector()

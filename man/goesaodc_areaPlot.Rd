@@ -4,12 +4,14 @@
 \alias{goesaodc_areaPlot}
 \title{Create plots of AOD data available within a region}
 \usage{
-goesaodc_areaPlot(ncList = NULL, box = bbox_CONUS, dqfLevel = 2,
+goesaodc_areaPlot(ncList = NULL, bbox = bbox_CONUS, dqfLevel = 2,
   exponentiate = TRUE, col_state = "black", col_county = "white",
   lwd_state = 1.5, lwd_county = 1)
 }
 \arguments{
 \item{ncList}{ncdf4 handle or a list of handles.}
+
+\item{bbox}{Geographic extent of area of interest; Defaults to CONUS.}
 
 \item{dqfLevel}{Sets the DQF level to filter to data to.}
 
@@ -22,8 +24,6 @@ goesaodc_areaPlot(ncList = NULL, box = bbox_CONUS, dqfLevel = 2,
 \item{lwd_state}{Line weight of state borders.}
 
 \item{lwd_county}{Line weight of county borders.}
-
-\item{bbox}{Geographic extent of area of interest; Defaults to CONUS.}
 }
 \description{
 The goal of this plot is to get a quick look at available data 
