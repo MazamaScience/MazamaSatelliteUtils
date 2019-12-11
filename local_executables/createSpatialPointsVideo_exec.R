@@ -137,7 +137,7 @@ MazamaCoreUtils::stopIfNull(opt$datetime)
 
 # TODO:  # Either bbox or stateCode must exist
 
-MazamaCoreUtils::stopIfNull(opt$stateCode)
+# TO DO: Derive BBOX from State, if that's what's given
 
 if ( opt$frameRate < 0 ||
      opt$frameRate != floor(opt$frameRate) )
@@ -227,40 +227,23 @@ result <- try({
     if ( opt$fullDay ) {
       
       # Download the satellite scans for entire day
-      downloadedFiles <- goesaodc_downloadDaytimeAOD(
+      scanFiles <- goesaodc_downloadDaytimeAOD(
         satID = opt$satID,
         datetime = datetime,
         timezone = timezone,
         verbose = opt$verbose
       )
       
-      # Get the local scan files for entire day
-      scanFiles <- goesaodc_listDaytimeFiles(
-        satID = opt$satID,
-        datetime = datetime,
-        timezone = timezone
-      )
-      
     } else {
       
       # Download the satellite scans for this hour
-      downloadedFiles <- goesaodc_downloadAOD(
+      scanFiles <- goesaodc_downloadAOD(
         satID = opt$satID,
         datetime = datetime,
         endTime = NULL,
         timezone = timezone,
         isJulian = FALSE,
         verbose = opt$verbose
-      )
-      
-      # Get the now local scan files
-      scanFiles <- goesaodc_listFiles(
-        satID = opt$satID,
-        datetime = datetime,
-        endTime = NULL,
-        useRemote = FALSE,
-        timezone = timezone,
-        isJulian = FALSE
       )
       
     }
@@ -293,16 +276,13 @@ result <- try({
       scanTimeUTC <-goesaodc_convertFilenameToDatetime(scanFile)
       scanTimeLocal <- lubridate::with_tz(scanTimeUTC, tzone = timezone)
       
+      #TO DO: Get scanTimeLocal back into plot
+      
       if ( opt$verbose )
         logger.trace("Start frame for %s", strftime(scanTimeLocal, "%H:%M:%S"))
       
       # Load scan data
       nc <- goesaodc_openFile(filename = scanFile)
-      
-      # Try creating spatial points
-      result <- try({
-        SPDF <- goesaodc_createSpatialPoints(nc, bbox, opt$dqfLevel)
-      }, silent = FALSE)
       
       # Plot the frame
       png(frameFilePath, width = 1280, height = 720, units = "px")
@@ -323,24 +303,12 @@ result <- try({
         
       } else {
         
-        # Data plot
-        
-        # TODO:  # Use goesaodc_areaPlot() when it becomes available
-        
-        par(bg = 'gray')
-        plot(state, main =  strftime(scanTimeLocal, "%Y-%m-%d %H:%M:%S %Z"))
-        goesaodc_plotSpatialPoints(
-          SPDF,
-          var = opt$var,
-          n = 1e5,
-          colBins = NULL,
-          breaks = c(-3.0, -0.2, 0.1, 0.2, 0.4, 0.6, 0.8, 1.0, 1.5, 3.0),
-          paletteName = "YlOrRd",
-          pch = 15,
-          cex = 0.5,
-          add = TRUE
-        )
-        plot(state, add = TRUE)
+        # Data plot 
+        #TO DO: Update cex value based on bbox size 
+        goesaodc_areaPlot(ncList = list(nc), 
+                          bbox = bbox, 
+                          dqfLevel = opt$dqfLevel)
+
         
       }
       
