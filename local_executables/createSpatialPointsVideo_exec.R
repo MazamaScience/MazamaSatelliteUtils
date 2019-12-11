@@ -5,7 +5,9 @@
 #
 # Test this script from the command line with:
 #
-# ./createSpatialPointsVideo_exec.R -t 2019102715 -s CA -x AOD -q 2 -r 2 -o ~/Desktop/ -v TRUE
+# ./createSpatialPointsVideo_exec.R -t 2019102715 -s CA -x AOD -q 2 \ 
+# -r 2 -o ~/Desktop/ -v TRUE --SpatialDataDir="~/Data/Spatial" \ 
+# --SatelliteDataDir="~/Data/Satellite" --bbox="-126,-119,30,40"
 
 VERSION = "0.2.0"
 
@@ -70,8 +72,6 @@ if ( interactive() ) {
       default = NULL,
       help = "datetime of interest specified to the hour [default = \"%default\"]"
     ),
-    
-    # TODO:  # Add support for bbox as a string: "w,e,s,n"
     
     make_option(
       c("-s", "--stateCode"),
@@ -185,8 +185,6 @@ result <- try({
     setSpatialDataDir(opt$SpatialDataDir)
     loadSpatialData("USCensusStates")
     setSatelliteDataDir(opt$SatelliteDataDir)
-    
-    # TODO:  # Interpret bbox argument coming in as a string: "w,e,s,n"
     
     # TODO:  # Use bbox if not NULL else state
     
@@ -380,6 +378,7 @@ result <- try({
     )
     cmd_rm <- "rm *.png"
     cmd <- paste0(cmd_cd, " && ", cmd_ffmpeg, " && ", cmd_rm)
+
     
     logger.info("Calling ffmpeg to make video from frames")
     logger.trace(cmd)
