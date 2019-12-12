@@ -10,7 +10,9 @@
 #'
 #' @return A named list with x1, x2, y1, and y2.
 #'
-goesaodc_getCoordBounds <- function(nc) {
+goesaodc_getCoordBounds <- function(
+  nc
+) {
   
   x_bounds <- ncvar_get(nc, "x_image_bounds")
   y_bounds <- ncvar_get(nc, "y_image_bounds")
@@ -38,7 +40,9 @@ goesaodc_getCoordBounds <- function(nc) {
 #'
 #' @return Dataframe.
 #'  
-goesaodc_getCoordGrid <- function(nc) {
+goesaodc_getCoordGrid <- function(
+  nc
+) {
   
   # Get the x and y variables
   x <- ncvar_get(nc, varid = "x")
@@ -100,7 +104,7 @@ goesaodc_getCoordGrid <- function(nc) {
     # Coordinates in degrees
     lon <- ((lambda0 - atan(sy / (H - sx))) * 180) / pi 
     lat <- (atan((r_eq^2 / r_pol^2) * (sz / sqrt((H - sx)^2 + sy^2))) * 180) / pi
-                      
+    
     return(list("lon" = lon, "lat" = lat))
     
   }
@@ -140,8 +144,9 @@ goesaodc_getProjection <- function(
 #' 
 #' @return logical
 #' 
-goesaodc_isGoesProjection <- function(nc) 
-  {
+goesaodc_isGoesProjection <- function(
+  nc
+) {
   projection <- goesaodc_getProjection(nc)
   satelliteDataDir <- getSatelliteDataDir()
   tryCatch(
@@ -159,7 +164,7 @@ goesaodc_isGoesProjection <- function(nc)
     }
   )  
   return(isGoesEast || isGoesWest)
-  }
+}
 
 
 #' @export
@@ -190,44 +195,68 @@ goesaodc_convertFilenameToDatetime <- function(
 
 
 #' @export
-#' 
+#'
 #' @title Converts raw, signed short AOD values from GOES 16 & 17 NetCDF files
-#' @param aod_data raw, signed short AOD data from GOES .nc file
-#' @param conversion_factors AOD:'_FillValue', AOD:scale_factor, AOD:add_offset
-#' from AOD variable metadata in GOES .nc file
+#' 
+#' @param aod_data raw, signed short AOD data read in from GOES .nc file
+#' @param aod_attributes AOD metadata read in from GOES .nc file
 #' 
 #' @description Performs a series of conversions to raw AOD values from .nc file
 #' #' \itemize{
-#' \item{0}{ -- Converts '_FillValue' entries to NA}
+#' \item{0}{ -- Converts \code{_FillValue} entries to \code{NA}}
 #' \item{1}{ -- Converts signed short values into unsigned short values}
-#' \item{2}{ -- Applies AOD:scale_factor and AOD:add_offset to create correctly
-#' scaled AOD values}
+#' \item{2}{ -- Applies \code{scale_factor} and \code{aod_offset} to create
+#' correctly scaled AOD values}
 #' }
 #' 
-#' @return The scan start time.
+#' @note As of ncdf4 version 1.16.1, the signedbyte flag is only used to
+#' interpret singlye byte values. GOES AODC values are written as unsigned short 
+#' int but \code{ncdf4::ncvar_get()} interprets these 16 bits as signed short int. 
+#' Hence the need for conversion.
+#' 
+#' @return Matrix of properly scaled AOD values.
 #' 
 
 goesaodc_scaleAOD <- function (
-  
   aod_data,
-  conversion_factors
-  
+  aod_attributes
 ) {
   
-  # Convert fill_values to NA
-  fill_values <- aod_data == conversion_factors$fill_value
-  aod_data[fill_values] <- NA
-  negative_values <- aod_data < 0
+  # > str(aod_attributes)
+  # List of 13
+  # $ _FillValue         : int -1
+  # $ long_name          : chr "ABI L2+ Aerosol Optical Depth at 550 nm"
+  # $ standard_name      : chr "atmosphere_extinction_optical_thickness_due_to_ambient_aerosol"
+  # $ _Unsigned          : chr "true"
+  # $ valid_range        : int [1:2] 0 -6
+  # $ scale_factor       : num 7.71e-05
+  # $ add_offset         : num -0.05
+  # $ units              : chr "1"
+  # $ resolution         : chr "y: 0.000056 rad x: 0.000056 rad"
+  # $ coordinates        : chr "sunglint_angle retrieval_local_zenith_angle quantitative_local_zenith_angle retrieval_solar_zenith_angle quanti"| __truncated__
+  # $ grid_mapping       : chr "goes_imager_projection"
+  # $ cell_methods       : chr "sunglint_angle: point (no pixel produced over sea only) retrieval_local_zenith_angle: point (good or degraded q"| __truncated__
+  # $ ancillary_variables: chr "DQF"
   
-  # Convert the negative values to proper unsigned short values
-  negative_values <- which(aod_data < 0)
-  aod_data[negative_values] <- aod_data[negative_values] + 65536
+  # NOTE:  In the conversion of signed short int into unsigned short int, the
+  # NOTE:  first bit of 16 is now used to add positive 2^15 rather than negative
+  # NOTE:  2^15. So we need to add 2^15 twice, once to undo it's previous use 
+  # NOTE:  to add negative 2^15 and once more in its new use as the 2^15 place.
+  # NOTE:  (The bit count starts at zero because 2^0 is the "ones" place.)
+  
+  conversion <- 2^15 + 2^15
+  
+  # Convert the negative values to proper unsigned short values.
+  negative_mask <- aod_data < 0
+  aod_data[negative_mask] <- aod_data[negative_mask] + conversion
+  
+  # Convert (modified) fill_values to NA
+  fill_value_mask <- aod_data == (aod_attributes$'_FillValue' + conversion)
+  aod_data[fill_value_mask] <- NA
   
   # Scale AOD data into proper range
-  aod_scale_factor <- conversion_factors$aod_scale_factor
-  aod_offset <- conversion_factors$aod_offset
-  
-  scaled_aod <- (aod_data * aod_scale_factor) + aod_offset
+  scaled_aod <- (aod_data * aod_attributes$scale_factor) + aod_attributes$add_offset
   
   return(scaled_aod)
+  
 }
