@@ -45,7 +45,7 @@
 
 goesaodc_createSpatialPoints <- function(
   nc = NULL,
-  bbox = NULL,
+  bbox = c(-125, -65, 24, 50), # Set CONUS as default area
   dqfLevel = NULL
 ) {
   
