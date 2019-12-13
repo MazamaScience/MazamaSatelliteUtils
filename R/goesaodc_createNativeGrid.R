@@ -192,7 +192,7 @@ goesaodc_createNativeGrid <- function (
     # NOTE:  unsigned short ints but ncdf4::ncvar_get interprets these 16 bits
     # NOTE:  as signed short ints. Hence the need for conversion.
     
-    # Convert the AOD data from unsigned short int
+    # Convert the AOD data from unsigned short int and apply scaling
     nativeGrid[["AOD"]] <- goesaodc_scaleAOD(raw_aod_data, aod_attributes)
     
     # Get DQF using start and count arguments

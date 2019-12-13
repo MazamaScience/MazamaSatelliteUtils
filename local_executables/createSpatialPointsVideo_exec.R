@@ -9,7 +9,8 @@
 # -r 2 -o ~/Desktop/ -v TRUE --SpatialDataDir="~/Data/Spatial" \ 
 # --SatelliteDataDir="~/Data/Satellite" --bbox="-126,-119,30,40"
 
-VERSION = "0.2.0"
+# ---- . ---- . auto aspect ratio
+VERSION = "0.2.1"
 
 # The following packages are attached here so they show up in the sessionInfo
 suppressPackageStartupMessages({
@@ -27,7 +28,8 @@ if ( interactive() ) {
     SpatialDataDir="~/Data/Spatial",
     SatelliteDataDir="~/Data/Satellite",
     fullDay = TRUE,
-    bbox = "-126,-119,30,40", # Kincade, extending out into Pacific
+    ##bbox = "-126,-119,34,40", # Kincade, extending out into Pacific
+    bbox = "-124,-122,37,39", # Kincade, closeup
     datetime = "2019-10-27 14",       # Kincade fire near Sonoma, CA (local time)
     stateCode = "CA",
     satID = "G17",
@@ -205,6 +207,13 @@ result <- try({
     mid_lon <- w + (e - w) / 2
     mid_lat <- s + (n - s) / 2
     
+    # Adjust incoming bbox width to fit the video aspect ratio 1280/720
+    videoAspectRatio <- 1280/720 # (width/height)
+    newWidth <- (n - s) * videoAspectRatio
+    w <- mid_lon - newWidth/2
+    e <- mid_lon + newWidth/2
+    bbox <- c(w, e, s, n)
+    
     # Get the timezone in the bbox center
     timezone <- MazamaSpatialUtils::getTimezone(lon = mid_lon,
                                                 lat = mid_lat,
@@ -276,7 +285,7 @@ result <- try({
       scanTimeUTC <-goesaodc_convertFilenameToDatetime(scanFile)
       scanTimeLocal <- lubridate::with_tz(scanTimeUTC, tzone = timezone)
       
-      #TO DO: Get scanTimeLocal back into plot
+      # TODO: Get scanTimeLocal back into plot
       
       if ( opt$verbose )
         logger.trace("Start frame for %s", strftime(scanTimeLocal, "%H:%M:%S"))
@@ -286,6 +295,8 @@ result <- try({
       
       # Plot the frame
       png(frameFilePath, width = 1280, height = 720, units = "px")
+      
+      par(mar = c(0,0,0,0))
       
       if ( "try-error" %in% class(result) ) {
         
@@ -304,7 +315,7 @@ result <- try({
       } else {
         
         # Data plot 
-        #TO DO: Update cex value based on bbox size 
+        # TODO: Update cex value based on bbox size 
         goesaodc_areaPlot(ncList = list(nc), 
                           bbox = bbox, 
                           dqfLevel = opt$dqfLevel)
@@ -316,6 +327,9 @@ result <- try({
         logger.trace("  End frame for %s", strftime(scanTimeLocal, "%H:%M:%S"))
       
       dev.off()
+      
+      if ( frameNumber > 12 ) 
+        break
       
     }
     
