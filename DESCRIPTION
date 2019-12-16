@@ -1,6 +1,6 @@
 Type: Package
 Package: MazamaSatelliteUtils
-Version: 0.2.11
+Version: 0.2.12
 Title: Utilities for Working with Model and Satellite Data as Rasters
 Authors@R: c(
     person("Jonathan", "Callahan", email="jonathan.s.callahan@gmail.com", role=c("aut","cre")),

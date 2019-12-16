@@ -184,16 +184,16 @@ goesaodc_createNativeGrid <- function (
       raw_datavals = TRUE
     )
     
-    # Get the fill, scaling and offset metadata
-    aod_metadata <- ncatt_get(nc, "AOD")
-    aod_conversion_factors <- list()
-    aod_conversion_factors$fill_value <- aod_metadata$'_FillValue'
-    aod_conversion_factors$aod_scale_factor <- aod_metadata$scale_factor
-    aod_conversion_factors$aod_offset <- aod_metadata$add_offset
+    # Get AOD attributes
+    aod_attributes <- ncdf4::ncatt_get(nc, "AOD")
     
-    # Convert the AOD data and insert it into NativeGrid object
-    nativeGrid[["AOD"]] <- goesaodc_scaleAOD(raw_aod_data, 
-                                             aod_conversion_factors)
+    # NOTE:  As of ncdf4 version 1.16.1, the signedbyte flag is only used to
+    # NOTE:  interpret singlye byte values. GOES AODC values are stored as
+    # NOTE:  unsigned short ints but ncdf4::ncvar_get interprets these 16 bits
+    # NOTE:  as signed short ints. Hence the need for conversion.
+    
+    # Convert the AOD data from unsigned short int and apply scaling
+    nativeGrid[["AOD"]] <- goesaodc_scaleAOD(raw_aod_data, aod_attributes)
     
     # Get DQF using start and count arguments
     nativeGrid[["DQF"]] <- ncdf4::ncvar_get(

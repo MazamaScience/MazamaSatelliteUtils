@@ -4,23 +4,28 @@
 \alias{goesaodc_scaleAOD}
 \title{Converts raw, signed short AOD values from GOES 16 & 17 NetCDF files}
 \usage{
-goesaodc_scaleAOD(aod_data, conversion_factors)
+goesaodc_scaleAOD(aod_data, aod_attributes)
 }
 \arguments{
-\item{aod_data}{raw, signed short AOD data from GOES .nc file}
+\item{aod_data}{raw, signed short AOD data read in from GOES .nc file}
 
-\item{conversion_factors}{AOD:'_FillValue', AOD:scale_factor, AOD:add_offset
-from AOD variable metadata in GOES .nc file}
+\item{aod_attributes}{AOD metadata read in from GOES .nc file}
 }
 \value{
-The scan start time.
+Matrix of properly scaled AOD values.
 }
 \description{
 Performs a series of conversions to raw AOD values from .nc file
 #' \itemize{
-\item{0}{ -- Converts '_FillValue' entries to NA}
+\item{0}{ -- Converts \code{_FillValue} entries to \code{NA}}
 \item{1}{ -- Converts signed short values into unsigned short values}
-\item{2}{ -- Applies AOD:scale_factor and AOD:add_offset to create correctly
-scaled AOD values}
+\item{2}{ -- Applies \code{scale_factor} and \code{aod_offset} to create
+correctly scaled AOD values}
 }
+}
+\note{
+As of ncdf4 version 1.16.1, the signedbyte flag is only used to
+interpret singlye byte values. GOES AODC values are written as unsigned short 
+int but \code{ncdf4::ncvar_get()} interprets these 16 bits as signed short int. 
+Hence the need for conversion.
 }

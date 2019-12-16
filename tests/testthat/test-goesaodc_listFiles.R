@@ -10,6 +10,9 @@ jdate_end <- "20192491700"
 
 test_that("remote files are listed correctly", {
   
+  skip_on_cran()
+  skip_on_travis()
+  
   expect_equal(
     length( 
       goesaodc_listFiles(
@@ -24,6 +27,9 @@ test_that("remote files are listed correctly", {
 })
 
 test_that("remote files are listed correctly with Julian date", {
+  
+  skip_on_cran()
+  skip_on_travis()
   
   expect_equal(
     length( 
@@ -51,6 +57,9 @@ goesaodc_downloadAOD(satID = satID,
 # ---------------------------------------------------------------------------- #
 test_that("local files are listed correctly", {
   
+  skip_on_cran()
+  skip_on_travis()
+  
   expect_equal(
     length( 
       goesaodc_listFiles(
@@ -65,6 +74,9 @@ test_that("local files are listed correctly", {
 })
 
 test_that("local files are listed correctly using Julian format dates", {
+  
+  skip_on_cran()
+  skip_on_travis()
   
   expect_equal(
     length( 

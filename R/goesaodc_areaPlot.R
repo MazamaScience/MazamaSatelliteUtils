@@ -5,11 +5,11 @@
 #' @param ncList ncdf4 handle or a list of handles.
 #' @param bbox Geographic extent of area of interest; Defaults to CONUS.
 #' @param dqfLevel Sets the DQF level to filter to data to.
-#' @param exponentiate Logical, sets whether to scale the data values by 10^AOD 
 #' @param col_state Color of state borders. Use "transparent" for no lines.
 #' @param col_county Color of county borders. Use "transparent" for no lines.
 #' @param lwd_state Line weight of state borders.
 #' @param lwd_county Line weight of county borders.
+#' @param ... Additional arguments passed to \code{goesaodc_plotSpatialPoints()}.
 #' 
 #' @description The goal of this plot is to get a quick look at available data 
 #' within a region. A user might look at a single timestep or might pass in a 
@@ -47,32 +47,61 @@
 #' goesaodc_areaPlot(ncList, kincade_bbox)
 #' }
 
-
 goesaodc_areaPlot <- function(
   ncList = NULL,  # a single or list of nc handles
   bbox = bbox_CONUS,        
   dqfLevel = 2,
-  exponentiate = TRUE,
   col_state = "black",
   col_county = "white",
   lwd_state = 1.5,
-  lwd_county = 1             
-  # additional arguments passed to goesaodc_plotSpatialPoints()
+  lwd_county = 1,          
+  ...
 ) {
   
   # ----- Validate parameters --------------------------------------------------
+  
   MazamaCoreUtils::stopIfNull(ncList)
   MazamaCoreUtils::stopIfNull(bbox)
   
+  # ----- Arguments to goesaodc_plotSpatialPoints() ----------------------------
+  
+  argsList <- list(
+    var = "AOD",
+    add = TRUE
+  )
+  
+  # Sample size
+  if ( !("n" %in% names(argsList)) )
+    argsList$n <- 5e5
+  
+  # Breaks
+  if ( !("breaks" %in% names(argsList)) )
+    argsList$breaks <- c(-Inf, 0.2, 0.5, 1, 2, Inf)
+  
+  # Number of color bins
+  if ( !("colBins" %in% names(argsList)) )
+    argsList$colBins <- 5
+  
+  # Palette
+  if ( !("paletteName" %in% names(argsList)) )
+    argsList$paletteName <- "YlOrRd"
+  
+  # Symbol
+  if ( !("pch" %in% names(argsList)) )
+    argsList$pch <- 15
+  
+  # Symbol size
+  if ( !("cex" %in% names(argsList)) )
+    argsList$cex <- 0.5
+  
   # ---- Process and display each .nc handle -----------------------------------
+  
   for (nc in ncList) {
     
-    # Check if we should exponentiate
-    if ( is.null(exponentiate) || !is.logical(exponentiate) ) 
-      exponentiate <- TRUE
-    
-    # ----- Prepare data ---------------------------------------------------------
+    # ----- Prepare data -------------------------------------------------------
     bbox <- bboxToVector(bbox)
+    xlim <- c(bbox[1], bbox[2])
+    ylim <- c(bbox[3], bbox[4])
     
     # Load data from within bbox and create SpatialPoints
     result <- try({
@@ -89,35 +118,9 @@ goesaodc_areaPlot <- function(
       }
     }
     
-    # Exponentiate the data
-    if ( !noData && exponentiate ) {
-      SP@data$AOD <- 10^SP@data$AOD
-    }
+    # ----- Create plot --------------------------------------------------------
     
-    # ----- Plot style -----------------------------------------------------------
-    if ( exponentiate ) {
-      
-      n <- 5e5
-      breaks <- c(0,5,10,20,40,Inf)
-      colBins <- 5
-      paletteName <- "YlOrRd"
-      pch <- 15
-      cex <- 0.5
-      
-    } else {
-      # No breaks if not exponentiated
-      # TODO:  What is better than default settings?
-      n <- 1e5
-      breaks <- NULL
-      colBins <- 5
-      paletteName <- "YlOrRd"
-      pch <- 15
-      cex <- 0.5
-      
-    }
-    
-    # ----- Create plot ----------------------------------------------------------
-    maps::map('state', xlim = c(bbox[1], bbox[2]), ylim = c(bbox[3], bbox[4]))
+    maps::map('state', xlim = xlim, ylim = ylim)
     
     usr <- par('usr')
     graphics::rect(usr[1], usr[3], usr[2], usr[4], col = "gray80")
@@ -131,24 +134,18 @@ goesaodc_areaPlot <- function(
       
     } else {
       
-      goesaodc_plotSpatialPoints(
-        SP, 
-        var = "AOD",
-        n = n,
-        colBins = colBins,
-        breaks = breaks,
-        paletteName = paletteName,
-        pch = pch,
-        cex = cex,
-        add = TRUE
-      )
-      
+      argsList$spatialPoints <- SP
+      do.call(goesaodc_plotSpatialPoints, argsList)
+
     }
     
-    maps::map('county', col = col_county, lwd = lwd_county, add = TRUE)
-    maps::map('state', col = col_state, lwd = lwd_state, add = TRUE)
+    maps::map('county', xlim = xlim, ylim = ylim,
+              col = col_county, lwd = lwd_county, add = TRUE)
+    maps::map('state', xlim = xlim, ylim = ylim,
+              col = col_state, lwd = lwd_state, add = TRUE)
     
     # TODO:  Add title and other annotations
+    
   } # END OF NC HANDLE FOR LOOP
   
 } # END OF FUNCTION

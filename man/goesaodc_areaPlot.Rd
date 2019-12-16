@@ -5,8 +5,8 @@
 \title{Create plots of AOD data available within a region}
 \usage{
 goesaodc_areaPlot(ncList = NULL, bbox = bbox_CONUS, dqfLevel = 2,
-  exponentiate = TRUE, col_state = "black", col_county = "white",
-  lwd_state = 1.5, lwd_county = 1)
+  col_state = "black", col_county = "white", lwd_state = 1.5,
+  lwd_county = 1, ...)
 }
 \arguments{
 \item{ncList}{ncdf4 handle or a list of handles.}
@@ -15,8 +15,6 @@ goesaodc_areaPlot(ncList = NULL, bbox = bbox_CONUS, dqfLevel = 2,
 
 \item{dqfLevel}{Sets the DQF level to filter to data to.}
 
-\item{exponentiate}{Logical, sets whether to scale the data values by 10^AOD}
-
 \item{col_state}{Color of state borders. Use "transparent" for no lines.}
 
 \item{col_county}{Color of county borders. Use "transparent" for no lines.}
@@ -24,6 +22,8 @@ goesaodc_areaPlot(ncList = NULL, bbox = bbox_CONUS, dqfLevel = 2,
 \item{lwd_state}{Line weight of state borders.}
 
 \item{lwd_county}{Line weight of county borders.}
+
+\item{...}{Additional arguments passed to \code{goesaodc_plotSpatialPoints()}.}
 }
 \description{
 The goal of this plot is to get a quick look at available data 
