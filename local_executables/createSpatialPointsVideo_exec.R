@@ -9,8 +9,8 @@
 # -r 2 -o ~/Desktop/ -v TRUE --SpatialDataDir="~/Data/Spatial" \ 
 # --SatelliteDataDir="~/Data/Satellite" --bbox="-126,-119,30,40"
 
-# ---- . ---- . auto aspect ratio
-VERSION = "0.2.1"
+# ---- . ---- . corrected aspect ratio
+VERSION = "0.2.2"
 
 # The following packages are attached here so they show up in the sessionInfo
 suppressPackageStartupMessages({
@@ -30,7 +30,7 @@ if ( interactive() ) {
     fullDay = TRUE,
     ##bbox = "-126,-119,34,40", # Kincade, extending out into Pacific
     bbox = "-124,-122,37,39", # Kincade, closeup
-    datetime = "2019-10-27 14",       # Kincade fire near Sonoma, CA (local time)
+    datetime = "2019-10-27",       # Kincade fire near Sonoma, CA (local time)
     stateCode = "CA",
     satID = "G17",
     var = "AOD",
@@ -139,7 +139,7 @@ MazamaCoreUtils::stopIfNull(opt$datetime)
 
 # TODO:  # Either bbox or stateCode must exist
 
-# TO DO: Derive BBOX from State, if that's what's given
+# TODO: Derive BBOX from State, if that's what's given
 
 if ( opt$frameRate < 0 ||
      opt$frameRate != floor(opt$frameRate) )
@@ -209,7 +209,8 @@ result <- try({
     
     # Adjust incoming bbox width to fit the video aspect ratio 1280/720
     videoAspectRatio <- 1280/720 # (width/height)
-    newWidth <- (n - s) * videoAspectRatio
+    longitudeScaling <- sin(mid_lat * pi / 180)
+    newWidth <- (n - s) * videoAspectRatio / longitudeScaling
     w <- mid_lon - newWidth/2
     e <- mid_lon + newWidth/2
     bbox <- c(w, e, s, n)
@@ -296,7 +297,7 @@ result <- try({
       # Plot the frame
       png(frameFilePath, width = 1280, height = 720, units = "px")
       
-      par(mar = c(0,0,0,0))
+      ###par(mar = c(0,0,0,0))
       
       if ( "try-error" %in% class(result) ) {
         
@@ -327,9 +328,6 @@ result <- try({
         logger.trace("  End frame for %s", strftime(scanTimeLocal, "%H:%M:%S"))
       
       dev.off()
-      
-      if ( frameNumber > 12 ) 
-        break
       
     }
     
