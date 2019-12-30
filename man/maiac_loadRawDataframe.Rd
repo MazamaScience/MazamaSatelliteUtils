@@ -4,8 +4,14 @@
 \alias{maiac_loadRawDataframe}
 \title{Download or load MAIAC data and return data as a dataframe}
 \usage{
-maiac_loadRawDataframe(tileNumber = NULL, date = NULL, time = NULL,
-  julianDate = NULL, product = "MAIACAAOT", baseUrl = NULL)
+maiac_loadRawDataframe(
+  tileNumber = NULL,
+  date = NULL,
+  time = NULL,
+  julianDate = NULL,
+  product = "MAIACAAOT",
+  baseUrl = NULL
+)
 }
 \arguments{
 \item{tileNumber}{number code for tile (eg h01v04).}

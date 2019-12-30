@@ -4,9 +4,17 @@
 \alias{goesaodc_plotSpatialPoints}
 \title{Create a quick plot of a GOES AOD SpatialPointsDataFrame}
 \usage{
-goesaodc_plotSpatialPoints(spatialPoints, var = "AOD", n = 1e+05,
-  colBins = 5, breaks = NULL, paletteName = "YlOrRd", pch = 15,
-  cex = 0.5, add = FALSE)
+goesaodc_plotSpatialPoints(
+  spatialPoints,
+  var = "AOD",
+  n = 1e+05,
+  colBins = 5,
+  breaks = NULL,
+  paletteName = "YlOrRd",
+  pch = 15,
+  cex = 0.5,
+  add = FALSE
+)
 }
 \arguments{
 \item{spatialPoints}{SpatialPointsDataFrame}

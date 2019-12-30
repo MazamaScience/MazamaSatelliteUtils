@@ -4,9 +4,15 @@
 \alias{raster_createLocationTimeseries}
 \title{Create a Tibble for a location's AOD readings at a given hour}
 \usage{
-raster_createLocationTimeseries(rasterStack = NULL, longitude = NULL,
-  latitude = NULL, bbox = NULL, method = "simple", buffer = NULL,
-  fun = mean)
+raster_createLocationTimeseries(
+  rasterStack = NULL,
+  longitude = NULL,
+  latitude = NULL,
+  bbox = NULL,
+  method = "simple",
+  buffer = NULL,
+  fun = mean
+)
 }
 \arguments{
 \item{rasterStack}{a RasterStack with a RasterLayer for every data snapshot.}

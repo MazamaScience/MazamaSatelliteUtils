@@ -5,8 +5,14 @@
 \title{Calculates the sunrise and sunset hours for a specific date and 
 location}
 \usage{
-getDaylightHours(datetime = NULL, longitude = NULL, latitude = NULL,
-  bbox = NULL, timezone = NULL, isJulian = FALSE)
+getDaylightHours(
+  datetime = NULL,
+  longitude = NULL,
+  latitude = NULL,
+  bbox = NULL,
+  timezone = NULL,
+  isJulian = FALSE
+)
 }
 \arguments{
 \item{datetime}{Specific date for which daylight hours are requested.}

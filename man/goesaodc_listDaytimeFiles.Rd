@@ -5,9 +5,16 @@
 \title{List GOES AOD files that are available for a specific date and 
 location during the hours between sunlight and sunset.}
 \usage{
-goesaodc_listDaytimeFiles(satID = NULL, datetime = NULL,
-  longitude = NULL, latitude = NULL, bbox = NULL,
-  useRemote = FALSE, timezone = NULL, isJulian = FALSE)
+goesaodc_listDaytimeFiles(
+  satID = NULL,
+  datetime = NULL,
+  longitude = NULL,
+  latitude = NULL,
+  bbox = NULL,
+  useRemote = FALSE,
+  timezone = NULL,
+  isJulian = FALSE
+)
 }
 \arguments{
 \item{satID}{ID of the source GOES satellite (G16 or G17).}

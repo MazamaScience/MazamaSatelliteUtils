@@ -4,8 +4,7 @@
 \alias{maiac_2nc4}
 \title{Convert hdf file to .nc file}
 \usage{
-maiac_2nc4(file, converterPath = "./executables/h4toncff_nc4",
-  cleanup = TRUE)
+maiac_2nc4(file, converterPath = "./executables/h4toncff_nc4", cleanup = TRUE)
 }
 \arguments{
 \item{file}{absolute path of file to be converted}

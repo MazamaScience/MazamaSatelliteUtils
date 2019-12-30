@@ -3,7 +3,6 @@
 \docType{package}
 \name{MazamaSatelliteUtils}
 \alias{MazamaSatelliteUtils}
-\alias{MazamaSatelliteUtils-package}
 \title{Utilities for working with model and satellite data as rasters.}
 \source{
 \url{https://www.ncdc.noaa.gov/sites/default/files/attachments/GOES-17_ABI_L2_AOD_Provisional_ReadMe.pdf}

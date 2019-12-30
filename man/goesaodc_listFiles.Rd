@@ -4,9 +4,15 @@
 \alias{goesaodc_listFiles}
 \title{List available GOES AOD files for a specified date and hour}
 \usage{
-goesaodc_listFiles(satID = NULL, datetime = NULL, endTime = NULL,
-  useRemote = FALSE, timezone = "UTC", isJulian = FALSE,
-  baseUrl = "https://tools-1.airfire.org/Satellite/")
+goesaodc_listFiles(
+  satID = NULL,
+  datetime = NULL,
+  endTime = NULL,
+  useRemote = FALSE,
+  timezone = "UTC",
+  isJulian = FALSE,
+  baseUrl = "https://tools-1.airfire.org/Satellite/"
+)
 }
 \arguments{
 \item{satID}{ID of the source GOES satellite (G16 or G17).}

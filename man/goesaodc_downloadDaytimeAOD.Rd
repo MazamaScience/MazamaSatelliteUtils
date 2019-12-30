@@ -9,9 +9,16 @@ specific date and location.
 with \code{setSatelliteDir}.  See \code{getDaylightHours()} for details 
 regarding how daylight hours are calculated.}
 \usage{
-goesaodc_downloadDaytimeAOD(satID = NULL, datetime = NULL,
-  longitude = NULL, latitude = NULL, bbox = NULL, timezone = NULL,
-  isJulian = FALSE, verbose = FALSE)
+goesaodc_downloadDaytimeAOD(
+  satID = NULL,
+  datetime = NULL,
+  longitude = NULL,
+  latitude = NULL,
+  bbox = NULL,
+  timezone = NULL,
+  isJulian = FALSE,
+  verbose = FALSE
+)
 }
 \arguments{
 \item{satID}{ID of the source GOES satellite (G16 or G17).}

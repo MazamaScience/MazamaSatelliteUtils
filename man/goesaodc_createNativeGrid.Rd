@@ -4,8 +4,7 @@
 \alias{goesaodc_createNativeGrid}
 \title{Create a nativeGrid object}
 \usage{
-goesaodc_createNativeGrid(nc = NULL, bbox = bbox_CONUS,
-  verbose = FALSE)
+goesaodc_createNativeGrid(nc = NULL, bbox = bbox_CONUS, verbose = FALSE)
 }
 \arguments{
 \item{nc}{ncdf4 handle or a list of handles.}

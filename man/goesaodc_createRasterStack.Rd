@@ -4,10 +4,19 @@
 \alias{goesaodc_createRasterStack}
 \title{goesaodc_createRasterStack()}
 \usage{
-goesaodc_createRasterStack(satID = NULL, datetime = NULL,
-  endTime = NULL, var = "AOD", res = 0.1, bbox = c(-125, -65, 24,
-  50), dqfLevel = NULL, timezone = "UTC", isJulian = FALSE,
-  fileList = NULL, verbose = FALSE)
+goesaodc_createRasterStack(
+  satID = NULL,
+  datetime = NULL,
+  endTime = NULL,
+  var = "AOD",
+  res = 0.1,
+  bbox = c(-125, -65, 24, 50),
+  dqfLevel = NULL,
+  timezone = "UTC",
+  isJulian = FALSE,
+  fileList = NULL,
+  verbose = FALSE
+)
 }
 \arguments{
 \item{satID}{ID of the source GOES satellite (G16 or G17).}

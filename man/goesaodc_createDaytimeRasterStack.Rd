@@ -4,9 +4,16 @@
 \alias{goesaodc_createDaytimeRasterStack}
 \title{Create a daytime RasterStack for a specified date}
 \usage{
-goesaodc_createDaytimeRasterStack(satID = NULL, datetime = NULL,
-  var = "AOD", res = 0.1, bbox = NULL, dqfLevel = NULL,
-  timezone = NULL, verbose = FALSE)
+goesaodc_createDaytimeRasterStack(
+  satID = NULL,
+  datetime = NULL,
+  var = "AOD",
+  res = 0.1,
+  bbox = NULL,
+  dqfLevel = NULL,
+  timezone = NULL,
+  verbose = FALSE
+)
 }
 \arguments{
 \item{satID}{ID of the source GOES satellite (G16 or G17).}
@@ -71,7 +78,7 @@ datetime  <- "2019-10-27"
 timezone  <- "America/Los_Angeles"
 dqfLevel  <- 2
 
-latitude  <- 38.245   # \\
+latitude  <- 38.245   # \
                       #  - Town of Tomales
 longitude <- -122.906 # /
 

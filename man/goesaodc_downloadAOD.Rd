@@ -4,9 +4,15 @@
 \alias{goesaodc_downloadAOD}
 \title{Download GOES-16 or GOES-17 AOD data}
 \usage{
-goesaodc_downloadAOD(satID = NULL, datetime = NULL, endTime = NULL,
-  timezone = "UTC", isJulian = FALSE, verbose = FALSE,
-  baseUrl = "https://tools-1.airfire.org/Satellite/")
+goesaodc_downloadAOD(
+  satID = NULL,
+  datetime = NULL,
+  endTime = NULL,
+  timezone = "UTC",
+  isJulian = FALSE,
+  verbose = FALSE,
+  baseUrl = "https://tools-1.airfire.org/Satellite/"
+)
 }
 \arguments{
 \item{satID}{ID of the source GOES satellite (G16 or G17).}

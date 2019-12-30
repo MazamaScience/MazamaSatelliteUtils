@@ -4,10 +4,17 @@
 \alias{maiac_loadRaster}
 \title{Download North America MAIAC swath data}
 \usage{
-maiac_loadRaster(tileNumber = NULL, date = NULL, time = NULL,
-  julianDate = NULL, product = "MAIACAAOT", baseUrl = NULL,
-  filePath = NULL, params = "Optical_Depth_055",
-  converterPath = "./executables/h4toncff_nc4")
+maiac_loadRaster(
+  tileNumber = NULL,
+  date = NULL,
+  time = NULL,
+  julianDate = NULL,
+  product = "MAIACAAOT",
+  baseUrl = NULL,
+  filePath = NULL,
+  params = "Optical_Depth_055",
+  converterPath = "./executables/h4toncff_nc4"
+)
 }
 \arguments{
 \item{tileNumber}{number code for tile (eg h01v04).}

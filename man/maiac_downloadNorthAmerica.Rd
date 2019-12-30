@@ -4,9 +4,14 @@
 \alias{maiac_downloadNorthAmerica}
 \title{Download North America MAIAC swath data}
 \usage{
-maiac_downloadNorthAmerica(tileNumber = NULL, date = NULL,
-  time = NULL, julianDate = NULL, product = "MAIACAAOT",
-  baseUrl = NULL)
+maiac_downloadNorthAmerica(
+  tileNumber = NULL,
+  date = NULL,
+  time = NULL,
+  julianDate = NULL,
+  product = "MAIACAAOT",
+  baseUrl = NULL
+)
 }
 \arguments{
 \item{tileNumber}{number code for tile (eg h01v04).}
