@@ -71,7 +71,7 @@ close to the coordinates." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MazamaSatelliteUtils</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.11</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.13</span>
       </span>
     </div>
 
@@ -85,6 +85,33 @@ close to the coordinates." />
 </li>
 <li>
   <a href="../reference/index.html">Reference</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/aod_data_format.html">AOD Data Format</a>
+    </li>
+    <li>
+      <a href="../articles/goes-east_data_quality_limits.html">GOES-East Data Quality Spatial Limits</a>
+    </li>
+    <li>
+      <a href="../articles/grid_sizes.html">Grid Sizes</a>
+    </li>
+    <li>
+      <a href="../articles/intro_to_goes_aodc_data.html">Intro to GOES AOD Data</a>
+    </li>
+    <li>
+      <a href="../articles/intro_to_mazama_satellite_utils.html">Introduction to MazamaSatelliteUtils</a>
+    </li>
+    <li>
+      <a href="../articles/working_with_goes_aodc_rasters.html">Working With GOES AODC Rasters</a>
+    </li>
+  </ul>
 </li>
 <li>
   <a href="../news/index.html">Changelog</a>
@@ -116,9 +143,15 @@ The readings are approximated by tracking the AOD values for raster cells
 close to the coordinates.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>raster_createLocationTimeseries</span>(<span class='kw'>rasterStack</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>longitude</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>latitude</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>bbox</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>"simple"</span>, <span class='kw'>buffer</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>mean</span>)</pre>
+    <pre class="usage"><span class='fu'>raster_createLocationTimeseries</span>(
+  <span class='kw'>rasterStack</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>longitude</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>latitude</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>bbox</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>"simple"</span>,
+  <span class='kw'>buffer</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>mean</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -173,7 +206,8 @@ is used)</p></td>
 <span class='fu'><a href='https://rdrr.io/pkg/MazamaSpatialUtils/man/loadSpatialData.html'>loadSpatialData</a></span>(<span class='st'>"USCensusStates"</span>)
 
 <span class='co'># Oregon on August 1, 2019 at 12pm (Milepost 97 Fire)</span>
-<span class='no'>datetime</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>lubridate</span><span class='kw ns'>::</span><span class='fu'><a href='http://lubridate.tidyverse.org/reference/ymd_hms.html'>ymd_h</a></span>(<span class='st'>"2019-08-01 19"</span>, <span class='kw'>tz</span> <span class='kw'>=</span> <span class='st'>"UTC"</span>)
+<span class='no'>datetime</span> <span class='kw'>&lt;-</span> <span class='st'>"2019-08-01 19"</span>
+<span class='no'>timezone</span> <span class='kw'>&lt;-</span> <span class='st'>"UTC"</span>
 <span class='no'>oregon</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='no'>USCensusStates</span>, <span class='no'>stateCode</span> <span class='kw'>==</span> <span class='st'>"OR"</span>)
 <span class='no'>bbox_oregon</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>sp</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/sp/man/bbox.html'>bbox</a></span>(<span class='no'>oregon</span>)
 <span class='no'>lon</span> <span class='kw'>&lt;-</span> -<span class='fl'>123.245</span>
@@ -183,6 +217,7 @@ is used)</p></td>
 <span class='no'>rasterStack</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='goesaodc_createRasterStack.html'>goesaodc_createRasterStack</a></span>(
   <span class='kw'>satID</span> <span class='kw'>=</span> <span class='st'>"G16"</span>,
   <span class='kw'>datetime</span> <span class='kw'>=</span> <span class='no'>datetime</span>,
+  <span class='kw'>timezone</span> <span class='kw'>=</span> <span class='no'>timezone</span>,
   <span class='kw'>bbox</span> <span class='kw'>=</span> <span class='no'>bbox_oregon</span>,
   <span class='kw'>res</span> <span class='kw'>=</span> <span class='fl'>0.05</span>,
   <span class='kw'>dqfLevel</span> <span class='kw'>=</span> <span class='fl'>2</span>,

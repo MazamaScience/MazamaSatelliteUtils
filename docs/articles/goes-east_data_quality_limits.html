@@ -7,8 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GOES-East Data Quality Spatial Limits • MazamaSatelliteUtils</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><meta property="og:title" content="GOES-East Data Quality Spatial Limits">
 <meta property="og:description" content="">
 <meta name="twitter:card" content="summary">
@@ -30,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MazamaSatelliteUtils</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.13</span>
       </span>
     </div>
 
@@ -38,7 +39,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="../index.html">
-    <span class="fa fa-home fa-lg"></span>
+    <span class="fas fa fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -53,13 +54,19 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
+      <a href="../articles/aod_data_format.html">AOD Data Format</a>
+    </li>
+    <li>
       <a href="../articles/goes-east_data_quality_limits.html">GOES-East Data Quality Spatial Limits</a>
     </li>
     <li>
       <a href="../articles/grid_sizes.html">Grid Sizes</a>
     </li>
     <li>
-      <a href="../articles/intro_to_goes_aodc_data.html">Intro to GOES AODC Data</a>
+      <a href="../articles/intro_to_goes_aodc_data.html">Intro to GOES AOD Data</a>
+    </li>
+    <li>
+      <a href="../articles/intro_to_mazama_satellite_utils.html">Introduction to MazamaSatelliteUtils</a>
     </li>
     <li>
       <a href="../articles/working_with_goes_aodc_rasters.html">Working With GOES AODC Rasters</a>
@@ -79,6 +86,7 @@
 <!--/.navbar -->
 
       
+
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
@@ -94,60 +102,70 @@
 
     
     
-<p>Aerosol optical depth readings from the GOES-East satellite are each labeled with a data quality flag ranging from 0 to 2 (high to low) with an additional flag, 3, for “no retrieval flag”. Plotting data with no quality restrictions typically results in an image similar to the following:</p>
+<div id="western-exclusion" class="section level2">
+<h2 class="hasAnchor">
+<a href="#western-exclusion" class="anchor"></a>Western Exclusion</h2>
+<p>Aerosol optical depth readings from the GOES-East satellite are each labeled with a data quality flag ranging from 0 to 2 (high to low) including an additional flag, 3, for “no retrieval flag”. Plotting data with no quality restrictions typically results in an image like the following:</p>
 <center>
-<div class="figure">
-<img src="dqf_2.png">
-</div>
+<p><img src="img/dqf_2.png"></p>
 </center>
-<p>While clouds and snow might leave many regions obscured, we can see that there can be coverage for the whole continental United States. However, when plotting <em>just</em> medium and/or high quality data we notice something interesting:</p>
+<p>While clouds and snow might leave many regions spotty or obscured, we can see that there is at least <em>some</em> coverage across the whole continental United States. However, when plotting only medium and/or high quality data we notice something interesting:</p>
 <center>
-<div class="figure">
-<img src="dqf_1.png">
-</div>
+<p><img src="img/dqf_1.png"></p>
 </center>
-<p>As expected, many points have been removed from the map, leaving every region much more bare than before. What is strange though is the culling of the entire West Coast. There isn’t a single point left in Washington, Oregon, or Idaho, and large parts of California, Nevada, and Montana are completely blank. This excluded region seems to be cut off by a fairly well-defined curve which arcs through North Dakota down towards southern California.</p>
-<p>So what is this curved boundary and why does it exist?</p>
-<p>Due to GOES-East’s geostationary orbit above 0.0N 75.0W, the satellite’s ABI scanner is limited to viewing the fixed disk of the globe below it as displayed by the diagram:</p>
+<p>As we should expect, quite a lot points have been removed–leaving many regions much more bare than before. However, while eastern states still retain some dense clouds of points, <strong>all</strong> readings from the west coast have been entirely swept away. There isn’t a single point left in Washington, Oregon, and Idaho, and large portions of Montana, Nevada, and California have been completely removed.</p>
+<p>From the image above one can make out the apparent “shape” of this retained data. A well defined arc from North Dakota to California seems to be the border of a circular area between low quality data and the rest. Everything within this region is kept while the rest is thrown away. Unfortunately, while the central and eastern United States falls within this radius, much of the west coast does not. Similar plots at different times confirm that this boundary is fixed both in location and size.</p>
+<p>So what is this boundary and why does it exist?</p>
+</div>
+<div id="satellite-angle-limitations" class="section level2">
+<h2 class="hasAnchor">
+<a href="#satellite-angle-limitations" class="anchor"></a>Satellite Angle Limitations</h2>
+<p>Due to GOES-East’s geostationary orbit over the equator at 75.0W, the satellite’s ABI scanner is limited to only covering the area shown below:</p>
 <center>
-<div class="figure">
-<img src="GOESWestEast.jpg">
-</div>
+<p><img src="img/satelliteview.jpg"></p>
 </center>
-<p>This results in a view skewed by the curve of the Earth. Southeastern states like Florida can be scanned almost straight-on, but those on the opposite coast like Washington, Oregon, and California can only be seen at a very shallow angle.</p>
+<p>The satellite has a clear view of the regions directly below it, but due to the curvature of the Earth, the further the scanner looks out the more distorted its view becomes. Southeastern states like Florida can be scanned almost straight-on, but those on the opposite coast like Washington, Oregon, and California can only be seen at a very shallow angle.</p>
+<p>Part of what separates low quality readings from the rest is the local zenith angle (LZA) of the observation points. The <a href="https://www.goes-r.gov/products/docs/PUG-L2+-vol5.pdf">GOES-R documentation</a> defines this measurement on page 36:</p>
+<ul>
+<li>Local zenith angle: The angle between the line of sight to the satellite and the zenith at the observation target. (“Viewing zenith angle” in the diagram)</li>
+</ul>
 <center>
-<div class="figure">
-<img src="satelliteview.jpg">
-</div>
+<p><img src="img/vza-sza.gif"></p>
 </center>
-<p>Part of what separates low quality readings from the rest are the local and solar zenith angles (LZA/SZA) of the data points. The LZA measures the</p>
-<center>
-<div class="figure">
-<img src="vza-sza.gif">
+<p>The documentation states that: “There are many ABI Level 2+ products where the local zenith angle has an adverse effect on the quality of product data or precludes its generation”. For the aerosol optical depth product, readings at locations with a LZA of less than 60.0 degrees are labeled as “good” (p. 246).</p>
+<p>As locations get further and further away from the satellite, their local zenith angle grows larger and larger. It is possible that the circular limit we found earlier is defined by this 60 degree angle constraint. Readings at the edge of that curve might have a LZA just barely under 60, while those in west coast states have LZAs too large to be labelled as high or medium quality.</p>
 </div>
-</center>
-<p><a href="https://www.goes-r.gov/products/docs/PUG-L2+-vol5.pdf" class="uri">https://www.goes-r.gov/products/docs/PUG-L2+-vol5.pdf</a> p.246 (PDF 279)</p>
-<p>Local zenith angle There are many ABI Level 2+ products where the angle between the line of sight to the satellite and the zenith at the observation target has an adverse effect on the quality of product data or precludes its generation. The local zenith angle coordinates identify the specific angular constraints. These coordinate values are stored in variables whose names have the string “local_zenith_angle” and “local_zenith_angle_bounds”. Additional details on the use of local zenith angle coordinate variables are discussed in paragraph 4.4.1 Local and Solar Zenith Angle Coordinate Variable Usage. Solar zenith angle There are many Level 2+ products where the angle between the line of sight to the sun and the zenith at the observation target has an adverse effect on the quality of product data or precludes its generation. This coordinate is also used to indicate day-only product data. These coordinate values are stored in variables whose names have the string “solar_zenith_angle” and “solar_zenith_angle_bounds”. Additional details on the use of solar zenith angle coordinate variables are discussed in paragraph 4.4.1 Local and Solar Zenith Angle Coordinate Variable Usage. p.36 (PDF 69)</p>
-<p><a href="http://sacs.aeronomie.be/info/sza.php">Solar Zenith Angle</a></p>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+
+        <div id="tocnav">
+      <h2 class="hasAnchor">
+<a href="#tocnav" class="anchor"></a>Contents</h2>
+      <ul class="nav nav-pills nav-stacked">
+<li><a href="#western-exclusion">Western Exclusion</a></li>
+      <li><a href="#satellite-angle-limitations">Satellite Angle Limitations</a></li>
+      </ul>
+</div>
       </div>
 
 </div>
 
 
+
       <footer><div class="copyright">
-  <p>Developed by Jonathan Callahan, Helen Miller, Raffuse Sean, Rex Thompson, Thomas Bergamaschi.</p>
+  <p>Developed by Jonathan Callahan, Helen Miller, Raffuse Sean, Rex Thompson, Tate Brasel, Thomas Bergamaschi, Roger Andre.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
 </div>
+
       </footer>
 </div>
 
   
+
 
   </body>
 </html>

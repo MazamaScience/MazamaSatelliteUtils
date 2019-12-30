@@ -76,7 +76,7 @@ provides a simple way to convert 5-minute data into an hourly average." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MazamaSatelliteUtils</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.11</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.13</span>
       </span>
     </div>
 
@@ -90,6 +90,33 @@ provides a simple way to convert 5-minute data into an hourly average." />
 </li>
 <li>
   <a href="../reference/index.html">Reference</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/aod_data_format.html">AOD Data Format</a>
+    </li>
+    <li>
+      <a href="../articles/goes-east_data_quality_limits.html">GOES-East Data Quality Spatial Limits</a>
+    </li>
+    <li>
+      <a href="../articles/grid_sizes.html">Grid Sizes</a>
+    </li>
+    <li>
+      <a href="../articles/intro_to_goes_aodc_data.html">Intro to GOES AOD Data</a>
+    </li>
+    <li>
+      <a href="../articles/intro_to_mazama_satellite_utils.html">Introduction to MazamaSatelliteUtils</a>
+    </li>
+    <li>
+      <a href="../articles/working_with_goes_aodc_rasters.html">Working With GOES AODC Rasters</a>
+    </li>
+  </ul>
 </li>
 <li>
   <a href="../news/index.html">Changelog</a>
@@ -126,8 +153,7 @@ DQF will be averaged across all nc handles. This  "native grid" averaging
 provides a simple way to convert 5-minute data into an hourly average.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>goesaodc_createNativeGrid</span>(<span class='kw'>nc</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>bbox</span> <span class='kw'>=</span> <span class='no'>bbox_CONUS</span>,
-  <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='fu'>goesaodc_createNativeGrid</span>(<span class='kw'>nc</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>bbox</span> <span class='kw'>=</span> <span class='no'>bbox_CONUS</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">

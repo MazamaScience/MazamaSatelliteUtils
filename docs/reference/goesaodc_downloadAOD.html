@@ -78,7 +78,7 @@ this call." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MazamaSatelliteUtils</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.11</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.13</span>
       </span>
     </div>
 
@@ -92,6 +92,33 @@ this call." />
 </li>
 <li>
   <a href="../reference/index.html">Reference</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/aod_data_format.html">AOD Data Format</a>
+    </li>
+    <li>
+      <a href="../articles/goes-east_data_quality_limits.html">GOES-East Data Quality Spatial Limits</a>
+    </li>
+    <li>
+      <a href="../articles/grid_sizes.html">Grid Sizes</a>
+    </li>
+    <li>
+      <a href="../articles/intro_to_goes_aodc_data.html">Intro to GOES AOD Data</a>
+    </li>
+    <li>
+      <a href="../articles/intro_to_mazama_satellite_utils.html">Introduction to MazamaSatelliteUtils</a>
+    </li>
+    <li>
+      <a href="../articles/working_with_goes_aodc_rasters.html">Working With GOES AODC Rasters</a>
+    </li>
+  </ul>
 </li>
 <li>
   <a href="../news/index.html">Changelog</a>
@@ -130,9 +157,15 @@ that match the requested date whether they were download previously or with
 this call.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>goesaodc_downloadAOD</span>(<span class='kw'>satID</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>datetime</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>endTime</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>timezone</span> <span class='kw'>=</span> <span class='st'>"UTC"</span>, <span class='kw'>isJulian</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>baseUrl</span> <span class='kw'>=</span> <span class='st'>"https://tools-1.airfire.org/Satellite/"</span>)</pre>
+    <pre class="usage"><span class='fu'>goesaodc_downloadAOD</span>(
+  <span class='kw'>satID</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>datetime</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>endTime</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>timezone</span> <span class='kw'>=</span> <span class='st'>"UTC"</span>,
+  <span class='kw'>isJulian</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>baseUrl</span> <span class='kw'>=</span> <span class='st'>"https://tools-1.airfire.org/Satellite/"</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">

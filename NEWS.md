@@ -1,3 +1,7 @@
+# MazamaSatelliteUtils 0.2.13
+
+* Updated documentation and vignettes.
+
 # MazamaSatelliteUtils 0.2.12
 
  * `goesaodc_createNativeGrid()` now properly reads and scales the raw data 
