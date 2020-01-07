@@ -1,10 +1,10 @@
 ---
-title: "Intro to GOES AOD Data"
+title: "Example Workflow"
 author: "Mazama Science"
-date: "7/30/2019"
+date: "1/7/2020"
 output: html_document
 vignette: >
-  %\VignetteIndexEntry{Intro to GOES AOD Data}
+  %\VignetteIndexEntry{Example Workflow}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -13,51 +13,12 @@ vignette: >
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Aerosol Optical Depth
-
-Aerosol optical depth provides a measure of air quality by estimating the amount
-of particles in a vertical column of the atmosphere. The absorbtion and 
-scattering of certain spectral wavelengths on the atmosphere is fed into aerosol
-models to determine an AOD value. This number is unitless, but values closer to 
-0.0 correspond to a cleaner atmosphere while higher values correspond to more 
-hazy conditions. An average AOD for the U.S. is usually around 0.1 and 0.15.
-
-There are several limitations to this method. Sunlight is required for the
-measurement process, meaning that AOD levels can't be estimated during 
-nighttime. Additionally, many areas will have no AOD defined due to the 
-reflectance of clouds or snow.
-
-## AOD Source
-
-The MazamaSatelliteUtils package uses AOD data provided by the Advanced 
-Baseline Imager ([ABI](https://www.goes-r.gov/spacesegment/abi.html)) on board 
-the GOES-16 satellite. This geostationary satellite is positioned to give the 
-ABI a full view of the lower 48 states so that about every 5 minutes the imager
-can complete a full scan of this region. The measurements of each individual 
-scan are saved to a NetCDF file for that particular period in time.
-
-More on the ABI's AOD measurement process can be found in the 
-[GOES-R aerosol optical depth overview](https://www.star.nesdis.noaa.gov/goesr/product_aero_aod.php)
-and the
-[ABI AOD algorithm theoretical basis document](https://www.star.nesdis.noaa.gov/goesr/docs/ATBD/AOD.pdf).
-
-## NetCDF Files
-
-The "Common Data Form" filetype is used for efficient access to multidimensional
-array-based data such as atmospheric measurements. A typical scan of North 
-America yields around 3 to 4 MB of data. If scans are taken every 5 minutes, a 
-single day would hold about 12 files * 24 hrs * 3 MB = 860 MB in all. Due to 
-this fairly large size, downloading a NetCDF using the `MazamaSatelliteUtils` 
-package saves the file to a specified data directory from which the contents can
-be accessed through a file handle.
-
-## MazamaSatelliteUtils Setup
+### MazamaSatelliteUtils Setup
 
 Let's start exploring AOD data with the `MazamaSatelliteUtils` package. First 
-we'll give ourselves a case study to focuson though, such as the recent Milepost
-97 Fire. This incident was reported on July 24, 2019 about 1 mile southeast of 
-Canyonville, Oregon and is still current as of August 14, 2019. This should 
-provide plenty of data for us to examine in detail.
+we'll give ourselves a case study to focus on, the recent Milepost 97 Fire. 
+This incident was reported on July 24, 2019 about 1 mile southeast of 
+Canyonville, Oregon and was still current as of August 14, 2019.
 
 To begin our analysis, let's load the `MazamaSatelliteUtils` package and define
 a `SatelliteDataDir`: A directory where all of our NetCDF files will be stored 
@@ -68,7 +29,7 @@ library(MazamaSatelliteUtils)
 setSatelliteDataDir("~/Data/Satellite")
 ```
 
-## Downloading Data and Creating NetCDF Handles
+### Downloading Data and Creating NetCDF Handles
 
 We can now start loading in satellite data using the `goesaodc_downloadAOD()`
 function. For this we have to provide a datetime to specify which files we 
@@ -80,6 +41,9 @@ just defined.
 
 Since downloading many NetCDF files can take a bit of time, for now let's only 
 gather data for August 1, 2019 at 17:00:00 UTC (10AM PDT).
+
+(Note: This example uses data from GOES-East because no data is available prior 
+to August 28, 2019 from GOES-West.)
 
 ```{r download_files}
 datetime <- lubridate::ymd_h("2019-08-01 17", tz = "UTC")
@@ -106,7 +70,7 @@ filename, so let's open the first one in our downloaded time range
 nc <- goesaodc_openFile(filename = dateFiles[1])
 ```
 
-## Reading Through NetCDF Handles
+### Reading Through NetCDF Handles
 
 Now that we have a handle to a netCDF file we can freely access readings from 
 any of the variables in the dataset (listed by `names(nc$var)`) using the 
@@ -118,7 +82,7 @@ print(length(readings_aod))
 print(range(readings_aod, na.rm = TRUE))
 ```
 
-## AOD and DQF Data as a Tibble
+### AOD and DQF Data as a Tibble
 
 For our purposes of mapping AOD values, we can consolidate all the data we 
 need (longitude, latitude, and AOD) and make it even easier to access by forming
@@ -137,7 +101,7 @@ tb <- goesaodc_createTibble(nc)
 knitr::kable(head(tb))
 ```
 
-## Working With Data as Spatial Points
+### Working With Data as Spatial Points
 
 We can now finally start visualizing this data on geographic maps by creating 
 and plotting spatial points from the AOD readings. Each spatial point represents
@@ -203,7 +167,7 @@ points(x = lon_mp97, y = lat_mp97, pch = 0, cex = 4.0, lwd = 1.5,
 Now we can start to make out the the scan pattern made by the ABI, which forms a 
 slightly tilted grid of points.
 
-## Rasterizing Spatial Points
+### Rasterizing Spatial Points
 
 A raster image divides geographic space into uniform pixels or "cells". A grid
 is placed over a map and the value of each cell is calculated by aggregating the
@@ -274,9 +238,9 @@ Given that the average distance between spatial points is about 4km, we can
 confirm our cell size estimation since these appear to be 2 points wide (8km) 
 and about 3 tall (12km).
 
-## AOD Over Time
+### AOD Over Time
 
-### Raster Stacks
+#### Raster Stacks
 
 So far we have only looked at a single instant from our original datetime. There
 are still 11 other datasets from 16:00:00 that we can analyze like we did this 
@@ -313,7 +277,7 @@ points(x = lon_mp97, y = lat_mp97, pch = 0, cex = 4.0, lwd = 1.5,
        col = "darkgreen")
 ```
 
-### Hourly Time Series Plots
+#### Hourly Time Series Plots
 
 Finally, the `raster_createLocationTimeseries()` function allows us to track
 AOD values of a specific location in each layer of a stack, resulting in a 

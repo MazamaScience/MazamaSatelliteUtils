@@ -136,3 +136,6 @@ AOD:valid_range = 0, 65530
 
 \* Additional information on NetCDF data types can be found at https://www.unidata.ucar.edu/software/netcdf/docs/data_type.html
 
+## Time Conventions in AOD Data
+
+(Talk about ordinal/Julian date format here)

@@ -1,0 +1,161 @@
+---
+title: "Working with Mazama Satellite Utils"
+author: "Mazama Science"
+date: "1/7/2020"
+output: html_document
+vignette: >
+  %\VignetteIndexEntry{Working with Mazama Satellite Utils}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Importance of Time and Location
+
+An AOD scan of the Continental U.S. is captured every 5 minutes of the day and 
+typically yields around 3 to 4 MB of data. This means that for every hour of the 
+day, 12 files are generated.  An entire 24-hour day would have close to 300 
+files in it and be close to a Gigabyte in size.  This would include scans taken 
+during nighttime hours which do not contain valid AOD data.
+
+In addition, although AOD scans are stored by time, because of the wide geographic 
+extent of their coverage they are managed in Coordinated Universal Time (UTC). 
+It is assumed that a person working with this data is generally working in local 
+time, and will need to have access to the appropriate AOD scan that corresponds 
+with a specific local time in the U.S.
+
+Finally, as meantioned in "Introduction to MazamaSatelliteUtils", there are 2 
+GOES satellites, GOES-East and GOES-West, which favor different parts of the U.S. 
+with their coverage.  "GOES-East Data Quality Spatial Limits" provides a useful 
+overview of the Western limit of coverage for GOES-East.  Generally speaking though, 
+when looking at the Western U.S., one should use data from GOES-West.
+
+The `MazamaSatelliteUtils` package provides easy ways to specify time(s), 
+locations and the GOES satellite of interest.
+
+### Time
+
+Time can be specified in a number of ways in `MazamaSatelliteUtils`, but it is 
+important to keep in mind that the unit of time the package works with is the hour. 
+More granular times can be given as parameters, but the package will truncate 
+them to the hour.
+
+Furthermore, it should be clear that a specific date is also required for the various 
+utilities to work.  This combination is referred to as a "datetime" in the documentation. 
+Below are some of examples of how a "datetime" can be specified.  
+
+(Note that all examples are written as parameters of a function call)
+
+<center>
+__"datetime" examples for August 1, 2019 at 10:00AM PDT__
+</center>
+```
+# Ex 1. Local Time
+
+function(
+  datetime = "2019-08-01 10:00",
+  timezone = "America/Los_Angeles"
+  )
+
+# Ex. 2 Collapsed Local Time
+
+function(
+  datetime = "2019080110",
+  timezone = "America/Los_Angeles"
+)
+
+# Ex 3. UTC Time
+
+function(
+  datetime = "2019-08-01 17:00",
+  timezone = "UTC"
+  )
+  
+# Ex. 4 Collapsed UTC Time
+function(
+  datetime = "2019080117",
+  timezone = "UTC"
+)
+
+# Ex. 5 Julian Date
+function(
+  datetime = "201924417",
+  isJulian = TRUE
+)
+```
+
+Two requirements must always be met when specifying datetimes:
+
+* Timezone must be specified (unless Julian dates are used)
+* Julian dates must be identified
+
+### Satellite ID
+
+The GOES-East and West satellites are easily specified in by using the `SatID` 
+parameter.  For ease of use and clarity, the package implements GOES-East as "G16", 
+and GOES-West as "G17".  Below are examples of how `SatID` is used in a function call.
+
+<center>
+__Example usage of "SatID" parameter__
+</center>
+
+```
+Ex 1. GOES-East
+
+function(
+  satID = "G16"
+)
+
+Ex 2. GOES-West
+
+function(
+  satID = "G17"
+)
+```
+
+### Geographic Location
+
+While it can be useful to work with the entire extents of CONUS when analyzing 
+AOD data, often it is desirable to filter, or limit, the data to a specific geographic 
+extent or location.  Depending on the function being used, this can be a region, 
+or a point.  (See the specific function documentation to determine which of these 
+it supports.)  For extents, the package allows the user to specify a region of 
+interest in several ways.  For clarity and consistency the parameter used to specify 
+extents is named "bbox".
+
+<center>
+__Example of "bbox" specified for state of Oregon__
+</center>
+
+```
+# Ex 1. bbox as a list of coordinates in lonLo, lonHi, latLo, latHi order
+
+function(
+  bbox = c(-124.56624, -116.46350, 41.99179, 46.29203)
+)
+
+# Ex 2. bbox obtained from spatial object
+
+oregon <- subset(USCensusStates, stateCode == "OR")
+bbox_oregon <- sp::bbox(oregon)
+
+function(
+  bbox = bbox_oregon
+)
+```
+
+NOTE: spatial object example assumes that "USCensusStates" is available from the 
+`MazamaSpatialUtils` package.
+
+
+## Data Management
+
+As mentioned above, working with AOD data can lead to having a large number of 
+files on disk very quickly.  `MazamaSatelliteUtils` requires that a "Data" folder 
+be specified for storing these files.  This is done using the `setSatelliteDataDir()`
+function.
+
+"Example Workflow" gives an example of how to use these concepts to do a simple analysis.
