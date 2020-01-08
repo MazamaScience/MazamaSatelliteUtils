@@ -47,19 +47,19 @@ The "Common Data Form" filetype is used for efficient access to multidimensional
 array-based data such as atmospheric measurements. A typical scan of North 
 America yields around 3 to 4 MB of data. If scans are taken every 5 minutes, a 
 single day would hold about 12 files * 24 hrs * 3 MB = 860 MB in all. Due to 
-this fairly large size, downloading a NetCDF using the `MazamaSatelliteUtils` 
+this fairly large size, downloading a NetCDF using the **MazamaSatelliteUtils** 
 package saves the file to a specified data directory from which the contents can
 be accessed through a file handle.
 
 ## MazamaSatelliteUtils Setup
 
-Let's start exploring AOD data with the `MazamaSatelliteUtils` package. First 
+Let's start exploring AOD data with the **MazamaSatelliteUtils** package. First 
 we'll give ourselves a case study to focuson though, such as the recent Milepost
 97 Fire. This incident was reported on July 24, 2019 about 1 mile southeast of 
 Canyonville, Oregon and is still current as of August 14, 2019. This should 
 provide plenty of data for us to examine in detail.
 
-To begin our analysis, let's load the `MazamaSatelliteUtils` package and define
+To begin our analysis, let's load the **MazamaSatelliteUtils** package and define
 a `SatelliteDataDir`: A directory where all of our NetCDF files will be stored 
 to and read from:
 

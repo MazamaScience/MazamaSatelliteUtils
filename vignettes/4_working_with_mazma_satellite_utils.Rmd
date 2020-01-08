@@ -21,8 +21,7 @@ day, 12 files are generated.  An entire 24-hour day would have close to 300
 files in it and be close to a Gigabyte in size.  This would include scans taken 
 during nighttime hours which do not contain valid AOD data.
 
-In addition, although AOD scans are stored by time, because of the wide geographic 
-extent of their coverage they are managed in Coordinated Universal Time (UTC). 
+AOD scans are stored by timestamp using Coordinated Universal Time (UTC). 
 It is assumed that a person working with this data is generally working in local 
 time, and will need to have access to the appropriate AOD scan that corresponds 
 with a specific local time in the U.S.
@@ -33,12 +32,12 @@ with their coverage.  "GOES-East Data Quality Spatial Limits" provides a useful
 overview of the Western limit of coverage for GOES-East.  Generally speaking though, 
 when looking at the Western U.S., one should use data from GOES-West.
 
-The `MazamaSatelliteUtils` package provides easy ways to specify time(s), 
+The **MazamaSatelliteUtils** package provides easy ways to specify time(s), 
 locations and the GOES satellite of interest.
 
 ### Time
 
-Time can be specified in a number of ways in `MazamaSatelliteUtils`, but it is 
+Time can be specified in a number of ways in **MazamaSatelliteUtils**, but it is 
 important to keep in mind that the unit of time the package works with is the hour. 
 More granular times can be given as parameters, but the package will truncate 
 them to the hour.
@@ -52,45 +51,25 @@ Below are some of examples of how a "datetime" can be specified.
 <center>
 __"datetime" examples for August 1, 2019 at 10:00AM PDT__
 </center>
+
 ```
-# Ex 1. Local Time
+  datetime = "2019-08-01 10:00",      # ISO 8601
+  timezone = "America/Los_Angeles"    # local time
 
-function(
-  datetime = "2019-08-01 10:00",
-  timezone = "America/Los_Angeles"
-  )
+  datetime = "2019080110",            # YYYYmmddHH
+  timezone = "America/Los_Angeles"    # local time
 
-# Ex. 2 Collapsed Local Time
+  datetime = "2019-08-01 17:00",      # ISO 8601
+  timezone = "UTC"                    # UTC
 
-function(
-  datetime = "2019080110",
-  timezone = "America/Los_Angeles"
-)
-
-# Ex 3. UTC Time
-
-function(
-  datetime = "2019-08-01 17:00",
-  timezone = "UTC"
-  )
-  
-# Ex. 4 Collapsed UTC Time
-function(
-  datetime = "2019080117",
-  timezone = "UTC"
-)
-
-# Ex. 5 Julian Date
-function(
-  datetime = "201924417",
+  datetime = "201924417",             # Julian date
   isJulian = TRUE
-)
 ```
 
 Two requirements must always be met when specifying datetimes:
 
 * Timezone must be specified (unless Julian dates are used)
-* Julian dates must be identified
+* Julian dates must be identified when used
 
 ### Satellite ID
 
@@ -103,17 +82,9 @@ __Example usage of "SatID" parameter__
 </center>
 
 ```
-Ex 1. GOES-East
-
-function(
-  satID = "G16"
-)
-
-Ex 2. GOES-West
-
-function(
-  satID = "G17"
-)
+  satID = "G16"   # GOES-East
+  
+  satID = "G17"   # GOES-West
 ```
 
 ### Geographic Location
@@ -147,14 +118,14 @@ function(
 )
 ```
 
-NOTE: spatial object example assumes that "USCensusStates" is available from the 
-`MazamaSpatialUtils` package.
+_NOTE: spatial object example assumes that "USCensusStates" is available from the 
+`MazamaSpatialUtils` package._
 
 
 ## Data Management
 
 As mentioned above, working with AOD data can lead to having a large number of 
-files on disk very quickly.  `MazamaSatelliteUtils` requires that a "Data" folder 
+files on disk very quickly.  **MazamaSatelliteUtils** requires that a data directory
 be specified for storing these files.  This is done using the `setSatelliteDataDir()`
 function.
 

@@ -67,8 +67,8 @@ satellite's ABI scanner is limited to only covering the area shown below:
 
 The satellite has a clear view of the regions directly below it, but due to the
 curvature of the Earth, the further the scanner looks out the more distorted its
-view becomes. Southeastern states like Florida can be scanned almost 
-straight-on, but those on the opposite coast like Washington, Oregon, and 
+view becomes. Southeastern states like Florida can be scanned at an angle closer
+to 90 degrees, but those on the opposite coast like Washington, Oregon, and 
 California can only be seen at a very shallow angle.
 
 Part of what separates low quality readings from the rest is the local zenith 

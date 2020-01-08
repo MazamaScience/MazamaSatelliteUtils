@@ -32,7 +32,7 @@ pixels of an image. It is tailored towards visualizing geospatial data so that
 each pixel (or "cell") of the Raster covers a small area of the Earth's 
 surface and the color represents the value of a measurement, such as aerosol 
 optical depth. A Raster is created in several steps, but the process can be 
-streamlined with `MazamaSatelliteUtils` functions. Let's walk through the 
+streamlined with **MazamaSatelliteUtils** functions. Let's walk through the 
 process first though to understand what Rasters are made of and how they are put
 together:
 

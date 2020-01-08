@@ -19,7 +19,7 @@ knitr::opts_chunk$set(echo = TRUE, fig.align = 'center')
 
 \* From the [GOES R-Series Product User Guide](https://www.goes-r.gov/products/docs/PUG-L2+-vol5.pdf).
 
-NetCDF (network common data form) files are self-describing, machine-independent data formats that support the creation, access, and sharing of array-oriented scientific data.  They are used for storing multidimensional scientific data (variables) such as temperature, humidity, pressure, wind speed, and direction. Each of these variables can be displayed through a dimension (such as time or geographic location).  NetCDF was developed and is maintained at Unidata, which is part of the University Corporation for Atmospheric Research (UCAR) Community Programs (UCP) and is a standard in the scientific community for sharing data.
+NetCDF (Network Common Data Form) files are self-describing, machine-independent data formats that support the creation, access, and sharing of array-oriented scientific data.  They are used for storing multidimensional scientific data (variables) such as temperature, humidity, pressure, wind speed, and direction. Each of these variables can be displayed through a dimension (such as time or geographic location).  NetCDF was developed and is maintained at Unidata, which is part of the University Corporation for Atmospheric Research (UCAR) Community Programs (UCP) and is a standard in the scientific community for sharing data.
 
 Generally speaking, a netCDF file can be viewed as a multidimensional grid, or raster, file.  They are often used to store _n(x, y, z)_ data where the scientific data _(n)_ are linked to one-dimensional spatial _(x, y)_ and time _(z)_ coordinates.  These dimensional coordinates are strictly monotonic (values increasing or decreasing) and are full, meaning that there are no missing or NA values.  The scientific data itself may have missing values which are usually identified with a specific value that falls outside of the data's valid instrument range such as -1 or 999.
 
@@ -29,7 +29,7 @@ Generally speaking, a netCDF file can be viewed as a multidimensional grid, or r
 
 ## AOD Data Dictionary
 
-AOD NetCDF files follow the conventions set forth in [COARDS](https://ferret.pmel.noaa.gov/Ferret/documentation/coards-netcdf-conventions).  It is recommended  that the MazamaSatelliteUtils user take a moment to acquaint themselves with these conventions.  An overview of key aspects of the GOES AOD NetCDF file will be provided below, but will not cover all aspects related to it.
+AOD NetCDF files follow the conventions set forth in [COARDS](https://ferret.pmel.noaa.gov/Ferret/documentation/coards-netcdf-conventions).  Anyone wishing to enhance the **MazamaSatelliteUtils** package should take a moment to acquaint themselves with these conventions.  An overview of key aspects of the CONUS GOES AOD NetCDF file will be provided below, but will not cover all aspects related to it.
 
 #### Pertinent metadata from a GOES-17 AOD NetCDF file.
 
@@ -117,15 +117,14 @@ AOD:valid_range = 0s, -6s ;
 ```
 As read from the NetCDF file, the raw AOD values contain _-1_  as a _FillValue_ to indicate _No Data_.  Additionally the data values are  _Unsigned_ (more on this below),  and the _valid\_range_ of the data is from 0 to -6 _short integers_.  This may be confusing to the user, so additional explanation is provided below.
 
-#### Explanation of Signed vs. Unsigned Integer Storage in NetCDF
+### Signed vs. Unsigned Integer Storage in NetCDF
 
-By definition, a numeric variable is _signed_ if it can represent both positive and negative numbers, and _unsigned_ if it can only represent non-negative numbers (zero or positive numbers).  Aside from having the ability to store negative values, a _signed_ data set differs from an _unsigned_ one in that it can only store a positive number that is half as large as one in an _unsigned_ set.  This is because the integer type defines the maximum storage space that can be allocated for each integer.  So in the case of an _unsigned short_ integer, the number of values that could be stored is 65,536 or 2^16, with a range of [0, 65535] (Remember that 0 counts as a value and takes up one position).   If the data type were _signed short_, then the number of values is still limited to 65,536 but the valid range would be [-32768, 32767].
+By definition, a numeric variable is _signed_ if it can represent both positive and negative numbers, and _unsigned_ if it can only represent non-negative numbers (zero or positive numbers).  Aside from having the ability to store negative values, a _signed_ data set differs from an _unsigned_ one in that it can only store a positive number that is half as large as one in an _unsigned_ set.  This is because the integer type defines the maximum storage space that can be allocated for each integer.  So in the case of an _unsigned short_ integer, the number of values that could be stored is 65,536 or 2^16, with a range of [0, 65535] (Remember that 0 counts as a value and takes up one position).   If the data type were _signed short_, then the number of values is still limited to 65,536 but the valid range would be [-32768, 32767]. (In binary, bit 1 stores 2^0, bit 2 stores 2^1, _etc._ For _unsigned short_ bit 16 is used to store 2^15 but for _signed_short_ bit 16 is used to store -2^15.)
 
 #### NetCDF implementation of unsigned integers
 
-In the case of AOD data, the _Unsigned = "true";_ metadata tag tells us that we should only have positive numbers in the data.  However, while the netCDF version 4 format supports the use of unsigned integers as externally defined data types, internally the data is still stored as signed integers.  In a data like this, when negative values are present in what should be an _unsigned_  data type, it is an indication that the original value inserted into the file exceeded the maximum positive value allowed for in the _signed_ internal representation.  Instead, the NetCDF libraries store the offset amount needed to convert the value back into the correct, original _unsigned_ value.  This offset is by definition negative and is thus easily stored as a _signed_ integer.
+In the case of AOD data, the `Unsigned = "true";` metadata tag tells us that we should only have positive numbers in the data.  However, while the netCDF version 4 format supports the use of unsigned integers as externally defined data types, library functions still interpret the data as signed integers.  In a data like this, when negative values are present in what should be an _unsigned_  data type, it is an indication that the original value exceeded the maximum positive value allowed for in the _signed_ representation. The **MazamaSatelliteUtils** package manages this by reading in raw bytes and correctly interpreting them as _unsigned int_:
 
-#### Conversion from signed to unsigned integer
 ```
 AOD:valid_range = 0s, -6s
     translates to
@@ -138,4 +137,4 @@ AOD:valid_range = 0, 65530
 
 ## Time Conventions in AOD Data
 
-(Talk about ordinal/Julian date format here)
+(TODO:  Talk about ordinal/Julian date format here)

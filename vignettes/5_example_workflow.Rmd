@@ -15,12 +15,12 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ### MazamaSatelliteUtils Setup
 
-Let's start exploring AOD data with the `MazamaSatelliteUtils` package. First 
+Let's start exploring AOD data with the **MazamaSatelliteUtils** package. First 
 we'll give ourselves a case study to focus on, the recent Milepost 97 Fire. 
 This incident was reported on July 24, 2019 about 1 mile southeast of 
 Canyonville, Oregon and was still current as of August 14, 2019.
 
-To begin our analysis, let's load the `MazamaSatelliteUtils` package and define
+To begin our analysis, let's load the **MazamaSatelliteUtils** package and define
 a `SatelliteDataDir`: A directory where all of our NetCDF files will be stored 
 to and read from:
 

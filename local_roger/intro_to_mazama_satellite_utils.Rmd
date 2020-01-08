@@ -14,16 +14,16 @@ knitr::opts_chunk$set(echo = TRUE, fig.align = 'center')
 ```
 
 
-The _MazamaSatelliteUtils_ R package is intended to facilitate working with GOES 16 and 17 Aerosol Optical Depth (AOD) data provided by NOAA and available through [The U.S. Forest Service AirFire Research Team](airfire.org) data site.  The package is designed to allow easy access to AOD data and provides a host of features to analyze and visualize the data.
+The **MazamaSatelliteUtils** R package is intended to facilitate working with GOES 16 and 17 Aerosol Optical Depth (AOD) data provided by NOAA and available through [The U.S. Forest Service AirFire Research Team](airfire.org) data site.  The package is designed to allow easy access to AOD data and provides a host of features to analyze and visualize the data.
 
 Intended users of this package are researchers of wildfire smoke or anyone interested in studying the effects of aerosols in the atmosphere.  It is released under GPL and is available from [Github](https://github.com/MazamaScience/MazamaSatelliteUtils).
 
-_MazamaSatelliteUtils_ requires that the R programming language be installed, as well as the following R packages.
+**MazamaSatelliteUtils** requires that the R programming language be installed, as well as the following R packages.
 
 * _sp_ 
-* _MazamaSpatialUtils_
+* **MazamaSpatialUtils**
 
-These, and the _MazamaSatelliteUtils_ package itself, can be installed from The Comprehensive R Archive Network (CRAN). 
+These, and the **MazamaSatelliteUtils** package itself, can be installed from The Comprehensive R Archive Network (CRAN). 
 
 ```install.packages('MazamaSatelliteUtils')```.
 
@@ -35,13 +35,13 @@ Developers and people interested in working with the very latest version of the 
 
 ### GOES 16 & 17
 
-The _MazamaSatelliteUtils_ package uses data provided by the Advanced Baseline Imager (ABI) on board the Geostationary Operational Environmental Satellites (GOES) 16 and 17.  GOES 16 and 17 are also known as "GOES-East" and "GOES-West" respectively due to the difference in their positioning relative to the surface of the Earth.   GOES-16 (East) is positioned over the Equator at a geographic longitude roughly equal to Dover, DE and is intended to provide good imaging of the Eastern half of the United States.  GOES-17 (West) is also positioned over the Equator, roughly halfway between Los Angeles and Honolulu, and is intended to cover the Western half of the U.S..  
+The **MazamaSatelliteUtils** package uses data provided by the Advanced Baseline Imager (ABI) on board the Geostationary Operational Environmental Satellites (GOES) 16 and 17.  GOES 16 and 17 are also known as "GOES-East" and "GOES-West" respectively due to the difference in their positioning relative to the surface of the Earth.   GOES-16 (East) is positioned over the Equator at a geographic longitude roughly equal to Dover, DE and is intended to provide good imaging of the Eastern half of the United States.  GOES-17 (West) is also positioned over the Equator, roughly halfway between Los Angeles and Honolulu, and is intended to cover the Western half of the U.S..  
 
 <center>
 ![Goes 16 & 17](img/GOESWestEast.jpg)
 </center>
 
-The ABI imager on GOES satellites operates in a variety of scanning modes which capture data at different intervals.  The AOD data used by _MazamaSatelliteUtils_ is obtained by scanning the full extent of the Contiguous U.S. (CONUS) every five minutes.  Other data sets produced by the GOES satellites, include:
+The ABI imager on GOES satellites operates in a variety of scanning modes which capture data at different intervals.  The AOD data used by **MazamaSatelliteUtils** is obtained by scanning the full extent of the Contiguous U.S. (CONUS) every five minutes.  Other data sets produced by the GOES satellites, include:
 
 * Cloud and Moisture Imagery 
 * Fire/Hot Spot Characterization
@@ -62,7 +62,7 @@ An AOD value is a measure of columnar extinction (scattering + absorption) of ra
 
 ### DQF 
 
-In addition to AOD, _MazamaSatelliteUtils_ uses the Data Quality Flag (DQF) to provide the user with an indication of AOD data quality.  The DQF is a separate variable associated with each AOD data point and has 4 possible quality levels.
+In addition to AOD, **MazamaSatelliteUtils** uses the Data Quality Flag (DQF) to provide the user with an indication of AOD data quality.  The DQF is a separate variable associated with each AOD data point and has 4 possible quality levels.
 
 * 0 - _high quality_
 * 1 - _medium quality_
