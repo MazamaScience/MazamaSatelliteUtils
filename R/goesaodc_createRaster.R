@@ -54,7 +54,7 @@
 #'   
 #' west <- c("washington", "oregon", "california", "nevada", "idaho")
 #' maps::map(database = "state", regions = west)   
-#' raster::plot(rstr, "AOD", col=rev(heat.colors(5)))
+#' raster::plot(rstr, "AOD", col=rev(heat.colors(5)), add = TRUE)
 #' maps::map(database = "state", regions = west, add = TRUE)
 #' }
 
