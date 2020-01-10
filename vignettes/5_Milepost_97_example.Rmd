@@ -1,10 +1,10 @@
 ---
-title: "Example Workflow"
+title: "Milepost 97 Example"
 author: "Mazama Science"
 date: "1/7/2020"
 output: html_document
 vignette: >
-  %\VignetteIndexEntry{Example Workflow}
+  %\VignetteIndexEntry{Milepost 97 Example}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
