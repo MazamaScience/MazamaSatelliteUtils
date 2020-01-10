@@ -31,7 +31,10 @@ setSatelliteDataDir("~/Data/kincade")
   GOES-West AOD data became available from the BlueSky/Fire site beginning on August 28, 2019.  In order to have a sense of how much data we will need to obtain for this project, our first step will be to check on the Fire server to see what AOD data is available on that day.  Furthermore, as we are only interested in seeing what data is available during local daytime hours in Sonoma, CA, we will limit our file-listing to only Daytime hours.
   
 ```
-goesaodc_listDaytimeFiles(satID = "G17", datetime = "2019-10-29", timezone = "America/Los_Angeles", useRemote = TRUE)
+goesaodc_listDaytimeFiles(satID = "G17", 
+                          datetime = "2019-10-29", 
+                          timezone = "America/Los_Angeles", 
+                          useRemote = TRUE)
   
   [1] "OR_ABI-L2-AODC-M6_G17_s20193021401196_e20193021403569_c20193021404452.nc"
   [2] "OR_ABI-L2-AODC-M6_G17_s20193021406196_e20193021408569_c20193021409556.nc"
@@ -54,22 +57,22 @@ As we can see from the date strings in the truncated file listing output above, 
   
 ```
   s20193021401196...
-  s        = "start"
+  s    = "start"
   2019 = Year
-  302   = Ordinal Day
-  14      = 24hr Day Hour
-  01      = Minute
-  19      = Seconds 
-  6        = Milliseconds
+  302  = Ordinal Day
+  14   = 24hr Day Hour
+  01   = Minute
+  19   = Seconds 
+  6    = Milliseconds
   
   e20193030158569...
-  e         = "end"
+  e     = "end"
   2019  = Year
-  303    = Ordinal Day
-  01       = 24hr Day Hour
-  58       = Minutes
-  56       = Seconds
-  9          = Milliseconds
+  303   = Ordinal Day
+  01    = 24hr Day Hour
+  58    = Minutes
+  56    = Seconds
+  9     = Milliseconds
 ```
   
 In other words, the files needed to display AOD during Daytime hours span from roughly _2019-10-29 14:00 UTC_ until _2019-10-30 01:00 UTC_.  `goesaodc_listDaytimeFiles()` automatically took the input date of "2019-10-29" and the Olson timezone of "America/Los_Angeles" and performed the calculations needed to obtain the Sunrise and Sunset times for that timezone on that date.  We can verify those times using the `getDaylightHours()` utility function that is included in the package.
@@ -101,7 +104,10 @@ __NOTE:__ It is important to remember that __MazamaSatelliteUtils__ uses the ent
 Downloading the AOD data for our timespan of interest can be easily accomplished by using the `goesaodc_downloadDaytimeAOD()` function, which works very similarly to `goesaodc_listDaytimeFiles()`.
 
 ```{r file_download, message = FALSE}
-goesaodc_downloadDaytimeAOD(satID = "G17", datetime = "2019-10-29", timezone = "America/Los_Angeles", verbose = TRUE)
+goesaodc_downloadDaytimeAOD(satID = "G17", 
+                            datetime = "2019-10-29", 
+                            timezone = "America/Los_Angeles", 
+                            verbose = TRUE)
 
 #Downloaded OR_ABI-L2-AODC-M6_G17_s20193021401196_e20193021403569_c20193021404452.nc
 #Downloaded OR_ABI-L2-AODC-M6_G17_s20193021406196_e20193021408569_c20193021409556.nc
@@ -125,7 +131,9 @@ goesaodc_downloadAOD(satID = "G17", datetime = "2019-10-29 07", endTime = "2019-
 Whichever way you've decided to download the files, it's now a good idea to make sure that you've downloaded the data that you think you have.  This is particularly a good idea if you have done the download without specifying "verbose = TRUE".  If we use `goesaodc_listDaytimeFiles()` in it's default mode, with `useRemote = FALSE`, we can confirm that we have 144 files downloaded and residing in our project directory, which we set using `setSatteliteDataDir`. 
 
 ```
-goesaodc_listDaytimeFiles(satID = "G17", datetime = "2019-10-29", timezone = "America/Los_Angeles")
+goesaodc_listDaytimeFiles(satID = "G17", 
+                          datetime = "2019-10-29", 
+                          timezone = "America/Los_Angeles")
 <snip>
 [140] "OR_ABI-L2-AODC-M6_G17_s20193030136196_e20193030138569_c20193030141011.nc"
 [141] "OR_ABI-L2-AODC-M6_G17_s20193030141196_e20193030143569_c20193030145552.nc"
@@ -151,11 +159,8 @@ kincade_bbox <- c(-125, -120, 36, 40)
 
 goesaodc_areaPlot(list(nc_handle), kincade_bbox)
 ```
-<center>
-__2019-10-29 10:00AM PDT AOD Image__
-</center>
   
-We can clearly see the heavy smoke plume coming out towards the Southwest, as well as dense smoke that is drifting throughout the rest of the Bay Area.
+We can clearly see the heavy smoke plume coming out of the Santa Rosa region towards the Southwest, as well as dense smoke that is drifting throughout the rest of the Bay Area.
 
 ### Create a movie from data
   
