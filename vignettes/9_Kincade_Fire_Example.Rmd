@@ -148,7 +148,7 @@ There are a variety of ways to visualize the AOD data, but for now, it's handy t
 
 
 
-```{r first_view, message=FALSE, fig.align='center', fig.asp=.987}
+```{r first_view, message=FALSE, fig.align='center', fig.height=7, fig.width=7, fig.asp=.987}
 installGoesGrids()
 nc_file <- goesaodc_listFiles(satID = "G17", 
                                      datetime = "2019-10-29 10", 
@@ -163,6 +163,16 @@ goesaodc_areaPlot(list(nc_handle), kincade_bbox)
 We can clearly see the heavy smoke plume coming out of the Santa Rosa region towards the Southwest, as well as dense smoke that is drifting throughout the rest of the Bay Area.
 
 ### Create a movie from data
-  
+
+It's relatively straight-forward to create a movie of the AOD changes throught the day.  Use the `createSpatialPointsVideo_exec.R` file located in _local_executables_.  It requires that [ffmpeg](https://www.ffmpeg.org/) be installed.  To create the movie, execute the following command:
+
+```
+./createSpatialPointsVideo_exec.R --datetime="2019-10-29" \
+-s CA -x AOD -q 3 -r 2 -o ~/Desktop/ -v TRUE \
+--SpatialDataDir="~/Data/Spatial" \
+--SatelliteDataDir="~/Data/kincade" \
+--bbox="-124, -120, 36.5, 40.5" \
+--fullDay="TRUE"
+```
   
   

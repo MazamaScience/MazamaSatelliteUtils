@@ -5,9 +5,12 @@
 #
 # Test this script from the command line with:
 #
-# ./createSpatialPointsVideo_exec.R -t 2019102715 -s CA -x AOD -q 2 \ 
-# -r 2 -o ~/Desktop/ -v TRUE --SpatialDataDir="~/Data/Spatial" \ 
-# --SatelliteDataDir="~/Data/Satellite" --bbox="-126,-119,30,40"
+# ./createSpatialPointsVideo_exec.R --datetime="2019-10-29" 
+# -s CA -x AOD -q 3 -r 2 -o ~/Desktop/ 
+#  -v TRUE --SpatialDataDir="~/Data/Spatial" 
+#  --SatelliteDataDir="~/Data/kincade" 
+#  --bbox="-125, -120, 36, 40" 
+#   --fullDay="TRUE"
 
 # ---- . ---- . corrected aspect ratio
 VERSION = "0.2.2"
@@ -214,7 +217,7 @@ result <- try({
     w <- mid_lon - newWidth/2
     e <- mid_lon + newWidth/2
     bbox <- c(w, e, s, n)
-    
+
     # Get the timezone in the bbox center
     timezone <- MazamaSpatialUtils::getTimezone(lon = mid_lon,
                                                 lat = mid_lat,

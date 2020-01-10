@@ -92,7 +92,7 @@ goesaodc_areaPlot <- function(
   
   # Symbol size
   if ( !("cex" %in% names(argsList)) )
-    argsList$cex <- 0.5
+    argsList$cex <- 0.75
   
   # ---- Process and display each .nc handle -----------------------------------
   
