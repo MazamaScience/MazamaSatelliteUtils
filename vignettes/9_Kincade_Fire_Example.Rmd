@@ -26,7 +26,7 @@ library(MazamaSatelliteUtils)
 library(MazamaSpatialUtils)
 setSatelliteDataDir("~/Data/kincade")
 ```
-  ### Check Data Availability
+### Check Data Availability
   
   GOES-West AOD data became available from the BlueSky/Fire site beginning on August 28, 2019.  In order to have a sense of how much data we will need to obtain for this project, our first step will be to check on the Fire server to see what AOD data is available on that day.  Furthermore, as we are only interested in seeing what data is available during local daytime hours in Sonoma, CA, we will limit our file-listing to only Daytime hours.
   
