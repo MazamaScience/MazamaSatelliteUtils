@@ -2,7 +2,7 @@
 title: "Grid Sizes"
 author: "Mazama Science"
 date: "8/2/2019"
-output: html_document
+output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Grid Sizes}
   %\VignetteEngine{knitr::rmarkdown}

@@ -2,7 +2,7 @@
 title: "Working With GOES AODC Rasters"
 author: "Mazama Science"
 date: "8/12/2019"
-output: html_document
+output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Working With GOES AODC Rasters}
   %\VignetteEngine{knitr::rmarkdown}

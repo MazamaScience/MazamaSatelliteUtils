@@ -2,7 +2,7 @@
 title: "Kincade Fire Example"
 author: "Mazama Science"
 date: "1/9/2020"
-output: html_document
+output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Kincade Fire Example}
   %\VignetteEngine{knitr::rmarkdown}

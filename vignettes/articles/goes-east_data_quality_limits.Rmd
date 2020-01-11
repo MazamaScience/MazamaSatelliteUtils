@@ -2,7 +2,7 @@
 title: "GOES-East Data Quality Spatial Limits"
 author: "Mazama Science"
 date: "8/22/2019"
-output: html_document
+output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{GOES-East Data Quality Spatial Limits}
   %\VignetteEngine{knitr::rmarkdown}

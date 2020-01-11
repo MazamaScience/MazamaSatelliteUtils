@@ -54,22 +54,31 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/aod_data_format.html">AOD Data Format</a>
+      <a href="../articles/articles/Kincade_Fire_Example.html">Kincade Fire Example</a>
     </li>
     <li>
-      <a href="../articles/goes-east_data_quality_limits.html">GOES-East Data Quality Spatial Limits</a>
+      <a href="../articles/articles/Milepost_97_example.html">Milepost 97 Example</a>
     </li>
     <li>
-      <a href="../articles/grid_sizes.html">Grid Sizes</a>
+      <a href="../articles/articles/aod_data_format.html">AOD Data Format</a>
     </li>
     <li>
-      <a href="../articles/intro_to_goes_aodc_data.html">Intro to GOES AOD Data</a>
+      <a href="../articles/articles/aod_data_structures.html">Working with AODC Data Structures</a>
+    </li>
+    <li>
+      <a href="../articles/articles/goes-east_data_quality_limits.html">GOES-East Data Quality Spatial Limits</a>
+    </li>
+    <li>
+      <a href="../articles/articles/grid_sizes.html">Grid Sizes</a>
+    </li>
+    <li>
+      <a href="../articles/articles/working_with_goes_aodc_rasters.html">Working With GOES AODC Rasters</a>
+    </li>
+    <li>
+      <a href="../articles/articles/working_with_mazma_satellite_utils.html">Working with Mazama Satellite Utils</a>
     </li>
     <li>
       <a href="../articles/intro_to_mazama_satellite_utils.html">Introduction to MazamaSatelliteUtils</a>
-    </li>
-    <li>
-      <a href="../articles/working_with_goes_aodc_rasters.html">Working With GOES AODC Rasters</a>
     </li>
   </ul>
 </li>
@@ -102,14 +111,14 @@
 
     
     
-<p>The <em>MazamaSatelliteUtils</em> R package is intended to facilitate working with GOES 16 and 17 Aerosol Optical Depth (AOD) data provided by NOAA and available through <a href="airfire.org">The U.S. Forest Service AirFire Research Team</a> data site. The package is designed to allow easy access to AOD data and provides a host of features to analyze and visualize the data.</p>
+<p>The <strong>MazamaSatelliteUtils</strong> R package is intended to facilitate working with GOES 16 and 17 Aerosol Optical Depth (AOD) data provided by NOAA and available through <a href="https://sites.google.com/firenet.gov/wfaqrp-airfire/">The U.S. Forest Service AirFire Research Team</a> data site. The package is designed to allow easy access to AOD data and provides a host of features to analyze and visualize the data.</p>
 <p>Intended users of this package are researchers of wildfire smoke or anyone interested in studying the effects of aerosols in the atmosphere. It is released under GPL and is available from <a href="https://github.com/MazamaScience/MazamaSatelliteUtils">Github</a>.</p>
-<p><em>MazamaSatelliteUtils</em> requires that the R programming language be installed, as well as the following R packages.</p>
+<p><strong>MazamaSatelliteUtils</strong> requires that the R programming language be installed, as well as the following R packages.</p>
 <ul>
-<li><em>sp</em></li>
-<li><em>MazamaSpatialUtils</em></li>
+<li><strong>sp</strong></li>
+<li><strong>MazamaSpatialUtils</strong></li>
 </ul>
-<p>These, and the <em>MazamaSatelliteUtils</em> package itself, can be installed from The Comprehensive R Archive Network (CRAN).</p>
+<p>These, and the <strong>MazamaSatelliteUtils</strong> package itself, can be installed from The Comprehensive R Archive Network (CRAN).</p>
 <p><code><a href="https://rdrr.io/r/utils/install.packages.html">install.packages('MazamaSatelliteUtils')</a></code>.</p>
 <p>Developers and people interested in working with the very latest version of the code can install it directly from Github.</p>
 <p><code><a href="https://rdrr.io/pkg/devtools/man/remote-reexports.html">devtools::install_github('mazamascience/MazamaSatelliteUtils')</a></code>.</p>
@@ -119,12 +128,13 @@
 <div id="goes-16-17" class="section level3">
 <h3 class="hasAnchor">
 <a href="#goes-16-17" class="anchor"></a>GOES 16 &amp; 17</h3>
-<p>The <em>MazamaSatelliteUtils</em> package uses data provided by the Advanced Baseline Imager (ABI) on board the Geostationary Operational Environmental Satellites (GOES) 16 and 17. GOES 16 and 17 are also known as “GOES-East” and “GOES-West” respectively due to the difference in their positioning relative to the surface of the Earth. GOES-16 (East) is positioned over the Equator at a geographic longitude roughly equal to Dover, DE and is intended to provide good imaging of the Eastern half of the United States. GOES-17 (West) is also positioned over the Equator, roughly halfway between Los Angeles and Honolulu, and is intended to cover the Western half of the U.S..</p>
+<p>The <strong>MazamaSatelliteUtils</strong> package uses data provided by the Advanced Baseline Imager (ABI) on board the Geostationary Operational Environmental Satellites (GOES) 16 and 17. GOES 16 and 17 are also known as “GOES-East” and “GOES-West” respectively due to the difference in their positioning relative to the surface of the Earth. GOES-16 (East) is positioned over the Equator at a geographic longitude of -75 deg, roughly equal to Dover, DE, and is intended to provide good imaging of the Eastern half of the United States. GOES-17 (West) is also positioned over the Equator at -137 deg, roughly halfway between Los Angeles and Honolulu, and is intended to cover the Western half of the U.S..</p>
 <center>
 <img src="img/GOESWestEast.jpg" alt="Goes 16 &amp; 17">
 </center>
-<p>The ABI imager on GOES satellites operates in a variety of scanning modes which capture data at different intervals. The AOD data used by <em>MazamaSatelliteUtils</em> is obtained by scanning the full extent of the Contiguous U.S. (CONUS) every five minutes. Other data sets produced by the GOES satellites, include:</p>
+<p>The ABI imager on GOES satellites operates in a variety of scanning modes which capture data at different intervals. The AOD data used by <strong>MazamaSatelliteUtils</strong> is obtained by scanning the full extent of the Contiguous U.S. (CONUS) every five minutes. The measurements of each individual scan are saved to a NetCDF file for that particular period in time. Other data sets produced by the GOES satellites, include:</p>
 <ul>
+<li>“Full Disk” imagery that includes Alaska, Central America and S. America</li>
 <li>Cloud and Moisture Imagery</li>
 <li>Fire/Hot Spot Characterization</li>
 <li>Land Surface Temperature</li>
@@ -132,19 +142,19 @@
 <li>Sea Surface Temperature</li>
 <li>Snow Cover</li>
 </ul>
-<p>* See <a href="https://www.goes-r.gov/downloads/resources/documents/GOES-RSeriesDataBook.pdf" class="uri">https://www.goes-r.gov/downloads/resources/documents/GOES-RSeriesDataBook.pdf</a> for additional detail on available GOES products</p>
+<p>* See the <a href="https://www.goes-r.gov/downloads/resources/documents/GOES-RSeriesDataBook.pdf">GOES-RSeriesDataBook.pdf</a> and the <a href="https://www.star.nesdis.noaa.gov/goesr/docs/ATBD/AOD.pdf">ABI AOD algorithm theoretical basis document</a> for additional detail on available GOES products.</p>
 </div>
 <div id="aod" class="section level3">
 <h3 class="hasAnchor">
 <a href="#aod" class="anchor"></a>AOD</h3>
-<p>Aerosol Optical Depth (AOD) is a measure of the number of particles (aerosols) in the air. Aerosols scatter and absorb incoming sunlight, which reduces visibility. AOD indicates the amount at which they prevent light from traveling through the atmosphere. From an observer on the ground, a low AOD indicates “clean” air - characteristic of clear blue sky, bright sun and maximum visibility. When AOD levels increase, aerosols can become so dense that the sun is obscured.</p>
-<p>There are limitations where AOD values can be calculated. AOD is only available over areas with clear-sky (cloud-free) pixels. Additionally, AOD is not calculated over “bright” land surfaces. This means that most non-vegetated, or sparsely vegetated, desert areas, snow or ice-covered surfaces and water surface in sun-glint do not have AOD values. Finally, areas where the solar zenith angle is larger than 80 deg and/or the satellite zenith angle is larger than 60 deg reduces the quality of the AOD calculations. This is discussed more in the section below on DQF and data quality.</p>
-<p>An AOD value is a measure of columnar extinction (scattering + absorption) of radiation by aerosols. It is proportional to the amount (number or mass concentration) of aerosols in an atmospheric column. AOD is unitless, but the valid range produced by the GOES sensor is from -0.05 to +5.00. Values closer to 0.0 correspond to a cleaner atmosphere while higher values correspond to more hazy conditions. An average AOD for the U.S. is usually around 0.1 and 0.15. Generally speaking, an AOD of less than 0.1 is “clean” and greater than 3.0 is “extremely hazy”.</p>
+<p>Aerosol Optical Depth (AOD) is a measure of the number of particles (aerosols) in the air. Aerosols scatter and absorb incoming sunlight, which reduces visibility. AOD indicates the degree to which they prevent light from traveling through the atmosphere. For an observer on the ground, a low AOD value indicates “clean” air, which is characterized by clear blue sky, bright sun and maximum visibility. When AOD levels increase, aerosols can become so dense that the sun is obscured.</p>
+<p>There are to limitations where AOD values can be calculated. AOD is only available over areas with clear-sky (cloud-free) pixels. Additionally, AOD is not calculated over “bright” land surfaces. This means that most non-vegetated, or sparsely vegetated desert areas, snow or ice-covered surfaces and water surface in sun-glint do not have AOD values. Finally, areas where the solar zenith angle is larger than 80 deg and/or the satellite zenith angle is larger than 60 deg reduces the quality of the AOD calculations. This is discussed more in the section below on DQF and data quality.</p>
+<p>An AOD value is a measure of columnar extinction (scattering + absorption) of radiation by aerosols. It is proportional to the amount (number or mass concentration) of aerosols in an atmospheric column. AOD is unitless, but the valid range produced by the GOES sensor is from -0.05 to +5.00. Values closer to 0.0 correspond to a cleaner atmosphere while higher values correspond to more hazy conditions. An average AOD for the U.S. is usually around 0.1 to 0.15. Generally speaking, an AOD of less than 0.1 is “clean” and greater than 3.0 is “extremely hazy”.</p>
 </div>
 <div id="dqf" class="section level3">
 <h3 class="hasAnchor">
 <a href="#dqf" class="anchor"></a>DQF</h3>
-<p>In addition to AOD, <em>MazamaSatelliteUtils</em> uses the Data Quality Flag (DQF) to provide the user with an indication of AOD data quality. The DQF is a separate variable associated with each AOD data point and has 4 possible quality levels.</p>
+<p>In addition to AOD, <strong>MazamaSatelliteUtils</strong> uses the Data Quality Flag (DQF) to provide the user with an indication of AOD data quality. The DQF is a separate variable associated with each AOD data point and has 4 possible quality levels.</p>
 <ul>
 <li>0 - <em>high quality</em>
 </li>
@@ -152,7 +162,7 @@
 </li>
 <li>2 - <em>low quality</em>
 </li>
-<li>3 - <em>no-retrieval(of quality)</em>
+<li>3 - <em>no-retrieval (of quality metric)</em>
 </li>
 </ul>
 <p>DQF is affected by numerous factors, but a few of the most significant are:</p>
@@ -162,7 +172,7 @@
 <li>Bright land surface (presence of snow, ice or sand)</li>
 <li>Clouds</li>
 </ul>
-<p>Several of these factors vary by season (clouds and snow) and by time of day (sun angle) but the satellite zenith angle is a geographic effect that cannot be altered. Depending on where in the Contiguous United States an AOD point is located, it may be impossible to obtain a high-quality DQF value. This is discussed in greater detail in the “GOES-East Data Quality Spatial Limits” document.</p>
+<p>Several of these factors vary by season (clouds and snow) and by time of day (sun angle) but the satellite zenith angle is a geographic effect that cannot be altered. Depending on where in the Contiguous United States an AOD pixel is located, it may be impossible to obtain a high-quality DQF value. This is discussed in greater detail in the “GOES-East Data Quality Spatial Limits” document.</p>
 </div>
 </div>
   </div>

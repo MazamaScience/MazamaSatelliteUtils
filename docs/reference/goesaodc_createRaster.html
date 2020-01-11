@@ -105,22 +105,31 @@ raster::extent()." />
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/aod_data_format.html">AOD Data Format</a>
+      <a href="../articles/articles/Kincade_Fire_Example.html">Kincade Fire Example</a>
     </li>
     <li>
-      <a href="../articles/goes-east_data_quality_limits.html">GOES-East Data Quality Spatial Limits</a>
+      <a href="../articles/articles/Milepost_97_example.html">Milepost 97 Example</a>
     </li>
     <li>
-      <a href="../articles/grid_sizes.html">Grid Sizes</a>
+      <a href="../articles/articles/aod_data_format.html">AOD Data Format</a>
     </li>
     <li>
-      <a href="../articles/intro_to_goes_aodc_data.html">Intro to GOES AOD Data</a>
+      <a href="../articles/articles/aod_data_structures.html">Working with AODC Data Structures</a>
+    </li>
+    <li>
+      <a href="../articles/articles/goes-east_data_quality_limits.html">GOES-East Data Quality Spatial Limits</a>
+    </li>
+    <li>
+      <a href="../articles/articles/grid_sizes.html">Grid Sizes</a>
+    </li>
+    <li>
+      <a href="../articles/articles/working_with_goes_aodc_rasters.html">Working With GOES AODC Rasters</a>
+    </li>
+    <li>
+      <a href="../articles/articles/working_with_mazma_satellite_utils.html">Working with Mazama Satellite Utils</a>
     </li>
     <li>
       <a href="../articles/intro_to_mazama_satellite_utils.html">Introduction to MazamaSatelliteUtils</a>
-    </li>
-    <li>
-      <a href="../articles/working_with_goes_aodc_rasters.html">Working With GOES AODC Rasters</a>
     </li>
   </ul>
 </li>
@@ -228,7 +237,7 @@ latHi) order or the return value from <code><a href='https://rdrr.io/pkg/sp/man/
   )
 
 <span class='no'>west</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"washington"</span>, <span class='st'>"oregon"</span>, <span class='st'>"california"</span>, <span class='st'>"nevada"</span>, <span class='st'>"idaho"</span>)
-<span class='kw pkg'>maps</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/maps/man/map.html'>map</a></span>(<span class='kw'>database</span> <span class='kw'>=</span> <span class='st'>"state"</span>, <span class='kw'>regions</span> <span class='kw'>=</span> <span class='no'>west</span>)</div><div class='img'><img src='goesaodc_createRaster-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='kw pkg'>raster</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/raster/man/plot.html'>plot</a></span>(<span class='no'>rstr</span>, <span class='st'>"AOD"</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/rev.html'>rev</a></span>(<span class='fu'><a href='https://rdrr.io/r/grDevices/palettes.html'>heat.colors</a></span>(<span class='fl'>5</span>)))</div><div class='input'><span class='kw pkg'>maps</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/maps/man/map.html'>map</a></span>(<span class='kw'>database</span> <span class='kw'>=</span> <span class='st'>"state"</span>, <span class='kw'>regions</span> <span class='kw'>=</span> <span class='no'>west</span>, <span class='kw'>add</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</div><div class='img'><img src='goesaodc_createRaster-2.png' alt='' width='700' height='433' /></div><div class='input'># }
+<span class='kw pkg'>maps</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/maps/man/map.html'>map</a></span>(<span class='kw'>database</span> <span class='kw'>=</span> <span class='st'>"state"</span>, <span class='kw'>regions</span> <span class='kw'>=</span> <span class='no'>west</span>)</div><div class='img'><img src='goesaodc_createRaster-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='kw pkg'>raster</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/raster/man/plot.html'>plot</a></span>(<span class='no'>rstr</span>, <span class='st'>"AOD"</span>, <span class='kw'>col</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/rev.html'>rev</a></span>(<span class='fu'><a href='https://rdrr.io/r/grDevices/palettes.html'>heat.colors</a></span>(<span class='fl'>5</span>)), <span class='kw'>add</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</div><div class='input'><span class='kw pkg'>maps</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/maps/man/map.html'>map</a></span>(<span class='kw'>database</span> <span class='kw'>=</span> <span class='st'>"state"</span>, <span class='kw'>regions</span> <span class='kw'>=</span> <span class='no'>west</span>, <span class='kw'>add</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</div><div class='img'><img src='goesaodc_createRaster-2.png' alt='' width='700' height='433' /></div><div class='input'># }
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

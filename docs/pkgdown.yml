@@ -2,10 +2,13 @@ pandoc: 2.3.1
 pkgdown: 1.4.1
 pkgdown_sha: ~
 articles:
-  aod_data_format: aod_data_format.html
-  goes-east_data_quality_limits: goes-east_data_quality_limits.html
-  grid_sizes: grid_sizes.html
-  intro_to_goes_aodc_data: intro_to_goes_aodc_data.html
+  Kincade_Fire_Example: articles/Kincade_Fire_Example.html
+  Milepost_97_example: articles/Milepost_97_example.html
+  aod_data_format: articles/aod_data_format.html
+  aod_data_structures: articles/aod_data_structures.html
+  goes-east_data_quality_limits: articles/goes-east_data_quality_limits.html
+  grid_sizes: articles/grid_sizes.html
+  working_with_goes_aodc_rasters: articles/working_with_goes_aodc_rasters.html
+  working_with_mazma_satellite_utils: articles/working_with_mazma_satellite_utils.html
   intro_to_mazama_satellite_utils: intro_to_mazama_satellite_utils.html
-  working_with_goes_aodc_rasters: working_with_goes_aodc_rasters.html
 

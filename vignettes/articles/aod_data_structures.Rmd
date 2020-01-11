@@ -2,7 +2,7 @@
 title: "Working with AODC Data Structures"
 author: "Mazama Science"
 date: "1/8/2020"
-output: html_document
+output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Working with AODC Data Structures}
   %\VignetteEngine{knitr::rmarkdown}

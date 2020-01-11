@@ -2,7 +2,7 @@
 title: "Introduction to MazamaSatelliteUtils"
 author: "Mazama Science"
 date: "12/16/2019"
-output: html_document
+output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Intro to MazamaSatelliteUtils}
   %\VignetteEngine{knitr::rmarkdown}

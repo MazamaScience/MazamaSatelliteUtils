@@ -2,7 +2,7 @@
 title: "Milepost 97 Example"
 author: "Mazama Science"
 date: "1/7/2020"
-output: html_document
+output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Milepost 97 Example}
   %\VignetteEngine{knitr::rmarkdown}

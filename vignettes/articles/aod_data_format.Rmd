@@ -2,7 +2,7 @@
 title: "AOD Data Format"
 author: "Mazama Science"
 date: "12/19/2019"
-output: html_document
+output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{AOD Data Format}
   %\VignetteEngine{knitr::rmarkdown}
