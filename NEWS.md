@@ -3,6 +3,7 @@
 * Fixed error in `bboxToVector()`.
 * Updated documentation.
 * Minor internal refactoring.
+* Removed nonfunctional exploratory scripts and files.
 
 # MazamaSatelliteUtils 0.2.13
 
