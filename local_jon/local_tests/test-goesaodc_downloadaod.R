@@ -14,13 +14,13 @@ test_that("data can be downloaded", {
   
   # download files for Noon, May 16th 2019 UTC
   startdate <- 2019051612
-  downloaded_files <- goesaodc_downloadAOD(startdate, quiet = TRUE)
+  downloaded_files <- goesaodc_downloadAOD("G16", startdate)
     
   # should have downloaded 12 files
   expect_length(downloaded_files, 12)
   
   # get rid of downloaded files
-  file.remove(downloaded_files)
+  file.remove(paste0(getSatelliteDataDir(), "/", downloaded_files))
   
   # reset satelliteDataDir
   if (!is.null(olddir)) {
