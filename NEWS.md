@@ -1,6 +1,7 @@
 # MazamaSatelliteUtils 0.4.0
 
 * Fixed error in `bboxToVector()`.
+* Fixed `bbox` used in the `goesaodc_areaPlot()` example.
 * Updated documentation.
 * Minor internal refactoring.
 * Removed nonfunctional exploratory scripts and files.

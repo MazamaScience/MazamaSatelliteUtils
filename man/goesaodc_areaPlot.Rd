@@ -53,7 +53,7 @@ files <- goesaodc_downloadAOD(satID = "G17",
   datetime = 2019102714, 
   timezone = "America/Los_Angeles")[1]
   
-#' Kincade fire
+# Kincade fire
 bbox <- c(-124, -120, 36, 39)
 
 # Build a list of open nc handles to process
@@ -66,6 +66,6 @@ for ( file in files ) {
   ncList[[label]] <- goesaodc_openFile(basename(file))
 }
 
-goesaodc_areaPlot(ncList, kincade_bbox)
+goesaodc_areaPlot(ncList, bbox)
 }
 }
