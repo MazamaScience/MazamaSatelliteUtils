@@ -19,6 +19,7 @@ setSpatialDataDir("~/Data/Spatial")
 loadSpatialData("USCensusStates")
 
 florida <- subset(USCensusStates, stateCode == "FL")
+goesaodc_downloadAOD(satID = "G16", datetime = "20191291201274", isJulian = TRUE, timezone = "UTC")
 nc <- goesaodc_openFile("OR_ABI-L2-AODC-M6_G16_s20191291201274_e20191291204047_c20191291210009.nc")
 
 pal_aod <- colorRampPalette(c("lightgoldenrod1", "red3"))
