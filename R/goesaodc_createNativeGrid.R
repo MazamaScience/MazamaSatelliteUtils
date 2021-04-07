@@ -286,7 +286,7 @@ if ( FALSE ) {
   
   # bbox
   ca <- subset(USCensusStates, stateCode == "CA")
-  bbox <- bbox(ca) %>% bboxToVector()
+  bbox <- sp::bbox(ca) %>% bboxToVector()
   
   verbose <- TRUE
   

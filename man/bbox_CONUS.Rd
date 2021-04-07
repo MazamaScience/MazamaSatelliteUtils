@@ -4,7 +4,9 @@
 \name{bbox_CONUS}
 \alias{bbox_CONUS}
 \title{Bounding box for the 48 contiguous United States}
-\format{A vector with 4 numerics.}
+\format{
+A vector with 4 numerics.
+}
 \usage{
 bbox_CONUS
 }

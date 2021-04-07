@@ -1,12 +1,18 @@
+# MazamaSatelliteUtils 0.4.0
+
+* Fixed error in `bboxToVector()`.
+* Updated documentation.
+* Minor internal refactoring.
+
 # MazamaSatelliteUtils 0.2.13
 
 * Updated documentation and vignettes.
 
 # MazamaSatelliteUtils 0.2.12
 
- * `goesaodc_createNativeGrid()` now properly reads and scales the raw data 
- which are stored as `unsigned short int` values.
- * New `goesaodc_areaPlot()` function creates nice plots of AOD.
+* `goesaodc_createNativeGrid()` now properly reads and scales the raw data 
+which are stored as `unsigned short int` values.
+* New `goesaodc_areaPlot()` function creates nice plots of AOD.
 
 # MazamaSatelliteUtils 0.2.11
 

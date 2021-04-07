@@ -4,7 +4,9 @@
 \name{SatelliteDataDir}
 \alias{SatelliteDataDir}
 \title{Directory for Satellite Data}
-\format{Absolute path string.}
+\format{
+Absolute path string.
+}
 \description{
 This package maintains an internal directory location which 
 users can set using \code{setSatelliteDataDir()}. All package functions use 

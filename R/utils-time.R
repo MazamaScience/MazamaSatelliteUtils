@@ -19,7 +19,7 @@
 #' 
 #' mx <- subset(SimpleCountries, countryCode == "MX")
 #' 
-#' mx_bbox <- bbox(mx)
+#' mx_bbox <- sp::bbox(mx)
 #' 
 #' isDaylight(
 #'   datetime = "2019-09-06 12",

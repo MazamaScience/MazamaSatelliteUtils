@@ -152,7 +152,7 @@ grid matches that of a particular model run -- allowing direct comparison.
 ```{r raster}
 # Using previously defined variables
 ca_nv <- subset(USCensusStates, stateCode %in% c("CA","NV"))
-ca_nv_bbox <- bbox(ca_nv)
+ca_nv_bbox <- sp::bbox(ca_nv)
 
 rstr <- goesaodc_createRaster(
   ncList[[1]],
