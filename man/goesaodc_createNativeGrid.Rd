@@ -9,27 +9,26 @@ goesaodc_createNativeGrid(nc = NULL, bbox = bbox_CONUS, verbose = FALSE)
 \arguments{
 \item{nc}{ncdf4 handle or a list of handles.}
 
-\item{bbox}{Geographic extent of area of interest; Defaults to CONUS.}
+\item{bbox}{Bounding box for the region of interest; Defaults to CONUS.}
 
 \item{verbose}{Logical flag to increase messages while processing data.}
 }
 \value{
-List with lon, lat, AOD and DQF arrays.
+List with lon, lat, AOD and DQF matrices
 }
 \description{
-Creates a \emph{nativeGrid} object with a list of list of 
-2-D arrays for: lon, lat, AOD, and DQF. The arrays are defined 
-in native i, j coordinates and are thus curvilinear as opposed to 
-rectilinear geospatial coordinates.s
+Creates a \emph{nativeGrid} object with a list of matrices for: 
+longitude, latitude, AOD values, and DQF values. The arrays are defined in
+native i, j coordinates and are thus curvilinear as opposed to rectilinear 
+geospatial coordinates.
 
-The \code{nc} parameter can be either a single netcdf handle or a list
-of handles. If a list of handles is provided, grid cell values for AOD and
-DQF will be averaged across all nc handles. This  "native grid" averaging 
+The \code{nc} parameter can be either a single netcdf handle or a list of 
+handles. If a list of handles is provided, grid cell values for AOD and DQF 
+will be averaged across all nc handles. This "native grid" averaging 
 provides a simple way to convert 5-minute data into an hourly average.
 }
 \examples{
 \donttest{
-# Process full extent of Gridfile
 library(MazamaSatelliteUtils)
 
 setSatelliteDataDir("~/Data/Satellite")
@@ -40,7 +39,11 @@ goesaodc_downloadAOD(
   timezone = "America/Los_Angeles"
 )
 
-files <- goesaodc_listFiles("G17", "2019-10-27 14:00", timezone = "America/Los_Angeles")
+files <- goesaodc_listFiles(
+  satID = "G17",
+  datetime = "2019-10-27 14:00",
+  timezone = "America/Los_Angeles"
+)
 
 ncList <- list()
 for ( file in files ) {
@@ -51,6 +54,7 @@ for ( file in files ) {
   ncList[[label]] <- goesaodc_openFile(basename(file))
 }
 
+# Kincade fire region
 kincade_bbox <- c(-124, -120, 36, 39)
 
 layout(matrix(seq(2)))

@@ -1,10 +1,12 @@
 #' @export
+#' 
 #' @importFrom graphics par
+#' 
 #' @title Create plots of AOD data available within a region
 #' 
 #' @param ncList ncdf4 handle or a list of handles.
 #' @param bbox Geographic extent of area of interest; Defaults to CONUS.
-#' @param dqfLevel Sets the DQF level to filter to data to.
+#' @param dqfLevel Data quality flag level.
 #' @param col_state Color of state borders. Use "transparent" for no lines.
 #' @param col_county Color of county borders. Use "transparent" for no lines.
 #' @param lwd_state Line weight of state borders.
@@ -20,19 +22,22 @@
 #' \dontrun{
 #' library(sp)
 #' library(MazamaSpatialUtils)
-#' setSpatialDataDir("~/Data/Spatial")
-#' loadSpatialData("USCensusStates")
-#' 
 #' library(MazamaSatelliteUtils)
+#' 
+#' setSpatialDataDir("~/Data/Spatial")
 #' setSatelliteDataDir("~/Data/Satellite")
 #' 
+#' loadSpatialData("USCensusStates")
+#' 
 #' # Date and region of interest
-#' files <- goesaodc_downloadAOD(satID = "G17", 
+#' files <- goesaodc_downloadAOD(
+#'   satID = "G17", 
 #'   datetime = 2019102714, 
-#'   timezone = "America/Los_Angeles")[1]
+#'   timezone = "America/Los_Angeles"
+#' )[1]
 #'   
-#' # Kincade fire
-#' bbox <- c(-124, -120, 36, 39)
+#' # Kincade fire region
+#' kincade_bbox <- c(-124, -120, 36, 39)
 #' 
 #' # Build a list of open nc handles to process
 #' ncList <- list()
@@ -44,11 +49,11 @@
 #'   ncList[[label]] <- goesaodc_openFile(basename(file))
 #' }
 #' 
-#' goesaodc_areaPlot(ncList, bbox)
+#' goesaodc_areaPlot(ncList, kincade_bbox)
 #' }
 
 goesaodc_areaPlot <- function(
-  ncList = NULL,  # a single or list of nc handles
+  ncList = NULL,
   bbox = bbox_CONUS,        
   dqfLevel = 2,
   col_state = "black",
@@ -63,7 +68,7 @@ goesaodc_areaPlot <- function(
   MazamaCoreUtils::stopIfNull(ncList)
   MazamaCoreUtils::stopIfNull(bbox)
   
-  # ----- Arguments to goesaodc_plotSpatialPoints() ----------------------------
+  # ----- Arguments for goesaodc_plotSpatialPoints() ---------------------------
   
   argsList <- list(
     var = "AOD",
@@ -94,11 +99,12 @@ goesaodc_areaPlot <- function(
   if ( !("cex" %in% names(argsList)) )
     argsList$cex <- 0.75
   
-  # ---- Process and display each .nc handle -----------------------------------
+  # ---- Process and plot each .nc handle --------------------------------------
   
   for (nc in ncList) {
     
     # ----- Prepare data -------------------------------------------------------
+    
     bbox <- bboxToVector(bbox)
     xlim <- c(bbox[1], bbox[2])
     ylim <- c(bbox[3], bbox[4])
@@ -120,17 +126,20 @@ goesaodc_areaPlot <- function(
     
     # ----- Create plot --------------------------------------------------------
     
-    maps::map('state', xlim = xlim, ylim = ylim)
+    maps::map("state", xlim = xlim, ylim = ylim)
     
-    usr <- par('usr')
+    usr <- par("usr")
     graphics::rect(usr[1], usr[3], usr[2], usr[4], col = "gray80")
     
     if ( noData ) {
       
-      x <- (usr[2] - usr[1])/2
-      graphics::text(x = usr[1] + (usr[2] - usr[1])/2,
-                     y = usr[3] + (usr[4] - usr[3])/2,
-                     sprintf("No Data Found for dqfLevel %d", dqfLevel))
+      x <- (usr[2] - usr[1]) / 2
+      
+      graphics::text(
+        x = usr[1] + (usr[2] - usr[1]) / 2,
+        y = usr[3] + (usr[4] - usr[3]) / 2,
+        sprintf("No Data Found for dqfLevel %d", dqfLevel)
+      )
       
     } else {
       

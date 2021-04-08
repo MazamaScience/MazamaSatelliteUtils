@@ -2,7 +2,7 @@
 % Please edit documentation in R/createGoesGrid.R
 \name{createGoesGrid}
 \alias{createGoesGrid}
-\title{Creates a GOES grid in satelliteDataDir}
+\title{Create a GOES grid in satelliteDataDir}
 \usage{
 createGoesGrid(nc = NULL, grid_filepath = NULL)
 }
@@ -14,9 +14,9 @@ goesWestGrid.rda}
 }
 \description{
 Creates data files with geolocation information for GOES-16 
-(East) or GOES-17 (West) satellite products.  Takes an open .nc filehandle
- and reads projection and coordinate grid information from it to create
-a GOES East or West grids in the directory previously set with 
+(East) or GOES-17 (West) satellite products. Takes an open .nc filehandle 
+and reads projection and coordinate grid information from it to create
+a GOES East or West grid in the directory previously set with 
 \code{setSatelliteDataDir()}.
 }
 \examples{
@@ -26,15 +26,16 @@ library(MazamaSatelliteUtils)
 setSatelliteDataDir("~/Data/Satellite")
 outputDir <- getSatelliteDataDir()
 
-nc_file <- goesaodc_listFiles(satID = "G16", 
+nc_file <- goesaodc_listFiles(
+  satID = "G16", 
   datetime = "201924918",
   timezone = "UTC",
-  isJulian = TRUE)[1]
+  isJulian = TRUE
+)[1]
    
 nc <- goesaodc_openFile(nc_file)
 G16_filepath <- file.path(outputDir, "goesEastGrid.rda")
 
 createGoesGrid(nc, G16_filepath)
-
 } 
 }

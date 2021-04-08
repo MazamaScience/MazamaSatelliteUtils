@@ -1,3 +1,7 @@
+# MazamaSatelliteUtils 0.4.1
+
+* Harmonized code and documentation style with other Mazama Science packages.
+
 # MazamaSatelliteUtils 0.4.0
 
 * Fixed error in `bboxToVector()`.

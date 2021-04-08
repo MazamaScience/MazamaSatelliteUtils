@@ -2,7 +2,7 @@
 % Please edit documentation in R/getDaylightHours.R
 \name{getDaylightHours}
 \alias{getDaylightHours}
-\title{Calculates the sunrise and sunset hours for a specific date and 
+\title{Calculate the sunrise and sunset hours for a specific date and 
 location}
 \usage{
 getDaylightHours(
@@ -34,7 +34,7 @@ for the specified date.
 }
 \description{
 Returns the sunrise and sunset hours for specified dates within 
-a bounding box based on sun ephemerides calculations. Sunrise is calcualted
+a bounding box based on sun ephemerides calculations. Sunrise is calculated
 using the midpoint of the east edge of the bounding box while sunset is
 calculated using the midpoint of the west edge.
 
@@ -46,7 +46,7 @@ via the \code{timezone} parameter}
 \item{}{Geographic Bounding Box, either as a vector of floats in 
 \code{c(lonLo, lonHi, latLo,latHi)} order, or the return value from 
 \code{sp::bbox()}, or \code{raster::extent()} }
-\item{}{Longitude and Latitude specified in decimal degrees}
+\item{}{Longitude and latitude specified in decimal degrees}
 }
 
 If more than one of the above are specified, the order of preference for 
@@ -74,13 +74,14 @@ getDaylightHours(
 # Get sunrise and sunset by bbox and datetime
 getDaylightHours(
   datetime = "2019-09-06",
-  bbox = c(-124.566, -116.463, 41.991, 46.292)
-) # Oregon
+  bbox = c(-124.566, -116.463, 41.991, 46.292) # Oregon
+) 
 
 # Get sunrise and sunset by datetime and timezone
 getDaylightHours(
   datetime = "2019-09-06",
-  timezone = "America/Los_Angeles")
+  timezone = "America/Los_Angeles"
+)
 
 # Get sunrise and sunset for a vector of datetimes
 getDaylightHours(

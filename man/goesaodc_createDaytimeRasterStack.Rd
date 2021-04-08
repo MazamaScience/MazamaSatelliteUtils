@@ -22,15 +22,15 @@ goesaodc_createDaytimeRasterStack(
 
 \item{var}{variable ("AOD, "DQF" or "ID")}
 
-\item{res}{resolution of raster in degrees}
+\item{res}{resolution of raster in longitude/latitude degrees}
 
 \item{bbox}{Bounding box for the region of interest.}
 
 \item{dqfLevel}{Data quality flag level.}
 
-\item{timezone}{timezone in which to interpret the \code{datetime}.}
+\item{timezone}{Timezone in which to interpret the \code{datetime}.}
 
-\item{verbose}{show progress of raster stacking.}
+\item{verbose}{Logical flag to show progress of raster stacking.}
 }
 \value{
 RasterStack
@@ -50,6 +50,10 @@ is the time stamp of the scan and has the format YYYYMMDDHHMMSS. This can be
 accessed using the \code{raster::getZ()} function. Names of the
 \code{RasterStack} are also time stamps of the scan, of the format XHH.MM.SS.
 
+The \code{bbox} parameter can be a vector of floats in c(lonLo, lonHi, latLo,
+latHi) order or the return value from \code{sp::bbox()} or 
+\code{raster::extent()}.
+
 The \code{dqfLevel} parameter can take a value of:
 
 \itemize{
@@ -58,46 +62,47 @@ The \code{dqfLevel} parameter can take a value of:
 \item{2}{ -- Low quality retrieval flag}
 \item{3}{ -- No retrieval quality flag}
 }
-
-The \code{bbox} parameter can be a vector of floats in c(lonLo, lonHi, latLo,
-latHi) order or the return value from \code{sp::bbox()} or 
-\code{raster::extent()}.
 }
 \examples{
 \dontrun{
-
-library(MazamaSatelliteUtils)
 library(MazamaSpatialUtils)
+library(MazamaSatelliteUtils)
 
-setSatelliteDataDir("~/Data/Satellite")
 setSpatialDataDir("~/Data/Spatial")
+setSatelliteDataDir("~/Data/Satellite")
 
-bbox      <- c(-124, -120, 36, 39) # Kincade fire region
-satID     <- "G16"
-datetime  <- "2019-10-27"
-timezone  <- "America/Los_Angeles"
-dqfLevel  <- 2
-
-latitude  <- 38.245   # \
-                      #  - Town of Tomales
-longitude <- -122.906 # /
+# Kincade fire region
+kincade_bbox <- c(-124, -120, 36, 39)
 
 dayStack <- goesaodc_createDaytimeRasterStack(
-  satID = satID,
-  datetime = datetime,
-  timezone = timezone,
-  bbox = bbox,
-  dqfLevel = dqfLevel,
+  satID = "G16",
+  datetime = "2019-10-27",
+  timezone = "America/Los_Angeles",
+  bbox = kincade_bbox,
+  dqfLevel = 2,
   verbose = TRUE
 )
 
-tb <- raster_createLocationTimeseries(dayStack,
-                                      longitude = longitude,
-                                      latitude = latitude,
-                                      bbox = bbox)
+# Town of Tomales
+latitude  <- 38.245
+longitude <- -122.906
 
-plot(x = tb$datetime, y = tb$aod,
-     pch = 15, cex = 0.8, col = rgb(red = 0, green = 0, blue = 0, alpha = 0.8),
-     main = "Tomales, CA - 2019-10-27", xlab = "Time (UTC)", ylab = "AOD")
+tb <- raster_createLocationTimeseries(
+  rasterStack = dayStack,
+  longitude = longitude,
+  latitude = latitude,
+  bbox = kincade_bbox
+)
+
+plot(
+  x = tb$datetime,
+  y = tb$aod,
+  pch = 15,
+  cex = 0.8,
+  col = rgb(red = 0, green = 0, blue = 0, alpha = 0.8),
+  main = "Tomales, CA - 2019-10-27",
+  xlab = "Time (UTC)",
+  ylab = "AOD"
+)
 }
 }

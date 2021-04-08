@@ -23,25 +23,26 @@ goesaodc_createRasterStack(
 
 \item{datetime}{Desired datetime in any Ymd H [MS] format or \code{POSIXct}.}
 
-\item{endTime}{Desired ending time in any Ymd H [MS] format or \code{POSIXct}}
+\item{endTime}{Desired ending time in any Ymd H [MS] format or 
+\code{POSIXct}.}
 
-\item{var}{GOES data variable ("AOD, "DQF" or "ID"). Default: "AOD"}
+\item{var}{GOES data variable ("AOD, "DQF" or "ID"); Defaults to "AOD".}
 
-\item{res}{resolution of raster in degrees. Default: 0.1}
+\item{res}{Resolution of raster in degrees; Defaults to 0.1.}
 
-\item{bbox}{Bounding box for raster, Default: c(-125, -65, 24, 50) CONUS}
+\item{bbox}{Bounding box for raster; Defaults to CONUS.}
 
 \item{dqfLevel}{Data quality flag level.}
 
-\item{timezone}{timezone for \code{datetime} and optionally \code{endTime}.}
+\item{timezone}{Timezone for \code{datetime} and optionally \code{endTime}.}
 
 \item{isJulian}{Logical specifying if \code{datetime} (and optionally
-\code{endTime}) are Julian formatted}
+\code{endTime}) are Julian formatted.}
 
-\item{fileList}{optional list of files to stack. Useful when working with 
+\item{fileList}{Optional list of files to stack. Useful when working with 
 custom time ranges.}
 
-\item{verbose}{Logical specifies whether to print stacking information.}
+\item{verbose}{Logical flag to print stacking information.}
 }
 \value{
 RasterStack
@@ -52,14 +53,18 @@ date and hour specified by \code{datetime}. Each \code{RasterLayer} contains
 data from one Advanced Baseline Imager (ABI) scan during the specified time
 period.
 
-If data for the specified time period is not found in the directory specified
-by \code{setSatelliteDataDir()}, it will be downloaded in order to create the
+If data for the given time period is not found in the directory specified by 
+\code{setSatelliteDataDir()}, it will be downloaded in order to create the
 \code{RasterStack}.
 
 The Z axis of the \code{RasterStack} is a character vector where each element
 is the time stamp of the scan and has the format YYYYMMDDHHMMSS. This can be
 accessed using the \code{raster::getZ()} function. Names of the
-\code{RasterStack} are also time stamps of the scan, of the format XHH.MM.SS.
+\code{RasterStack} are also time stamps of the scan in the format: XHH.MM.SS.
+
+The \code{bbox} parameter can be a vector of floats in c(lonLo, lonHi, latLo,
+latHi) order or the return value from \code{sp::bbox()} or
+\code{raster::extent()}.
 
 The \code{dqfLevel} parameter can take a value of:
 
@@ -69,33 +74,28 @@ The \code{dqfLevel} parameter can take a value of:
 \item{2}{ -- Low quality retrieval flag}
 \item{3}{ -- No retrieval quality flag}
 }
-
-The \code{bbox} parameter can be a vector of floats in c(lonLo, lonHi, latLo,
-latHi) order or the return value from \code{sp::bbox()} or
-\code{raster::extent()}.
 }
 \examples{
 \dontrun{
 library(MazamaSatelliteUtils)
+
 setSatelliteDataDir("~/Data/Satellite")
 
-satID <- "G17"
-datetime <- "2019-10-27 10"
-endTime <- "2019-10-27 11"
-bbox <- c(-124, -120, 36, 39) # Kincade fire region
-dqfLevel <- 3
-timezone <- "America/Los_Angeles"
+# Kincade fire region
+kincade_bbox <- c(-124, -120, 36, 39)
 
 rasterStack <- goesaodc_createRasterStack(
-satID = satID,
-datetime = datetime,
-endTime = endTime,
-bbox = bbox,
-dqfLevel = dqfLevel,
-timezone = timezone,
-res = 0.075,
-verbose = TRUE)
+  satID = "G17",
+  datetime = "2019-10-27 10",
+  endTime = "2019-10-27 11",
+  res = 0.075,
+  bbox = kincade_bbox,
+  dqfLevel = 3,
+  timezone = "America/Los_Angeles",
+  verbose = TRUE
+)
 
-rasterVis::levelplot(rasterStack, par.settings=BuRdTheme())
- }
+rasterVis::levelplot(rasterStack)
+}
+
 }

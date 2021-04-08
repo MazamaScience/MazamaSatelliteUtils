@@ -20,7 +20,7 @@ goesaodc_areaPlot(
 
 \item{bbox}{Geographic extent of area of interest; Defaults to CONUS.}
 
-\item{dqfLevel}{Sets the DQF level to filter to data to.}
+\item{dqfLevel}{Data quality flag level.}
 
 \item{col_state}{Color of state borders. Use "transparent" for no lines.}
 
@@ -42,19 +42,22 @@ significantly reduces the number missing data grid cells.
 \dontrun{
 library(sp)
 library(MazamaSpatialUtils)
-setSpatialDataDir("~/Data/Spatial")
-loadSpatialData("USCensusStates")
-
 library(MazamaSatelliteUtils)
+
+setSpatialDataDir("~/Data/Spatial")
 setSatelliteDataDir("~/Data/Satellite")
 
+loadSpatialData("USCensusStates")
+
 # Date and region of interest
-files <- goesaodc_downloadAOD(satID = "G17", 
+files <- goesaodc_downloadAOD(
+  satID = "G17", 
   datetime = 2019102714, 
-  timezone = "America/Los_Angeles")[1]
+  timezone = "America/Los_Angeles"
+)[1]
   
-# Kincade fire
-bbox <- c(-124, -120, 36, 39)
+# Kincade fire region
+kincade_bbox <- c(-124, -120, 36, 39)
 
 # Build a list of open nc handles to process
 ncList <- list()
@@ -66,6 +69,6 @@ for ( file in files ) {
   ncList[[label]] <- goesaodc_openFile(basename(file))
 }
 
-goesaodc_areaPlot(ncList, bbox)
+goesaodc_areaPlot(ncList, kincade_bbox)
 }
 }

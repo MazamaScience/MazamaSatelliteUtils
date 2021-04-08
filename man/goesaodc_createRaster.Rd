@@ -15,11 +15,11 @@ goesaodc_createRaster(
 \arguments{
 \item{nc}{ncdf4 handle}
 
-\item{res}{resolution of raster in degrees}
+\item{res}{resolution of raster in degrees; Defaults to 0.1.}
 
-\item{fun}{function to use when rasterizing}
+\item{fun}{function to use when rasterizing; Defaults to mean.}
 
-\item{bbox}{Bounding box for the region of interest.}
+\item{bbox}{Bounding box for the region of interest; Defaults to CONUS.}
 
 \item{dqfLevel}{Data quality flag level.}
 }
@@ -29,7 +29,11 @@ RasterBrick
 \description{
 Create a RasterBrick of GOES AOD data including data points
 with the specified resolution and function, and within the specified bounding
-box and data quality flag level. 
+box and data quality flag level.
+
+The \code{bbox} parameter can be a vector of floats in c(lonLo, lonHi, latLo,
+latHi) order or the return value from \code{sp::bbox()} or 
+\code{raster::extent()}.
 
 The \code{dqfLevel} parameter can take a value of:
 
@@ -39,10 +43,6 @@ The \code{dqfLevel} parameter can take a value of:
 \item{2}{ -- Low quality retrieval flag}
 \item{3}{ -- No retrieval quality flag}
 }
-
-The \code{bbox} parameter can be a vector of floats in c(lonLo, lonHi, latLo,
-latHi) order or the return value from \code{sp::bbox()} or 
-\code{raster::extent()}.
 }
 \examples{
 \donttest{
@@ -50,28 +50,29 @@ library(MazamaSatelliteUtils)
 
 setSatelliteDataDir("~/Data/Satellite")
 
-goesaodc_downloadAOD(
+files <- goesaodc_downloadAOD(
   satID = "G17", 
-  datetime = "2019-10-27 16", 
-  timezone = "UTC",
+  datetime = 2019102714, 
+  timezone = "America/Los_Angeles",
   verbose = TRUE 
-  )
+)
 
-netCDF <- "OR_ABI-L2-AODC-M6_G17_s20193001616196_e20193001618569_c20193001621030.nc"
+netCDF <- files[1]
 nc <- goesaodc_openFile(netCDF)
 
-bbox <- c(-129, -110, 29, 50)
+# Kincade fire region
+kincade_bbox <- c(-124, -120, 36, 39)
 
-rstr <- goesaodc_createRaster(
+raster <- goesaodc_createRaster(
   nc, 
-  res = 0.05, 
-  dqfLevel = 3, 
-  bbox = bbox
-  )
+  res = 0.03,
+  bbox = kincade_bbox,
+  dqfLevel = 3
+)
   
 west <- c("washington", "oregon", "california", "nevada", "idaho")
 maps::map(database = "state", regions = west)   
-raster::plot(rstr, "AOD", col=rev(heat.colors(5)), add = TRUE)
+raster::plot(raster, "AOD", col=rev(heat.colors(5)), add = TRUE)
 maps::map(database = "state", regions = west, add = TRUE)
 }
 }
