@@ -10,7 +10,7 @@
 #' @param n Sample size.
 #' @param colBins Number of color bins.
 #' @param breaks Vector of color breaks.
-#' @param pch Plot character.
+#' @param pch Index of plot character (0-25).
 #' @param cex Plot symbol scale factor.
 #' @param paletteName RColorBrewer palette name.
 #' @param add Logical specifying whether to create a new plot or add to an 
@@ -55,6 +55,40 @@ goesaodc_plotSpatialPoints <- function(
   add = FALSE
   # TODO: color reverse?
 ) {
+  
+  # ----- Validate parameters --------------------------------------------------
+  
+  MazamaCoreUtils::stopIfNull(spatialPoints)
+  
+  if ( !(var %in% c("AOD", "DQF", "ID")) ) {
+    stop("Parameter 'var' must be either 'AOD', 'DQF', or 'ID'")
+  }
+  
+  if ( !is.numeric(n) || n < 0 ) {
+    stop("Parameter 'n' must be a number > 0")
+  }
+  
+  if ( !is.numeric(colBins) || colBins <= 0 ) {
+    stop("Parameter 'colBins' must be a number > 0")
+  }
+  
+  # TODO: Validate 'breaks' param
+  
+  if ( !is.character(paletteName) ) {
+    stop("Parameter 'paletteName' must be an RColorBrewer palette name")
+  }
+  
+  if ( !is.numeric(pch) ) {
+    stop("Parameter 'pch' must be an integer from 0 to 25")
+  }
+  
+  if ( !is.numeric(cex) ) {
+    stop("Parameter 'cex' must be number > 0")
+  }
+  
+  if ( !is.logical(add) ) {
+    stop("Parameter 'add' must be either TRUE or FALSE")
+  }
   
   # ----- Subsample points -----------------------------------------------------
   

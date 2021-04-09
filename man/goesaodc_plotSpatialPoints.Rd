@@ -29,7 +29,7 @@ goesaodc_plotSpatialPoints(
 
 \item{paletteName}{RColorBrewer palette name.}
 
-\item{pch}{Plot character.}
+\item{pch}{Index of plot character (0-25).}
 
 \item{cex}{Plot symbol scale factor.}
 
