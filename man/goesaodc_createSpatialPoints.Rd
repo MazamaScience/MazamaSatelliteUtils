@@ -4,11 +4,7 @@
 \alias{goesaodc_createSpatialPoints}
 \title{Create a SpatialPointsDataFrame of GOES data}
 \usage{
-goesaodc_createSpatialPoints(
-  nc = NULL,
-  bbox = c(-125, -65, 24, 50),
-  dqfLevel = NULL
-)
+goesaodc_createSpatialPoints(nc = NULL, bbox = bbox_CONUS, dqfLevel = NULL)
 }
 \arguments{
 \item{nc}{ncdf4 handle.}

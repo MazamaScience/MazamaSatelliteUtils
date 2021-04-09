@@ -55,7 +55,7 @@
 
 goesaodc_createSpatialPoints <- function(
   nc = NULL,
-  bbox = c(-125, -65, 24, 50),
+  bbox = bbox_CONUS,
   dqfLevel = NULL
 ) {
   

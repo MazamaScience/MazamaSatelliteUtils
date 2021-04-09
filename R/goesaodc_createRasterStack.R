@@ -77,7 +77,7 @@ goesaodc_createRasterStack <- function(
   endtime = NULL,
   var = "AOD",
   res = 0.1,
-  bbox = c(-125, -65, 24, 50),
+  bbox = bbox_CONUS,
   dqfLevel = NULL,
   timezone = "UTC",
   isJulian = FALSE,
