@@ -1,6 +1,7 @@
 context("test-goesaodc_listDaytimeFiles")
 
-# ---- TEST PARAMETERS ---------------------------------------------------------
+# ----- TEST PARAMETERS --------------------------------------------------------
+
 satID <- "G16"
 datetime <- "2019-09-06"
 timezone <- "America/Los_Angeles"
@@ -12,12 +13,13 @@ test_that("remote files are listed correctly for daytime", {
   skip_on_travis()
   
   expect_equal(
-    length( 
+    length(
       goesaodc_listDaytimeFiles(
         satID = satID, 
         datetime = datetime, 
         timezone = timezone, 
-        useRemote = TRUE)
+        useRemote = TRUE
+      )
     ),
     168
   )
@@ -57,12 +59,14 @@ test_that("local files are listed correctly for daytime", {
   )
   
   expect_equal(
-    length( 
+    length(
       goesaodc_listDaytimeFiles(
         satID = "G16", 
         datetime = "2019-09-06 16",
         timezone = "America/Los_Angeles", 
-        useRemote = FALSE)),
+        useRemote = FALSE
+      )
+    ),
     168
   )
   

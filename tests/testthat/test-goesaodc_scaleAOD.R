@@ -2,7 +2,7 @@ context("test-goesaodc_scaleAOD")
 
 # ---- Test that scaled AOD values are correct ---------------------------------
 
-test_that("Check that AOD scaling and NA setting are correct", {
+test_that("AOD scaling and NA setting are correct", {
   
   # Same attributes found in GOES AOD netcdf files
   aod_attributes <- list(

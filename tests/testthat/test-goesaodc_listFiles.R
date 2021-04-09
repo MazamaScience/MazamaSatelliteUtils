@@ -1,6 +1,7 @@
 context("test-goesaodc_listFiles")
 
 # ---- TEST PARAMETERS ---------------------------------------------------------
+
 satID <- "G16"
 datetime <- "2019-09-06 16"
 endtime <- "2019-09-06 17"
@@ -19,7 +20,8 @@ test_that("remote files are listed correctly", {
         satID = satID, 
         datetime = datetime, 
         timezone = timezone, 
-        useRemote = TRUE)
+        useRemote = TRUE
+      )
     ),
     12
   )
@@ -38,7 +40,8 @@ test_that("remote files are listed correctly with Julian date", {
         datetime = jdate, 
         timezone = timezone,
         isJulian = TRUE,
-        useRemote = TRUE)
+        useRemote = TRUE
+      )
     ),
     12
   )
@@ -49,10 +52,12 @@ test_that("remote files are listed correctly with Julian date", {
 # dir with the right strings in the filename as part of the setup and then
 # delete them in teardown.
 
-goesaodc_downloadAOD(satID = satID, 
-                     datetime = datetime, 
-                     endtime = endtime,
-                     timezone = timezone)
+goesaodc_downloadAOD(
+  satID = satID, 
+  datetime = datetime, 
+  endtime = endtime,
+  timezone = timezone
+)
 
 # ---------------------------------------------------------------------------- #
 test_that("local files are listed correctly", {
@@ -66,7 +71,8 @@ test_that("local files are listed correctly", {
         satID = satID, 
         datetime = datetime,
         endtime = endtime,
-        timezone = timezone)
+        timezone = timezone
+      )
     ),
     24
   )
@@ -85,7 +91,8 @@ test_that("local files are listed correctly using Julian format dates", {
         datetime = jdate,
         endtime = jdate_end,
         timezone = timezone,
-        isJulian = TRUE)
+        isJulian = TRUE
+      )
     ),
     24
   )

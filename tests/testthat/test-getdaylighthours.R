@@ -1,105 +1,153 @@
 context("test-getdaylighthours")
 
-test_that("Correct daylight sunrise and sunset hours are calculated", {
+test_that("correct daylight sunrise and sunset hours are calculated", {
   
   library(MazamaSpatialUtils)
   
-  # ---- TEST_SETUP ------------------------------------------------------------
-  sunrise_ll <- MazamaCoreUtils::parseDatetime("2019-09-06 06:42:52", 
-                                               timezone = "America/Los_Angeles")
-  sunset_ll <- MazamaCoreUtils::parseDatetime("2019-09-06 19:39:02", 
-                                              timezone = "America/Los_Angeles")
+  # ----- TEST_SETUP -----------------------------------------------------------
+  
+  sunrise_ll <- MazamaCoreUtils::parseDatetime(
+    "2019-09-06 06:42:52", 
+    timezone = "America/Los_Angeles"
+  )
+  sunset_ll <- MazamaCoreUtils::parseDatetime(
+    "2019-09-06 19:39:02", 
+    timezone = "America/Los_Angeles"
+  )
   ll_dayInfo <- list("sunrise" = sunrise_ll, "sunset" = sunset_ll)
   
-  posix_t <- MazamaCoreUtils::parseDatetime("2019-09-06 16", 
-                                            "America/Los_Angeles")
+  posix_t <- MazamaCoreUtils::parseDatetime(
+    "2019-09-06 16", 
+    "America/Los_Angeles"
+  )
   
-  # ---- GET DAYLIGHT HOURS WITH LAT/LON ---------------------------------------
-  ll_test_data <- getDaylightHours(datetime = "2019-09-06", 
-                                   longitude = -123.245, 
-                                   latitude = 42.861)
+  # ----- GET DAYLIGHT HOURS WITH LAT/LON --------------------------------------
+  ll_test_data <- getDaylightHours(
+    datetime = "2019-09-06", 
+    longitude = -123.245, 
+    latitude = 42.861
+  )
   
-  # ---- GET DAYLIGHT HOURS WITH BBOX ------------------------------------------
-  bb_test_data <- getDaylightHours(datetime = "2019-09-06", 
-                                   bbox = c(-124.566, -116.463, 
-                                            41.991, 46.292))
+  # ----- GET DAYLIGHT HOURS WITH BBOX -----------------------------------------
+  bb_test_data <- getDaylightHours(
+    datetime = "2019-09-06", 
+    bbox = c(-124.566, -116.463, 41.991, 46.292)
+  )
   
-  # ---- GET DAYLIGHT HOURS WITH DATETIME AND TIMEZONE -------------------------
-  tz_test_data <- getDaylightHours(datetime = "2019-09-06", 
-                                   timezone = "America/Los_Angeles")
+  # ----- GET DAYLIGHT HOURS WITH DATETIME AND TIMEZONE ------------------------
+  tz_test_data <- getDaylightHours(
+    datetime = "2019-09-06", 
+    timezone = "America/Los_Angeles"
+  )
   
-  # ---- GET DAYLIGHT HOURS WITH JULIAN FORMAT DATETIME AND TIMEZONE -----------
-  julian_test_data <- getDaylightHours(datetime = "2019249",
-                                       timezone = "America/Los_Angeles",
-                                       isJulian = TRUE)
+  # ----- GET DAYLIGHT HOURS WITH JULIAN FORMAT DATETIME AND TIMEZONE ----------
   
-  # --- GET DAYLIGHT HOURS WITH POSIXt ALONE -----------------------------------
+  julian_test_data <- getDaylightHours(
+    datetime = "2019249",
+    timezone = "America/Los_Angeles",
+    isJulian = TRUE
+  )
+  
+  # ----- GET DAYLIGHT HOURS WITH POSIXt ALONE ---------------------------------
+  
   posix_test_data <- getDaylightHours(posix_t)
   
-  # ---- LAT/LON TIME DIFFS ----------------------------------------------------
-  ll_sunrise_diff <- as.numeric(difftime(ll_dayInfo$sunrise,
-                                         ll_test_data$sunrise,
-                                         units = "mins"))
+  # ----- LAT/LON TIME DIFFS ---------------------------------------------------
+  
+  ll_sunrise_diff <- as.numeric(difftime(
+    ll_dayInfo$sunrise,
+    ll_test_data$sunrise,
+    units = "mins")
+  )
+  
+  ll_sunset_diff <- as.numeric(difftime(
+    ll_dayInfo$sunset, 
+    ll_test_data$sunset, 
+    units = "mins")
+  )
+  
+  # ----- BBOX TIME DIFFS ------------------------------------------------------
+  
+  bb_sunrise_diff <- as.numeric(difftime(
+    ll_dayInfo$sunrise,
+    ll_test_data$sunrise,
+    units = "mins")
+  )
+  
+  bb_sunset_diff <- as.numeric(difftime(
+    ll_dayInfo$sunset,
+    ll_test_data$sunset,
+    units = "mins"
+  ))
+  
+  # ----- TZ TIME DIFFS --------------------------------------------------------
+  
+  tz_sunrise_diff <- as.numeric(difftime(
+    ll_dayInfo$sunrise,
+    tz_test_data$sunrise,
+    units = "mins"
+  ))
+  
+  tz_sunset_diff <- as.numeric(difftime(
+    ll_dayInfo$sunset,
+    tz_test_data$sunset,
+    units = "mins"
+  ))
+  
+  # ----- JULIAN TIME DIFFS ----------------------------------------------------
   
   
-  ll_sunset_diff <- as.numeric(difftime(ll_dayInfo$sunset, 
-                                        ll_test_data$sunset, 
-                                        units = "mins"))
+  julian_sunrise_diff <- as.numeric(difftime(
+    ll_dayInfo$sunrise,
+    julian_test_data$sunrise,
+    units = "mins"
+  ))
   
-  # ---- BBOX TIME DIFFS -------------------------------------------------------
-  bb_sunrise_diff <- as.numeric(difftime(ll_dayInfo$sunrise,
-                                         ll_test_data$sunrise,
-                                         units = "mins"))
+  julian_sunset_diff <- as.numeric(difftime(
+    ll_dayInfo$sunset,
+    julian_test_data$sunset,
+    units = "mins"
+  ))
   
-  bb_sunset_diff <- as.numeric(difftime(ll_dayInfo$sunset,
-                                        ll_test_data$sunset,
-                                        units = "mins"))
+  # ----- POSIX TIME DIFF (SHOULD BE EQUAL TO TZ TIME --------------------------
   
-  # ---- TZ TIME DIFFS ---------------------------------------------------------
-  tz_sunrise_diff <- as.numeric(difftime(ll_dayInfo$sunrise,
-                                         tz_test_data$sunrise,
-                                         units = "mins"))
+  posix_sunrise_diff <- as.numeric(difftime(
+    tz_test_data$sunrise,
+    posix_test_data$sunrise,
+    units = "secs"
+  ))
   
-  tz_sunset_diff <- as.numeric(difftime(ll_dayInfo$sunset,
-                                        tz_test_data$sunset,
-                                        units = "mins"))
+  posix_sunset_diff <- as.numeric(difftime(
+    tz_test_data$sunset,
+    posix_test_data$sunset,
+    units = "secs"
+  ))
   
-  # ---- JULIAN TIME DIFFS -----------------------------------------------------
-  julian_sunrise_diff <- as.numeric(difftime(ll_dayInfo$sunrise,
-                                         julian_test_data$sunrise,
-                                         units = "mins"))
+  # ----- LAT/LON ASSERTIONS ---------------------------------------------------
   
-  julian_sunset_diff <- as.numeric(difftime(ll_dayInfo$sunset,
-                                        julian_test_data$sunset,
-                                        units = "mins"))
-  
-  # ---- POSIX TIME DIFF (SHOULD BE EQUAL TO TZ TIME ---------------------------                                         
-  posix_sunrise_diff <- as.numeric(difftime(tz_test_data$sunrise,
-                                            posix_test_data$sunrise,
-                                            units = "secs"))
-  
-  posix_sunset_diff <- as.numeric(difftime(tz_test_data$sunset,
-                                           posix_test_data$sunset,
-                                           units = "secs"))
-  # ---- LAT/LON ASSERTIONS ----------------------------------------------------
   expect_lt(ll_sunrise_diff, 60)
   expect_lt(ll_sunset_diff, 60)
   
-  # ---- BBOX ASSERTIONS -------------------------------------------------------
+  # ----- BBOX ASSERTIONS ------------------------------------------------------
+  
   expect_lt(bb_sunrise_diff, 60)
   expect_lt(bb_sunset_diff, 60)
   
-  # ---- TIMEZONE ASSERTIONS ---------------------------------------------------
+  # ----- TIMEZONE ASSERTIONS --------------------------------------------------
+  
   expect_lt(tz_sunrise_diff, 60)
   expect_lt(tz_sunset_diff, 60)
   
-  # ---- JULIAN DATE ASSERTIONS ------------------------------------------------
+  # ----- JULIAN DATE ASSERTIONS -----------------------------------------------
+  
   expect_lt(julian_sunrise_diff, 60)
   expect_lt(julian_sunset_diff, 60)
   
-  # ---- POSIXt ASSERTIONS -----------------------------------------------------
+  # ----- POSIXt ASSERTIONS ----------------------------------------------------
+  
   expect_equal(posix_sunrise_diff, 0)
-  expect_equal(posix_sunset_diff, 0)  
+  expect_equal(posix_sunset_diff, 0)
+  
 })
 
 test_that("function fails when passed incorrect parameters", {

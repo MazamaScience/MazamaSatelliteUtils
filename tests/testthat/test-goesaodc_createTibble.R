@@ -6,7 +6,8 @@ goesaodc_downloadAOD(
   satID = "G16", 
   datetime = "201924918", 
   timezone = "UTC", 
-  isJulian = TRUE)
+  isJulian = TRUE
+)
 
 ncFile <- "OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc"
 
@@ -15,7 +16,7 @@ kincade_bbox <- c(-124, -120, 36, 39)
 
 # ---- Original, full extent use case ------------------------------------------
 
-test_that("Create tibble from full extents", {
+test_that("create tibble from full extents", {
   
   expect_error( 
     goesaodc_createTibble(nc),
@@ -26,7 +27,7 @@ test_that("Create tibble from full extents", {
 
 # ---- BBOX filtered use case --------------------------------------------------
 
-test_that("Create tibble from filtered bbox extents", {
+test_that("create tibble from filtered bbox extents", {
   
   expect_error(
     goesaodc_createTibble(nc, bbox = kincade_bbox),
