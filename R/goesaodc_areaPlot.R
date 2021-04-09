@@ -72,6 +72,7 @@ goesaodc_areaPlot <- function(
   
   argsList <- list(
     var = "AOD",
+    ... = ...,
     add = TRUE
   )
   
@@ -148,10 +149,22 @@ goesaodc_areaPlot <- function(
 
     }
     
-    maps::map('county', xlim = xlim, ylim = ylim,
-              col = col_county, lwd = lwd_county, add = TRUE)
-    maps::map('state', xlim = xlim, ylim = ylim,
-              col = col_state, lwd = lwd_state, add = TRUE)
+    maps::map(
+      'county',
+      xlim = xlim,
+      ylim = ylim,
+      col = col_county,
+      lwd = lwd_county,
+      add = TRUE
+    )
+    maps::map(
+      'state',
+      xlim = xlim,
+      ylim = ylim,
+      col = col_state,
+      lwd = lwd_state,
+      add = TRUE
+    )
     
     # TODO:  Add title and other annotations
     
