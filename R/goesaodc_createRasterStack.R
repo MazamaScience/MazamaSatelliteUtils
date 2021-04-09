@@ -145,6 +145,7 @@ goesaodc_createRasterStack <- function(
   rasterStack <- raster::stack()
   nameList <- c()
   zList <- c()
+  i <- 1
   
   for (nc_file in fileList) {
     
@@ -179,9 +180,11 @@ goesaodc_createRasterStack <- function(
       rasterStack <- raster::stack(rasterStack, aod_raster)
       
       if ( verbose == TRUE ) {
-        print(paste0("Stacked: ", nc_file))
+        print(paste0("Stacked (", i, "/", length(fileList), "): ", nc_file))
       }
     }
+    
+    i <- i + 1
   }
   
   rasterStack <- raster::setZ(rasterStack, zList)
