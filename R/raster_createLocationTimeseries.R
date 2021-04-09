@@ -97,6 +97,16 @@ raster_createLocationTimeseries <- function(
   fun = mean
 ) {
   
+  # ----- Validate parameters --------------------------------------------------
+  
+  MazamaCoreUtils::stopIfNull(rasterStack)
+  MazamaCoreUtils::stopIfNull(longitude)
+  MazamaCoreUtils::stopIfNull(latitude)
+  MazamaCoreUtils::stopIfNull(bbox)
+  MazamaCoreUtils::stopIfNull(buffer)
+  
+  # ----- Create AOD tibble ----------------------------------------------------
+  
   # Format location coordinates
   location <- data.frame(lon = longitude, lat = latitude)
   
@@ -106,8 +116,6 @@ raster_createLocationTimeseries <- function(
     timeStrings, 
     timezone = "UTC"
   )
-  
-  # ----- Create AOD tibble ----------------------------------------------------
   
   # Store the aggregated AOD value of the location in each layer of the stack
   aod <- c()
