@@ -34,22 +34,25 @@
 #'   satID = "G17", 
 #'   datetime = 2019102714, 
 #'   timezone = "America/Los_Angeles"
-#' )[1]
+#' )
 #'   
 #' # Kincade fire region
 #' kincade_bbox <- c(-124, -120, 36, 39)
 #' 
-#' # Build a list of open nc handles to process
-#' nc <- list()
+#' # Plot a single NetCDF file
+#' netcdf <- goesaodc_openFile(basename(files[1]))
+#' goesaodc_areaPlot(netcdf, kincade_bbox)
+#' 
+#' # Plot multiple NetCDF files
+#' netcdfs <- list()
 #' for ( file in files ) {
 #'   label <- 
 #'     file %>%
 #'     goesaodc_convertFilenameToDatetime() %>%
 #'     MazamaCoreUtils::timeStamp(unit = "sec", timezone = "UTC")
-#'   nc[[label]] <- goesaodc_openFile(basename(file))
+#'   netcdfs[[label]] <- goesaodc_openFile(basename(file))
 #' }
-#' 
-#' goesaodc_areaPlot(nc, kincade_bbox)
+#' goesaodc_areaPlot(netcdfs, kincade_bbox)
 #' }
 
 goesaodc_areaPlot <- function(
@@ -67,6 +70,15 @@ goesaodc_areaPlot <- function(
   
   MazamaCoreUtils::stopIfNull(nc)
   MazamaCoreUtils::stopIfNull(bbox)
+  
+  # Force a single ncdf4 handle into a list
+  if ( "list" %in% class(nc) ) {
+    ncList <- nc
+  } else if ( "ncdf4" %in% class(nc) ) {
+    ncList <- list(nc)
+  } else {
+    stop("Parameter 'nc' must be of type 'list' or 'ncdf4'")
+  }
   
   # ----- Arguments for goesaodc_plotSpatialPoints() ---------------------------
   
@@ -102,7 +114,7 @@ goesaodc_areaPlot <- function(
   
   # ---- Process and plot each .nc handle --------------------------------------
   
-  for (netCDF in nc) {
+  for (netCdf in ncList) {
     
     # ----- Prepare data -------------------------------------------------------
     
@@ -112,7 +124,7 @@ goesaodc_areaPlot <- function(
     
     # Load data from within bbox and create SpatialPoints
     result <- try({
-      SP <- goesaodc_createSpatialPoints(netCDF, bbox, dqfLevel)
+      SP <- goesaodc_createSpatialPoints(netCdf, bbox, dqfLevel)
     }, silent = TRUE)
     
     noData <- FALSE

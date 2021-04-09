@@ -54,21 +54,24 @@ files <- goesaodc_downloadAOD(
   satID = "G17", 
   datetime = 2019102714, 
   timezone = "America/Los_Angeles"
-)[1]
+)
   
 # Kincade fire region
 kincade_bbox <- c(-124, -120, 36, 39)
 
-# Build a list of open nc handles to process
-nc <- list()
+# Plot a single NetCDF file
+netcdf <- goesaodc_openFile(basename(files[1]))
+goesaodc_areaPlot(netcdf, kincade_bbox)
+
+# Plot multiple NetCDF files
+netcdfs <- list()
 for ( file in files ) {
   label <- 
     file \%>\%
     goesaodc_convertFilenameToDatetime() \%>\%
     MazamaCoreUtils::timeStamp(unit = "sec", timezone = "UTC")
-  nc[[label]] <- goesaodc_openFile(basename(file))
+  netcdfs[[label]] <- goesaodc_openFile(basename(file))
 }
-
-goesaodc_areaPlot(nc, kincade_bbox)
+goesaodc_areaPlot(netcdfs, kincade_bbox)
 }
 }
