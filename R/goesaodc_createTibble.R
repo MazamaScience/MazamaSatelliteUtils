@@ -1,14 +1,17 @@
 #' @export
+#' 
 #' @importFrom rlang .data
 #' 
-#' @title Create a tibble from ncdf4 handle
+#' @title Create a tibble from a ncdf4 handle
+#' 
+#' @description Creates a tibble from a netCDF file with columns: AOD, DQF, lon 
+#' and lat. This information is sufficient to plot as points or create a raster 
+#' object.
 #' 
 #' @param nc ncdf4 handle or a list of handles.
-#' @param bbox Geographic extent of area of interest; Defaults to CONUS.
-#' @param verbose Logical flag to increase messages while processing data.
-#' 
-#' @description Create a tibble with columns: AOD, DQF, lon and lat.
-#' This information is sufficient to plot as points or create a raster object.
+#' @param bbox Bounding box for the region of interest; Defaults to CONUS.
+#' @param verbose Logical flag to print data processing messages; Defaults to 
+#' FALSE.
 #' 
 #' @return Tibble (dataframe) with NetCDF variables and associated locations.
 #
@@ -19,34 +22,24 @@
 #'
 #' setSatelliteDataDir("~/Data/Satellite")
 #' 
-#' ncFile <- goesaodc_downloadAOD(
+#' netCDF <- goesaodc_downloadAOD(
 #'   satID = "G17", 
 #'   datetime = "2019-10-27 10", 
 #'   timezone = "America/Los_Angeles" 
-#'   )[1]
+#' )[1]
 #'
-#' nc <- goesaodc_openFile(ncFile)
+#' nc <- goesaodc_openFile(netCDF)
 #'
 #' tbl <- goesaodc_createTibble(nc)
 #' head(tbl)
 #' 
-#' # Tibble based on BBOX filtered extent of tibble
-#' library(MazamaSatelliteUtils)
+#' # Tibble based on bbox filtered region
 #' 
-#' ncFile <- goesaodc_downloadAOD(
-#'   satID = "G17", 
-#'   datetime = "2019-10-27 10", 
-#'   timezone = "America/Los_Angeles" 
-#'   )[1]
-#'
-#' nc <- goesaodc_openFile(ncFile)
-#' 
-#' # 2019 Kincade fire in Sonoma county
+#' # Kincade fire region
 #' bbox <- c(-124, -120, 36, 39)
 #' 
 #' filtered_tbl <- goesaodc_createTibble(nc, bbox)
 #' head(filtered_tbl)
-#' 
 #' }
 
 goesaodc_createTibble <- function(
@@ -75,7 +68,7 @@ goesaodc_createTibble <- function(
   
   # ----- Assemble the tibble --------------------------------------------------
   
-  # Get data on the native, satellite grid
+  # Get data on the native satellite grid
   # NOTE:  If nc is a list, AOD and DQF will represent an average
   nativeGrid <- goesaodc_createNativeGrid(ncList, bbox, verbose)
   
@@ -97,12 +90,15 @@ goesaodc_createTibble <- function(
   
   # Guarantee W, E, S, N order
   bbox <- bboxToVector(bbox)
+  
   tbl <-
     tbl %>%
-    dplyr::filter(.data$lon >= bbox[1] &
-                    .data$lon <= bbox[2] &
-                    .data$lat >= bbox[3] &
-                    .data$lat <= bbox[4])
+    dplyr::filter(
+      .data$lon >= bbox[1] &
+      .data$lon <= bbox[2] &
+      .data$lat >= bbox[3] &
+      .data$lat <= bbox[4]
+    )
     
   # ----- Return ---------------------------------------------------------------
   

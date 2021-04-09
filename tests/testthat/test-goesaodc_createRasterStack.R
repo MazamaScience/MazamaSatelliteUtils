@@ -12,7 +12,7 @@
 # # ---- Create basic parameters for raster stacking -----------------------------
 # satID <- "G16"
 # datetime <- "2019-09-06 09:00"
-# endTime <- "2019-09-06 10:00"
+# endtime <- "2019-09-06 10:00"
 # bbox <- c(-124.56624, -116.46350, 41.99179, 46.29203) # Oregon
 # dqfLevel <- 2
 # timezone <- "America/Los_Angeles"
@@ -28,7 +28,7 @@
 #   expect_error( goesaodc_createRasterStack(
 #     satID = satID,
 #     datetime = datetime,
-#     endTime = endTime,
+#     endtime = endtime,
 #     bbox = bbox,
 #     dqfLevel = dqfLevel,
 #     timezone = timezone),
@@ -41,7 +41,7 @@
 #   expect_error( goesaodc_createRasterStack(
 #     satID = satID,
 #     datetime = jdate,
-#     endTime = jdate_end,
+#     endtime = jdate_end,
 #     isJulian = TRUE,
 #     bbox = bbox,
 #     dqfLevel = dqfLevel,
@@ -55,13 +55,13 @@
 #   
 #   fileList <- goesaodc_listFiles(satID = satID,
 #                                  datetime = datetime,
-#                                  endTime = endTime,
+#                                  endtime = endtime,
 #                                  timezone = timezone)
 # 
 #   expect_error( goesaodc_createRasterStack(
 #     satID = satID,
 #     datetime = datetime,
-#     endTime = endTime,
+#     endtime = endtime,
 #     bbox = bbox,
 #     dqfLevel = dqfLevel,
 #     timezone = timezone,

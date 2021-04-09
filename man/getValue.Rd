@@ -7,16 +7,16 @@
 getValue(raster, x, y)
 }
 \arguments{
-\item{raster}{\code{RasterLayer} object}
+\item{raster}{A \code{RasterLayer} object.}
 
-\item{x}{longitude value (deg E)}
+\item{x}{Longitude value (deg E).}
 
-\item{y}{latitude value (deg N)}
+\item{y}{Latitude value (deg N).}
 }
 \value{
 Value of raster cell covering the point.
 }
 \description{
-Get raster value at a point.
+Gets the raster value at a given point.
 }
 \keyword{utils}

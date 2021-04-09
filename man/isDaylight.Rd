@@ -7,11 +7,11 @@
 isDaylight(datetime = NULL, timezone = "UTC", bbox = bbox_CONUS)
 }
 \arguments{
-\item{datetime}{Desired datetime in any Y-m-d H [MS] format or \code{POSIXct}.}
+\item{datetime}{Datetime in any Ymd H [MS] format or \code{POSIXct}.}
 
-\item{timezone}{Timezone in which to interpret the \code{datetime}.}
+\item{timezone}{Timezone used to interpret \code{datetime}; Defaults to UTC.}
 
-\item{bbox}{Bounding box for region of interest, Default \code{bbox_CONUS}.}
+\item{bbox}{Bounding box for the region of interest; Defaults to CONUS.}
 }
 \value{
 Logical vector.
@@ -22,12 +22,11 @@ Determine whether times are during daylight within a region
 \examples{
 \donttest{
 library(MazamaSatelliteUtils)
-setSatelliteDataDir("~/Data/Satellite")
-
-# BBOX AS CREATED BY sp::bbox()
-
 library(MazamaSpatialUtils)
 
+setSatelliteDataDir("~/Data/Satellite")
+
+# Example with bbox from country shape
 mx <- subset(SimpleCountries, countryCode == "MX")
 
 mx_bbox <- sp::bbox(mx)
@@ -38,18 +37,17 @@ isDaylight(
   timezone = "UTC"
 ) 
 
-# BBOX AS CREATED BY raster::extent()
+# Example with bbox from raster::extent()
 
 goesaodc_downloadAOD(
   satID = "G16", 
   datetime = "201924918", 
   timezone = "UTC", 
-  isJulian = TRUE)
+  isJulian = TRUE
+)
   
-G16_filepath <- 
-  "OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc"
-
-nc <- goesaodc_openFile(G16_filepath)
+netCDF <- "OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc"
+nc <- goesaodc_openFile(netCDF)
 
 raster <- goesaodc_createRaster(nc, res = 0.1, dqfLevel = 2)
 
@@ -58,6 +56,7 @@ extent <- raster::extent(raster)
 isDaylight(
   datetime = "2019-09-06 12",
   bbox = extent,
-  timezone = "UTC")
+  timezone = "UTC"
+)
 }
 }

@@ -13,7 +13,7 @@ goesaodc_createSpatialPoints(
 \arguments{
 \item{nc}{ncdf4 handle.}
 
-\item{bbox}{Bounding box for the region of interest.}
+\item{bbox}{Bounding box for the region of interest; Defaults to CONUS.}
 
 \item{dqfLevel}{Data quality flag level.}
 }
@@ -24,6 +24,10 @@ SpatialPointsDataFrame
 Create a SpatialPointsDataFrame of GOES data including data
 within the specified bounding box and data quality flag level. 
 
+The \code{bbox} parameter can be a vector of floats in c(lonLo, lonHi, latLo,
+latHi) order or the return value from \code{sp::bbox()} or 
+\code{raster::extent()}.
+
 The \code{dqfLevel} parameter can take a value of:
 
 \itemize{
@@ -32,10 +36,6 @@ The \code{dqfLevel} parameter can take a value of:
 \item{2}{ -- Low quality retrieval flag}
 \item{3}{ -- No retrieval quality flag}
 }
-
-The \code{bbox} parameter can be a vector of floats in c(lonLo, lonHi, latLo,
-latHi) order or the return value from \code{sp::bbox()} or 
-\code{raster::extent()}.
 }
 \examples{
 \donttest{
@@ -45,13 +45,22 @@ setSatelliteDataDir("~/Data/Satellite")
 netCDF <- goesaodc_downloadAOD(
   satID = "G17", 
   datetime = "2019-10-27 10", 
-  timezone = "America/Los_Angeles")[1]
-  
-kincade_bbox <- c(-126, -119, 35, 40)   
+  timezone = "America/Los_Angeles"
+)[1]
+
+# Kincade fire region
+kincade_bbox <- c(-124, -120, 36, 39)
   
 nc <- goesaodc_openFile(netCDF)
-sp <- goesaodc_createSpatialPoints(nc, dqfLevel = 3, bbox = kincade_bbox)
-maps::map(database = "state", "regions" = c("california"), xlim = c(-126, -113.5))
-goesaodc_plotSpatialPoints(sp, cex = 0.2, add = TRUE)
+sp <- goesaodc_createSpatialPoints(nc, bbox = kincade_bbox, dqfLevel = 3)
+
+goesaodc_plotSpatialPoints(sp, cex = 0.5)
+maps::map(
+  database = "state",
+  regions = "california",
+  xlim = c(-125, -119),
+  ylim = c(35, 40),
+  add  = TRUE
+)
 }
 }

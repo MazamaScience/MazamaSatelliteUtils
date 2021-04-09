@@ -1,31 +1,32 @@
 #' @export
 #'
-#' @title Download GOES-16 or GOES-17 AOD data
+#' @title Download GOES AOD data for a specific date
 #'
-#' @param satID ID of the source GOES satellite (G16 or G17).
-#' @param datetime Desired datetime in any Ymd H [MS] format or \code{POSIXct}
-#' @param endTime Desired ending time in any Ymd H [MS] format or \code{POSIXct}
-#' @param timezone Timezone used to interpret \code{datetime} and \code{endTime}
-#' @param isJulian Logical specifying if \code{datetime} (and optionally 
-#' \code{endTime}) are Julian formatted
-#' @param verbose Logical parameter specifying whether download status should be
-#'  shown.
-#' @param baseUrl Base URL for data queries.
-#'
-#' @description Download all GOES 16 or 17 NetCDF files for the given
+#' @description Downloads a GOES satellite's NetCDF files for the given 
 #' \code{datetime} to the directory specified by \code{setSatelliteDataDir()}.
-#' If \code{datetime} is specified to the hour and \code{fullDay} is not
-#' explicitly set to TRUE', only files for that hour will be downloaded. If the
-#' optional \code{endTime} is specified, all files that exist for the time 
-#' period between \code{datetime} and \code{endTime} will be downloaded. If 
-#' \code{timezone} is not specified, "UTC" is assumed.
+#' If \code{endtime} is specified, all files that exist between \code{datetime} 
+#' and \code{endtime} will be downloaded. Otherwise, only files for the 
+#' \code{datetime} hour will be retrieved.
 #' 
 #' The vector of files returned includes all files in \code{satelliteDataDir}
 #' that match the requested date whether they were download previously or with
 #' this call.
 #'
-#' @return Invisibly returns a vector of local files matching the requested \code{datetime}.
+#' @param satID ID of the source GOES satellite (G16 or G17).
+#' @param datetime Datetime in any Ymd H [MS] format or \code{POSIXct}.
+#' @param endtime End time in any Ymd H [MS] format or \code{POSIXct}.
+#' @param timezone Timezone used to interpret \code{datetime} and 
+#' \code{endtime}; Defaults to UTC.
+#' @param isJulian Logical value determining whether \code{datetime} should be 
+#' interpreted as a Julian date with day of year as a decimal number; Defaults 
+#' to FALSE.
+#' @param verbose Logical flag to print download progress; Defaults to FALSE.
+#' @param baseUrl URL of remote database; Defaults to 
+#' "https://tools-1.airfire.org/Satellite/".
 #'
+#' @return Invisibly returns a vector of local files matching the requested 
+#' \code{datetime}.
+#' 
 #' @seealso \code{\link{setSatelliteDataDir}}
 #'
 #' @examples
@@ -37,11 +38,11 @@
 #' files <- goesaodc_downloadAOD("G17", "2019-09-06 18") 
 #' print(files)
 #' 
-#' # Specific time range
+#' # Time range
 #' files <- goesaodc_downloadAOD(
 #'   satID = "G16",
 #'   datetime = "2019-09-06 08:00",
-#'   endTime = "2019-09-06 12:00",
+#'   endtime = "2019-09-06 12:00",
 #'   timezone = "America/Los_Angeles"
 #' )
 #' print(files)
@@ -58,14 +59,14 @@
 goesaodc_downloadAOD <- function(
   satID = NULL,
   datetime = NULL,
-  endTime = NULL,
+  endtime = NULL,
   timezone = "UTC",
   isJulian = FALSE,
   verbose = FALSE,
   baseUrl = "https://tools-1.airfire.org/Satellite/"
 ) {
   
-  # ---- Validate Parameters --------------------------------------------------
+  # ----- Validate Parameters --------------------------------------------------
   
   MazamaCoreUtils::stopIfNull(satID)
   MazamaCoreUtils::stopIfNull(datetime)
@@ -74,8 +75,8 @@ goesaodc_downloadAOD <- function(
   if ( !(satID %in% c("G16", "G17")) )
     stop("Must specify GOES satellite ID (G16 or G17)")
   
-  if ( !is.null(endTime) ) {
-    endTime <- endTime
+  if ( !is.null(endtime) ) {
+    endtime <- endtime
   }
   
   # ----- Determine files to download ------------------------------------------
@@ -84,7 +85,7 @@ goesaodc_downloadAOD <- function(
   remoteFiles <- goesaodc_listFiles(
     satID = satID, 
     datetime = datetime, 
-    endTime = endTime, 
+    endtime = endtime, 
     timezone = timezone,
     isJulian = isJulian,
     useRemote = TRUE
@@ -102,7 +103,7 @@ goesaodc_downloadAOD <- function(
   localFiles <- goesaodc_listFiles(
     satID = satID, 
     datetime = datetime, 
-    endTime = endTime, 
+    endtime = endtime, 
     timezone = timezone,
     isJulian = isJulian,
     useRemote = FALSE
@@ -111,7 +112,7 @@ goesaodc_downloadAOD <- function(
   # Files to download
   missingFiles <- setdiff(remoteFiles, localFiles)
   
-  # ---- Download missing files ------------------------------------------------
+  # ----- Download missing files -----------------------------------------------
   
   satelliteDataDir <- getSatelliteDataDir()
   
@@ -127,11 +128,13 @@ goesaodc_downloadAOD <- function(
     fileUrl <- paste0(satUrl, "/", file)
     
     result <- try({
-      utils::download.file(fileUrl, 
-                           destfile = filePath, 
-                           quiet = TRUE, 
-                           method = "auto", 
-                           mode = "wb")
+      utils::download.file(
+        fileUrl, 
+        destfile = filePath, 
+        quiet = TRUE, 
+        method = "auto", 
+        mode = "wb"
+      )
     }, silent = FALSE)
     
     if ( "try-error" %in% class(result) ) {
@@ -153,7 +156,7 @@ goesaodc_downloadAOD <- function(
   localFiles <- goesaodc_listFiles(
     satID = satID, 
     datetime = datetime, 
-    endTime = endTime, 
+    endtime = endtime, 
     timezone = timezone,
     isJulian = isJulian,
     useRemote = FALSE

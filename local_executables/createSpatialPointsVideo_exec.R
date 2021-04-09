@@ -253,7 +253,7 @@ result <- try({
       scanFiles <- goesaodc_downloadAOD(
         satID = opt$satID,
         datetime = datetime,
-        endTime = NULL,
+        endtime = NULL,
         timezone = timezone,
         isJulian = FALSE,
         verbose = opt$verbose

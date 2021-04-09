@@ -4,23 +4,21 @@
 \alias{getAttributes}
 \title{Returns attributes from a netCDF file}
 \usage{
-getAttributes(nc, varid = 0, print = TRUE)
+getAttributes(nc, varid = 0, verbose = TRUE)
 }
 \arguments{
-\item{nc}{An object of class ncdf4 (as returned from nc_open), indicating 
-what file to read from.}
+\item{nc}{ncdf4 handle.}
 
 \item{varid}{The variable whose attribute is to be read. Can be a character 
 string with the variable's name or an object of class ncvar4. As a special 
 case, if \code{varid == 0}, then a global (file) attribute will be read 
 rather than a particular variable's attribute.}
 
-\item{print}{Logical specifying whether human readable output should be
-printed to the console.}
+\item{verbose}{Logical flag to print attribute structure; Defaults to TRUE.}
 }
 \value{
-A named list of netCDF attributes is returned invisibly.
+Invisibly returns a named list of netCDF attributes.
 }
 \description{
-Returns attributes from a netCDF files
+Returns attributes from a netCDF file.
 }

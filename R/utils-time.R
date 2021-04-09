@@ -2,21 +2,20 @@
 #' 
 #' @title Determine whether times are during daylight within a region
 #' 
-#' @param datetime Desired datetime in any Y-m-d H [MS] format or \code{POSIXct}.
-#' @param timezone Timezone in which to interpret the \code{datetime}.
-#' @param bbox Bounding box for region of interest, Default \code{bbox_CONUS}.
+#' @param datetime Datetime in any Ymd H [MS] format or \code{POSIXct}.
+#' @param timezone Timezone used to interpret \code{datetime}; Defaults to UTC.
+#' @param bbox Bounding box for the region of interest; Defaults to CONUS.
 #' 
 #' @return Logical vector.
 #' 
 #' @examples 
 #' \donttest{
 #' library(MazamaSatelliteUtils)
-#' setSatelliteDataDir("~/Data/Satellite")
-#' 
-#' # BBOX AS CREATED BY sp::bbox()
-#' 
 #' library(MazamaSpatialUtils)
 #' 
+#' setSatelliteDataDir("~/Data/Satellite")
+#' 
+#' # Example with bbox from country shape
 #' mx <- subset(SimpleCountries, countryCode == "MX")
 #' 
 #' mx_bbox <- sp::bbox(mx)
@@ -27,18 +26,17 @@
 #'   timezone = "UTC"
 #' ) 
 #' 
-#' # BBOX AS CREATED BY raster::extent()
+#' # Example with bbox from raster::extent()
 #' 
 #' goesaodc_downloadAOD(
 #'   satID = "G16", 
 #'   datetime = "201924918", 
 #'   timezone = "UTC", 
-#'   isJulian = TRUE)
+#'   isJulian = TRUE
+#' )
 #'   
-#' G16_filepath <- 
-#'   "OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc"
-#' 
-#' nc <- goesaodc_openFile(G16_filepath)
+#' netCDF <- "OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc"
+#' nc <- goesaodc_openFile(netCDF)
 #' 
 #' raster <- goesaodc_createRaster(nc, res = 0.1, dqfLevel = 2)
 #' 
@@ -47,13 +45,14 @@
 #' isDaylight(
 #'   datetime = "2019-09-06 12",
 #'   bbox = extent,
-#'   timezone = "UTC")
+#'   timezone = "UTC"
+#' )
 #' }
 
 isDaylight <- function(
   datetime = NULL,
   timezone = "UTC",
-  bbox = bbox_CONUS # package data
+  bbox = bbox_CONUS
 ) {
   
   # ----- Validate parameters --------------------------------------------------
@@ -80,17 +79,21 @@ isDaylight <- function(
   west_edge <- matrix(c(w, mid_lat), nrow = 1)
   east_edge <- matrix(c(e, mid_lat), nrow = 1)
   
-  # sunrise for mid_lat on East edge
-  sunriseDF <- maptools::sunriset(east_edge, 
-                                  datetime, 
-                                  direction = "sunrise",
-                                  POSIXct.out = TRUE)
+  # Sunrise for mid_lat on East edge
+  sunriseDF <- maptools::sunriset(
+    east_edge, 
+    datetime, 
+    direction = "sunrise",
+    POSIXct.out = TRUE
+  )
   
-  # sunset for mid_lat West edge
-  sunsetDF <- maptools::sunriset(west_edge, 
-                                 datetime, 
-                                 direction = "sunset",
-                                 POSIXct.out = TRUE)
+  # Sunset for mid_lat West edge
+  sunsetDF <- maptools::sunriset(
+    west_edge, 
+    datetime, 
+    direction = "sunset",
+    POSIXct.out = TRUE
+  )
   
   # Extract vectors
   sunrise <- sunriseDF[, 2] 

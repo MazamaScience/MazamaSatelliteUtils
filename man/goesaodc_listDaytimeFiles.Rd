@@ -2,8 +2,8 @@
 % Please edit documentation in R/goesaodc_listDaytimeFiles.R
 \name{goesaodc_listDaytimeFiles}
 \alias{goesaodc_listDaytimeFiles}
-\title{List GOES AOD files that are available for a specific date and 
-location during the hours between sunlight and sunset.}
+\title{List GOES AOD files available for a specific date and 
+location during daytime hours}
 \usage{
 goesaodc_listDaytimeFiles(
   satID = NULL,
@@ -19,59 +19,55 @@ goesaodc_listDaytimeFiles(
 \arguments{
 \item{satID}{ID of the source GOES satellite (G16 or G17).}
 
-\item{datetime}{Specific date for which daylight hours are requested.}
+\item{datetime}{Datetime in any Ymd H [MS] format or \code{POSIXct}.}
 
 \item{longitude}{Longitude of the location of interest in decimal degrees E.}
 
 \item{latitude}{Latitude of the location of interest in decimal degrees N.}
 
-\item{bbox}{Bounding box for the region of interest, Default: CONUS.}
+\item{bbox}{Bounding box for the region of interest; Defaults to CONUS.}
 
 \item{useRemote}{Logical specifying whether to look for files in 
-\code{getSatelliteDataDir()} or \code{baseUrl}.}
+\code{getSatelliteDataDir()} or \code{baseUrl}; Defaults to FALSE;}
 
-\item{timezone}{Timezone in which to interpret the \code{datetime}.}
+\item{timezone}{Timezone used to interpret \code{datetime}.}
 
-\item{isJulian}{Logical value determining whether datetime should be 
-interpreted as a Julian date with day of year as a decimal number.}
+\item{isJulian}{Logical value determining whether \code{datetime} should be 
+interpreted as a Julian date with day of year as a decimal number; Defaults 
+to FALSE.}
 }
 \value{
 Vector of filenames.
 }
 \description{
-List all daylight files available, either locally in directory
-specified with \code{setSatelliteDir}, or optionally on remote file server 
-by using the \code{useRemote} parameter.  See \code{getDaylightHours()} for 
-details regarding how daylight hours are calculated.
+Retrieves a list of GOES AOD files for the daylight hours of a 
+given \code{datetime}, available either locally in the specified 
+\code{setSatelliteDir} or on a remote server using the \code{useRemote} 
+parameter. See \code{getDaylightHours()} for details regarding how daylight 
+hours are calculated.
 }
 \examples{
 \donttest{
-
-# List locally available files for a specific date by timezone
-
 library(MazamaSatelliteUtils)
 library(MazamaSpatialUtils)
 
 setSatelliteDataDir("~/Data/Satellite")
 setSpatialDataDir("~/Data/Spatial")
 
-goesaodc_listDaytimeFiles(satID = "G16",
-datetime = "2019-09-06", 
-timezone = "America/Los_Angeles")
+# List local files available for specific date by timezone
+goesaodc_listDaytimeFiles(
+  satID = "G16",
+  datetime = "2019-09-06", 
+  timezone = "America/Los_Angeles"
+)
 
 # List remote files available for specific date by timezone
-
-library(MazamaSatelliteUtils)
-library(MazamaSpatialUtils)
-
-setSatelliteDataDir("~/Data/Satellite")
-setSpatialDataDir("~/Data/Spatial")
-
-goesaodc_listDaytimeFiles(satID = "G16", 
-datetime = "2019-09-06", 
-timezone = "America/Los_Angeles",
-useRemote = TRUE)
+goesaodc_listDaytimeFiles(
+  satID = "G16", 
+  datetime = "2019-09-06", 
+  timezone = "America/Los_Angeles",
+  useRemote = TRUE
+)
 }
-
 
 }

@@ -123,7 +123,7 @@ __Example of AOD download using starting and ending times__
 </center>
 
 ```
-goesaodc_downloadAOD(satID = "G17", datetime = "2019-10-29 07", endTime = "2019-10-29 18", timezone = "America/Los_Angeles")
+goesaodc_downloadAOD(satID = "G17", datetime = "2019-10-29 07", endtime = "2019-10-29 18", timezone = "America/Los_Angeles")
 ```
 
 ### Verify Files Have Downloaded

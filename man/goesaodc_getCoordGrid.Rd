@@ -8,10 +8,10 @@ netcdf handle}
 goesaodc_getCoordGrid(nc)
 }
 \arguments{
-\item{nc}{netcdf handle}
+\item{nc}{ncdf4 handle.}
 }
 \value{
-Dataframe.
+Dataframe
 }
 \description{
 Code borrowed from 

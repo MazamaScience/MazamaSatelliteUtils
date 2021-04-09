@@ -15,18 +15,19 @@ getDaylightHours(
 )
 }
 \arguments{
-\item{datetime}{Specific date for which daylight hours are requested.}
+\item{datetime}{Datetime in any Ymd H [MS] format or \code{POSIXct}.}
 
 \item{longitude}{Longitude of the location of interest in decimal degrees E.}
 
 \item{latitude}{Latitude of the location of interest in decimal degrees N.}
 
-\item{bbox}{Bounding box for the region of interest, Default: CONUS.}
+\item{bbox}{Bounding box for the region of interest; Defaults to CONUS.}
 
-\item{timezone}{Timezone in which to interpret the \code{datetime}.}
+\item{timezone}{Timezone used to interpret \code{datetime}.}
 
-\item{isJulian}{Logical value determining whether datetime should be 
-interpreted as a Julian date with day of year as a decimal number.}
+\item{isJulian}{Logical value determining whether \code{datetime} should be 
+interpreted as a Julian date with day of year as a decimal number; Defaults 
+to FALSE.}
 }
 \value{
 List containing \code{POSIXct} \code{sunrise} and \code{sunset} times 

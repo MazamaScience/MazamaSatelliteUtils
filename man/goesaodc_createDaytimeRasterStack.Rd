@@ -18,19 +18,19 @@ goesaodc_createDaytimeRasterStack(
 \arguments{
 \item{satID}{ID of the source GOES satellite (G16 or G17).}
 
-\item{datetime}{Desired datetime in any Ymd H [MS] format or \code{POSIXct}.}
+\item{datetime}{Datetime in any Ymd H [MS] format or \code{POSIXct}.}
 
-\item{var}{variable ("AOD, "DQF" or "ID")}
+\item{var}{var GOES data variable ("AOD, "DQF" or "ID"); Defaults to "AOD".}
 
-\item{res}{resolution of raster in longitude/latitude degrees}
+\item{res}{Resolution of raster in degrees; Defaults to 0.1.}
 
 \item{bbox}{Bounding box for the region of interest.}
 
 \item{dqfLevel}{Data quality flag level.}
 
-\item{timezone}{Timezone in which to interpret the \code{datetime}.}
+\item{timezone}{Timezone used to interpret \code{datetime}.}
 
-\item{verbose}{Logical flag to show progress of raster stacking.}
+\item{verbose}{Logical flag to print stacking progress; Defaults to FALSE.}
 }
 \value{
 RasterStack

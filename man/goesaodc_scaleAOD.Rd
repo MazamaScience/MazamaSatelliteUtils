@@ -26,6 +26,6 @@ correctly scaled AOD values}
 \note{
 As of ncdf4 version 1.16.1, the signedbyte flag is only used to
 interpret singlye byte values. GOES AODC values are written as unsigned short 
-int but \code{ncdf4::ncvar_get()} interprets these 16 bits as signed short int. 
-Hence the need for conversion.
+int but \code{ncdf4::ncvar_get()} interprets these 16 bits as signed short 
+int. Hence the need for conversion.
 }

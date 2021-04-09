@@ -1,14 +1,15 @@
 #' @export
+#' 
 #' @importFrom rlang .data
 #'
 #' @title Create a SpatialPointsDataFrame of GOES data
-#'
-#' @param nc ncdf4 handle.
-#' @param bbox Bounding box for the region of interest.
-#' @param dqfLevel Data quality flag level.
-#'
+#' 
 #' @description Create a SpatialPointsDataFrame of GOES data including data
 #' within the specified bounding box and data quality flag level. 
+#' 
+#' The \code{bbox} parameter can be a vector of floats in c(lonLo, lonHi, latLo,
+#' latHi) order or the return value from \code{sp::bbox()} or 
+#' \code{raster::extent()}.
 #' 
 #' The \code{dqfLevel} parameter can take a value of:
 #'
@@ -18,10 +19,10 @@
 #' \item{2}{ -- Low quality retrieval flag}
 #' \item{3}{ -- No retrieval quality flag}
 #' }
-#' 
-#' The \code{bbox} parameter can be a vector of floats in c(lonLo, lonHi, latLo,
-#' latHi) order or the return value from \code{sp::bbox()} or 
-#' \code{raster::extent()}.
+#'
+#' @param nc ncdf4 handle.
+#' @param bbox Bounding box for the region of interest; Defaults to CONUS.
+#' @param dqfLevel Data quality flag level.
 #'
 #' @return SpatialPointsDataFrame
 #'
@@ -33,19 +34,28 @@
 #' netCDF <- goesaodc_downloadAOD(
 #'   satID = "G17", 
 #'   datetime = "2019-10-27 10", 
-#'   timezone = "America/Los_Angeles")[1]
-#'   
-#' kincade_bbox <- c(-126, -119, 35, 40)   
+#'   timezone = "America/Los_Angeles"
+#' )[1]
+#' 
+#' # Kincade fire region
+#' kincade_bbox <- c(-124, -120, 36, 39)
 #'   
 #' nc <- goesaodc_openFile(netCDF)
-#' sp <- goesaodc_createSpatialPoints(nc, dqfLevel = 3, bbox = kincade_bbox)
-#' maps::map(database = "state", "regions" = c("california"), xlim = c(-126, -113.5))
-#' goesaodc_plotSpatialPoints(sp, cex = 0.2, add = TRUE)
+#' sp <- goesaodc_createSpatialPoints(nc, bbox = kincade_bbox, dqfLevel = 3)
+#' 
+#' goesaodc_plotSpatialPoints(sp, cex = 0.5)
+#' maps::map(
+#'   database = "state",
+#'   regions = "california",
+#'   xlim = c(-125, -119),
+#'   ylim = c(35, 40),
+#'   add  = TRUE
+#' )
 #' }
 
 goesaodc_createSpatialPoints <- function(
   nc = NULL,
-  bbox = c(-125, -65, 24, 50), # Set CONUS as default area
+  bbox = c(-125, -65, 24, 50),
   dqfLevel = NULL
 ) {
   
@@ -96,6 +106,8 @@ goesaodc_createSpatialPoints <- function(
     coords = dplyr::select(tbl, c(.data$lon, .data$lat)),
     data = dplyr::select(tbl, -c(.data$lon, .data$lat))
   )
+  
+  # ----- Return ---------------------------------------------------------------
   
   return(spatialPoints)
   

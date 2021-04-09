@@ -1,26 +1,29 @@
 #' @export
 #'
-#' @title List available GOES AOD files for a specified date and hour
+#' @title List GOES AOD files available for a specific date and hour
 #'
-#' @param satID ID of the source GOES satellite (G16 or G17).
-#' @param datetime Desired datetime in any Ymd H [MS] format or \code{POSIXct}
-#' @param endTime Desired ending time in any Ymd H [MS] format or \code{POSIXct}
-#' @param useRemote Logical specifying whether to look for files in 
-#' \code{getSatelliteDataDir()} or \code{baseUrl}.
-#' @param timezone Timezone used to interpret \code{datetime} and \code{endTime}
-#' @param isJulian Logical specifying if \code{datetime} (and optionally 
-#' \code{endTime}) are Julian formatted
-#' @param baseUrl Base URL for data queries.
-#' 
-#' 
-#' @description Retrieve a list of GOES AOD files available in the
-#' \code{satelliteDataDir} or at \code{baseUrl} for a specified date and hour.
+#' @description Retrieves a list of GOES AOD files for a specified date and hour
+#' available either locally in the specified \code{setSatelliteDir} or on a 
+#' remote server using the \code{useRemote} parameter.
 #'
-#' @note All files for a particular hour will be returned even if the
+#' @details All files for a particular hour will be returned even if the
 #' incoming \code{startdate} or \code{jdate} is specified to the minute or
-#' second.  By default, the local directory set by \code{setSatelliteDir()} is 
+#' second. By default, the local directory set by \code{setSatelliteDir()} is 
 #' searched. \code{useRemote = TRUE} will search \code{baseURL} for all files 
 #' that are available within the specified timeframe.
+#'
+#' @param satID ID of the source GOES satellite (G16 or G17).
+#' @param datetime Datetime in any Ymd H [MS] format or \code{POSIXct}.
+#' @param endtime End time in any Ymd H [MS] format or \code{POSIXct}
+#' @param useRemote Logical specifying whether to look for files in 
+#' \code{getSatelliteDataDir()} or \code{baseUrl}; Defaults to FALSE.
+#' @param timezone Timezone used to interpret \code{datetime} and 
+#' \code{endtime}; Defaults to UTC.
+#' @param isJulian Logical value determining whether \code{datetime} (and
+#' optionally \code{endtime}) should be interpreted as a Julian date with day of
+#'  year as a decimal number; Defaults to FALSE.
+#' @param baseUrl URL of remote database; Defaults to 
+#' "https://tools-1.airfire.org/Satellite/".
 #'
 #' @return Vector of filenames.
 #'
@@ -36,7 +39,7 @@
 #' goesaodc_listFiles(
 #'   satID = "G16",
 #'   datetime = "2019-09-06 06:00",
-#'   endTime = "2019-09-06 18:00",
+#'   endtime = "2019-09-06 18:00",
 #'   timezone = "America/Los_Angeles",
 #'   useRemote = TRUE
 #' )
@@ -45,14 +48,14 @@
 goesaodc_listFiles <- function(
   satID = NULL,
   datetime = NULL,
-  endTime = NULL,
+  endtime = NULL,
   useRemote = FALSE,
   timezone = "UTC",
   isJulian = FALSE,
   baseUrl = "https://tools-1.airfire.org/Satellite/"
 ) {
   
-  # ---- Validate Parameters --------------------------------------------------
+  # ----- Validate Parameters --------------------------------------------------
   
   MazamaCoreUtils::stopIfNull(satID)
   MazamaCoreUtils::stopIfNull(datetime)
@@ -80,9 +83,9 @@ goesaodc_listFiles <- function(
     isJulian = isJulian
   )
   
-  if ( !is.null(endTime) ) {
-    endTime <- MazamaCoreUtils::parseDatetime(
-      endTime, 
+  if ( !is.null(endtime) ) {
+    endtime <- MazamaCoreUtils::parseDatetime(
+      endtime, 
       timezone = timezone, 
       isJulian = isJulian
     )
@@ -99,14 +102,10 @@ goesaodc_listFiles <- function(
     }
   }
   
-  # Assemble regex to search with
-  regex <- paste0(
-    "OR_ABI-L2-AODC-M[0-9]_",
-    satID,
-    "_s[0-9]+_e[0-9]+_c[0-9]+\\.nc"
-  )
+  # Build regex pattern
+  regex <- paste0("OR_ABI-L2-AODC-M[0-9]_", satID, "_s[0-9]+_e[0-9]+_c[0-9]+\\.nc")
   
-  # ----- Create a list files --------------------------------------------------
+  # ----- Create a list of files -----------------------------------------------
   
   if ( !useRemote ) {
     
@@ -127,11 +126,11 @@ goesaodc_listFiles <- function(
     
   }
   
-  # Build a squence of hours
-  if ( is.null(endTime) ) {
+  # Build a sequence of hours
+  if ( is.null(endtime) ) {
     hours <- c(datetime)
   } else {
-    hours <- seq.POSIXt(from = datetime, to = endTime, by = "hour")
+    hours <- seq.POSIXt(from = datetime, to = endtime, by = "hour")
   }
   
   # Convert to UTC and create startPatterns for each requested hour
@@ -159,7 +158,7 @@ if ( FALSE ) {
   
   satID <- "G16"
   datetime <- 20190906# "2019-09-06 06:00"
-  endTime <- NULL#"2019-09-06 18:00"
+  endtime <- NULL#"2019-09-06 18:00"
   timezone <- "America/Los_Angeles"
   useRemote <- FALSE
   baseUrl <- "https://tools-1.airfire.org/Satellite/"
@@ -167,7 +166,7 @@ if ( FALSE ) {
   goesaodc_listFiles(
     satID = satID,
     datetime = datetime,
-    endTime = endTime,
+    endtime = endtime,
     timezone = timezone,
     useRemote = useRemote,
     baseUrl = baseUrl

@@ -29,13 +29,14 @@
 #' \item{\code{datetime} is \code{POSIXct} -- use bbox of the timezone attribute}
 #' }
 #' 
-#' @param datetime Specific date for which daylight hours are requested.
+#' @param datetime Datetime in any Ymd H [MS] format or \code{POSIXct}.
 #' @param longitude Longitude of the location of interest in decimal degrees E.
 #' @param latitude Latitude of the location of interest in decimal degrees N.
-#' @param bbox Bounding box for the region of interest, Default: CONUS.
-#' @param timezone Timezone in which to interpret the \code{datetime}.
-#' @param isJulian Logical value determining whether datetime should be 
-#' interpreted as a Julian date with day of year as a decimal number.
+#' @param bbox Bounding box for the region of interest; Defaults to CONUS.
+#' @param timezone Timezone used to interpret \code{datetime}.
+#' @param isJulian Logical value determining whether \code{datetime} should be 
+#' interpreted as a Julian date with day of year as a decimal number; Defaults 
+#' to FALSE.
 #' 
 #' @return List containing \code{POSIXct} \code{sunrise} and \code{sunset} times 
 #' for the specified date.

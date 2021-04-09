@@ -1,13 +1,14 @@
 #' @export
 #'
-#' @title Converts and validates bbox objects or strings into standard format
-#'
-#' @param bbox bounding box for region of interest.
+#' @title Convert and validate bbox objects or strings into standard format
 #'
 #' @description Accepts a variety of bbox formats, validates that they are
-#' numerically sane and returns a vector of floats in c(lonLo, lonLo, latLo, latHi) order.
-#' Input can be a vector of floats in c(lonLo, lonHi, latLo, latHi) order or 
-#' the return value from \code{sp::bbox()} or \code{raster::extent()}.
+#' numerically sane and returns a vector of floats in c(lonLo, lonLo, latLo, 
+#' latHi) order. Input can be a vector of floats in c(lonLo, lonHi, latLo, 
+#' latHi) order or the return value from \code{sp::bbox()} or 
+#' \code{raster::extent()}.
+#'
+#' @param bbox Bounding box for the region of interest.
 #'
 #' @return a vector of floats in c(lonLo, lonHi, latLo, latHi) order.
 #'
@@ -17,8 +18,9 @@
 #' library(MazamaSatelliteUtils)
 #' 
 #' setSpatialDataDir("~/Data/Spatial")
-#' loadSpatialData("USCensusStates")
 #' setSatelliteDataDir("~/Data/Satellite")
+#' 
+#' loadSpatialData("USCensusStates")
 #' 
 #' oregon <- subset(USCensusStates, stateCode == "OR")
 #' bbox <- sp::bbox(oregon)
@@ -27,7 +29,8 @@
 #'   satID = "G16", 
 #'   datetime = "201924918", 
 #'   timezone = "UTC", 
-#'   isJulian = TRUE)
+#'   isJulian = TRUE
+#' )
 #'   
 #' ncFile <- "OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc"
 #' nc <- goesaodc_openFile(ncFile)

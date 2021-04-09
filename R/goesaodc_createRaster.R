@@ -1,13 +1,7 @@
 #' @export
 #'
 #' @title Create a RasterBrick of GOES data
-#'
-#' @param nc ncdf4 handle
-#' @param res resolution of raster in degrees; Defaults to 0.1.
-#' @param fun function to use when rasterizing; Defaults to mean.
-#' @param bbox Bounding box for the region of interest; Defaults to CONUS.
-#' @param dqfLevel Data quality flag level.
-#'
+#' 
 #' @description Create a RasterBrick of GOES AOD data including data points
 #' with the specified resolution and function, and within the specified bounding
 #' box and data quality flag level.
@@ -25,6 +19,12 @@
 #' \item{3}{ -- No retrieval quality flag}
 #' }
 #'
+#' @param nc ncdf4 handle.
+#' @param res Resolution of raster in degrees; Defaults to 0.1.
+#' @param fun Function to use when rasterizing; Defaults to mean.
+#' @param bbox Bounding box for the region of interest; Defaults to CONUS.
+#' @param dqfLevel Data quality flag level.
+#'
 #' @return RasterBrick
 #'
 #' @examples
@@ -33,19 +33,17 @@
 #'
 #' setSatelliteDataDir("~/Data/Satellite")
 #' 
-#' files <- goesaodc_downloadAOD(
+#' netCDF <- goesaodc_downloadAOD(
 #'   satID = "G17", 
 #'   datetime = 2019102714, 
 #'   timezone = "America/Los_Angeles",
 #'   verbose = TRUE 
-#' )
-#' 
-#' netCDF <- files[1]
-#' nc <- goesaodc_openFile(netCDF)
+#' )[1]
 #' 
 #' # Kincade fire region
 #' kincade_bbox <- c(-124, -120, 36, 39)
 #' 
+#' nc <- goesaodc_openFile(netCDF)
 #' raster <- goesaodc_createRaster(
 #'   nc, 
 #'   res = 0.03,

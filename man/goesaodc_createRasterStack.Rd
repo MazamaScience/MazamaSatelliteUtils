@@ -7,7 +7,7 @@
 goesaodc_createRasterStack(
   satID = NULL,
   datetime = NULL,
-  endTime = NULL,
+  endtime = NULL,
   var = "AOD",
   res = 0.1,
   bbox = c(-125, -65, 24, 50),
@@ -21,41 +21,41 @@ goesaodc_createRasterStack(
 \arguments{
 \item{satID}{ID of the source GOES satellite (G16 or G17).}
 
-\item{datetime}{Desired datetime in any Ymd H [MS] format or \code{POSIXct}.}
+\item{datetime}{Datetime in any Ymd H [MS] format or \code{POSIXct}.}
 
-\item{endTime}{Desired ending time in any Ymd H [MS] format or 
-\code{POSIXct}.}
+\item{endtime}{End time in any Ymd H [MS] format or \code{POSIXct}.}
 
 \item{var}{GOES data variable ("AOD, "DQF" or "ID"); Defaults to "AOD".}
 
 \item{res}{Resolution of raster in degrees; Defaults to 0.1.}
 
-\item{bbox}{Bounding box for raster; Defaults to CONUS.}
+\item{bbox}{Bounding box for the region of interest; Defaults to CONUS.}
 
 \item{dqfLevel}{Data quality flag level.}
 
-\item{timezone}{Timezone for \code{datetime} and optionally \code{endTime}.}
+\item{timezone}{Timezone used to interpret \code{datetime} and 
+\code{endtime}; Defaults to UTC.}
 
-\item{isJulian}{Logical specifying if \code{datetime} (and optionally
-\code{endTime}) are Julian formatted.}
+\item{isJulian}{Logical value determining whether \code{datetime} should be 
+interpreted as a Julian date with day of year as a decimal number; Defaults 
+to FALSE.}
 
 \item{fileList}{Optional list of files to stack. Useful when working with 
 custom time ranges.}
 
-\item{verbose}{Logical flag to print stacking information.}
+\item{verbose}{Logical flag to print stacking progress; Defaults to FALSE.}
 }
 \value{
 RasterStack
 }
 \description{
-Create a \code{RasterStack} from GOES AOD data files for the
+Creates a \code{RasterStack} from GOES AOD data files for the
 date and hour specified by \code{datetime}. Each \code{RasterLayer} contains
 data from one Advanced Baseline Imager (ABI) scan during the specified time
 period.
 
 If data for the given time period is not found in the directory specified by 
-\code{setSatelliteDataDir()}, it will be downloaded in order to create the
-\code{RasterStack}.
+\code{setSatelliteDataDir()}, then it will be downloaded.
 
 The Z axis of the \code{RasterStack} is a character vector where each element
 is the time stamp of the scan and has the format YYYYMMDDHHMMSS. This can be
@@ -63,7 +63,7 @@ accessed using the \code{raster::getZ()} function. Names of the
 \code{RasterStack} are also time stamps of the scan in the format: XHH.MM.SS.
 
 The \code{bbox} parameter can be a vector of floats in c(lonLo, lonHi, latLo,
-latHi) order or the return value from \code{sp::bbox()} or
+latHi) order or the return value of \code{sp::bbox()} or 
 \code{raster::extent()}.
 
 The \code{dqfLevel} parameter can take a value of:
@@ -87,7 +87,7 @@ kincade_bbox <- c(-124, -120, 36, 39)
 rasterStack <- goesaodc_createRasterStack(
   satID = "G17",
   datetime = "2019-10-27 10",
-  endTime = "2019-10-27 11",
+  endtime = "2019-10-27 11",
   res = 0.075,
   bbox = kincade_bbox,
   dqfLevel = 3,

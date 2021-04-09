@@ -6,10 +6,10 @@
 #'
 #' @title Determines the x and y bounds (in radians) for a given netcdf handle
 #'
-#' @param nc netcdf handle
+#' @param nc ncdf4 handle.
 #'
 #' @return A named list with x1, x2, y1, and y2.
-#'
+
 goesaodc_getCoordBounds <- function(
   nc
 ) {
@@ -17,10 +17,12 @@ goesaodc_getCoordBounds <- function(
   x_bounds <- ncvar_get(nc, "x_image_bounds")
   y_bounds <- ncvar_get(nc, "y_image_bounds")
   
-  bounds <- list(x1 = x_bounds[1], 
-                 x2 = x_bounds[2], 
-                 y1 = y_bounds[1], 
-                 y2 = y_bounds[2])
+  bounds <- list(
+    x1 = x_bounds[1], 
+    x2 = x_bounds[2], 
+    y1 = y_bounds[1], 
+    y2 = y_bounds[2]
+  )
   
   return(bounds)
   
@@ -33,13 +35,13 @@ goesaodc_getCoordBounds <- function(
 #' @title Creates a data frame of decimal degree lon/lat pairs for a given
 #' netcdf handle
 #'
-#' @param nc netcdf handle
+#' @param nc ncdf4 handle.
 #'
 #' @description Code borrowed from 
 #' https://github.com/raffscallion/goesfire/blob/master/R/utils.R
 #'
-#' @return Dataframe.
-#'  
+#' @return Dataframe
+
 goesaodc_getCoordGrid <- function(
   nc
 ) {
@@ -57,10 +59,16 @@ goesaodc_getCoordGrid <- function(
   # Create an initial tibble with "x", "y", "x_rad" and "y_rad"
   x_array <- replicate(length(y), x)
   y_array <- t(replicate(length(x), y))
-  df <- dplyr::tibble(x = as.vector(x_array),
-                      y = as.vector(y_array)) %>%
-    dplyr::mutate(x_rad = x * x_scale + x_offset,
-                  y_rad = y * y_scale + y_offset)
+  
+  df <- 
+    dplyr::tibble(
+      x = as.vector(x_array),
+      y = as.vector(y_array)
+    ) %>%
+    dplyr::mutate(
+      x_rad = x * x_scale + x_offset,
+      y_rad = y * y_scale + y_offset
+    )
   
   # Get the parameters needed for geolocation
   r_eq <- ncatt_get(nc, "goes_imager_projection", "semi_major_axis")$value
@@ -68,8 +76,11 @@ goesaodc_getCoordGrid <- function(
   perspective_point <- ncatt_get(nc, "goes_imager_projection",
                                  "perspective_point_height")$value
   H <- perspective_point + r_eq
-  lambda0 <- ncatt_get(nc, "goes_imager_projection",
-                       "longitude_of_projection_origin")$value * (pi / 180)
+  lambda0 <- ncatt_get(
+    nc,
+    "goes_imager_projection",
+    "longitude_of_projection_origin"
+  )$value * (pi / 180)
   
   # ----- Convert scan angles to latitude and longitude ------------------------
   
@@ -110,10 +121,13 @@ goesaodc_getCoordGrid <- function(
   }
   
   # geolocate
-  df <- dplyr::bind_cols(df, 
-                         purrr::map2_dfr(df$x_rad, df$y_rad,        # variables
-                                         goesaodc_lonLat,               # function
-                                         r_eq, r_pol, H, lambda0))  # constants
+  df <- dplyr::bind_cols(
+    df, 
+    purrr::map2_dfr(
+      df$x_rad, df$y_rad,       # variables
+      goesaodc_lonLat,          # function
+      r_eq, r_pol, H, lambda0)  # constants
+    )
   
   return(df)
   
@@ -123,32 +137,40 @@ goesaodc_getCoordGrid <- function(
 #' @export
 #' 
 #' @title Get projection metadata from GOES-R ABI ncdf4 object
-#' @param nc ncdf4 object
-#' @description Return the projection information of `nc`
-#' @return list of metadata
 #' 
+#' @description Return the projection information of `nc`.
+#' 
+#' @param nc ncdf4 handle.
+#' 
+#' @return list of metadata
+
 goesaodc_getProjection <- function(
   nc
 ) {
+  
   projection <- ncdf4::ncatt_get(nc, "goes_imager_projection")
   return(projection)
+  
 }
 
 #' @export
 #' 
 #' @title Check if `nc` projection is GOES projection
-#' @param nc ncdf4 object
-#' @description 
-#' Return TRUE if projection information in `nc` matches GOES projection
-#' information.
+#' 
+#' @description Determines if projection information in `nc` matches GOES 
+#' projection information.
+#' 
+#' @param nc ncdf4 handle.
 #' 
 #' @return logical
-#' 
+
 goesaodc_isGoesProjection <- function(
   nc
 ) {
+  
   projection <- goesaodc_getProjection(nc)
   satelliteDataDir <- getSatelliteDataDir()
+  
   tryCatch(
     expr = {
       goesEastGrid <- get(load(file.path(satelliteDataDir, "goesEastGrid.rda")))
@@ -163,43 +185,50 @@ goesaodc_isGoesProjection <- function(
       stop(w)
     }
   )  
+  
   return(isGoesEast || isGoesWest)
+  
 }
 
 
 #' @export
 #' 
 #' @title Get the scan start time from a GOES AODC netCDF file name
-#' @param file GOES AOD netCDF file name
 #' 
-#' @description Get the scan start time from a GOES AODC netCDF file name
+#' @description Gets the scan start time from a GOES AODC netCDF file name.
+#' 
+#' @param file File name of GOES AOD file.
 #' 
 #' @return The scan start time.
-#' 
+
 goesaodc_convertFilenameToDatetime <- function(
   file
 ) {
+  
   # Example file name:
   #  OR_ABI-L2-AODC-M4_G17_s20192481500215_e20192481505115_c20192481507046.nc
   
   # Extract the "s..." part and strip of the 's' and the fractional seconds 
   # to get a nicely parseable "YjHMS".
   
-  start_string <- stringr::str_split_fixed(file, "_", 6)[,4] %>%
+  start_string <-
+    stringr::str_split_fixed(file, "_", 6)[,4] %>%
     stringr::str_sub(2, -2)
   
-  start_time <- MazamaCoreUtils::parseDatetime(start_string, timezone = "UTC", isJulian = TRUE)
+  start_time <- MazamaCoreUtils::parseDatetime(
+    start_string,
+    timezone = "UTC",
+    isJulian = TRUE
+  )
   
   return(start_time)
+  
 }
 
 
 #' @export
 #'
 #' @title Converts raw, signed short AOD values from GOES 16 & 17 NetCDF files
-#' 
-#' @param aod_data raw, signed short AOD data read in from GOES .nc file
-#' @param aod_attributes AOD metadata read in from GOES .nc file
 #' 
 #' @description Performs a series of conversions to raw AOD values from .nc file
 #' #' \itemize{
@@ -209,15 +238,17 @@ goesaodc_convertFilenameToDatetime <- function(
 #' correctly scaled AOD values}
 #' }
 #' 
+#' @param aod_data raw, signed short AOD data read in from GOES .nc file
+#' @param aod_attributes AOD metadata read in from GOES .nc file
+#' 
 #' @note As of ncdf4 version 1.16.1, the signedbyte flag is only used to
 #' interpret singlye byte values. GOES AODC values are written as unsigned short 
-#' int but \code{ncdf4::ncvar_get()} interprets these 16 bits as signed short int. 
-#' Hence the need for conversion.
+#' int but \code{ncdf4::ncvar_get()} interprets these 16 bits as signed short 
+#' int. Hence the need for conversion.
 #' 
 #' @return Matrix of properly scaled AOD values.
-#' 
 
-goesaodc_scaleAOD <- function (
+goesaodc_scaleAOD <- function(
   aod_data,
   aod_attributes
 ) {

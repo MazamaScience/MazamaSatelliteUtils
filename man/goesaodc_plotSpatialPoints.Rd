@@ -17,26 +17,27 @@ goesaodc_plotSpatialPoints(
 )
 }
 \arguments{
-\item{spatialPoints}{SpatialPointsDataFrame}
+\item{spatialPoints}{SpatialPointsDataFrame.}
 
-\item{var}{Variable to plot}
+\item{var}{GOES data variable ("AOD, "DQF" or "ID"); Defaults to "AOD".}
 
-\item{n}{Sample size}
+\item{n}{Sample size.}
 
-\item{colBins}{number of color bins}
+\item{colBins}{Number of color bins.}
 
-\item{breaks}{vector of color breaks}
+\item{breaks}{Vector of color breaks.}
 
-\item{paletteName}{RColorBrewer palette name}
+\item{paletteName}{RColorBrewer palette name.}
 
-\item{pch}{plot character}
+\item{pch}{Plot character.}
 
-\item{cex}{plot symbol scale factor}
+\item{cex}{Plot symbol scale factor.}
 
-\item{add}{logical specifying whether to create a new plot or add to existing}
+\item{add}{Logical specifying whether to create a new plot or add to an 
+existing one.}
 }
 \description{
-Quickly subsample and plot points in a GOES AOD 
+Quickly subsamples and plots points in a GOES AOD 
 spatialPointsDataFrame
 }
 \examples{
@@ -48,13 +49,21 @@ netCDF <- goesaodc_downloadAOD(
   satID = "G17", 
   datetime = "2019-10-27 10", 
   timezone = "America/Los_Angeles" 
-  )[1]
-  
-kincade_bbox <- c(-126, -119, 35, 40)   
+)[1]
+
+# Kincade fire region
+kincade_bbox <- c(-124, -120, 36, 39)
 
 nc <- goesaodc_openFile(netCDF)
-sp <- goesaodc_createSpatialPoints(nc, dqfLevel = 3, bbox = kincade_bbox)
-maps::map(database = "state", "regions" = c("california"), xlim = c(-126, -113.5))
-goesaodc_plotSpatialPoints(sp, cex = 0.2, add = TRUE)
+sp <- goesaodc_createSpatialPoints(nc, bbox = kincade_bbox, dqfLevel = 3)
+
+goesaodc_plotSpatialPoints(sp, cex = 0.5)
+maps::map(
+  database = "state",
+  regions = "california",
+  xlim = c(-125, -119),
+  ylim = c(35, 40),
+  add  = TRUE
+)
 }
 }

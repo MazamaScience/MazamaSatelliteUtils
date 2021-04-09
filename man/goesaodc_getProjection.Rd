@@ -7,11 +7,11 @@
 goesaodc_getProjection(nc)
 }
 \arguments{
-\item{nc}{ncdf4 object}
+\item{nc}{ncdf4 handle.}
 }
 \value{
 list of metadata
 }
 \description{
-Return the projection information of `nc`
+Return the projection information of `nc`.
 }

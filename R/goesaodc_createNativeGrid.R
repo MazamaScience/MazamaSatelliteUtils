@@ -2,10 +2,6 @@
 #' 
 #' @title Create a nativeGrid object
 #' 
-#' @param nc ncdf4 handle or a list of handles.
-#' @param bbox Bounding box for the region of interest; Defaults to CONUS.
-#' @param verbose Logical flag to increase messages while processing data.
-#' 
 #' @description Creates a \emph{nativeGrid} object with a list of matrices for: 
 #' longitude, latitude, AOD values, and DQF values. The arrays are defined in
 #' native i, j coordinates and are thus curvilinear as opposed to rectilinear 
@@ -15,6 +11,11 @@
 #' handles. If a list of handles is provided, grid cell values for AOD and DQF 
 #' will be averaged across all nc handles. This "native grid" averaging 
 #' provides a simple way to convert 5-minute data into an hourly average.
+#' 
+#' @param nc ncdf4 handle or a list of handles.
+#' @param bbox Bounding box for the region of interest; Defaults to CONUS.
+#' @param verbose Logical flag to print data processing messages; Defaults to 
+#' FALSE.
 #' 
 #' @return List with lon, lat, AOD and DQF matrices
 #

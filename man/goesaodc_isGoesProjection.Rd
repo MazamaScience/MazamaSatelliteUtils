@@ -7,12 +7,12 @@
 goesaodc_isGoesProjection(nc)
 }
 \arguments{
-\item{nc}{ncdf4 object}
+\item{nc}{ncdf4 handle.}
 }
 \value{
 logical
 }
 \description{
-Return TRUE if projection information in `nc` matches GOES projection
-information.
+Determines if projection information in `nc` matches GOES 
+projection information.
 }

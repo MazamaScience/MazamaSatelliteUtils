@@ -7,7 +7,7 @@
 goesaodc_getCoordBounds(nc)
 }
 \arguments{
-\item{nc}{netcdf handle}
+\item{nc}{ncdf4 handle.}
 }
 \value{
 A named list with x1, x2, y1, and y2.

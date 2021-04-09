@@ -1,30 +1,14 @@
 #' @export
 #' 
 #' @title goesaodc_createRasterStack()
-#'
-#' @param satID ID of the source GOES satellite (G16 or G17).
-#' @param datetime Desired datetime in any Ymd H [MS] format or \code{POSIXct}.
-#' @param endTime Desired ending time in any Ymd H [MS] format or 
-#' \code{POSIXct}.
-#' @param var GOES data variable ("AOD, "DQF" or "ID"); Defaults to "AOD".
-#' @param res Resolution of raster in degrees; Defaults to 0.1.
-#' @param bbox Bounding box for raster; Defaults to CONUS.
-#' @param dqfLevel Data quality flag level.
-#' @param timezone Timezone for \code{datetime} and optionally \code{endTime}.
-#' @param isJulian Logical specifying if \code{datetime} (and optionally
-#' \code{endTime}) are Julian formatted.
-#' @param fileList Optional list of files to stack. Useful when working with 
-#' custom time ranges. 
-#' @param verbose Logical flag to print stacking information.
-#'
-#' @description  Create a \code{RasterStack} from GOES AOD data files for the
+#' 
+#' @description Creates a \code{RasterStack} from GOES AOD data files for the
 #' date and hour specified by \code{datetime}. Each \code{RasterLayer} contains
 #' data from one Advanced Baseline Imager (ABI) scan during the specified time
 #' period.
 #'
 #' If data for the given time period is not found in the directory specified by 
-#' \code{setSatelliteDataDir()}, it will be downloaded in order to create the
-#' \code{RasterStack}.
+#' \code{setSatelliteDataDir()}, then it will be downloaded.
 #'
 #' The Z axis of the \code{RasterStack} is a character vector where each element
 #' is the time stamp of the scan and has the format YYYYMMDDHHMMSS. This can be
@@ -32,7 +16,7 @@
 #' \code{RasterStack} are also time stamps of the scan in the format: XHH.MM.SS.
 #'
 #' The \code{bbox} parameter can be a vector of floats in c(lonLo, lonHi, latLo,
-#' latHi) order or the return value from \code{sp::bbox()} or
+#' latHi) order or the return value of \code{sp::bbox()} or 
 #' \code{raster::extent()}.
 #'
 #' The \code{dqfLevel} parameter can take a value of:
@@ -43,6 +27,22 @@
 #' \item{2}{ -- Low quality retrieval flag}
 #' \item{3}{ -- No retrieval quality flag}
 #' }
+#'
+#' @param satID ID of the source GOES satellite (G16 or G17).
+#' @param datetime Datetime in any Ymd H [MS] format or \code{POSIXct}.
+#' @param endtime End time in any Ymd H [MS] format or \code{POSIXct}.
+#' @param var GOES data variable ("AOD, "DQF" or "ID"); Defaults to "AOD".
+#' @param res Resolution of raster in degrees; Defaults to 0.1.
+#' @param bbox Bounding box for the region of interest; Defaults to CONUS.
+#' @param dqfLevel Data quality flag level.
+#' @param timezone Timezone used to interpret \code{datetime} and 
+#' \code{endtime}; Defaults to UTC.
+#' @param isJulian Logical value determining whether \code{datetime} should be 
+#' interpreted as a Julian date with day of year as a decimal number; Defaults 
+#' to FALSE.
+#' @param fileList Optional list of files to stack. Useful when working with 
+#' custom time ranges. 
+#' @param verbose Logical flag to print stacking progress; Defaults to FALSE.
 #'
 #' @return RasterStack
 #' 
@@ -58,7 +58,7 @@
 #' rasterStack <- goesaodc_createRasterStack(
 #'   satID = "G17",
 #'   datetime = "2019-10-27 10",
-#'   endTime = "2019-10-27 11",
+#'   endtime = "2019-10-27 11",
 #'   res = 0.075,
 #'   bbox = kincade_bbox,
 #'   dqfLevel = 3,
@@ -74,12 +74,12 @@
 goesaodc_createRasterStack <- function(
   satID = NULL,
   datetime = NULL,
-  endTime = NULL,
+  endtime = NULL,
   var = "AOD",
   res = 0.1,
   bbox = c(-125, -65, 24, 50),
   dqfLevel = NULL,
-  timezone = 'UTC',
+  timezone = "UTC",
   isJulian = FALSE,
   fileList = NULL,
   verbose = FALSE
@@ -110,9 +110,9 @@ goesaodc_createRasterStack <- function(
     isJulian = isJulian
   )
   
-  if ( !is.null(endTime) ) {
-    endTime <- MazamaCoreUtils::parseDatetime(
-      datetime = endTime, 
+  if ( !is.null(endtime) ) {
+    endtime <- MazamaCoreUtils::parseDatetime(
+      datetime = endtime, 
       timezone = timezone, 
       isJulian = isJulian
     )
@@ -126,7 +126,7 @@ goesaodc_createRasterStack <- function(
     goesaodc_downloadAOD(
       satID = satID, 
       datetime = datetime, 
-      endTime = endTime, 
+      endtime = endtime, 
       timezone = timezone, 
       verbose = verbose
     )
@@ -135,7 +135,7 @@ goesaodc_createRasterStack <- function(
     fileList <- goesaodc_listFiles(
       satID = satID, 
       datetime = datetime, 
-      endTime = endTime, 
+      endtime = endtime, 
       timezone = timezone
     )
   }

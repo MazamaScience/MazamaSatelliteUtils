@@ -2,15 +2,17 @@
 #' 
 #' @title Create a GOES grid in satelliteDataDir
 #' 
-#' @param nc open .nc filehandle created with \code{goesaodc_openFile()}
-#' @param grid_filepath filepath location for either goesEastGrid.rda or 
-#' goesWestGrid.rda
-#' 
 #' @description Creates data files with geolocation information for GOES-16 
 #' (East) or GOES-17 (West) satellite products. Takes an open .nc filehandle 
 #' and reads projection and coordinate grid information from it to create
 #' a GOES East or West grid in the directory previously set with 
 #' \code{setSatelliteDataDir()}.
+#' 
+#' @param nc ncdf4 handle.
+#' @param grid_filepath filepath location for either goesEastGrid.rda or 
+#' goesWestGrid.rda.
+#' 
+#' @return Invisibly returns the file path of the created GOES grid file.
 #' 
 #' @examples
 #' \donttest{

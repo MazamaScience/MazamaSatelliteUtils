@@ -2,12 +2,12 @@
 % Please edit documentation in R/goesaodc_listFiles.R
 \name{goesaodc_listFiles}
 \alias{goesaodc_listFiles}
-\title{List available GOES AOD files for a specified date and hour}
+\title{List GOES AOD files available for a specific date and hour}
 \usage{
 goesaodc_listFiles(
   satID = NULL,
   datetime = NULL,
-  endTime = NULL,
+  endtime = NULL,
   useRemote = FALSE,
   timezone = "UTC",
   isJulian = FALSE,
@@ -17,31 +17,35 @@ goesaodc_listFiles(
 \arguments{
 \item{satID}{ID of the source GOES satellite (G16 or G17).}
 
-\item{datetime}{Desired datetime in any Ymd H [MS] format or \code{POSIXct}}
+\item{datetime}{Datetime in any Ymd H [MS] format or \code{POSIXct}.}
 
-\item{endTime}{Desired ending time in any Ymd H [MS] format or \code{POSIXct}}
+\item{endtime}{End time in any Ymd H [MS] format or \code{POSIXct}}
 
 \item{useRemote}{Logical specifying whether to look for files in 
-\code{getSatelliteDataDir()} or \code{baseUrl}.}
+\code{getSatelliteDataDir()} or \code{baseUrl}; Defaults to FALSE.}
 
-\item{timezone}{Timezone used to interpret \code{datetime} and \code{endTime}}
+\item{timezone}{Timezone used to interpret \code{datetime} and 
+\code{endtime}; Defaults to UTC.}
 
-\item{isJulian}{Logical specifying if \code{datetime} (and optionally 
-\code{endTime}) are Julian formatted}
+\item{isJulian}{Logical value determining whether \code{datetime} (and
+optionally \code{endtime}) should be interpreted as a Julian date with day of
+ year as a decimal number; Defaults to FALSE.}
 
-\item{baseUrl}{Base URL for data queries.}
+\item{baseUrl}{URL of remote database; Defaults to 
+"https://tools-1.airfire.org/Satellite/".}
 }
 \value{
 Vector of filenames.
 }
 \description{
-Retrieve a list of GOES AOD files available in the
-\code{satelliteDataDir} or at \code{baseUrl} for a specified date and hour.
+Retrieves a list of GOES AOD files for a specified date and hour
+available either locally in the specified \code{setSatelliteDir} or on a 
+remote server using the \code{useRemote} parameter.
 }
-\note{
+\details{
 All files for a particular hour will be returned even if the
 incoming \code{startdate} or \code{jdate} is specified to the minute or
-second.  By default, the local directory set by \code{setSatelliteDir()} is 
+second. By default, the local directory set by \code{setSatelliteDir()} is 
 searched. \code{useRemote = TRUE} will search \code{baseURL} for all files 
 that are available within the specified timeframe.
 }
@@ -57,7 +61,7 @@ goesaodc_listFiles("G17", "2019-09-06 18")
 goesaodc_listFiles(
   satID = "G16",
   datetime = "2019-09-06 06:00",
-  endTime = "2019-09-06 18:00",
+  endtime = "2019-09-06 18:00",
   timezone = "America/Los_Angeles",
   useRemote = TRUE
 )

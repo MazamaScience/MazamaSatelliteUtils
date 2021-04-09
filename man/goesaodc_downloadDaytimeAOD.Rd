@@ -2,12 +2,8 @@
 % Please edit documentation in R/goesaodc_downloadDaytimeAOD.R
 \name{goesaodc_downloadDaytimeAOD}
 \alias{goesaodc_downloadDaytimeAOD}
-\title{Download GOES-16 or GOES-17 AOD data for the daylight hours of a 
-specific date and location.
-
-#' @description Download all daylight files available to directory specified 
-with \code{setSatelliteDir}.  See \code{getDaylightHours()} for details 
-regarding how daylight hours are calculated.}
+\title{Download GOES AOD data for the daylight hours of a specific date and 
+location}
 \usage{
 goesaodc_downloadDaytimeAOD(
   satID = NULL,
@@ -23,36 +19,34 @@ goesaodc_downloadDaytimeAOD(
 \arguments{
 \item{satID}{ID of the source GOES satellite (G16 or G17).}
 
-\item{datetime}{Specific date for which daylight hours are requested.}
+\item{datetime}{Datetime in any Ymd H [MS] format or \code{POSIXct}.}
 
 \item{longitude}{Longitude of the location of interest in decimal degrees E.}
 
 \item{latitude}{Latitude of the location of interest in decimal degrees N.}
 
-\item{bbox}{Bounding box for the region of interest, Default: CONUS.}
+\item{bbox}{Bounding box for the region of interest; Defaults to CONUS.}
 
-\item{timezone}{Timezone in which to interpret the \code{datetime}.}
+\item{timezone}{Timezone used to interpret \code{datetime}.}
 
-\item{isJulian}{Logical value determining whether datetime should be 
-interpreted as a Julian date with day of year as a decimal number.}
+\item{isJulian}{Logical value determining whether \code{datetime} should be 
+interpreted as a Julian date with day of year as a decimal number; Defaults 
+to FALSE.}
 
-\item{verbose}{Logical specifies whether to show status of file download.}
+\item{verbose}{Logical flag to print download progress; Defaults to FALSE.}
 }
 \value{
-Invisibly returns a vector of local files matching the requested \code{datetime}.
+Invisibly returns a vector of local files matching the requested 
+\code{datetime}.
 }
 \description{
-Download GOES-16 or GOES-17 AOD data for the daylight hours of a 
-specific date and location.
-
-#' @description Download all daylight files available to directory specified 
-with \code{setSatelliteDir}.  See \code{getDaylightHours()} for details 
-regarding how daylight hours are calculated.
+Downloads a GOES satellite's daylight NetCDF files for the given 
+\code{datetime} to the directory specified by \code{setSatelliteDataDir()}.
+See \code{getDaylightHours()} for details regarding how daylight hours are 
+calculated.
 }
 \examples{
 \donttest{
-# List locally available files for a specific date by timezone
-
 library(MazamaSatelliteUtils)
 library(MazamaSpatialUtils)
 
@@ -62,7 +56,8 @@ setSpatialDataDir("~/Data/Spatial")
 goesaodc_downloadDaytimeAOD(
   satID = "G16",
   datetime = "2019-09-06", 
-  timezone = "America/Los_Angeles")
+  timezone = "America/Los_Angeles"
+)
 }
 
 }

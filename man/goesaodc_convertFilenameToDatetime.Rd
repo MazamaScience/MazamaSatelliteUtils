@@ -7,11 +7,11 @@
 goesaodc_convertFilenameToDatetime(file)
 }
 \arguments{
-\item{file}{GOES AOD netCDF file name}
+\item{file}{File name of GOES AOD file.}
 }
 \value{
 The scan start time.
 }
 \description{
-Get the scan start time from a GOES AODC netCDF file name
+Gets the scan start time from a GOES AODC netCDF file name.
 }

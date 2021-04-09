@@ -1,16 +1,7 @@
 #' @export
 #'
 #' @title Create a daytime RasterStack for a specified date
-#'
-#' @param satID ID of the source GOES satellite (G16 or G17).
-#' @param datetime Desired datetime in any Ymd H [MS] format or \code{POSIXct}.
-#' @param var variable ("AOD, "DQF" or "ID")
-#' @param res resolution of raster in longitude/latitude degrees
-#' @param bbox Bounding box for the region of interest.
-#' @param dqfLevel Data quality flag level.
-#' @param timezone Timezone in which to interpret the \code{datetime}.
-#' @param verbose Logical flag to show progress of raster stacking.
-#'
+#' 
 #' @description Create a \code{RasterStack} from GOES AOD data files for the
 #' date specified by \code{datetime}. Each \code{RasterLayer} contains
 #' data from one Advanced Baseline Imager (ABI) scan during the specified time
@@ -37,6 +28,15 @@
 #' \item{2}{ -- Low quality retrieval flag}
 #' \item{3}{ -- No retrieval quality flag}
 #' }
+#'
+#' @param satID ID of the source GOES satellite (G16 or G17).
+#' @param datetime Datetime in any Ymd H [MS] format or \code{POSIXct}.
+#' @param var var GOES data variable ("AOD, "DQF" or "ID"); Defaults to "AOD".
+#' @param res Resolution of raster in degrees; Defaults to 0.1.
+#' @param bbox Bounding box for the region of interest.
+#' @param dqfLevel Data quality flag level.
+#' @param timezone Timezone used to interpret \code{datetime}.
+#' @param verbose Logical flag to print stacking progress; Defaults to FALSE.
 #'
 #' @return RasterStack
 #'
@@ -115,7 +115,7 @@ goesaodc_createDaytimeRasterStack <- function(
   dayStack <- goesaodc_createRasterStack(
     satID = satID, 
     datetime = sunrise,
-    endTime = sunset,
+    endtime = sunset,
     dqfLevel = dqfLevel,
     verbose = verbose
   )

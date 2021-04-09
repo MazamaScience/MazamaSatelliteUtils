@@ -2,12 +2,12 @@
 % Please edit documentation in R/goesaodc_downloadAOD.R
 \name{goesaodc_downloadAOD}
 \alias{goesaodc_downloadAOD}
-\title{Download GOES-16 or GOES-17 AOD data}
+\title{Download GOES AOD data for a specific date}
 \usage{
 goesaodc_downloadAOD(
   satID = NULL,
   datetime = NULL,
-  endTime = NULL,
+  endtime = NULL,
   timezone = "UTC",
   isJulian = FALSE,
   verbose = FALSE,
@@ -17,31 +17,32 @@ goesaodc_downloadAOD(
 \arguments{
 \item{satID}{ID of the source GOES satellite (G16 or G17).}
 
-\item{datetime}{Desired datetime in any Ymd H [MS] format or \code{POSIXct}}
+\item{datetime}{Datetime in any Ymd H [MS] format or \code{POSIXct}.}
 
-\item{endTime}{Desired ending time in any Ymd H [MS] format or \code{POSIXct}}
+\item{endtime}{End time in any Ymd H [MS] format or \code{POSIXct}.}
 
-\item{timezone}{Timezone used to interpret \code{datetime} and \code{endTime}}
+\item{timezone}{Timezone used to interpret \code{datetime} and 
+\code{endtime}; Defaults to UTC.}
 
-\item{isJulian}{Logical specifying if \code{datetime} (and optionally 
-\code{endTime}) are Julian formatted}
+\item{isJulian}{Logical value determining whether \code{datetime} should be 
+interpreted as a Julian date with day of year as a decimal number; Defaults 
+to FALSE.}
 
-\item{verbose}{Logical parameter specifying whether download status should be
-shown.}
+\item{verbose}{Logical flag to print download progress; Defaults to FALSE.}
 
-\item{baseUrl}{Base URL for data queries.}
+\item{baseUrl}{URL of remote database; Defaults to 
+"https://tools-1.airfire.org/Satellite/".}
 }
 \value{
-Invisibly returns a vector of local files matching the requested \code{datetime}.
+Invisibly returns a vector of local files matching the requested 
+\code{datetime}.
 }
 \description{
-Download all GOES 16 or 17 NetCDF files for the given
+Downloads a GOES satellite's NetCDF files for the given 
 \code{datetime} to the directory specified by \code{setSatelliteDataDir()}.
-If \code{datetime} is specified to the hour and \code{fullDay} is not
-explicitly set to TRUE', only files for that hour will be downloaded. If the
-optional \code{endTime} is specified, all files that exist for the time 
-period between \code{datetime} and \code{endTime} will be downloaded. If 
-\code{timezone} is not specified, "UTC" is assumed.
+If \code{endtime} is specified, all files that exist between \code{datetime} 
+and \code{endtime} will be downloaded. Otherwise, only files for the 
+\code{datetime} hour will be retrieved.
 
 The vector of files returned includes all files in \code{satelliteDataDir}
 that match the requested date whether they were download previously or with
@@ -56,11 +57,11 @@ setSatelliteDataDir("~/Data/Satellite")
 files <- goesaodc_downloadAOD("G17", "2019-09-06 18") 
 print(files)
 
-# Specific time range
+# Time range
 files <- goesaodc_downloadAOD(
   satID = "G16",
   datetime = "2019-09-06 08:00",
-  endTime = "2019-09-06 12:00",
+  endtime = "2019-09-06 12:00",
   timezone = "America/Los_Angeles"
 )
 print(files)

@@ -4,19 +4,19 @@
 #' 
 #' @title Create plots of AOD data available within a region
 #' 
-#' @param ncList ncdf4 handle or a list of handles.
-#' @param bbox Geographic extent of area of interest; Defaults to CONUS.
-#' @param dqfLevel Data quality flag level.
+#' @description The goal of this plot is to get a quick look at available data 
+#' within a region. A user might look at a single timestep or might pass in a 
+#' list of nc handles to see if native grid averaging over several time steps 
+#' significantly reduces the number missing data grid cells.
+#' 
+#' @param nc ncdf4 handle or a list of handles.
+#' @param bbox Bounding box for the region of interest; Defaults to CONUS.
+#' @param dqfLevel Data quality flag level; Defaults to 2.
 #' @param col_state Color of state borders. Use "transparent" for no lines.
 #' @param col_county Color of county borders. Use "transparent" for no lines.
 #' @param lwd_state Line weight of state borders.
 #' @param lwd_county Line weight of county borders.
 #' @param ... Additional arguments passed to \code{goesaodc_plotSpatialPoints()}.
-#' 
-#' @description The goal of this plot is to get a quick look at available data 
-#' within a region. A user might look at a single timestep or might pass in a 
-#' list of nc handles to see if native grid averaging over several time steps 
-#' significantly reduces the number missing data grid cells.
 #' 
 #' @examples
 #' \dontrun{
@@ -40,20 +40,20 @@
 #' kincade_bbox <- c(-124, -120, 36, 39)
 #' 
 #' # Build a list of open nc handles to process
-#' ncList <- list()
+#' nc <- list()
 #' for ( file in files ) {
 #'   label <- 
 #'     file %>%
 #'     goesaodc_convertFilenameToDatetime() %>%
 #'     MazamaCoreUtils::timeStamp(unit = "sec", timezone = "UTC")
-#'   ncList[[label]] <- goesaodc_openFile(basename(file))
+#'   nc[[label]] <- goesaodc_openFile(basename(file))
 #' }
 #' 
-#' goesaodc_areaPlot(ncList, kincade_bbox)
+#' goesaodc_areaPlot(nc, kincade_bbox)
 #' }
 
 goesaodc_areaPlot <- function(
-  ncList = NULL,
+  nc = NULL,
   bbox = bbox_CONUS,        
   dqfLevel = 2,
   col_state = "black",
@@ -65,7 +65,7 @@ goesaodc_areaPlot <- function(
   
   # ----- Validate parameters --------------------------------------------------
   
-  MazamaCoreUtils::stopIfNull(ncList)
+  MazamaCoreUtils::stopIfNull(nc)
   MazamaCoreUtils::stopIfNull(bbox)
   
   # ----- Arguments for goesaodc_plotSpatialPoints() ---------------------------
@@ -101,7 +101,7 @@ goesaodc_areaPlot <- function(
   
   # ---- Process and plot each .nc handle --------------------------------------
   
-  for (nc in ncList) {
+  for (netCDF in nc) {
     
     # ----- Prepare data -------------------------------------------------------
     
@@ -111,7 +111,7 @@ goesaodc_areaPlot <- function(
     
     # Load data from within bbox and create SpatialPoints
     result <- try({
-      SP <- goesaodc_createSpatialPoints(nc, bbox, dqfLevel)
+      SP <- goesaodc_createSpatialPoints(netCDF, bbox, dqfLevel)
     }, silent = TRUE)
     
     noData <- FALSE

@@ -1,47 +1,79 @@
 #' @export
 #' 
-#' @title Create a RasterBrick Average for a specified hour
+#' @title Create an average AOD RasterBrick
 #' 
-#' @param rasterStack startdate, specified to the hour, in any Y-m-d H format or
-#' \code{POSIXct}
-#' @param na.rm logical that determines if an average should be taken for pixels
-#' that do not always have values
+#' @description Creates an average AOD RasterBrick for a given hour. 
 #' 
-#' @description Creates a RasterBrick of the average AOD for a given hour. 
+#' @param rasterStack A GOES AOD \code{RasterStack}.
+#' @param na.rm Logical that determines if an average should be taken for cells
+#' with no values.
 #' 
 #' @return RasterBrick
 #' 
 #' @examples
 #' \dontrun{
-#' # Library setup
 #' library(MazamaSatelliteUtils)
 #' library(MazamaSpatialUtils)
 #' 
 #' setSatelliteDataDir("~/Data/Satellite")
 #' setSpatialDataDir("~/Data/Spatial")
+#' 
 #' loadSpatialData("USCensusStates")
-#'
-#' # Take average for Oregon on July 31, 2019 at 9am (the Milepost 97 Fire)
+#' 
+#' # Oregon on August 1, 2019 at 12pm (Milepost 97 Fire)
+#' datetime <- "2019-08-01 19"
+#' timezone <- "UTC"
 #' oregon <- subset(USCensusStates, stateCode == "OR")
 #' bbox_oregon <- sp::bbox(oregon)
-#' datetime <- lubridate::ymd_h("2019-08-01 16", tz = "UTC")
+#' lon <- -123.245
+#' lat <- 42.861
 #' 
-#' rstrStack <- goesaodc_createRasterStack(
+#' # Gather all the raster layers for the given hour into a stack
+#' rasterStack <- goesaodc_createRasterStack(
 #'   satID = "G16",
-#'   datetime = datetime, 
+#'   datetime = datetime,
+#'   timezone = timezone, 
 #'   bbox = bbox_oregon,
-#'   res = 0.25,
-#'   dqfLevel = 2
+#'   res = 0.05,
+#'   dqfLevel = 2,
+#'   verbose = TRUE
 #' )
-#' avg <- raster_createStackAverage(rstrStack, na.rm = TRUE)
-#'
-#' # Plot average AOD raster and state border
+#' 
+#' rasterAvg <- raster_createStackAverage(rasterStack, na.rm = TRUE)
+#' 
+#' tb <- raster_createLocationTimeseries(
+#'   rasterStack = rasterStack,
+#'   longitude = lon,
+#'   latitude = lat,
+#'   bbox = bbox_oregon,
+#'   buffer = 1000
+#' )
+#' 
+#' # Plot AOD data
 #' pal_aod <- colorRampPalette(c("lightgoldenrod1", "red3"))
-#' title <- paste0("Average AOD (", 
-#'                 strftime(datetime, "%Y-%m-%d %I%p", tz = "America/Los_Angeles"), 
-#'                 " PDT)")
-#' plot(avg, col = pal_aod(50), main = title)
+#' par(mfrow = c(1, 2))
+#' 
+#' # Raster plot on left
+#' raster::plot(
+#'   rasterAvg,
+#'   main = "Average AOD",
+#'   col = pal_aod(50),
+#'   xlim = c(-125, -122),
+#'   ylim = c(42, 44)
+#' )
 #' plot(oregon, add = TRUE)
+#' 
+#' # Time series plot on right
+#' points(x = c(lon), y = c(lat), cex = 2.0, pch = 3, lwd = 1.5)
+#' plot(
+#'   x = tb$datetime,
+#'   y = tb$aod,
+#'   pch = 15,
+#'   cex = 1,
+#'   main = datetime,
+#'   xlab = "Time",
+#'   ylab = "AOD"
+#' )
 #' }
 
 raster_createStackAverage <- function(
@@ -50,6 +82,7 @@ raster_createStackAverage <- function(
 ) {
   
   stackAvg <- raster::mean(rasterStack, na.rm = na.rm)
+  
   return(stackAvg)
   
 }

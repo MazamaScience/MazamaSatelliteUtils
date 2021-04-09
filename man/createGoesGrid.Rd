@@ -7,10 +7,13 @@
 createGoesGrid(nc = NULL, grid_filepath = NULL)
 }
 \arguments{
-\item{nc}{open .nc filehandle created with \code{goesaodc_openFile()}}
+\item{nc}{ncdf4 handle.}
 
 \item{grid_filepath}{filepath location for either goesEastGrid.rda or 
-goesWestGrid.rda}
+goesWestGrid.rda.}
+}
+\value{
+Invisibly returns the file path of the created GOES grid file.
 }
 \description{
 Creates data files with geolocation information for GOES-16 

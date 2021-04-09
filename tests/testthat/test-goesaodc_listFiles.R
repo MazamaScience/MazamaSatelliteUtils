@@ -3,7 +3,7 @@ context("test-goesaodc_listFiles")
 # ---- TEST PARAMETERS ---------------------------------------------------------
 satID <- "G16"
 datetime <- "2019-09-06 16"
-endTime <- "2019-09-06 17"
+endtime <- "2019-09-06 17"
 timezone <- "America/Los_Angeles"
 jdate <- "20192491600"
 jdate_end <- "20192491700"
@@ -51,7 +51,7 @@ test_that("remote files are listed correctly with Julian date", {
 
 goesaodc_downloadAOD(satID = satID, 
                      datetime = datetime, 
-                     endTime = endTime,
+                     endtime = endtime,
                      timezone = timezone)
 
 # ---------------------------------------------------------------------------- #
@@ -65,7 +65,7 @@ test_that("local files are listed correctly", {
       goesaodc_listFiles(
         satID = satID, 
         datetime = datetime,
-        endTime = endTime,
+        endtime = endtime,
         timezone = timezone)
     ),
     24
@@ -83,7 +83,7 @@ test_that("local files are listed correctly using Julian format dates", {
       goesaodc_listFiles(
         satID = satID, 
         datetime = jdate,
-        endTime = jdate_end,
+        endtime = jdate_end,
         timezone = timezone,
         isJulian = TRUE)
     ),

@@ -5,7 +5,7 @@
 \title{Create plots of AOD data available within a region}
 \usage{
 goesaodc_areaPlot(
-  ncList = NULL,
+  nc = NULL,
   bbox = bbox_CONUS,
   dqfLevel = 2,
   col_state = "black",
@@ -16,11 +16,11 @@ goesaodc_areaPlot(
 )
 }
 \arguments{
-\item{ncList}{ncdf4 handle or a list of handles.}
+\item{nc}{ncdf4 handle or a list of handles.}
 
-\item{bbox}{Geographic extent of area of interest; Defaults to CONUS.}
+\item{bbox}{Bounding box for the region of interest; Defaults to CONUS.}
 
-\item{dqfLevel}{Data quality flag level.}
+\item{dqfLevel}{Data quality flag level; Defaults to 2.}
 
 \item{col_state}{Color of state borders. Use "transparent" for no lines.}
 
@@ -60,15 +60,15 @@ files <- goesaodc_downloadAOD(
 kincade_bbox <- c(-124, -120, 36, 39)
 
 # Build a list of open nc handles to process
-ncList <- list()
+nc <- list()
 for ( file in files ) {
   label <- 
     file \%>\%
     goesaodc_convertFilenameToDatetime() \%>\%
     MazamaCoreUtils::timeStamp(unit = "sec", timezone = "UTC")
-  ncList[[label]] <- goesaodc_openFile(basename(file))
+  nc[[label]] <- goesaodc_openFile(basename(file))
 }
 
-goesaodc_areaPlot(ncList, kincade_bbox)
+goesaodc_areaPlot(nc, kincade_bbox)
 }
 }

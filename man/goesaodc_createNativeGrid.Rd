@@ -11,7 +11,8 @@ goesaodc_createNativeGrid(nc = NULL, bbox = bbox_CONUS, verbose = FALSE)
 
 \item{bbox}{Bounding box for the region of interest; Defaults to CONUS.}
 
-\item{verbose}{Logical flag to increase messages while processing data.}
+\item{verbose}{Logical flag to print data processing messages; Defaults to 
+FALSE.}
 }
 \value{
 List with lon, lat, AOD and DQF matrices

@@ -2,23 +2,25 @@
 % Please edit documentation in R/goesaodc_createTibble.R
 \name{goesaodc_createTibble}
 \alias{goesaodc_createTibble}
-\title{Create a tibble from ncdf4 handle}
+\title{Create a tibble from a ncdf4 handle}
 \usage{
 goesaodc_createTibble(nc = NULL, bbox = bbox_CONUS, verbose = FALSE)
 }
 \arguments{
 \item{nc}{ncdf4 handle or a list of handles.}
 
-\item{bbox}{Geographic extent of area of interest; Defaults to CONUS.}
+\item{bbox}{Bounding box for the region of interest; Defaults to CONUS.}
 
-\item{verbose}{Logical flag to increase messages while processing data.}
+\item{verbose}{Logical flag to print data processing messages; Defaults to 
+FALSE.}
 }
 \value{
 Tibble (dataframe) with NetCDF variables and associated locations.
 }
 \description{
-Create a tibble with columns: AOD, DQF, lon and lat.
-This information is sufficient to plot as points or create a raster object.
+Creates a tibble from a netCDF file with columns: AOD, DQF, lon 
+and lat. This information is sufficient to plot as points or create a raster 
+object.
 }
 \examples{
 \donttest{
@@ -27,33 +29,23 @@ library(MazamaSatelliteUtils)
 
 setSatelliteDataDir("~/Data/Satellite")
 
-ncFile <- goesaodc_downloadAOD(
+netCDF <- goesaodc_downloadAOD(
   satID = "G17", 
   datetime = "2019-10-27 10", 
   timezone = "America/Los_Angeles" 
-  )[1]
+)[1]
 
-nc <- goesaodc_openFile(ncFile)
+nc <- goesaodc_openFile(netCDF)
 
 tbl <- goesaodc_createTibble(nc)
 head(tbl)
 
-# Tibble based on BBOX filtered extent of tibble
-library(MazamaSatelliteUtils)
+# Tibble based on bbox filtered region
 
-ncFile <- goesaodc_downloadAOD(
-  satID = "G17", 
-  datetime = "2019-10-27 10", 
-  timezone = "America/Los_Angeles" 
-  )[1]
-
-nc <- goesaodc_openFile(ncFile)
-
-# 2019 Kincade fire in Sonoma county
+# Kincade fire region
 bbox <- c(-124, -120, 36, 39)
 
 filtered_tbl <- goesaodc_createTibble(nc, bbox)
 head(filtered_tbl)
-
 }
 }

@@ -2,18 +2,19 @@
 #' 
 #' @title Create a quick plot of a GOES AOD SpatialPointsDataFrame
 #' 
-#' @param spatialPoints SpatialPointsDataFrame
-#' @param var Variable to plot
-#' @param n Sample size
-#' @param colBins number of color bins
-#' @param breaks vector of color breaks
-#' @param pch plot character
-#' @param cex plot symbol scale factor
-#' @param paletteName RColorBrewer palette name
-#' @param add logical specifying whether to create a new plot or add to existing
-#' 
-#' @description Quickly subsample and plot points in a GOES AOD 
+#' @description Quickly subsamples and plots points in a GOES AOD 
 #' spatialPointsDataFrame
+#' 
+#' @param spatialPoints SpatialPointsDataFrame.
+#' @param var GOES data variable ("AOD, "DQF" or "ID"); Defaults to "AOD".
+#' @param n Sample size.
+#' @param colBins Number of color bins.
+#' @param breaks Vector of color breaks.
+#' @param pch Plot character.
+#' @param cex Plot symbol scale factor.
+#' @param paletteName RColorBrewer palette name.
+#' @param add Logical specifying whether to create a new plot or add to an 
+#' existing one.
 #' 
 #' @examples 
 #' \donttest{
@@ -24,14 +25,22 @@
 #'   satID = "G17", 
 #'   datetime = "2019-10-27 10", 
 #'   timezone = "America/Los_Angeles" 
-#'   )[1]
-#'   
-#' kincade_bbox <- c(-126, -119, 35, 40)   
+#' )[1]
+#' 
+#' # Kincade fire region
+#' kincade_bbox <- c(-124, -120, 36, 39)
 #'
 #' nc <- goesaodc_openFile(netCDF)
-#' sp <- goesaodc_createSpatialPoints(nc, dqfLevel = 3, bbox = kincade_bbox)
-#' maps::map(database = "state", "regions" = c("california"), xlim = c(-126, -113.5))
-#' goesaodc_plotSpatialPoints(sp, cex = 0.2, add = TRUE)
+#' sp <- goesaodc_createSpatialPoints(nc, bbox = kincade_bbox, dqfLevel = 3)
+#' 
+#' goesaodc_plotSpatialPoints(sp, cex = 0.5)
+#' maps::map(
+#'   database = "state",
+#'   regions = "california",
+#'   xlim = c(-125, -119),
+#'   ylim = c(35, 40),
+#'   add  = TRUE
+#' )
 #' }
 
 goesaodc_plotSpatialPoints <- function(
@@ -47,7 +56,8 @@ goesaodc_plotSpatialPoints <- function(
   # TODO: color reverse?
 ) {
   
-  # Subsample points
+  # ----- Subsample points -----------------------------------------------------
+  
   if ( n < nrow(spatialPoints) ) {
     indices <- sample(seq_len(nrow(spatialPoints)), n)
     spatialPointsSub <- spatialPoints[indices,]
@@ -55,9 +65,11 @@ goesaodc_plotSpatialPoints <- function(
     spatialPointsSub <- spatialPoints
   }
   
-  # Make breaks for specifed number of equally sized color bins
+  # ----- Define palette -------------------------------------------------------
+  
+  # Make breaks for specified number of equally sized color bins
   # TODO: Use quantiles like quantile(aodValues, seq(from = 0.00, to = 1.00, by = 0.10), na.rm = TRUE)
-  if (is.null(breaks)) {
+  if ( is.null(breaks) ) {
     mn <- min(spatialPointsSub[[var]])
     mx <- max(spatialPointsSub[[var]])
     range <- mx - mn
@@ -71,6 +83,15 @@ goesaodc_plotSpatialPoints <- function(
   cols <- RColorBrewer::brewer.pal(length(breaks)-1, paletteName)
   col_i <- .bincode(spatialPointsSub[[var]], breaks)
   col_v <- cols[col_i]
-  plot(spatialPointsSub, pch=pch, col=col_v, cex=cex, add = add)
+  
+  # ----- Plot points ----------------------------------------------------------
+  
+  plot(
+    spatialPointsSub,
+    pch = pch,
+    col = col_v,
+    cex = cex,
+    add = add
+  )
   
 }
