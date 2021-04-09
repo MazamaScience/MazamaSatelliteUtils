@@ -186,14 +186,13 @@ result <- try({
   result <- try({
     
     # Set directories using command line parameters
-    
     setSpatialDataDir(opt$SpatialDataDir)
-    loadSpatialData("USCensusStates")
     setSatelliteDataDir(opt$SatelliteDataDir)
     
     # TODO:  # Use bbox if not NULL else state
     
-    # Load state boundries
+    # Load state boundaries
+    loadSpatialData("USCensusStates")
     state <- subset(USCensusStates, stateCode == opt$stateCode)
     
     # Parse out bbox vector
@@ -219,10 +218,12 @@ result <- try({
     bbox <- c(w, e, s, n)
 
     # Get the timezone in the bbox center
-    timezone <- MazamaSpatialUtils::getTimezone(lon = mid_lon,
-                                                lat = mid_lat,
-                                                countryCodes = c("US"),
-                                                useBuffering = TRUE)
+    timezone <- MazamaSpatialUtils::getTimezone(
+      lon = mid_lon,
+      lat = mid_lat,
+      countryCodes = c("US"),
+      useBuffering = TRUE
+    )
     
     # TODO:  # Support full days if local time hour is midnight
     
@@ -231,7 +232,11 @@ result <- try({
       MazamaCoreUtils::parseDatetime(opt$datetime, timezone = timezone) %>%
       lubridate::floor_date(unit = "hour")
     
-    videoTimeStamp <- MazamaCoreUtils::timeStamp(datetime, unit = "hour", timezone = timezone)
+    videoTimeStamp <- MazamaCoreUtils::timeStamp(
+      datetime,
+      unit = "hour",
+      timezone = timezone
+    )
     
     if ( opt$verbose )
       logger.trace("Creating video for %s ...", strftime(datetime, "%Y-%m-%d %H:%M:%S %Z"))
@@ -260,7 +265,6 @@ result <- try({
       )
       
     }
-    
     
   }, silent = TRUE)
   
@@ -296,6 +300,7 @@ result <- try({
       
       # Load scan data
       nc <- goesaodc_openFile(filename = scanFile)
+      print(scanFile)
       
       # Plot the frame
       png(frameFilePath, width = 1280, height = 720, units = "px")
@@ -320,10 +325,11 @@ result <- try({
         
         # Data plot 
         # TODO: Update cex value based on bbox size 
-        goesaodc_areaPlot(ncList = list(nc), 
-                          bbox = bbox, 
-                          dqfLevel = opt$dqfLevel)
-
+        goesaodc_areaPlot(
+          list(nc), 
+          bbox = bbox, 
+          dqfLevel = opt$dqfLevel
+        )
         
       }
       
