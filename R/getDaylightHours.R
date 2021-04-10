@@ -72,8 +72,6 @@
 #'   latitude = 42.861
 #' )
 #'}
-#'
-#' @rdname getDaylightHours
 
 getDaylightHours <- function(
   datetime = NULL,

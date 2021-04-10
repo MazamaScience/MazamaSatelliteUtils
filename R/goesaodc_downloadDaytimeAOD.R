@@ -36,8 +36,6 @@
 #'   timezone = "America/Los_Angeles"
 #' )
 #' }
-#' 
-#' @rdname goesaodc_downloadDaytimeAOD
 
 goesaodc_downloadDaytimeAOD <- function (
   satID = NULL,

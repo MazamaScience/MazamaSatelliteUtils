@@ -46,8 +46,6 @@
 #'   useRemote = TRUE
 #' )
 #' }
-#' 
-#' @rdname goesaodc_listDaytimeFiles
 
 goesaodc_listDaytimeFiles <- function(
   satID = NULL,
