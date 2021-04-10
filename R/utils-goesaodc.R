@@ -84,8 +84,6 @@ goesaodc_getCoordGrid <- function(
   
   # ----- Convert scan angles to latitude and longitude ------------------------
   
-  # @export
-  #
   # @title Converts GOES xy radian coordinates to latitude and longitude pairs
   #
   # @param x x value from the netcdf in radians (scale and offset already applied)
@@ -97,11 +95,10 @@ goesaodc_getCoordGrid <- function(
   # @param lambda0 longitude_of_projection_origin (converted to radians)
   #
   # @return a named list with lon and lat values
-  #
   
   goesaodc_lonLat <- function(x, y, r_eq, r_pol, H, lambda0) {
     
-    # Calculate distnace from satellite to point of interest
+    # Calculate distance from satellite to point of interest
     a <- sin(x)^2 + cos(x)^2 * (cos(y)^2 + (r_eq^2 / r_pol^2) * sin(y)^2)
     b <- -2 * H * cos(x) * cos(y)
     c <- H^2 - r_eq^2
