@@ -21,7 +21,7 @@ getDaylightHours(
 
 \item{latitude}{Latitude of the location of interest in decimal degrees N.}
 
-\item{bbox}{Bounding box for the region of interest; Defaults to CONUS.}
+\item{bbox}{Bounding box for the region of interest.}
 
 \item{timezone}{Timezone used to interpret \code{datetime}.}
 

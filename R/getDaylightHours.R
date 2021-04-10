@@ -32,7 +32,7 @@
 #' @param datetime Datetime in any Ymd H [MS] format or \code{POSIXct}.
 #' @param longitude Longitude of the location of interest in decimal degrees E.
 #' @param latitude Latitude of the location of interest in decimal degrees N.
-#' @param bbox Bounding box for the region of interest; Defaults to CONUS.
+#' @param bbox Bounding box for the region of interest.
 #' @param timezone Timezone used to interpret \code{datetime}.
 #' @param isJulian Logical value determining whether \code{datetime} should be 
 #' interpreted as a Julian date with day of year as a decimal number; Defaults 

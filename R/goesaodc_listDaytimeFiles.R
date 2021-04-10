@@ -13,7 +13,7 @@
 #' @param datetime Datetime in any Ymd H [MS] format or \code{POSIXct}.
 #' @param longitude Longitude of the location of interest in decimal degrees E.
 #' @param latitude Latitude of the location of interest in decimal degrees N.
-#' @param bbox Bounding box for the region of interest; Defaults to CONUS.
+#' @param bbox Bounding box for the region of interest.
 #' @param useRemote Logical specifying whether to look for files in 
 #' \code{getSatelliteDataDir()} or \code{baseUrl}; Defaults to FALSE;
 #' @param timezone Timezone used to interpret \code{datetime}.
