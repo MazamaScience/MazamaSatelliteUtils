@@ -87,7 +87,6 @@ kincade_bbox <- c(-124, -120, 36, 39)
 rasterStack <- goesaodc_createRasterStack(
   satID = "G17",
   datetime = "2019-10-27 10",
-  endtime = "2019-10-27 11",
   res = 0.075,
   bbox = kincade_bbox,
   dqfLevel = 3,
@@ -97,5 +96,4 @@ rasterStack <- goesaodc_createRasterStack(
 
 rasterVis::levelplot(rasterStack)
 }
-
 }

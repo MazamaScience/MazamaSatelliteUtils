@@ -59,5 +59,4 @@ goesaodc_downloadDaytimeAOD(
   timezone = "America/Los_Angeles"
 )
 }
-
 }

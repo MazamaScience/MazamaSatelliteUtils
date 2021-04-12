@@ -25,7 +25,7 @@ goesaodc_listDaytimeFiles(
 
 \item{latitude}{Latitude of the location of interest in decimal degrees N.}
 
-\item{bbox}{Bounding box for the region of interest; Defaults to CONUS.}
+\item{bbox}{Bounding box for the region of interest.}
 
 \item{useRemote}{Logical specifying whether to look for files in 
 \code{getSatelliteDataDir()} or \code{baseUrl}; Defaults to FALSE;}
@@ -69,5 +69,4 @@ goesaodc_listDaytimeFiles(
   useRemote = TRUE
 )
 }
-
 }

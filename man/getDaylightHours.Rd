@@ -91,5 +91,4 @@ getDaylightHours(
   latitude = 42.861
 )
 }
-
 }
