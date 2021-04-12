@@ -98,11 +98,20 @@ goesaodc_createDaytimeRasterStack <- function(
   
   MazamaCoreUtils::stopIfNull(satID)
   MazamaCoreUtils::stopIfNull(datetime)
+  MazamaCoreUtils::stopIfNull(dqfLevel)
   
-  # Validate if time passed in is already a posix time with timezone
-  time_classes <- c("POSIXct", "POSIXt", "POSIXlt")
-  if ( class(datetime)[1] %in% time_classes ) {
-    timezone <- attr(datetime, "tzone")
+  satID <- toupper(satID)
+  if ( !(satID %in% c("G16", "G17")) ) {
+    stop("Must specify GOES satellite ID (G16 or G17)")
+  }
+  
+  # Use timezone from POSIXt datetime, or passed in timezone
+  if ( lubridate::is.POSIXt(datetime) ) {
+    timezone <- lubridate::tz(datetime)
+  } else {
+    if ( !(timezone %in% OlsonNames()) ) {
+      stop(sprintf("timezone \"%s\" is not recognized", timezone))
+    }
   }
   
   # ----- Create RasterStack ---------------------------------------------------

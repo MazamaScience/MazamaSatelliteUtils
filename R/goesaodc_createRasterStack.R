@@ -58,7 +58,6 @@
 #' rasterStack <- goesaodc_createRasterStack(
 #'   satID = "G17",
 #'   datetime = "2019-10-27 10",
-#'   endtime = "2019-10-27 11",
 #'   res = 0.075,
 #'   bbox = kincade_bbox,
 #'   dqfLevel = 3,
@@ -94,10 +93,13 @@ goesaodc_createRasterStack <- function(
     stop("Must specify GOES satellite ID (G16 or G17)")
   }
   
-  # Validate if time passed in is already a posix time with timezone
-  time_classes <- c("POSIXct", "POSIXt", "POSIXlt")
-  if ( class(datetime)[1] %in% time_classes ) {
-    timezone <- attr(datetime, "tzone")
+  # Use timezone from POSIXt datetime, or passed in timezone
+  if ( lubridate::is.POSIXt(datetime) ) {
+    timezone <- lubridate::tz(datetime)
+  } else {
+    if ( !(timezone %in% OlsonNames()) ) {
+      stop(sprintf("timezone \"%s\" is not recognized", timezone))
+    }
   }
   
   # ----- Determine datetime range ---------------------------------------------
