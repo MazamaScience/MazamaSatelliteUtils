@@ -4,7 +4,7 @@
 \alias{goesaodc_isGoesProjection}
 \title{Check if `nc` projection is GOES projection}
 \usage{
-goesaodc_isGoesProjection(nc)
+goesaodc_isGoesProjection(nc = NULL)
 }
 \arguments{
 \item{nc}{ncdf4 handle.}

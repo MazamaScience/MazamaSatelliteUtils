@@ -4,7 +4,7 @@
 \alias{goesaodc_getCoordBounds}
 \title{Determines the x and y bounds (in radians) for a given netcdf handle}
 \usage{
-goesaodc_getCoordBounds(nc)
+goesaodc_getCoordBounds(nc = NULL)
 }
 \arguments{
 \item{nc}{ncdf4 handle.}

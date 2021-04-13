@@ -31,16 +31,6 @@ test_that("fails when passed incorrect parameters", {
     regexp = "argument 'satID' must not be NULL."
   )
   
-  # More than 24 hours of data requested
-  expect_error(
-    goesaodc_downloadAOD(
-      satID = satID,
-      datetime = "2019-09-06",
-      endtime = "2019-09-08"
-    ),
-    regexp = "More than 24 hours of data requested."
-  )
-  
 })
 
 # ----- TESTS THAT SHOULD PASS -------------------------------------------------

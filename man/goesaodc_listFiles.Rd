@@ -54,14 +54,14 @@ that are available within the specified timeframe.
 library(MazamaSatelliteUtils)
 setSatelliteDataDir("~/Data/Satellite")
 
-# Local files for a UTC hour
+# Local files for a single hour
 goesaodc_listFiles("G17", "2019-09-06 18") 
 
-# Remote files for a time range in local time
+# Remote files for a time range
 goesaodc_listFiles(
   satID = "G16",
-  datetime = "2019-09-06 06:00",
-  endtime = "2019-09-06 18:00",
+  datetime = "2019-09-06 06",
+  endtime = "2019-09-06 18",
   timezone = "America/Los_Angeles",
   useRemote = TRUE
 )

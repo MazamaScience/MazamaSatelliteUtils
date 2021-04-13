@@ -32,14 +32,14 @@
 #' library(MazamaSatelliteUtils)
 #' setSatelliteDataDir("~/Data/Satellite")
 #'
-#' # Local files for a UTC hour
+#' # Local files for a single hour
 #' goesaodc_listFiles("G17", "2019-09-06 18") 
 #' 
-#' # Remote files for a time range in local time
+#' # Remote files for a time range
 #' goesaodc_listFiles(
 #'   satID = "G16",
-#'   datetime = "2019-09-06 06:00",
-#'   endtime = "2019-09-06 18:00",
+#'   datetime = "2019-09-06 06",
+#'   endtime = "2019-09-06 18",
 #'   timezone = "America/Los_Angeles",
 #'   useRemote = TRUE
 #' )
@@ -58,12 +58,13 @@ goesaodc_listFiles <- function(
   # ----- Validate Parameters --------------------------------------------------
   
   MazamaCoreUtils::stopIfNull(satID)
-  MazamaCoreUtils::stopIfNull(datetime)
   
   # Convert satID to uniform case
   satID <- toupper(satID)
   if ( !(satID %in% c("G16", "G17")) )
-    stop("Must specify GOES satellite ID (G16 or G17)")
+    stop("Parameter 'satID' must be either 'G16' (East) or 'G17' (West)")
+  
+  MazamaCoreUtils::stopIfNull(datetime)
   
   # Use timezone from POSIXct datetime, or passed in timezone
   if ( lubridate::is.POSIXt(datetime) ) {
@@ -74,12 +75,26 @@ goesaodc_listFiles <- function(
     }
   }
   
-  # ----- Prepare data ---------------------------------------------------------
+  if ( isJulian ) {
+    
+    # TODO: Julian day cannot exceed the number of days in the year
+    
+  } else {
+    
+    if ( !lubridate::is.POSIXt(datetime) ) {
+      
+      if ( is.na(lubridate::ymd_hms(datetime, tz = timezone, truncated = 2)) ) {
+        stop("Parameter 'datetime' must be a POSIXt object or a string in either 'Ymd H' or Julian format")
+      }
+      
+    } 
+    
+  }
   
   # Parse incoming times with MazamaCoreUtils
   datetime <- MazamaCoreUtils::parseDatetime(
     datetime, 
-    timezone = timezone, 
+    timezone = timezone,
     isJulian = isJulian
   )
   
@@ -89,7 +104,12 @@ goesaodc_listFiles <- function(
       timezone = timezone, 
       isJulian = isJulian
     )
+    
+    if ( datetime > endtime )
+      stop("Endtime is before datetime")
   }
+  
+  # ----- Prepare data ---------------------------------------------------------
   
   # Create satUrl for remote searching
   if ( useRemote ) {
@@ -102,19 +122,23 @@ goesaodc_listFiles <- function(
     }
   }
   
-  # Build regex pattern
-  regex <- paste0("OR_ABI-L2-AODC-M[0-9]_", satID, "_s[0-9]+_e[0-9]+_c[0-9]+\\.nc")
+  # Build nc file regex pattern
+  ncFilePattern <- paste0(
+    "OR_ABI-L2-AODC-M[0-9]_",
+    satID,
+    "_s[0-9]+_e[0-9]+_c[0-9]+\\.nc"
+  )
   
   # ----- Create a list of files -----------------------------------------------
   
   if ( !useRemote ) {
     
-    # Create a list of all appropriate nc files on disk
-    dataFiles <- list.files(getSatelliteDataDir(), pattern = regex)
+    # Find all local nc files
+    dataFiles <- list.files(getSatelliteDataDir(), pattern = ncFilePattern)
     
   } else {
     
-    # Check remotely for available files and build filelist
+    # Find all remote nc files
     links <-
       xml2::read_html(satUrl) %>%
       xml2::xml_child("body") %>%
@@ -126,11 +150,21 @@ goesaodc_listFiles <- function(
     
   }
   
-  # Build a sequence of hours
+  # Build a list of requested hours
   if ( is.null(endtime) ) {
+    
     hours <- c(datetime)
+    
   } else {
-    hours <- seq.POSIXt(from = datetime, to = endtime, by = "hour")
+    
+    timeRange <- MazamaCoreUtils::timeRange(
+      starttime = datetime,
+      endtime = endtime,
+      timezone = timezone
+    )
+    
+    hours <- seq.POSIXt(from = timeRange[1], to = timeRange[2], by = "hour")
+  
   }
   
   # Convert to UTC and create startPatterns for each requested hour

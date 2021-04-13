@@ -4,7 +4,7 @@
 \alias{goesaodc_getProjection}
 \title{Get projection metadata from GOES-R ABI ncdf4 object}
 \usage{
-goesaodc_getProjection(nc)
+goesaodc_getProjection(nc = NULL)
 }
 \arguments{
 \item{nc}{ncdf4 handle.}

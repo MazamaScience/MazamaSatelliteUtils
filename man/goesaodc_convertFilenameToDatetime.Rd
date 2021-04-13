@@ -4,7 +4,7 @@
 \alias{goesaodc_convertFilenameToDatetime}
 \title{Get the scan start time from a GOES AODC netCDF file name}
 \usage{
-goesaodc_convertFilenameToDatetime(file)
+goesaodc_convertFilenameToDatetime(file = NULL)
 }
 \arguments{
 \item{file}{File name of GOES AOD file.}

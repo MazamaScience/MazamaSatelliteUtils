@@ -95,10 +95,6 @@ goesaodc_downloadAOD <- function(
   if ( rlang::is_empty(remoteFiles) )
     stop("There is no data available for this time.")
 
-  # Stop if more than 24 hrs of data are requested
-  if ( length(remoteFiles) > 288 )
-    stop("More than 24 hours of data requested.")
-
   # List of local files
   localFiles <- goesaodc_listFiles(
     satID = satID, 
