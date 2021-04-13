@@ -11,8 +11,14 @@
 #' @return A named list with x1, x2, y1, and y2.
 
 goesaodc_getCoordBounds <- function(
-  nc
+  nc = NULL
 ) {
+
+  MazamaCoreUtils::stopIfNull(nc)
+    
+  if ( class(nc) != "ncdf4" ) {
+    stop("argument 'nc' must be an ncdf4 object")
+  }
   
   x_bounds <- ncvar_get(nc, "x_image_bounds")
   y_bounds <- ncvar_get(nc, "y_image_bounds")
@@ -45,6 +51,12 @@ goesaodc_getCoordBounds <- function(
 goesaodc_getCoordGrid <- function(
   nc
 ) {
+  
+  MazamaCoreUtils::stopIfNull(nc)
+  
+  if ( class(nc) != "ncdf4" ) {
+    stop("argument 'nc' must be an ncdf4 object")
+  }
   
   # Get the x and y variables
   x <- ncvar_get(nc, varid = "x")
@@ -142,8 +154,14 @@ goesaodc_getCoordGrid <- function(
 #' @return list of metadata
 
 goesaodc_getProjection <- function(
-  nc
+  nc = NULL
 ) {
+  
+  MazamaCoreUtils::stopIfNull(nc)
+  
+  if ( class(nc) != "ncdf4" ) {
+    stop("argument 'nc' must be an ncdf4 object")
+  }
   
   projection <- ncdf4::ncatt_get(nc, "goes_imager_projection")
   return(projection)
@@ -162,8 +180,14 @@ goesaodc_getProjection <- function(
 #' @return logical
 
 goesaodc_isGoesProjection <- function(
-  nc
+  nc = NULL
 ) {
+  
+  MazamaCoreUtils::stopIfNull(nc)
+  
+  if ( class(nc) != "ncdf4" ) {
+    stop("argument 'nc' must be an ncdf4 object")
+  }
   
   projection <- goesaodc_getProjection(nc)
   satelliteDataDir <- getSatelliteDataDir()
@@ -199,8 +223,16 @@ goesaodc_isGoesProjection <- function(
 #' @return The scan start time.
 
 goesaodc_convertFilenameToDatetime <- function(
-  file
+  file = NULL
 ) {
+  
+  MazamaCoreUtils::stopIfNull(file)
+  
+  filePattern <- "OR_ABI-L2-AODC-M[0-9]_G(16|17)_s[0-9]+_e[0-9]+_c[0-9]+\\.nc"
+  
+  if ( regexpr(filePattern, file) == -1 ) {
+    stop("argument 'file' does not match expected file name format")
+  }
   
   # Example file name:
   #  OR_ABI-L2-AODC-M4_G17_s20192481500215_e20192481505115_c20192481507046.nc
