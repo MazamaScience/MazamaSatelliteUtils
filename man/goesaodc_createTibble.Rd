@@ -4,15 +4,12 @@
 \alias{goesaodc_createTibble}
 \title{Create a tibble from a ncdf4 handle}
 \usage{
-goesaodc_createTibble(nc = NULL, bbox = bbox_CONUS, verbose = FALSE)
+goesaodc_createTibble(nc = NULL, bbox = bbox_CONUS)
 }
 \arguments{
 \item{nc}{ncdf4 handle or a list of handles.}
 
 \item{bbox}{Bounding box for the region of interest; Defaults to CONUS.}
-
-\item{verbose}{Logical flag to print data processing messages; Defaults to 
-FALSE.}
 }
 \value{
 Tibble (dataframe) with NetCDF variables and associated locations.

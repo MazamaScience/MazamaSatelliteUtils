@@ -10,8 +10,6 @@
 #' 
 #' @param nc ncdf4 handle or a list of handles.
 #' @param bbox Bounding box for the region of interest; Defaults to CONUS.
-#' @param verbose Logical flag to print data processing messages; Defaults to 
-#' FALSE.
 #' 
 #' @return Tibble (dataframe) with NetCDF variables and associated locations.
 #
@@ -44,8 +42,7 @@
 
 goesaodc_createTibble <- function(
   nc = NULL, 
-  bbox = bbox_CONUS,
-  verbose = FALSE
+  bbox = bbox_CONUS
 ) {
   
   # ----- Validate parameters --------------------------------------------------
@@ -70,7 +67,7 @@ goesaodc_createTibble <- function(
   
   # Get data on the native satellite grid
   # NOTE:  If nc is a list, AOD and DQF will represent an average
-  nativeGrid <- goesaodc_createNativeGrid(ncList, bbox, verbose)
+  nativeGrid <- goesaodc_createNativeGrid(ncList, bbox)
   
   # Build the tibble
   varList <- list()
