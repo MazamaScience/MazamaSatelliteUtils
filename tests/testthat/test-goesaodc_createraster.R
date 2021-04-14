@@ -1,4 +1,4 @@
-context("test-goesaodc_createraster")
+context("test-goesaodc_createRaster")
 
 # ---- TO DO: Get this block in a generic setup file ---------------------------
 # library(MazamaSatelliteUtils)

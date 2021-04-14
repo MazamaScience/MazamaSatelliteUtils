@@ -42,15 +42,19 @@ installGoesGrids <- function(
     # ----- Download G16 .nc files and create goesEastGrid.rda -----------------
     
     message(sprintf("Creating %s ...", G16_filepath))
-    goesaodc_downloadAOD(satID = "G16", 
-                         datetime = "201924918",
-                         timezone = "UTC",
-                         isJulian = TRUE)
+    goesaodc_downloadAOD(
+      satID = "G16", 
+      datetime = "201924918",
+      timezone = "UTC",
+      isJulian = TRUE
+    )
     
-    nc_file <- goesaodc_listFiles(satID = "G16", 
-                                  datetime = "201924918",
-                                  timezone = "UTC",
-                                  isJulian = TRUE)[1]
+    nc_file <- goesaodc_listFiles(
+      satID = "G16", 
+      datetime = "201924918",
+      timezone = "UTC",
+      isJulian = TRUE
+    )[1]
     
     nc <- goesaodc_openFile(nc_file)
     createGoesGrid(nc, G16_filepath)
@@ -73,15 +77,19 @@ installGoesGrids <- function(
     # ----- Download G17 .nc files and create goesWestGrid.rda -----------------
     
     message(sprintf("Creating %s ...", G17_filepath))
-    goesaodc_downloadAOD(satID = "G17", 
-                         datetime = "201924918",
-                         timezone = "UTC",
-                         isJulian = TRUE)
+    goesaodc_downloadAOD(
+      satID = "G17", 
+      datetime = "201924918",
+      timezone = "UTC",
+      isJulian = TRUE
+    )
     
-    nc_file <- goesaodc_listFiles(satID = "G17", 
-                                  datetime = "201924918",
-                                  timezone = "UTC",
-                                  isJulian = TRUE)[1]
+    nc_file <- goesaodc_listFiles(
+      satID = "G17", 
+      datetime = "201924918",
+      timezone = "UTC",
+      isJulian = TRUE
+    )[1]
     
     nc <- goesaodc_openFile(nc_file)
     createGoesGrid(nc, G17_filepath)
