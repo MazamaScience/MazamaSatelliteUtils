@@ -140,7 +140,7 @@ goesaodc_downloadAOD <- function(
         MazamaCoreUtils::logger.warn(err_msg)
       }
     } else {
-      if (verbose == TRUE) {
+      if ( verbose ) {
         message(paste0("Downloaded (", i, "/", length(missingFiles), "): ", file))
       }
     }

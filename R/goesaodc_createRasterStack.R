@@ -179,8 +179,8 @@ goesaodc_createRasterStack <- function(
       aod_raster <- goes_raster[[var]]
       rasterStack <- raster::stack(rasterStack, aod_raster)
       
-      if ( verbose == TRUE ) {
-        print(paste0("Stacked (", i, "/", length(fileList), "): ", nc_file))
+      if ( verbose ) {
+        message(paste0("Stacked (", i, "/", length(fileList), "): ", nc_file))
       }
     }
     
