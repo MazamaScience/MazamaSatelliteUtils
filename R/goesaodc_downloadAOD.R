@@ -118,6 +118,7 @@ goesaodc_downloadAOD <- function(
     satUrl <- paste0(baseUrl, "GOES-17/AODC")
   }
   
+  i <- 1
   for ( file in missingFiles ) {
     
     filePath <- file.path(satelliteDataDir, file)
@@ -125,7 +126,7 @@ goesaodc_downloadAOD <- function(
     
     result <- try({
       utils::download.file(
-        fileUrl, 
+        fileUrl,
         destfile = filePath, 
         quiet = TRUE, 
         method = "auto", 
@@ -140,9 +141,11 @@ goesaodc_downloadAOD <- function(
       }
     } else {
       if (verbose == TRUE) {
-        message(paste0("Downloaded ", file))
+        message(paste0("Downloaded (", i, "/", length(missingFiles), "): ", file))
       }
     }
+    
+    i <- i + 1
     
   }
 
