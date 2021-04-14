@@ -282,12 +282,6 @@ goesaodc_scaleAOD <- function(
   aod_attributes
 ) {
   
-  if ( !("matrix" %in% class(aod_data)) )
-    stop("Parameter 'aod_data' must be a matrix")
-  
-  if ( !("list" %in% class(aod_attributes)) )
-    stop("Parameter 'aod_attributes' must be a list")
-  
   # > str(aod_attributes)
   # List of 13
   # $ _FillValue         : int -1
