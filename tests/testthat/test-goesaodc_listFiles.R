@@ -7,7 +7,7 @@ datetime <- "2019-09-06 16"
 endtime <- "2019-09-06 17"
 timezone <- "America/Los_Angeles"
 jdate <- "20192491600"
-jdate_end <- "20192491700"
+jdate_end <- "20192491800"
 
 test_that("remote files are listed correctly", {
   

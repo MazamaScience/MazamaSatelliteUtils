@@ -19,7 +19,8 @@ goesaodc_downloadAOD(
 
 \item{datetime}{Datetime in any Ymd H [MS] format or \code{POSIXct}.}
 
-\item{endtime}{End time in any Ymd H [MS] format or \code{POSIXct}.}
+\item{endtime}{End time in any Ymd H [MS] format or \code{POSIXct} 
+(exclusive).}
 
 \item{timezone}{Timezone used to interpret \code{datetime} and 
 \code{endtime}; Defaults to UTC.}
@@ -40,9 +41,9 @@ Invisibly returns a vector of local files matching the requested
 \description{
 Downloads a GOES satellite's NetCDF files for the given 
 \code{datetime} to the directory specified by \code{setSatelliteDataDir()}.
-If \code{endtime} is specified, all files that exist between \code{datetime} 
-and \code{endtime} will be downloaded. Otherwise, only files for the 
-\code{datetime} hour will be retrieved.
+If \code{endtime} is specified, all files from \code{startime} up to
+(but not including) \code{endtime} will be downloaded. Otherwise, only files 
+for the \code{datetime} hour will be retrieved.
 
 The vector of files returned includes all files in \code{satelliteDataDir}
 that match the requested date whether they were download previously or with

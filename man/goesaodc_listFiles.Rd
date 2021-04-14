@@ -17,9 +17,11 @@ goesaodc_listFiles(
 \arguments{
 \item{satID}{ID of the source GOES satellite (G16 or G17).}
 
-\item{datetime}{Datetime in any Ymd H [MS] format or \code{POSIXct}.}
+\item{datetime}{Datetime in any Ymd H [MS] format or \code{POSIXct} 
+(inclusive).}
 
-\item{endtime}{End time in any Ymd H [MS] format or \code{POSIXct}}
+\item{endtime}{End time in any Ymd H [MS] format or \code{POSIXct} 
+(exclusive).}
 
 \item{useRemote}{Logical specifying whether to look for files in 
 \code{getSatelliteDataDir()} or \code{baseUrl}; Defaults to FALSE.}
@@ -44,10 +46,11 @@ remote server using the \code{useRemote} parameter.
 }
 \details{
 All files for a particular hour will be returned even if the
-incoming \code{startdate} or \code{jdate} is specified to the minute or
-second. By default, the local directory set by \code{setSatelliteDir()} is 
-searched. \code{useRemote = TRUE} will search \code{baseURL} for all files 
-that are available within the specified timeframe.
+incoming \code{starttime} or \code{jdate} is specified to the minute or
+second. If \code{endtime} is specified, all files from \code{startime} up to
+(but not including) \code{endtime} will be listed. When 
+\code{useRemote=FALSE} the local directory set by \code{setSatelliteDir()} 
+will be searched.
 }
 \examples{
 \donttest{
@@ -61,7 +64,7 @@ goesaodc_listFiles("G17", "2019-09-06 18")
 goesaodc_listFiles(
   satID = "G16",
   datetime = "2019-09-06 06",
-  endtime = "2019-09-06 18",
+  endtime = "2019-09-06 08",
   timezone = "America/Los_Angeles",
   useRemote = TRUE
 )

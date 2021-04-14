@@ -23,7 +23,8 @@ goesaodc_createRasterStack(
 
 \item{datetime}{Datetime in any Ymd H [MS] format or \code{POSIXct}.}
 
-\item{endtime}{End time in any Ymd H [MS] format or \code{POSIXct}.}
+\item{endtime}{End time in any Ymd H [MS] format or \code{POSIXct}
+(exclusive).}
 
 \item{var}{GOES data variable ("AOD, "DQF" or "ID"); Defaults to "AOD".}
 
@@ -50,12 +51,10 @@ RasterStack
 }
 \description{
 Creates a \code{RasterStack} from GOES AOD data files for the
-date and hour specified by \code{datetime}. Each \code{RasterLayer} contains
-data from one Advanced Baseline Imager (ABI) scan during the specified time
-period.
-
-If data for the given time period is not found in the directory specified by 
-\code{setSatelliteDataDir()}, then it will be downloaded.
+date and hour specified by \code{datetime}. If \code{endtime} is specified, 
+all scans from \code{startime} up to (but not including) \code{endtime} will 
+be included. These files will be downloaded if they do not exist in the the 
+directory specified by \code{setSatelliteDataDir()}.
 
 The Z axis of the \code{RasterStack} is a character vector where each element
 is the time stamp of the scan and has the format YYYYMMDDHHMMSS. This can be

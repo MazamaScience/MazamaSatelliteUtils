@@ -7,14 +7,17 @@
 #' remote server using the \code{useRemote} parameter.
 #'
 #' @details All files for a particular hour will be returned even if the
-#' incoming \code{startdate} or \code{jdate} is specified to the minute or
-#' second. By default, the local directory set by \code{setSatelliteDir()} is 
-#' searched. \code{useRemote = TRUE} will search \code{baseURL} for all files 
-#' that are available within the specified timeframe.
+#' incoming \code{starttime} or \code{jdate} is specified to the minute or
+#' second. If \code{endtime} is specified, all files from \code{startime} up to
+#' (but not including) \code{endtime} will be listed. When 
+#' \code{useRemote=FALSE} the local directory set by \code{setSatelliteDir()} 
+#' will be searched.
 #'
 #' @param satID ID of the source GOES satellite (G16 or G17).
-#' @param datetime Datetime in any Ymd H [MS] format or \code{POSIXct}.
-#' @param endtime End time in any Ymd H [MS] format or \code{POSIXct}
+#' @param datetime Datetime in any Ymd H [MS] format or \code{POSIXct} 
+#' (inclusive).
+#' @param endtime End time in any Ymd H [MS] format or \code{POSIXct} 
+#' (exclusive).
 #' @param useRemote Logical specifying whether to look for files in 
 #' \code{getSatelliteDataDir()} or \code{baseUrl}; Defaults to FALSE.
 #' @param timezone Timezone used to interpret \code{datetime} and 
@@ -39,7 +42,7 @@
 #' goesaodc_listFiles(
 #'   satID = "G16",
 #'   datetime = "2019-09-06 06",
-#'   endtime = "2019-09-06 18",
+#'   endtime = "2019-09-06 08",
 #'   timezone = "America/Los_Angeles",
 #'   useRemote = TRUE
 #' )
@@ -84,7 +87,7 @@ goesaodc_listFiles <- function(
     if ( !lubridate::is.POSIXt(datetime) ) {
       
       if ( is.na(lubridate::ymd_hms(datetime, tz = timezone, truncated = 2)) ) {
-        stop("Parameter 'datetime' must be a POSIXt object or a string in either 'Ymd H' or Julian format")
+        stop("Parameter 'datetime' must be a POSIXt object or a string in 'Ymd H' or Julian format")
       }
       
     } 
@@ -105,8 +108,8 @@ goesaodc_listFiles <- function(
       isJulian = isJulian
     )
     
-    if ( datetime > endtime )
-      stop("Endtime is before datetime")
+    if ( endtime <= datetime )
+      stop("Parameter 'endtime' must be a time after 'datetime'")
   }
   
   # ----- Prepare data ---------------------------------------------------------
@@ -160,10 +163,14 @@ goesaodc_listFiles <- function(
     timeRange <- MazamaCoreUtils::timeRange(
       starttime = datetime,
       endtime = endtime,
-      timezone = timezone
+      timezone = timezone,
+      unit = "hour"
     )
     
-    hours <- seq.POSIXt(from = timeRange[1], to = timeRange[2], by = "hour")
+    startHour <- timeRange[1]
+    endHour <- timeRange[2] - lubridate::hours(1)
+    
+    hours <- seq.POSIXt(from = startHour, to = endHour, by = "hour")
   
   }
   

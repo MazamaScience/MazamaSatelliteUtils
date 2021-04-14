@@ -80,7 +80,7 @@ goesaodc_listDaytimeFiles <- function(
   fileList <- goesaodc_listFiles(
     satID = satID,
     datetime = sunrise, 
-    endtime = sunset,
+    endtime = sunset + lubridate::hours(1), # +1hr since endtime is exclusive
     useRemote = useRemote,
     baseUrl = baseUrl
   )
