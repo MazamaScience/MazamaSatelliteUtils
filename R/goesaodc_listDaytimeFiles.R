@@ -20,6 +20,8 @@
 #' @param isJulian Logical value determining whether \code{datetime} should be 
 #' interpreted as a Julian date with day of year as a decimal number; Defaults 
 #' to FALSE.
+#' @param baseUrl URL of remote database; Defaults to 
+#' "https://tools-1.airfire.org/Satellite/".
 #' 
 #' @return Vector of filenames.
 #' 
@@ -55,7 +57,8 @@ goesaodc_listDaytimeFiles <- function(
   bbox = NULL,
   useRemote = FALSE,
   timezone = NULL,
-  isJulian = FALSE
+  isJulian = FALSE,
+  baseUrl = "https://tools-1.airfire.org/Satellite/"
 ) {
   
   # ----- Get the sunrise and sunset times -------------------------------------
@@ -78,7 +81,8 @@ goesaodc_listDaytimeFiles <- function(
     satID = satID,
     datetime = sunrise, 
     endtime = sunset,
-    useRemote = useRemote
+    useRemote = useRemote,
+    baseUrl = baseUrl
   )
   
   return(fileList)

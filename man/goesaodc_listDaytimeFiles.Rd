@@ -13,7 +13,8 @@ goesaodc_listDaytimeFiles(
   bbox = NULL,
   useRemote = FALSE,
   timezone = NULL,
-  isJulian = FALSE
+  isJulian = FALSE,
+  baseUrl = "https://tools-1.airfire.org/Satellite/"
 )
 }
 \arguments{
@@ -35,6 +36,9 @@ goesaodc_listDaytimeFiles(
 \item{isJulian}{Logical value determining whether \code{datetime} should be 
 interpreted as a Julian date with day of year as a decimal number; Defaults 
 to FALSE.}
+
+\item{baseUrl}{URL of remote database; Defaults to 
+"https://tools-1.airfire.org/Satellite/".}
 }
 \value{
 Vector of filenames.
