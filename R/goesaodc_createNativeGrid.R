@@ -14,8 +14,6 @@
 #' 
 #' @param nc ncdf4 handle or a list of handles.
 #' @param bbox Bounding box for the region of interest; Defaults to CONUS.
-#' @param verbose Logical flag to print data processing messages; Defaults to 
-#' FALSE.
 #' 
 #' @return List with lon, lat, AOD and DQF matrices
 #
@@ -64,8 +62,7 @@
 
 goesaodc_createNativeGrid <- function (
   nc = NULL,
-  bbox = bbox_CONUS,
-  verbose = FALSE
+  bbox = bbox_CONUS
 ) {
   
   # ----- Validate parameters --------------------------------------------------
@@ -293,9 +290,7 @@ if ( FALSE ) {
   ca <- subset(USCensusStates, stateCode == "CA")
   bbox <- sp::bbox(ca) %>% bboxToVector()
   
-  verbose <- TRUE
-  
-  nativeGrid <- goesaodc_createNativeGrid(ncList, bbox, verbose = FALSE)
+  nativeGrid <- goesaodc_createNativeGrid(ncList, bbox)
   
   image(nativeGrid$AOD[,ncol(nativeGrid$AOD):1])
   
