@@ -74,7 +74,7 @@ test_that("local files are listed correctly", {
         timezone = timezone
       )
     ),
-    24
+    12
   )
   
 })
