@@ -23,6 +23,7 @@
 #' @param nc ncdf4 handle.
 #' @param bbox Bounding box for the region of interest; Defaults to CONUS.
 #' @param dqfLevel Data quality flag level.
+#' @param dropNa Logical flag whether to drop points with NA values.
 #'
 #' @return SpatialPointsDataFrame
 #'
@@ -56,7 +57,8 @@
 goesaodc_createSpatialPoints <- function(
   nc = NULL,
   bbox = bbox_CONUS,
-  dqfLevel = NULL
+  dqfLevel = NULL,
+  dropNa = TRUE
 ) {
   
   # ----- Validate parameters --------------------------------------------------
@@ -73,7 +75,7 @@ goesaodc_createSpatialPoints <- function(
   # ----- Filter data ----------------------------------------------------------
   
   # Create tibble
-  tbl <- goesaodc_createTibble(nc, bbox)
+  tbl <- goesaodc_createTibble(nc, bbox, dropNa)
 
   # Filter based on DQF
   if ( !is.null(dqfLevel) ) {

@@ -11,7 +11,7 @@ goesaodc_createTibble(nc = NULL, bbox = bbox_CONUS, dropNa = TRUE)
 
 \item{bbox}{Bounding box for the region of interest; Defaults to CONUS.}
 
-\item{dropNa}{Logical flag whether to drop rows with any NA values.}
+\item{dropNa}{Logical flag whether to drop rows with NA values.}
 }
 \value{
 Tibble (dataframe) with NetCDF variables and associated locations.

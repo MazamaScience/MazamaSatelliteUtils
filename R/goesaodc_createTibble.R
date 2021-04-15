@@ -10,7 +10,7 @@
 #' 
 #' @param nc ncdf4 handle or a list of handles.
 #' @param bbox Bounding box for the region of interest; Defaults to CONUS.
-#' @param dropNa Logical flag whether to drop rows with any NA values.
+#' @param dropNa Logical flag whether to drop rows with NA values.
 #' 
 #' @return Tibble (dataframe) with NetCDF variables and associated locations.
 #
