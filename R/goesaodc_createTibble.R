@@ -10,6 +10,7 @@
 #' 
 #' @param nc ncdf4 handle or a list of handles.
 #' @param bbox Bounding box for the region of interest; Defaults to CONUS.
+#' @param dropNa Logical flag whether to drop rows with any NA values.
 #' 
 #' @return Tibble (dataframe) with NetCDF variables and associated locations.
 #
@@ -42,7 +43,8 @@
 
 goesaodc_createTibble <- function(
   nc = NULL, 
-  bbox = bbox_CONUS
+  bbox = bbox_CONUS,
+  dropNa = TRUE
 ) {
   
   # ----- Validate parameters --------------------------------------------------
@@ -76,10 +78,12 @@ goesaodc_createTibble <- function(
   varList[["AOD"]] <- as.numeric(nativeGrid$AOD)
   varList[["DQF"]] <- as.numeric(nativeGrid$DQF)
   
+  tbl <- tibble::as_tibble(varList)
+  
   # NOTE:  Use tidyr::drop_na() to drop records with ANY missing values
-  tbl <-
-    tibble::as_tibble(varList) %>%
-    tidyr::drop_na()
+  if ( dropNa ) { 
+    tbl <- tidyr::drop_na(tbl)
+  }
   
   # NOTE:  Using the bounding box during nativeGrid ingest results in extra
   # NOTE:  records because the nativeGrid is curvilinear. We limit the records
