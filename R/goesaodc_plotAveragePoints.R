@@ -19,31 +19,28 @@
 #' @examples 
 #' \donttest{
 #' library(MazamaSatelliteUtils)
-#' 
 #' setSatelliteDataDir("~/Data/Satellite")
 #' 
-#' # Kincade fire region
-#' kincade_bbox <- c(-124, -120, 36, 39)
+#' oregon_bbox <- c(-125, -116, 42, 47)
 #' 
-#' goesaodc_plotAODPoints(
-#'   satID = "G16",
-#'   datetime = "2019-10-27 10",
+#' goesaodc_plotAveragePoints(
+#'   satID = "G17",
+#'   datetime = "2020-09-15 12",
 #'   timezone = "America/Los_Angeles",
-#'   bbox = kincade_bbox,
-#'   breaks = c(-Inf, 0, 1, 2, 3, 4, 5, Inf),
-#'   cex = 0.6
+#'   bbox = oregon_bbox,
+#'   cex = 0.3
 #' )
-#'
+#' 
 #' maps::map(
 #'   database = "state",
-#'   regions = "california",
-#'   xlim = c(-125, -120),
-#'   ylim = c(36, 39),
+#'   regions = "oregon",
+#'   xlim = oregon_bbox[1:2],
+#'   ylim = oregon_bbox[3:4],
 #'   add  = TRUE
 #' )
 #' }
 
-goesaodc_plotAODPoints <- function(
+goesaodc_plotAveragePoints <- function(
   satID = NULL,
   datetime = NULL,
   endtime = NULL,
