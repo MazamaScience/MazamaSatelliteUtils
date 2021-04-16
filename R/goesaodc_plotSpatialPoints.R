@@ -104,8 +104,8 @@ goesaodc_plotSpatialPoints <- function(
   # Make breaks for specified number of equally sized color bins
   # TODO: Use quantiles like quantile(aodValues, seq(from = 0.00, to = 1.00, by = 0.10), na.rm = TRUE)
   if ( is.null(breaks) ) {
-    mn <- min(spatialPointsSub[[var]])
-    mx <- max(spatialPointsSub[[var]])
+    mn <- min(spatialPointsSub[[var]], na.rm = TRUE)
+    mx <- max(spatialPointsSub[[var]], na.rm = TRUE)
     range <- mx - mn
     
     breaks <- c(mn)
