@@ -1,3 +1,25 @@
+# MazamaSatelliteUtils 0.4.3
+
+* Added `goesaodc_plotAveragePoints()` function.
+
+# MazamaSatelliteUtils 0.4.2
+
+* `endtime` params are now exclusive. The time they specify is the first time 
+excluded from the time range.
+* The `...` param in `goesaodc_areaPlot()` is now passed on correctly.
+* `goesaodc_areaPlot()` now accepts standalone ncdf4 handles for the `nc` param.
+* Added `dropNa` param to `goesaodc_createTibble()` and 
+`goesaodc_createSpatialPoints()`.
+* Added `baseUrl` param to `goesaodc_listDaytimeFiles()`.
+* Removed `verbose` param from `goesaodc_createNativeGrid()`.
+* Removed `verbose` from `goesaodc_createTibble()`.
+* Updated `goesaodc_openFile()` to open multiple nc files at once.
+* Added param validation to various functions.
+* Improved verbosity of various `verbose` functions.
+* Functions with default CONUS bboxes now use the `bbox_CONUS` package variable.
+* Updated docs.
+* Improved code style.
+
 # MazamaSatelliteUtils 0.4.1
 
 * Harmonized code and documentation style with other Mazama Science packages.
