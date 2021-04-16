@@ -22,7 +22,7 @@ goasaodc_findClosestScanFile(
 "https://tools-1.airfire.org/Satellite/".}
 }
 \value{
-The scan start time.
+A scan filename.
 }
 \description{
 Finds the name of the scan file that was generated closest to 

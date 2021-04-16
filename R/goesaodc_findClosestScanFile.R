@@ -11,7 +11,7 @@
 #' @param baseUrl URL of remote database; Defaults to 
 #' "https://tools-1.airfire.org/Satellite/".
 #' 
-#' @return The scan start time.
+#' @return A scan filename.
 #' 
 #' @examples
 #' \donttest{
@@ -36,6 +36,12 @@ goasaodc_findClosestScanFile <- function(
   timezone = NULL,
   baseUrl = "https://tools-1.airfire.org/Satellite/"
 ) {
+  
+  # ----- Validate parameters --------------------------------------------------
+  
+  MazamaCoreUtils::stopIfNull(satID)
+  MazamaCoreUtils::stopIfNull(datetime)
+  MazamaCoreUtils::stopIfNull(timezone)
   
   # ----- Gather candidate scan files  -----------------------------------------
   
@@ -108,11 +114,5 @@ goasaodc_findClosestScanFile <- function(
   # ----- Return ---------------------------------------------------------------
   
   return(closestScanFile)
-  
-}
-
-if ( FALSE ) {
-  
-  
   
 }
