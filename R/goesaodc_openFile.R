@@ -44,7 +44,44 @@ goesaodc_openFile <- function(
   
   MazamaCoreUtils::stopIfNull(filename)
   
+  if ( length(filename) == 0 )
+    stop("Param 'filename' must be a single filename or a list of filenames")
+  
   # ----- Open nc handle -------------------------------------------------------
+  
+  if ( length(filename) == 1 ) {
+    
+    nc <- goesaodc_openSingleFile(filename, dataDir)
+    
+  } else {
+    
+    nc <- list()
+    
+    for ( fn in filename ) {
+      
+      # Create a label for this file in the list
+      label <- 
+        fn %>%
+        goesaodc_convertFilenameToDatetime() %>%
+        MazamaCoreUtils::timeStamp(unit = "sec", timezone = "UTC")
+      
+      nc[[label]] <- goesaodc_openSingleFile(fn, dataDir)
+      
+    }
+    
+  }
+  
+  # ----- Return ---------------------------------------------------------------
+  
+  return(nc)
+  
+}
+
+# Internal helper function
+goesaodc_openSingleFile <- function(
+  filename = NULL,
+  dataDir = getSatelliteDataDir()
+) {
   
   # Check if internal package file is being used
   if ( stringr::str_detect(filename, "extdata") ) { 
@@ -52,14 +89,11 @@ goesaodc_openFile <- function(
   } else {
     fullPath <- file.path(dataDir, filename)
   }
-
+  
   if ( !file.exists(fullPath) )
     stop(paste0("Cannot find ", fullPath))
   
-  # Let nc_open error messages bubble up 
   nc <- ncdf4::nc_open(fullPath)
-  
-  # ----- Return ---------------------------------------------------------------
   
   return(nc)
   
