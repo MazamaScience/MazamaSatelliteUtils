@@ -47,7 +47,7 @@ oregon_bbox <- c(-125, -116, 42, 47)
 
 goesaodc_plotAveragePoints(
   satID = "G17",
-  datetime = "2020-09-15 12",
+  datetime = "2020-09-8 18",
   timezone = "America/Los_Angeles",
   bbox = oregon_bbox,
   cex = 0.3
@@ -58,6 +58,26 @@ maps::map(
   regions = "oregon",
   xlim = oregon_bbox[1:2],
   ylim = oregon_bbox[3:4],
+  add  = TRUE
+)
+
+
+kincade_bbox <- c(-124, -120, 36, 39)
+
+goesaodc_plotAveragePoints(
+  satID = "G17",
+  datetime = "2019-10-27 10",
+  endtime = "2019-10-27 14",
+  timezone = "America/Los_Angeles",
+  bbox = kincade_bbox,
+  cex = 0.5
+)
+
+maps::map(
+  database = "state",
+  regions = "california",
+  xlim = kincade_bbox[1:2],
+  ylim = kincade_bbox[3:4],
   add  = TRUE
 )
 }

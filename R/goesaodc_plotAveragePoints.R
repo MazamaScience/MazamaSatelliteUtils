@@ -25,7 +25,7 @@
 #' 
 #' goesaodc_plotAveragePoints(
 #'   satID = "G17",
-#'   datetime = "2020-09-15 12",
+#'   datetime = "2020-09-8 18",
 #'   timezone = "America/Los_Angeles",
 #'   bbox = oregon_bbox,
 #'   cex = 0.3
@@ -36,6 +36,26 @@
 #'   regions = "oregon",
 #'   xlim = oregon_bbox[1:2],
 #'   ylim = oregon_bbox[3:4],
+#'   add  = TRUE
+#' )
+#' 
+#' 
+#' kincade_bbox <- c(-124, -120, 36, 39)
+#' 
+#' goesaodc_plotAveragePoints(
+#'   satID = "G17",
+#'   datetime = "2019-10-27 10",
+#'   endtime = "2019-10-27 14",
+#'   timezone = "America/Los_Angeles",
+#'   bbox = kincade_bbox,
+#'   cex = 0.5
+#' )
+#' 
+#' maps::map(
+#'   database = "state",
+#'   regions = "california",
+#'   xlim = kincade_bbox[1:2],
+#'   ylim = kincade_bbox[3:4],
 #'   add  = TRUE
 #' )
 #' }
@@ -116,8 +136,9 @@ goesaodc_plotAveragePoints <- function(
       pointValues[tb] <- tbList[[tb]]$AOD[p]
     }
     
-    # Record average AOD value in the average tibble
-    avgTb$AOD[p] <- mean(pointValues, na.rm = dropNa)
+    # Record average AOD value in the average tibble. Returns NA only if *all*
+    # the point's values are NA.
+    avgTb$AOD[p] <- mean(pointValues, na.rm = TRUE)
     
   }
   
