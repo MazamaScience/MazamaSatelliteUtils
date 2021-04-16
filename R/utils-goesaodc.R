@@ -189,8 +189,15 @@ goesaodc_isGoesProjection <- function(
     stop("argument 'nc' must be an ncdf4 object")
   }
   
-  projection <- goesaodc_getProjection(nc)
   satelliteDataDir <- getSatelliteDataDir()
+  
+  # Test for grid existence
+  if ( !file.exists(file.path(satelliteDataDir, "goesEastGrid.rda")) ||
+       !file.exists(file.path(satelliteDataDir, "goesEastGrid.rda")) ) {
+    stop("Grid files not found. Run 'installGoesGrids()' first")
+  }
+  
+  projection <- goesaodc_getProjection(nc)
   
   tryCatch(
     expr = {
