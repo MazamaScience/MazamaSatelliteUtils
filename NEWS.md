@@ -1,3 +1,9 @@
+# MazamaSatelliteUtils 0.4.4
+
+* Added `goesaodc_createMultiScanPoints()` function.
+* Added `goesaodc_createSingleScanPoints()` function.
+* Added `goesaodc_plotAODPoints()` function.
+
 # MazamaSatelliteUtils 0.4.3
 
 * Added `goesaodc_plotAveragePoints()` function.
