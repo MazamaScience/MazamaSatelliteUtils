@@ -13,7 +13,7 @@
 #' @param bbox Bounding box for the region of interest; Defaults to CONUS.
 #' @param dqfLevel Data quality flag level; Defaults to 3.
 
-goesaodc_createMultiScanPoints <- function(
+goesaodc_multiScanToSPDF <- function(
   satID = NULL,
   datetime = NULL,
   endtime = NULL,
@@ -167,7 +167,7 @@ if ( FALSE ) {
   oregon_bbox <- c(-125, -116, 42, 47)
   
   # Create points from scans covering a full hour
-  sp <- goesaodc_createMultiScanPoints(
+  sp <- goesaodc_multiScanToSPDF(
     satID = "G17",
     datetime = "2020-09-08 12",
     endtime = "2020-09-08 13",

@@ -19,7 +19,7 @@
 #' @param breaks Vector of AOD values to use as palette breaks.
 #' @param pointSize Size of plot points; Defaults to 0.5.
 
-goesaodc_plotAODPoints <- function(
+goesaodc_plotScanPoints <- function(
   satID = NULL,
   datetime = NULL,
   endtime = NULL,
@@ -35,7 +35,7 @@ goesaodc_plotAODPoints <- function(
   
   if ( is.null(endtime) ) {
     
-    sp <- goesaodc_createSingleScanPoints(
+    sp <- goesaodc_singleScanToSPDF(
       satID = satID,
       datetime = datetime,
       timezone = timezone,
@@ -46,7 +46,7 @@ goesaodc_plotAODPoints <- function(
     
   } else {
     
-    sp <- goesaodc_createMultiScanPoints(
+    sp <- goesaodc_multiScanToSPDF(
       satID = satID,
       datetime = datetime,
       endtime = endtime,
@@ -79,7 +79,7 @@ if ( FALSE ) {
   oregon_bbox <- c(-125, -116, 42, 47)
   
   # Plot Oregon at 5:30pm on Sept. 8, 2020
-  goesaodc_plotAODPoints(
+  goesaodc_plotScanPoints(
     satID = "G17",
     datetime = "2020-09-08 17:30",
     timezone = "America/Los_Angeles",
@@ -89,7 +89,7 @@ if ( FALSE ) {
   )
   
   # Plot a scan file from Sept. 8, 2020
-  goesaodc_plotAODPoints(
+  goesaodc_plotScanPoints(
     filename = "OR_ABI-L2-AODC-M6_G17_s20202530031174_e20202530033547_c20202530035523.nc",
     bbox = oregon_bbox,
     dqfLevel = 3,
@@ -97,7 +97,7 @@ if ( FALSE ) {
   )
   
   # Plot Oregon from 12pm to 1pm on Sept. 8, 2020
-  goesaodc_plotAODPoints(
+  goesaodc_plotScanPoints(
     satID = "G17",
     datetime = "2020-09-08 12",
     endtime = "2020-09-08 13",
