@@ -94,6 +94,11 @@ if ( FALSE ) {
   
   filename <- "OR_ABI-L2-AODC-M6_G17_s20202530031174_e20202530033547_c20202530035523.nc"
   
+  title <- MazamaCoreUtils::parseDatetime(
+    goesaodc_convertFilenameToDatetime(filename),
+    "America/Los_Angeles"
+  )
+  
   # Create spatial points
   sp <- goesaodc_createSingleScanSPDF(
     filename = filename,
@@ -105,7 +110,7 @@ if ( FALSE ) {
   goesaodc_plotScanSPDF(
     sp = sp,
     bbox = bbox_oregon,
-    title = goesaodc_convertFilenameToDatetime(filename)
+    title = title
   ) +
     AirFirePlots::layer_states("OR")
   
@@ -115,7 +120,7 @@ if ( FALSE ) {
     bbox = bbox_oregon,
     breaks = c(-Inf, 0, 1, 2, 3, 4, 5, Inf),
     paletteName = "Reds",
-    title = goesaodc_convertFilenameToDatetime(filename)
+    title = title
   ) +
     AirFirePlots::layer_states("OR")
   

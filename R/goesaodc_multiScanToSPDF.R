@@ -183,7 +183,7 @@ if ( FALSE ) {
   )
   
   # Plot points
-  goesaodc_SPDFToPlot(sp) +
+  goesaodc_plotScanSPDF(sp) +
     AirFirePlots::layer_states("OR")
   
 }

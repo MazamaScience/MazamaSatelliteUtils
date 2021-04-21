@@ -123,15 +123,22 @@ if ( FALSE ) {
     dqfLevel = 3
   )
   
+  filename <- "OR_ABI-L2-AODC-M6_G17_s20202530031174_e20202530033547_c20202530035523.nc"
+  
+  title <- MazamaCoreUtils::parseDatetime(
+    goesaodc_convertFilenameToDatetime(filename),
+    "America/Los_Angeles"
+  )
+  
   # Create points from a named scan file
   sp <- goesaodc_createSingleScanSPDF(
-    filename = "OR_ABI-L2-AODC-M6_G17_s20202530031174_e20202530033547_c20202530035523.nc",
+    filename = filename,
     bbox = bbox_oregon,
     dqfLevel = 3
   )
   
   # Plot points
-  goesaodc_SPDFToPlot(sp, bbox = bbox_oregon) +
+  goesaodc_plotScanSPDF(sp, bbox = bbox_oregon, title = title) +
     AirFirePlots::layer_states("OR")
   
 }

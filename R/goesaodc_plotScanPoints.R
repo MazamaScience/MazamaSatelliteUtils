@@ -35,7 +35,7 @@ goesaodc_plotScanPoints <- function(
   
   if ( is.null(endtime) ) {
     
-    sp <- goesaodc_singleScanToSPDF(
+    sp <- goesaodc_createSingleScanSPDF(
       satID = satID,
       datetime = datetime,
       timezone = timezone,
@@ -46,7 +46,7 @@ goesaodc_plotScanPoints <- function(
     
   } else {
     
-    sp <- goesaodc_multiScanToSPDF(
+    sp <- goesaodc_createMultiScanSPDF(
       satID = satID,
       datetime = datetime,
       endtime = endtime,
