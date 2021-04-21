@@ -8,6 +8,8 @@
 #' @param sp A SpatialPointsDataFrame.
 #' @param bbox Bounding box for the region of interest; Defaults to CONUS.
 #' @param pointSize Size of plot points; Defaults to 0.5.
+#' @param pointShape Shape of the plot points (index); Defaults to 15 (filled 
+#' square).
 #' @param breaks Vector of AOD values to use as palette breaks.
 #' @param paletteName The name of an RColorBrewer palette; Defaults to 'YlOrRd'.
 #' @param title Title of the plot.

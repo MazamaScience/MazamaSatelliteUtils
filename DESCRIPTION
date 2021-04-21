@@ -23,7 +23,9 @@ Depends:
     R (>= 3.3)
 Imports:
     abind,
+    AirFirePlots,
     dplyr,
+    ggplot2,
     lubridate,
     magrittr,
     maptools,

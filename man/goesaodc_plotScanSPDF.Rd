@@ -21,6 +21,9 @@ goesaodc_plotScanSPDF(
 
 \item{pointSize}{Size of plot points; Defaults to 0.5.}
 
+\item{pointShape}{Shape of the plot points (index); Defaults to 15 (filled 
+square).}
+
 \item{breaks}{Vector of AOD values to use as palette breaks.}
 
 \item{paletteName}{The name of an RColorBrewer palette; Defaults to 'YlOrRd'.}
