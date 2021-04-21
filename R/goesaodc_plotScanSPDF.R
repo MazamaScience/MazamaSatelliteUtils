@@ -37,8 +37,8 @@ goesaodc_plotScanSPDF <- function(
   colorScale <- NULL
   if ( is.null(breaks) ) {
     colorScale <- ggplot2::scale_color_gradient(
-      low = "#fff5d9",
-      high = "#ab2626",
+      low = "#FFFFB2",
+      high = "#BD0026",
       na.value = "gray50"
     )
   } else {
@@ -99,12 +99,22 @@ if ( FALSE ) {
     filename = filename,
     bbox = bbox_oregon,
     dqfLevel = 3
-  ) 
+  )
   
-  # Plot spatial points
-  goesaodc_SPDFToPlot(
+  # Plot spatial points with default palette
+  goesaodc_plotScanSPDF(
     sp = sp,
+    bbox = bbox_oregon,
+    title = goesaodc_convertFilenameToDatetime(filename)
+  ) +
+    AirFirePlots::layer_states("OR")
+  
+  # Plot spatial points with custom palette
+  goesaodc_plotScanSPDF(
+    sp = sp,
+    bbox = bbox_oregon,
     breaks = c(-Inf, 0, 1, 2, 3, 4, 5, Inf),
+    paletteName = "Reds",
     title = goesaodc_convertFilenameToDatetime(filename)
   ) +
     AirFirePlots::layer_states("OR")
