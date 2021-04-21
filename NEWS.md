@@ -1,6 +1,7 @@
 # MazamaSatelliteUtils 0.4.5
 
-* Added `goesaodc_SPDFToPlot()` function.
+* Added `goesaodc_plotScanSPDF()` function.
+* Removed `goesaodc_plotAveragePoints()` function.
 * Renamed `goesaodc_plotAODPoints()` function to `goesaodc_plotScanPoints`.
 * Renamed `goesaodc_createSingleScanPoints()` function to `goesaodc_createSingleScanSPDF()`.
 * Renamed `goesaodc_createMultiScanPoints()` function to `goesaodc_createMultiScanSPDF()`.
