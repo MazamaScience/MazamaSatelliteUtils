@@ -20,7 +20,7 @@
 #' @param endtime End time in Ymd HMS format or a \code{POSIXct}.
 #' @param timezone Timezone used to interpret \code{datetime} and 
 #' \code{endtime}; Defaults to UTC.
-#' @param filename Name of the scan file.
+#' @param filename Name of a scan file.
 #' @param bbox Bounding box for the region of interest; Defaults to CONUS.
 #' @param dqfLevel Data quality flag level; Defaults to 3.
 
@@ -63,6 +63,7 @@ goesaodc_createScanSPDF <- function(
   
   if ( is.null(filename) && !is.null(endtime) ) {
     
+    # Average the AOD values across all scans in the time range
     sp <- goesaodc_createMultiScanSPDF(
       satID = satID,
       datetime = datetime,
@@ -74,6 +75,7 @@ goesaodc_createScanSPDF <- function(
     
   } else {
     
+    # Get the AOD values for the scan closest to the requested time
     sp <- goesaodc_createSingleScanSPDF(
       satID = satID,
       datetime = datetime,

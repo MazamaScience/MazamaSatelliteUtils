@@ -24,7 +24,7 @@ goesaodc_createScanSPDF(
 \item{timezone}{Timezone used to interpret \code{datetime} and 
 \code{endtime}; Defaults to UTC.}
 
-\item{filename}{Name of the scan file.}
+\item{filename}{Name of a scan file.}
 
 \item{bbox}{Bounding box for the region of interest; Defaults to CONUS.}
 

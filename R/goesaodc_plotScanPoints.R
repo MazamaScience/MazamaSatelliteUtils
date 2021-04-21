@@ -16,8 +16,13 @@
 #' @param filename The name of the scan file.
 #' @param bbox Bounding box for the region of interest; Defaults to CONUS.
 #' @param dqfLevel Data quality flag level; Defaults to 3.
-#' @param breaks Vector of AOD values to use as palette breaks.
 #' @param pointSize Size of plot points; Defaults to 0.5.
+#' @param pointShape Shape of the plot points (index); Defaults to 15 (filled 
+#' square).
+#' @param breaks Vector of AOD values to use as palette breaks.
+#' @param paletteName The name of an RColorBrewer palette; Defaults to 'YlOrRd'.
+#' @param stateCodes Codes of state outlines to draw.
+#' @param title Title of the plot.
 
 goesaodc_plotScanPoints <- function(
   satID = NULL,
@@ -27,9 +32,15 @@ goesaodc_plotScanPoints <- function(
   filename = NULL,
   bbox = bbox_CONUS,
   dqfLevel = 3,
+  pointSize = 0.5,
+  pointShape = 15,
   breaks = NULL,
-  pointSize = 0.5
+  paletteName = "YlOrRd",
+  stateCodes = NULL,
+  title = NULL
 ) {
+  
+  # ----- Validate parameters --------------------------------------------------
   
   # ----- Create spatial points ------------------------------------------------
   
@@ -48,8 +59,15 @@ goesaodc_plotScanPoints <- function(
   p <- goesaodc_plotScanSPDF(
     sp = sp,
     bbox = bbox,
-    breaks = breaks
-  )
+    pointSize = pointSize,
+    pointShape = pointShape,
+    breaks = breaks,
+    paletteName = paletteName,
+    title = title
+  ) +
+    AirFirePlots::layer_states(
+      stateCodes = stateCodes
+    )
   
   # ----- Return ---------------------------------------------------------------
   
@@ -69,23 +87,28 @@ if ( FALSE ) {
   
   bbox_oregon <- c(-125, -116, 42, 47)
   
-  # Plot Oregon at 5:30pm on Sept. 8, 2020
+  # Plot Oregon at 5:30pm on Sep. 8, 2020
   goesaodc_plotScanPoints(
     satID = "G17",
     datetime = "2020-09-08 17:30",
     timezone = "America/Los_Angeles",
     bbox = bbox_oregon,
-    dqfLevel = 3,
-    pointSize = 0.5
+    stateCodes = "OR",
+    title = "Oregon AOD at 5:30pm PDT on Sep. 8, 2020"
   )
   
-  # Plot a scan file from Sept. 8, 2020
+  # Plot Oregon with a scan file from Sep. 8, 2020
+  filename <- "OR_ABI-L2-AODC-M6_G17_s20202530031174_e20202530033547_c20202530035523.nc"
+  title <- paste0("Oregon AOD for ", MazamaCoreUtils::parseDatetime(
+    goesaodc_convertFilenameToDatetime(filename), "America/Los_Angeles"), " PDT"
+  )
+  
   goesaodc_plotScanPoints(
-    filename = "OR_ABI-L2-AODC-M6_G17_s20202530031174_e20202530033547_c20202530035523.nc",
+    filename = filename,
     bbox = bbox_oregon,
-    dqfLevel = 3,
-    pointSize = 0.5,
-    breaks = c(-Inf, 0, 1, 2, 3, 4, 5, Inf)
+    breaks = c(-Inf, 0, 1, 2, 3, 4, 5, Inf),
+    stateCodes = "OR",
+    title = title
   )
   
   # Plot Oregon from 12pm to 1pm on Sept. 8, 2020
@@ -95,8 +118,8 @@ if ( FALSE ) {
     endtime = "2020-09-08 13",
     timezone = "America/Los_Angeles",
     bbox = bbox_oregon,
-    dqfLevel = 3,
-    pointSize = 0.5
+    stateCodes = "OR",
+    title = "Oregon AOD from 12pm to 1pm PDT on Sept. 8, 2020"
   )
   
 }

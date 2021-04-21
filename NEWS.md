@@ -5,6 +5,8 @@
 functions are now hidden.
 * Renamed `goesaodc_singleScanToSPDF()` function to `goesaodc_createSingleScanSPDF()`.
 * Renamed `goesaodc_multiScanToSPDF()` function to `goesaodc_createMultiScanSPDF()`.
+* Added `pointShape`, `paletteName`, `stateCodes`, and `title` params to 
+`goesaodc_plotScanPoints()`.
 * Updated low and high colors for the default palette used in 
 `goesaodc_plotScanSPDF()`.
 
