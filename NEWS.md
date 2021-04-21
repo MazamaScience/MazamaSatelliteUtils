@@ -9,6 +9,7 @@ functions are now hidden.
 `goesaodc_plotScanPoints()`.
 * Updated low and high colors for the default palette used in 
 `goesaodc_plotScanSPDF()`.
+* Added "Plotting 2020 Oregon Wildfires" article.
 
 # MazamaSatelliteUtils 0.4.5
 
