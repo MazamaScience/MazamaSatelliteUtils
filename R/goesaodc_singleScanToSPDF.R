@@ -105,36 +105,34 @@ goesaodc_singleScanToSPDF <- function(
 if ( FALSE ) {
   
   library(MazamaSatelliteUtils)
+  library(MazamaSpatialUtils)
+  
   setSatelliteDataDir("~/Data/Satellite")
+  setSpatialDataDir("~/Data/Spatial")
   
-  oregon_bbox <- c(-125, -116, 42, 47)
+  loadSpatialData("NaturalEarthAdm1")
   
-  # Create points from a scan specified by satellite and datetime
+  bbox_oregon <- c(-125, -116, 42, 47)
+  
+  # Create points from a scan specified by satellite and time
   goesaodc_singleScanToSPDF(
     satID = "G17",
     datetime = "2020-09-08 17:30",
     timezone = "America/Los_Angeles",
-    bbox = oregon_bbox,
+    bbox = bbox_oregon,
     dqfLevel = 3
   )
   
-  # Create points from a given scan file
+  # Create points from a named scan file
   sp <- goesaodc_singleScanToSPDF(
     filename = "OR_ABI-L2-AODC-M6_G17_s20202530031174_e20202530033547_c20202530035523.nc",
-    bbox = oregon_bbox,
+    bbox = bbox_oregon,
     dqfLevel = 3
   )
   
-  # Draw plot
-  goesaodc_plotSpatialPoints(sp, cex = 0.3)
-  
-  maps::map(
-    database = "state",
-    regions = "oregon",
-    xlim = oregon_bbox[1:2],
-    ylim = oregon_bbox[3:4],
-    add  = TRUE
-  )
+  # Plot points
+  goesaodc_SPDFToPlot(sp, bbox = bbox_oregon) +
+    AirFirePlots::layer_states("OR")
   
 }
 

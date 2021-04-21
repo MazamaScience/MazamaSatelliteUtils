@@ -22,6 +22,8 @@ goesaodc_multiScanToSPDF <- function(
   dqfLevel = 3
 ) {
   
+  # ----- Validate parameters --------------------------------------------------
+  
   # ----- Get scan files -------------------------------------------------------
   
   startFilename <- goasaodc_findClosestScanFile(
@@ -99,7 +101,7 @@ goesaodc_multiScanToSPDF <- function(
     
   }
   
-  # ----- Create scan tibbles --------------------------------------------------
+  # ----- Create tibbles -------------------------------------------------------
   
   tbList <- list()
   
@@ -141,12 +143,12 @@ goesaodc_multiScanToSPDF <- function(
     }
     
     # Record average AOD value in the average tibble. Returns NA only if *all*
-    # the point's values are NA.
+    # values at that location are NA.
     avgTb$AOD[p] <- mean(pointValues, na.rm = TRUE)
     
   }
   
-  # ----- Create SpatialPoints -------------------------------------------------
+  # ----- Create spatial points -------------------------------------------------
   
   sp <- sp::SpatialPointsDataFrame(
     coords = dplyr::select(avgTb, c(.data$lon, .data$lat)),
@@ -162,9 +164,14 @@ goesaodc_multiScanToSPDF <- function(
 if ( FALSE ) {
   
   library(MazamaSatelliteUtils)
-  setSatelliteDataDir("~/Data/Satellite")
+  library(MazamaSpatialUtils)
   
-  oregon_bbox <- c(-125, -116, 42, 47)
+  setSatelliteDataDir("~/Data/Satellite")
+  setSpatialDataDir("~/Data/Spatial")
+  
+  loadSpatialData("NaturalEarthAdm1")
+  
+  bbox_oregon <- c(-125, -116, 42, 47)
   
   # Create points from scans covering a full hour
   sp <- goesaodc_multiScanToSPDF(
@@ -172,18 +179,11 @@ if ( FALSE ) {
     datetime = "2020-09-08 12",
     endtime = "2020-09-08 13",
     timezone = "America/Los_Angeles",
-    bbox = oregon_bbox
+    bbox = bbox_oregon
   )
   
-  # Draw plot
-  goesaodc_plotSpatialPoints(sp, cex = 0.3)
-  
-  maps::map(
-    database = "state",
-    regions = "oregon",
-    xlim = oregon_bbox[1:2],
-    ylim = oregon_bbox[3:4],
-    add  = TRUE
-  )
+  # Plot points
+  goesaodc_SPDFToPlot(sp) +
+    AirFirePlots::layer_states("OR")
   
 }

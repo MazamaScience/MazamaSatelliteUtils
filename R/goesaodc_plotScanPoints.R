@@ -31,7 +31,7 @@ goesaodc_plotScanPoints <- function(
   pointSize = 0.5
 ) {
   
-  # ----- Create AOD points for the given scan(s) ------------------------------
+  # ----- Create spatial points ------------------------------------------------
   
   if ( is.null(endtime) ) {
     
@@ -59,10 +59,10 @@ goesaodc_plotScanPoints <- function(
   
   # ----- Plot spatial points --------------------------------------------------
   
-  p <- goesaodc_plotSpatialPoints(
-    spatialPoints = sp,
-    breaks = breaks,
-    cex = pointSize
+  p <- goesaodc_plotScanSPDF(
+    sp = sp,
+    bbox = bbox,
+    breaks = breaks
   )
   
   # ----- Return ---------------------------------------------------------------
@@ -74,16 +74,21 @@ goesaodc_plotScanPoints <- function(
 if ( FALSE ) {
   
   library(MazamaSatelliteUtils)
-  setSatelliteDataDir("~/Data/Satellite")
+  library(MazamaSpatialUtils)
   
-  oregon_bbox <- c(-125, -116, 42, 47)
+  setSatelliteDataDir("~/Data/Satellite")
+  setSpatialDataDir("~/Data/Spatial")
+  
+  loadSpatialData("NaturalEarthAdm1")
+  
+  bbox_oregon <- c(-125, -116, 42, 47)
   
   # Plot Oregon at 5:30pm on Sept. 8, 2020
   goesaodc_plotScanPoints(
     satID = "G17",
     datetime = "2020-09-08 17:30",
     timezone = "America/Los_Angeles",
-    bbox = oregon_bbox,
+    bbox = bbox_oregon,
     dqfLevel = 3,
     pointSize = 0.5
   )
@@ -91,7 +96,7 @@ if ( FALSE ) {
   # Plot a scan file from Sept. 8, 2020
   goesaodc_plotScanPoints(
     filename = "OR_ABI-L2-AODC-M6_G17_s20202530031174_e20202530033547_c20202530035523.nc",
-    bbox = oregon_bbox,
+    bbox = bbox_oregon,
     dqfLevel = 3,
     pointSize = 0.5
   )
@@ -102,7 +107,7 @@ if ( FALSE ) {
     datetime = "2020-09-08 12",
     endtime = "2020-09-08 13",
     timezone = "America/Los_Angeles",
-    bbox = oregon_bbox,
+    bbox = bbox_oregon,
     dqfLevel = 3,
     pointSize = 0.5
   )

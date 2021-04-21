@@ -6,14 +6,17 @@
 #' SpatialPointsDataFrame.
 #' 
 #' @param sp A SpatialPointsDataFrame.
+#' @param bbox Bounding box for the region of interest; Defaults to CONUS.
 #' @param pointSize Size of plot points; Defaults to 0.5.
 #' @param breaks Vector of AOD values to use as palette breaks.
 #' @param paletteName The name of an RColorBrewer palette; Defaults to 'YlOrRd'.
 #' @param title Title of the plot.
 
-goesaodc_SPDFToPlot <- function(
+goesaodc_plotScanSPDF <- function(
   sp = NULL,
+  bbox = bbox_CONUS,
   pointSize = 0.5,
+  pointShape = 15,
   breaks = NULL,
   paletteName = "YlOrRd",
   title = NULL
@@ -43,17 +46,17 @@ goesaodc_SPDFToPlot <- function(
     )
   }
   
-  # convert SpatialPointsDataFrame to regular dataframe
+  # Convert SpatialPointsDataFrame a to regular dataframe
   df <- data.frame(sp)
   
   # ----- Create plot ----------------------------------------------------------
   
   p <-
     AirFirePlots::plot_base(
-      title = "AOD for 2020-09-08 17:31:17 PDT",
+      title = title,
       clab = "AOD",
-      xlim = oregon_bbox[1:2],
-      ylim = oregon_bbox[3:4],
+      xlim = bbox[1:2],
+      ylim = bbox[3:4],
       project = TRUE,
       expand = FALSE
     ) +
@@ -65,7 +68,7 @@ goesaodc_SPDFToPlot <- function(
         color = .data$AOD
       ),
       size = pointSize,
-      shape = 15
+      shape = pointShape
     ) +
     colorScale
   
@@ -85,14 +88,14 @@ if ( FALSE ) {
   
   loadSpatialData("NaturalEarthAdm1")
   
-  oregon_bbox <- c(-125, -116, 42, 47)
+  bbox_oregon <- c(-125, -116, 42, 47)
   
   filename <- "OR_ABI-L2-AODC-M6_G17_s20202530031174_e20202530033547_c20202530035523.nc"
   
   # Create spatial points
   sp <- goesaodc_singleScanToSPDF(
     filename = filename,
-    bbox = oregon_bbox,
+    bbox = bbox_oregon,
     dqfLevel = 3
   ) 
   
@@ -102,8 +105,6 @@ if ( FALSE ) {
     breaks = c(-Inf, 0, 1, 2, 3, 4, 5, Inf),
     title = goesaodc_convertFilenameToDatetime(filename)
   ) +
-    AirFirePlots::layer_states(
-      stateCodes = "OR"
-    )
+    AirFirePlots::layer_states("OR")
   
 }
