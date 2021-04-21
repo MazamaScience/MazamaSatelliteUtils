@@ -33,29 +33,15 @@ goesaodc_plotScanPoints <- function(
   
   # ----- Create spatial points ------------------------------------------------
   
-  if ( is.null(endtime) ) {
-    
-    sp <- goesaodc_createSingleScanSPDF(
-      satID = satID,
-      datetime = datetime,
-      timezone = timezone,
-      filename = filename,
-      bbox = bbox,
-      dqfLevel = dqfLevel
-    )
-    
-  } else {
-    
-    sp <- goesaodc_createMultiScanSPDF(
-      satID = satID,
-      datetime = datetime,
-      endtime = endtime,
-      timezone = timezone,
-      bbox = bbox,
-      dqfLevel = dqfLevel
-    )
-    
-  }
+  sp <- goesaodc_createScanSPDF(
+    satID = satID,
+    datetime = datetime,
+    endtime = endtime,
+    timezone = timezone,
+    filename = filename,
+    bbox = bbox,
+    dqfLevel = dqfLevel
+  )
   
   # ----- Plot spatial points --------------------------------------------------
   
@@ -98,7 +84,8 @@ if ( FALSE ) {
     filename = "OR_ABI-L2-AODC-M6_G17_s20202530031174_e20202530033547_c20202530035523.nc",
     bbox = bbox_oregon,
     dqfLevel = 3,
-    pointSize = 0.5
+    pointSize = 0.5,
+    breaks = c(-Inf, 0, 1, 2, 3, 4, 5, Inf)
   )
   
   # Plot Oregon from 12pm to 1pm on Sept. 8, 2020

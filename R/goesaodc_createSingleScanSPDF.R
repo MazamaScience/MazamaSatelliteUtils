@@ -1,5 +1,3 @@
-#' @export
-#' 
 #' @title Create spatial points for a single scan
 #' 
 #' @description Creates a SpatialPointsDataFrame from a single scan file 

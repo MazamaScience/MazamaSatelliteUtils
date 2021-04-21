@@ -1,5 +1,8 @@
 # MazamaSatelliteUtils 0.4.6
 
+* Added `goesaodc_createScanSPDF()` function.
+* `goesaodc_createSingleScanSPDF()` and `goesaodc_createSingleScanSPDF()` 
+functions are now hidden.
 * Renamed `goesaodc_singleScanToSPDF()` function to `goesaodc_createSingleScanSPDF()`.
 * Renamed `goesaodc_multiScanToSPDF()` function to `goesaodc_createMultiScanSPDF()`.
 * Updated low and high colors for the default palette used in 

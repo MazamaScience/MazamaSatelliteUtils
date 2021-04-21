@@ -1,5 +1,3 @@
-#' @export
-#' 
 #' @title Create spatial points for multiple scan
 #' 
 #' @description Creates a SpatialPointsDataFrame of averaged AOD values across
