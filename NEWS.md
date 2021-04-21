@@ -1,10 +1,17 @@
+# MazamaSatelliteUtils 0.4.6
+
+* Renamed `goesaodc_singleScanToSPDF()` function to `goesaodc_createSingleScanSPDF()`.
+* Renamed `goesaodc_multiScanToSPDF()` function to `goesaodc_createMultiScanSPDF()`.
+* Updated low and high colors for the default palette used in 
+`goesaodc_plotScanSPDF()`.
+
 # MazamaSatelliteUtils 0.4.5
 
 * Added `goesaodc_plotScanSPDF()` function.
 * Removed `goesaodc_plotAveragePoints()` function.
 * Renamed `goesaodc_plotAODPoints()` function to `goesaodc_plotScanPoints`.
-* Renamed `goesaodc_createSingleScanPoints()` function to `goesaodc_createSingleScanSPDF()`.
-* Renamed `goesaodc_createMultiScanPoints()` function to `goesaodc_createMultiScanSPDF()`.
+* Renamed `goesaodc_createSingleScanPoints()` function to `goesaodc_singleScanToSPDF()`.
+* Renamed `goesaodc_createMultiScanPoints()` function to `goesaodc_multiScanToSPDF()`.
 * Added **AirFirePlots** and **ggplot2** as package dependencies.
 
 # MazamaSatelliteUtils 0.4.4

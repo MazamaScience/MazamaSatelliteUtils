@@ -95,7 +95,7 @@ if ( FALSE ) {
   filename <- "OR_ABI-L2-AODC-M6_G17_s20202530031174_e20202530033547_c20202530035523.nc"
   
   # Create spatial points
-  sp <- goesaodc_singleScanToSPDF(
+  sp <- goesaodc_createSingleScanSPDF(
     filename = filename,
     bbox = bbox_oregon,
     dqfLevel = 3

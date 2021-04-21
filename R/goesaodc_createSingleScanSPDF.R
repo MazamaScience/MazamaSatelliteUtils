@@ -16,7 +16,7 @@
 #' @param bbox Bounding box for the region of interest; Defaults to CONUS.
 #' @param dqfLevel Data quality flag level; Defaults to 3.
 
-goesaodc_singleScanToSPDF <- function(
+goesaodc_createSingleScanSPDF <- function(
   satID = NULL,
   datetime = NULL,
   timezone = "UTC",
@@ -115,7 +115,7 @@ if ( FALSE ) {
   bbox_oregon <- c(-125, -116, 42, 47)
   
   # Create points from a scan specified by satellite and time
-  goesaodc_singleScanToSPDF(
+  goesaodc_createSingleScanSPDF(
     satID = "G17",
     datetime = "2020-09-08 17:30",
     timezone = "America/Los_Angeles",
@@ -124,7 +124,7 @@ if ( FALSE ) {
   )
   
   # Create points from a named scan file
-  sp <- goesaodc_singleScanToSPDF(
+  sp <- goesaodc_createSingleScanSPDF(
     filename = "OR_ABI-L2-AODC-M6_G17_s20202530031174_e20202530033547_c20202530035523.nc",
     bbox = bbox_oregon,
     dqfLevel = 3
