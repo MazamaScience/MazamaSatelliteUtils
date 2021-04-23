@@ -1,3 +1,7 @@
+# MazamaSatelliteUtils 0.4.7
+
+* Added `animateScanPoints_exec` executable script.
+
 # MazamaSatelliteUtils 0.4.6
 
 * Added `goesaodc_createScanSPDF()` function.
