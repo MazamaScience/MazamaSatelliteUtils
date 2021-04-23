@@ -35,8 +35,8 @@ if ( interactive() ) {
   # RStudio session
   opt <- list(
     satID = "G17",
-    starttime = "2020-09-08 16:00",
-    endtime = "2020-09-08 18:00",
+    starttime = "2020-09-08 15:00",
+    endtime = "2020-09-08 16:00",
     timezone = "America/Los_Angeles",
     bbox = "-125, -116, 42, 47",
     dqfLevel = NULL,
@@ -273,7 +273,7 @@ logger.debug("R session:\n\n%s\n", sessionString)
         stringr::str_pad(frameNumber, 3, 'left', '0'),
         ".png"
       )
-      frameFilePath <- file.path("~/Desktop/frames", frameFilename)
+      frameFilePath <- file.path(tempdir(), frameFilename)
       
       # Format the scan time
       scanTimeUTC <-goesaodc_convertFilenameToDatetime(scanFilename)
@@ -300,7 +300,7 @@ logger.debug("R session:\n\n%s\n", sessionString)
         filename = frameFilename,
         plot <- scanPlot,
         device = "png",
-        path = "~/Desktop/frames",
+        path = tempdir(),
         width = 8,
         height = 4.5,
         dpi = 300
@@ -317,7 +317,7 @@ logger.debug("R session:\n\n%s\n", sessionString)
     videoFilePath <- file.path(opt$outputDir, videoFilename)
     
     # Define system calls to ffmpeg to create video from frames
-    cmd_cd <- paste0("cd ", "~/Desktop/frames")
+    cmd_cd <- paste0("cd ", tempdir())
     cmd_ffmpeg <- paste0(
       "ffmpeg -loglevel quiet -r ",
       opt$frameRate, " -f image2 -s 1280x720 -i ",
