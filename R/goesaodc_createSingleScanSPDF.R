@@ -12,7 +12,7 @@
 #' \code{endtime}; Defaults to UTC.
 #' @param filename The name of the scan file.
 #' @param bbox Bounding box for the region of interest; Defaults to CONUS.
-#' @param dqfLevel Data quality flag level; Defaults to 3.
+#' @param dqfLevel Data quality flag level; Defaults to NULL.
 
 goesaodc_createSingleScanSPDF <- function(
   satID = NULL,
@@ -20,7 +20,7 @@ goesaodc_createSingleScanSPDF <- function(
   timezone = "UTC",
   filename = NULL,
   bbox = bbox_CONUS,
-  dqfLevel = 3
+  dqfLevel = NULL
 ) {
   
   # ----- Validate parameters --------------------------------------------------
@@ -45,8 +45,6 @@ goesaodc_createSingleScanSPDF <- function(
     }
     
   }
-  
-  MazamaCoreUtils::stopIfNull(dqfLevel)
   
   # ----- Get scan file --------------------------------------------------------
   

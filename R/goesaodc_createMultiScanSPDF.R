@@ -9,7 +9,7 @@
 #' @param timezone Timezone used to interpret \code{datetime} and 
 #' \code{endtime}; Defaults to UTC.
 #' @param bbox Bounding box for the region of interest; Defaults to CONUS.
-#' @param dqfLevel Data quality flag level; Defaults to 3.
+#' @param dqfLevel Data quality flag level; Defaults to NULL.
 
 goesaodc_createMultiScanSPDF <- function(
   satID = NULL,
@@ -17,7 +17,7 @@ goesaodc_createMultiScanSPDF <- function(
   endtime = NULL,
   timezone = "UTC",
   bbox = bbox_CONUS,
-  dqfLevel = 3
+  dqfLevel = NULL
 ) {
   
   # ----- Validate parameters --------------------------------------------------
@@ -110,12 +110,7 @@ goesaodc_createMultiScanSPDF <- function(
       goesaodc_convertFilenameToDatetime() %>%
       MazamaCoreUtils::timeStamp(unit = "sec", timezone = "UTC")
     
-    # Do not drop NA rows, since we want to keep all scan tibbles the same size
-    tbList[[label]] <- goesaodc_createTibble(
-      nc = nc,
-      bbox = bbox,
-      dropNa = FALSE
-    )
+    tbList[[label]] <- goesaodc_createTibble(nc, bbox)
     
   }
   

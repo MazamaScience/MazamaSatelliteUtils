@@ -10,7 +10,7 @@ goesaodc_createMultiScanSPDF(
   endtime = NULL,
   timezone = "UTC",
   bbox = bbox_CONUS,
-  dqfLevel = 3
+  dqfLevel = NULL
 )
 }
 \arguments{
@@ -25,7 +25,7 @@ goesaodc_createMultiScanSPDF(
 
 \item{bbox}{Bounding box for the region of interest; Defaults to CONUS.}
 
-\item{dqfLevel}{Data quality flag level; Defaults to 3.}
+\item{dqfLevel}{Data quality flag level; Defaults to NULL.}
 }
 \description{
 Creates a SpatialPointsDataFrame of averaged AOD values across

@@ -11,7 +11,7 @@ goesaodc_createScanSPDF(
   timezone = "UTC",
   filename = NULL,
   bbox = bbox_CONUS,
-  dqfLevel = 3
+  dqfLevel = NULL
 )
 }
 \arguments{
@@ -28,7 +28,7 @@ goesaodc_createScanSPDF(
 
 \item{bbox}{Bounding box for the region of interest; Defaults to CONUS.}
 
-\item{dqfLevel}{Data quality flag level; Defaults to 3.}
+\item{dqfLevel}{Data quality flag level; Defaults to NULL.}
 }
 \description{
 Creates a SpatialPointsDataFrame of AOD readings from one or 

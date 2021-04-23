@@ -7,6 +7,8 @@ functions are now hidden.
 * Renamed `goesaodc_multiScanToSPDF()` function to `goesaodc_createMultiScanSPDF()`.
 * Added `pointShape`, `paletteName`, `stateCodes`, and `title` params to 
 `goesaodc_plotScanPoints()`.
+* Removed NA row dropping from `goesaodc_createTibble()`.
+* Functions with a `dqfLevel` parameter now allowed it to be NULL.
 * Updated low and high colors for the default palette used in 
 `goesaodc_plotScanSPDF()`.
 * Added "Plotting 2020 Oregon Wildfires" article.

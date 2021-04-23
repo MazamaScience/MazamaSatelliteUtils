@@ -22,8 +22,7 @@
 #'
 #' @param nc ncdf4 handle.
 #' @param bbox Bounding box for the region of interest; Defaults to CONUS.
-#' @param dqfLevel Data quality flag level.
-#' @param dropNa Logical flag whether to drop points with NA values.
+#' @param dqfLevel Data quality flag level; Defaults to NULL.
 #'
 #' @return SpatialPointsDataFrame
 #'
@@ -57,14 +56,12 @@
 goesaodc_createSpatialPoints <- function(
   nc = NULL,
   bbox = bbox_CONUS,
-  dqfLevel = NULL,
-  dropNa = TRUE
+  dqfLevel = NULL
 ) {
   
   # ----- Validate parameters --------------------------------------------------
   
   MazamaCoreUtils::stopIfNull(nc)
-  MazamaCoreUtils::stopIfNull(dqfLevel)
   
   if ( !is.null(dqfLevel) ) {
     if ( !(dqfLevel %in% c(0, 1, 2, 3)) ) {
@@ -75,7 +72,7 @@ goesaodc_createSpatialPoints <- function(
   # ----- Filter data ----------------------------------------------------------
   
   # Create tibble
-  tbl <- goesaodc_createTibble(nc, bbox, dropNa)
+  tbl <- goesaodc_createTibble(nc, bbox)
 
   # Filter based on DQF
   if ( !is.null(dqfLevel) ) {

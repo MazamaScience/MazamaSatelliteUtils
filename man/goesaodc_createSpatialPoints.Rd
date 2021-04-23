@@ -4,21 +4,14 @@
 \alias{goesaodc_createSpatialPoints}
 \title{Create a SpatialPointsDataFrame of GOES data}
 \usage{
-goesaodc_createSpatialPoints(
-  nc = NULL,
-  bbox = bbox_CONUS,
-  dqfLevel = NULL,
-  dropNa = TRUE
-)
+goesaodc_createSpatialPoints(nc = NULL, bbox = bbox_CONUS, dqfLevel = NULL)
 }
 \arguments{
 \item{nc}{ncdf4 handle.}
 
 \item{bbox}{Bounding box for the region of interest; Defaults to CONUS.}
 
-\item{dqfLevel}{Data quality flag level.}
-
-\item{dropNa}{Logical flag whether to drop points with NA values.}
+\item{dqfLevel}{Data quality flag level; Defaults to NULL.}
 }
 \value{
 SpatialPointsDataFrame
