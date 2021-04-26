@@ -199,149 +199,141 @@ logger.info("Running animateScanPoints_exec.R version %s", VERSION)
 sessionString <- paste(capture.output(sessionInfo()), collapse = "\n")
 logger.debug("R session:\n\n%s\n", sessionString)
 
-# ----- EVERYTHING inside an overarching try{} block ---------------------------
 
+# ----- Assemble data ----------------------------------------------------------
 
+# Set data directories
+setSpatialDataDir(opt$spatialDataDir)
+setSatelliteDataDir(opt$satelliteDataDir)
+
+# Load state polygons
+loadSpatialData("USCensusStates")
+loadSpatialData("NaturalEarthAdm1")
+
+# Parse the bbox vector
+bbox <- as.numeric(unlist(strsplit(opt$bbox, ",")))
+bbox <- bboxToVector(bbox)
+
+# Parse the state codes
+stateCodes <- unlist(strsplit(opt$stateCodes, ","))
+
+# Parse the starttime and endtime
+starttime <- MazamaCoreUtils::parseDatetime(
+  opt$starttime,
+  timezone = opt$timezone
+)
+
+endtime <- MazamaCoreUtils::parseDatetime(
+  opt$endtime,
+  timezone = opt$timezone
+)
+
+if ( opt$verbose ) {
+  logger.trace(
+    "Animating scans from %s to %s",
+    strftime(starttime, "%Y-%m-%d %H:%M:%S %Z"),
+    strftime(endtime, "%Y-%m-%d %H:%M:%S %Z")
+  )
+}
+
+logger.trace("Downloading scan files")
+
+# Download scan files
+scanFilenames <- goesaodc_downloadAOD(
+  satID = opt$satID,
+  datetime = starttime,
+  endtime = endtime,
+  timezone = opt$timezone
+)
+
+# ----- Create frame files -----------------------------------------------------
   
-  # ----- Assemble data --------------------------------------------------------
+videoTimeStamp <- MazamaCoreUtils::timeStamp(
+  starttime,
+  unit = "hour",
+  timezone = opt$timezone
+)
+
+# Generate a frame for each scan file
+frameNumber <- 0
+
+for ( scanFilename in scanFilenames ) {
   
-    # Set data directories
-    setSpatialDataDir(opt$spatialDataDir)
-    setSatelliteDataDir(opt$satelliteDataDir)
-    
-    # Load state polygons
-    loadSpatialData("USCensusStates")
-    loadSpatialData("NaturalEarthAdm1")
-    
-    # Parse the bbox vector
-    bbox <- as.numeric(unlist(strsplit(opt$bbox, ",")))
-    bbox <- bboxToVector(bbox)
-    
-    stateCodes <- unlist(strsplit(opt$stateCodes, ","))
-    
-    # Parse the starttime and endtime
-    starttime <- MazamaCoreUtils::parseDatetime(
-      opt$starttime,
-      timezone = opt$timezone
+  # Frame setup
+  frameNumber <- frameNumber + 1
+  frameFilename <- paste0(
+    videoTimeStamp, "_",
+    stringr::str_pad(frameNumber, 3, 'left', '0'),
+    ".png"
+  )
+  frameFilePath <- file.path(tempdir(), frameFilename)
+  
+  # Format the scan time
+  scanTimeUTC <-goesaodc_convertFilenameToDatetime(scanFilename)
+  scanTimeLocal <- MazamaCoreUtils::parseDatetime(scanTimeUTC, opt$timezone)
+
+  if (opt$verbose)
+    logger.trace(
+      "Rendering frame for %s",
+      strftime(scanTimeLocal, "%Y-%m-%d %H:%M:%S %Z")
     )
     
-    endtime <- MazamaCoreUtils::parseDatetime(
-      opt$endtime,
-      timezone = opt$timezone
-    )
-    
-    if ( opt$verbose ) {
-      logger.trace(
-        "Animating scans from %s to %s",
-        strftime(starttime, "%Y-%m-%d %H:%M:%S %Z"),
-        strftime(endtime, "%Y-%m-%d %H:%M:%S %Z")
-      )
-    }
-    
-    logger.trace("Downloading scan files")
-    
-    # Download scan files
-    scanFilenames <- goesaodc_downloadAOD(
-      satID = opt$satID,
-      datetime = starttime,
-      endtime = endtime,
-      timezone = opt$timezone
-    )
-    
-
-
+  # Draw plot
+  scanPlot <- goesaodc_plotScanPoints(
+    filename = scanFilename,
+    bbox = bbox,
+    dqfLevel = opt$dqfLevel,
+    breaks = c(-Inf, 0, 1, 2, 3, 4, 5, Inf),
+    stateCodes = stateCodes,
+    title = paste0("AOD for ", strftime(scanTimeLocal, "%Y-%m-%d %H:%M:%S %Z"))
+  )
   
-  # ----- Create frame files ---------------------------------------------------
+  # Save frame file
+  ggplot2::ggsave(
+    filename = frameFilename,
+    plot = scanPlot,
+    device = "png",
+    path = tempdir(),
+    width = 8,
+    height = 4.5,
+    dpi = 200
+  )
   
-
-    
-    videoTimeStamp <- MazamaCoreUtils::timeStamp(
-      starttime,
-      unit = "hour",
-      timezone = opt$timezone
-    )
-    
-    # Generate a frame for each scan file
-    frameNumber <- 0
-    
-    for ( scanFilename in scanFilenames ) {
-      
-      # Frame setup
-      frameNumber <- frameNumber + 1
-      frameFilename <- paste0(
-        videoTimeStamp, "_",
-        stringr::str_pad(frameNumber, 3, 'left', '0'),
-        ".png"
-      )
-      frameFilePath <- file.path(tempdir(), frameFilename)
-      
-      # Format the scan time
-      scanTimeUTC <-goesaodc_convertFilenameToDatetime(scanFilename)
-      scanTimeLocal <- MazamaCoreUtils::parseDatetime(scanTimeUTC, opt$timezone)
-
-      if (opt$verbose)
-        logger.trace("Rendering frame for %s", strftime(scanTimeLocal, "%Y-%m-%d %H:%M:%S %Z"))
-        
-      # Draw plot
-      scanPlot <- goesaodc_plotScanPoints(
-        filename = scanFilename,
-        bbox = bbox,
-        dqfLevel = opt$dqfLevel,
-        breaks = c(-Inf, 0, 1, 2, 3, 4, 5, Inf),
-        stateCodes = stateCodes,
-        title = paste0("AOD for ", strftime(scanTimeLocal, "%Y-%m-%d %H:%M:%S %Z"))
-      )
-      
-      # Save frame file
-      ggplot2::ggsave(
-        filename = frameFilename,
-        plot = scanPlot,
-        device = "png",
-        path = tempdir(),
-        width = 8,
-        height = 4.5,
-        dpi = 200
-      )
-      
-    }
+}
   
-  # ----- Create video from frames ---------------------------------------------
-    
-    videoFilename <- paste0(
-      videoTimeStamp, "_DQF", opt$dqfLevel, ".mp4"
-    )
-    
-    videoFilePath <- file.path(opt$outputDir, videoFilename)
-    
-    # Define system calls to ffmpeg to create video from frames
-    cmd_cd <- paste0("cd ", tempdir())
-    cmd_ffmpeg <- paste0(
-      "ffmpeg -loglevel quiet -r ",
-      opt$frameRate, " -f image2 -s 1280x720 -i ",
-      videoTimeStamp, "_%03d.png -vcodec libx264 -crf 25 ",
-      videoFilePath
-    )
-    cmd_rm <- "rm *.png"
-    cmd <- paste0(cmd_cd, " && ", cmd_ffmpeg, " && ", cmd_rm)
-    
-    logger.info("Stitching frames into a video with ffmpeg")
-    logger.trace(cmd)
-    
-    # Make system call
-    ffmpegString <- paste(capture.output({
-      system(cmd)
-    }), collapse = "\n")
+# ----- Create video from frames -----------------------------------------------
 
-    logger.trace(ffmpegString)
+videoFilename <- paste0(
+  videoTimeStamp, "_DQF", opt$dqfLevel, ".mp4"
+)
 
-# ----- Handle errors ----------------------------------------------------------
+videoFilePath <- file.path(opt$outputDir, videoFilename)
 
+# Define system calls to ffmpeg to create video from frames
+cmd_cd <- paste0("cd ", tempdir())
+cmd_ffmpeg <- paste0(
+  "ffmpeg -loglevel quiet -r ",
+  opt$frameRate, " -f image2 -s 1280x720 -i ",
+  videoTimeStamp, "_%03d.png -vcodec libx264 -crf 25 ",
+  videoFilePath
+)
+cmd_rm <- "rm *.png"
+cmd <- paste0(cmd_cd, " && ", cmd_ffmpeg, " && ", cmd_rm)
 
-  
-  # Guarantee that an empty errorLog exists
-  if ( !file.exists(errorLog) )
-    dummy <- file.create(errorLog)
-  
-  logger.info("Completed successfully!")
+logger.info("Stitching frames into a video with ffmpeg")
+logger.trace(cmd)
+
+# Make system call
+ffmpegString <- paste(capture.output({
+  system(cmd)
+}), collapse = "\n")
+
+# ----- Finish -----------------------------------------------------------------
+
+# Guarantee that an empty errorLog exists
+if ( !file.exists(errorLog) )
+  dummy <- file.create(errorLog)
+
+logger.info("Completed successfully!")
   
 

@@ -55,7 +55,7 @@ goesaodc_plotScanSPDF <- function(
   
   # ----- Create plot ----------------------------------------------------------
   
-  p <-
+  scanPlot <-
     AirFirePlots::plot_base(
       title = title,
       clab = "AOD",
@@ -78,7 +78,7 @@ goesaodc_plotScanSPDF <- function(
   
   # ----- Return ---------------------------------------------------------------
   
-  return(p)
+  return(scanPlot)
   
 }
 
