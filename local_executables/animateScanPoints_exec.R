@@ -35,8 +35,8 @@ if ( interactive() ) {
   # RStudio session
   opt <- list(
     satID = "G17",
-    starttime = "2020-09-08 08:00",
-    endtime = "2020-09-08 18:00",
+    starttime = "2020-09-08 12:00",
+    endtime = "2020-09-08 15:00",
     timezone = "America/Los_Angeles",
     bbox = "-125, -116, 42, 47",
     dqfLevel = NULL,
@@ -215,7 +215,7 @@ bbox <- as.numeric(unlist(strsplit(opt$bbox, ",")))
 bbox <- bboxToVector(bbox)
 
 # Parse the state codes
-stateCodes <- unlist(strsplit(opt$stateCodes, ","))
+stateCodes <- trimws(unlist(strsplit(opt$stateCodes, ",")))
 
 # Parse the starttime and endtime
 starttime <- MazamaCoreUtils::parseDatetime(

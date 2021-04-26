@@ -86,7 +86,7 @@ goesaodc_createSingleScanSPDF <- function(
   
   nc <- goesaodc_openFile(filename)
   
-  sp <- goesaodc_createSpatialPoints(
+  spdf <- goesaodc_createSpatialPoints(
     nc = nc,
     bbox = bbox,
     dqfLevel = dqfLevel
@@ -94,7 +94,7 @@ goesaodc_createSingleScanSPDF <- function(
     
   # ----- Return ---------------------------------------------------------------
   
-  return(sp)
+  return(spdf)
   
 }
 
@@ -127,14 +127,14 @@ if ( FALSE ) {
   )
   
   # Create points from a named scan file
-  sp <- goesaodc_createSingleScanSPDF(
+  spdf <- goesaodc_createSingleScanSPDF(
     filename = filename,
     bbox = bbox_oregon,
     dqfLevel = 3
   )
   
   # Plot points
-  goesaodc_plotScanSPDF(sp, bbox = bbox_oregon, title = title) +
+  goesaodc_plotScanSPDF(spdf, bbox = bbox_oregon, title = title) +
     AirFirePlots::layer_states("OR")
   
 }

@@ -143,14 +143,14 @@ goesaodc_createMultiScanSPDF <- function(
   
   # ----- Create spatial points -------------------------------------------------
   
-  sp <- sp::SpatialPointsDataFrame(
+  spdf <- sp::SpatialPointsDataFrame(
     coords = dplyr::select(avgTb, c(.data$lon, .data$lat)),
     data = dplyr::select(avgTb, -c(.data$lon, .data$lat))
   )
   
   # ----- Return ---------------------------------------------------------------
   
-  return(sp)
+  return(spdf)
   
 }
 
@@ -167,7 +167,7 @@ if ( FALSE ) {
   bbox_oregon <- c(-125, -116, 42, 47)
   
   # Create points from scans covering a full hour
-  sp <- goesaodc_createMultiScanSPDF(
+  spdf <- goesaodc_createMultiScanSPDF(
     satID = "G17",
     datetime = "2020-09-08 12",
     endtime = "2020-09-08 13",
@@ -176,7 +176,7 @@ if ( FALSE ) {
   )
   
   # Plot points
-  goesaodc_plotScanSPDF(sp) +
+  goesaodc_plotScanSPDF(spdf) +
     AirFirePlots::layer_states("OR")
   
 }

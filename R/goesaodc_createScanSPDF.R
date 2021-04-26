@@ -62,7 +62,7 @@ goesaodc_createScanSPDF <- function(
   if ( is.null(filename) && !is.null(endtime) ) {
     
     # Average the AOD values across all scans in the time range
-    sp <- goesaodc_createMultiScanSPDF(
+    spdf <- goesaodc_createMultiScanSPDF(
       satID = satID,
       datetime = datetime,
       endtime = endtime,
@@ -74,7 +74,7 @@ goesaodc_createScanSPDF <- function(
   } else {
     
     # Get the AOD values for the scan closest to the requested time
-    sp <- goesaodc_createSingleScanSPDF(
+    spdf <- goesaodc_createSingleScanSPDF(
       satID = satID,
       datetime = datetime,
       timezone = timezone,
@@ -87,7 +87,7 @@ goesaodc_createScanSPDF <- function(
   
   # ----- Return ---------------------------------------------------------------
   
-  return(sp)
+  return(spdf)
   
 }
 
@@ -120,7 +120,7 @@ if ( FALSE ) {
   )
   
   # Create averaged points from scans covering a time range
-  sp <- goesaodc_createScanSPDF(
+  spdf <- goesaodc_createScanSPDF(
     satID = "G17",
     datetime = "2020-09-08 12",
     endtime = "2020-09-08 13",
@@ -129,7 +129,7 @@ if ( FALSE ) {
   )
   
   # Plot averaged points
-  goesaodc_plotScanSPDF(sp, bbox = bbox_oregon) +
+  goesaodc_plotScanSPDF(spdf, bbox = bbox_oregon) +
     AirFirePlots::layer_states("OR")
   
 }

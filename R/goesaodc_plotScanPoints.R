@@ -46,7 +46,7 @@ goesaodc_plotScanPoints <- function(
   
   result <- try({
     
-    sp <- goesaodc_createScanSPDF(
+    spdf <- goesaodc_createScanSPDF(
       satID = satID,
       datetime = datetime,
       endtime = endtime,
@@ -67,10 +67,12 @@ goesaodc_plotScanPoints <- function(
       AOD = 0
     )
     
-    sp <- sp::SpatialPointsDataFrame(
+    spdf <- sp::SpatialPointsDataFrame(
       coords = dplyr::select(tbl, c(.data$lon, .data$lat)),
       data = dplyr::select(tbl, -c(.data$lon, .data$lat))
     )
+    
+    warning(result)
     
   }
   
@@ -84,7 +86,7 @@ goesaodc_plotScanPoints <- function(
   
   scanPlot <- 
     goesaodc_plotScanSPDF(
-      sp = sp,
+      spdf = spdf,
       bbox = bbox,
       pointSize = pointSize,
       pointShape = pointShape,
