@@ -35,8 +35,8 @@ if ( interactive() ) {
   # RStudio session
   opt <- list(
     satID = "G17",
-    starttime = "2020-09-08 15:00",
-    endtime = "2020-09-08 16:00",
+    starttime = "2020-09-08 08:00",
+    endtime = "2020-09-08 18:00",
     timezone = "America/Los_Angeles",
     bbox = "-125, -116, 42, 47",
     dqfLevel = NULL,
@@ -278,9 +278,6 @@ logger.debug("R session:\n\n%s\n", sessionString)
       # Format the scan time
       scanTimeUTC <-goesaodc_convertFilenameToDatetime(scanFilename)
       scanTimeLocal <- MazamaCoreUtils::parseDatetime(scanTimeUTC, opt$timezone)
-      
-      # Load scan data
-      nc <- goesaodc_openFile(filename = scanFilename)
 
       if (opt$verbose)
         logger.trace("Rendering frame for %s", strftime(scanTimeLocal, "%Y-%m-%d %H:%M:%S %Z"))
@@ -292,18 +289,18 @@ logger.debug("R session:\n\n%s\n", sessionString)
         dqfLevel = opt$dqfLevel,
         breaks = c(-Inf, 0, 1, 2, 3, 4, 5, Inf),
         stateCodes = stateCodes,
-        title = paste0("AOD for ", scanTimeLocal)
+        title = paste0("AOD for ", strftime(scanTimeLocal, "%Y-%m-%d %H:%M:%S %Z"))
       )
       
       # Save frame file
       ggplot2::ggsave(
         filename = frameFilename,
-        plot <- scanPlot,
+        plot = scanPlot,
         device = "png",
         path = tempdir(),
         width = 8,
         height = 4.5,
-        dpi = 300
+        dpi = 200
       )
       
     }
@@ -327,7 +324,7 @@ logger.debug("R session:\n\n%s\n", sessionString)
     cmd_rm <- "rm *.png"
     cmd <- paste0(cmd_cd, " && ", cmd_ffmpeg, " && ", cmd_rm)
     
-    logger.info("Calling ffmpeg to generate video")
+    logger.info("Stitching frames into a video with ffmpeg")
     logger.trace(cmd)
     
     # Make system call
