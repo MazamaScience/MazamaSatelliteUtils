@@ -39,12 +39,14 @@ goesaodc_plotScanSPDF <- function(
     colorScale <- ggplot2::scale_color_gradient(
       low = "#FFFFB2",
       high = "#BD0026",
-      na.value = "gray50"
+      na.value = "gray50",
+      limits = c(0, 5)
     )
   } else {
     colorScale <- ggplot2::scale_color_stepsn(
       breaks = breaks,
-      colors = RColorBrewer::brewer.pal(length(breaks - 1), paletteName)
+      colors = RColorBrewer::brewer.pal(length(breaks - 1), paletteName),
+      limits = c(-1, 6)
     )
   }
   
