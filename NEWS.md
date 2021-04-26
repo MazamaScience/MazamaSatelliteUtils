@@ -48,6 +48,10 @@ excluded from the time range.
 
 # MazamaSatelliteUtils 0.4.0
 
+Version 0.4 is a large scale refactor of code with general improvements to bring
+this package up to Mazama Science standards. (Version 0.3 was skipped
+intentionally.)
+
 * Fixed error in `bboxToVector()`.
 * Fixed `bbox` used in the `goesaodc_areaPlot()` example.
 * Updated documentation.
