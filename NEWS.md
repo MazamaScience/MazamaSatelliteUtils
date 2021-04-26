@@ -1,9 +1,26 @@
+# MazamaSatelliteUtils 0.4.7
+
+* Added `animateScanPoints_exec` executable script.
+* `goesaodc_plotScanPoints()` draws an empty plot when there is an error making
+spatial points.
+* `goesaodc_plotScanPoints()` no longer crashes when state codes are not 
+provided.
+* `goesaodc_plotScanSPDF()` now has default palette limits.
+
 # MazamaSatelliteUtils 0.4.6
 
+* Added `goesaodc_createScanSPDF()` function.
+* `goesaodc_createSingleScanSPDF()` and `goesaodc_createSingleScanSPDF()` 
+functions are now hidden.
 * Renamed `goesaodc_singleScanToSPDF()` function to `goesaodc_createSingleScanSPDF()`.
 * Renamed `goesaodc_multiScanToSPDF()` function to `goesaodc_createMultiScanSPDF()`.
+* Added `pointShape`, `paletteName`, `stateCodes`, and `title` params to 
+`goesaodc_plotScanPoints()`.
+* Removed NA row dropping from `goesaodc_createTibble()`.
+* Functions with a `dqfLevel` parameter now allowed it to be NULL.
 * Updated low and high colors for the default palette used in 
 `goesaodc_plotScanSPDF()`.
+* Added "Plotting 2020 Oregon Wildfires" article.
 
 # MazamaSatelliteUtils 0.4.5
 

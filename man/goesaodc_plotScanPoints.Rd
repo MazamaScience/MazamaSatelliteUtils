@@ -12,8 +12,12 @@ goesaodc_plotScanPoints(
   filename = NULL,
   bbox = bbox_CONUS,
   dqfLevel = 3,
+  pointSize = 0.5,
+  pointShape = 15,
   breaks = NULL,
-  pointSize = 0.5
+  paletteName = "YlOrRd",
+  stateCodes = NULL,
+  title = NULL
 )
 }
 \arguments{
@@ -32,9 +36,18 @@ goesaodc_plotScanPoints(
 
 \item{dqfLevel}{Data quality flag level; Defaults to 3.}
 
+\item{pointSize}{Size of plot points; Defaults to 0.5.}
+
+\item{pointShape}{Shape of the plot points (index); Defaults to 15 (filled 
+square).}
+
 \item{breaks}{Vector of AOD values to use as palette breaks.}
 
-\item{pointSize}{Size of plot points; Defaults to 0.5.}
+\item{paletteName}{The name of an RColorBrewer palette; Defaults to 'YlOrRd'.}
+
+\item{stateCodes}{Codes of state outlines to draw.}
+
+\item{title}{Title of the plot.}
 }
 \description{
 Creates a plot of AOD points using GOES scans. If no 

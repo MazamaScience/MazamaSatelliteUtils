@@ -5,7 +5,7 @@
 \title{Create a plot from a SpatialPointsDataFrame}
 \usage{
 goesaodc_plotScanSPDF(
-  sp = NULL,
+  spdf = NULL,
   bbox = bbox_CONUS,
   pointSize = 0.5,
   pointShape = 15,
@@ -15,7 +15,7 @@ goesaodc_plotScanSPDF(
 )
 }
 \arguments{
-\item{sp}{A SpatialPointsDataFrame.}
+\item{spdf}{A SpatialPointsDataFrame.}
 
 \item{bbox}{Bounding box for the region of interest; Defaults to CONUS.}
 

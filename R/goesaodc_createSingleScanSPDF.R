@@ -1,5 +1,3 @@
-#' @export
-#' 
 #' @title Create spatial points for a single scan
 #' 
 #' @description Creates a SpatialPointsDataFrame from a single scan file 
@@ -14,7 +12,7 @@
 #' \code{endtime}; Defaults to UTC.
 #' @param filename The name of the scan file.
 #' @param bbox Bounding box for the region of interest; Defaults to CONUS.
-#' @param dqfLevel Data quality flag level; Defaults to 3.
+#' @param dqfLevel Data quality flag level; Defaults to NULL.
 
 goesaodc_createSingleScanSPDF <- function(
   satID = NULL,
@@ -22,7 +20,7 @@ goesaodc_createSingleScanSPDF <- function(
   timezone = "UTC",
   filename = NULL,
   bbox = bbox_CONUS,
-  dqfLevel = 3
+  dqfLevel = NULL
 ) {
   
   # ----- Validate parameters --------------------------------------------------
@@ -47,8 +45,6 @@ goesaodc_createSingleScanSPDF <- function(
     }
     
   }
-  
-  MazamaCoreUtils::stopIfNull(dqfLevel)
   
   # ----- Get scan file --------------------------------------------------------
   
@@ -90,7 +86,7 @@ goesaodc_createSingleScanSPDF <- function(
   
   nc <- goesaodc_openFile(filename)
   
-  sp <- goesaodc_createSpatialPoints(
+  spdf <- goesaodc_createSpatialPoints(
     nc = nc,
     bbox = bbox,
     dqfLevel = dqfLevel
@@ -98,7 +94,7 @@ goesaodc_createSingleScanSPDF <- function(
     
   # ----- Return ---------------------------------------------------------------
   
-  return(sp)
+  return(spdf)
   
 }
 
@@ -131,14 +127,14 @@ if ( FALSE ) {
   )
   
   # Create points from a named scan file
-  sp <- goesaodc_createSingleScanSPDF(
+  spdf <- goesaodc_createSingleScanSPDF(
     filename = filename,
     bbox = bbox_oregon,
     dqfLevel = 3
   )
   
   # Plot points
-  goesaodc_plotScanSPDF(sp, bbox = bbox_oregon, title = title) +
+  goesaodc_plotScanSPDF(spdf, bbox = bbox_oregon, title = title) +
     AirFirePlots::layer_states("OR")
   
 }

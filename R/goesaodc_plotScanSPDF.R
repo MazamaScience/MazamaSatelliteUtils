@@ -5,7 +5,7 @@
 #' @description Creates a plot of AOD points defined by a 
 #' SpatialPointsDataFrame.
 #' 
-#' @param sp A SpatialPointsDataFrame.
+#' @param spdf A SpatialPointsDataFrame.
 #' @param bbox Bounding box for the region of interest; Defaults to CONUS.
 #' @param pointSize Size of plot points; Defaults to 0.5.
 #' @param pointShape Shape of the plot points (index); Defaults to 15 (filled 
@@ -15,7 +15,7 @@
 #' @param title Title of the plot.
 
 goesaodc_plotScanSPDF <- function(
-  sp = NULL,
+  spdf = NULL,
   bbox = bbox_CONUS,
   pointSize = 0.5,
   pointShape = 15,
@@ -26,10 +26,10 @@ goesaodc_plotScanSPDF <- function(
   
   # ----- Validate parameters --------------------------------------------------
   
-  MazamaCoreUtils::stopIfNull(sp)
+  MazamaCoreUtils::stopIfNull(spdf)
   
-  if ( !("SpatialPointsDataFrame" %in% class(sp)) )
-    stop("Parameter 'sp' must be an object of class 'SpatialPointsDataFrame'")
+  if ( !("SpatialPointsDataFrame" %in% class(spdf)) )
+    stop("Parameter 'spdf' must be an object of class 'SpatialPointsDataFrame'")
   
   # ----- Prepare data ---------------------------------------------------------
   
@@ -39,21 +39,23 @@ goesaodc_plotScanSPDF <- function(
     colorScale <- ggplot2::scale_color_gradient(
       low = "#FFFFB2",
       high = "#BD0026",
-      na.value = "gray50"
+      na.value = "gray50",
+      limits = c(0, 5)
     )
   } else {
     colorScale <- ggplot2::scale_color_stepsn(
       breaks = breaks,
-      colors = RColorBrewer::brewer.pal(length(breaks - 1), paletteName)
+      colors = RColorBrewer::brewer.pal(length(breaks - 1), paletteName),
+      limits = c(-1, 6)
     )
   }
   
   # Convert SpatialPointsDataFrame a to regular dataframe
-  df <- data.frame(sp)
+  df <- data.frame(spdf)
   
   # ----- Create plot ----------------------------------------------------------
   
-  p <-
+  scanPlot <-
     AirFirePlots::plot_base(
       title = title,
       clab = "AOD",
@@ -76,7 +78,7 @@ goesaodc_plotScanSPDF <- function(
   
   # ----- Return ---------------------------------------------------------------
   
-  return(p)
+  return(scanPlot)
   
 }
 
@@ -100,15 +102,14 @@ if ( FALSE ) {
   )
   
   # Create spatial points
-  sp <- goesaodc_createSingleScanSPDF(
+  spdf <- goesaodc_createSingleScanSPDF(
     filename = filename,
-    bbox = bbox_oregon,
-    dqfLevel = 3
+    bbox = bbox_oregon
   )
   
   # Plot spatial points with default palette
   goesaodc_plotScanSPDF(
-    sp = sp,
+    spdf = spdf,
     bbox = bbox_oregon,
     title = title
   ) +
@@ -116,7 +117,7 @@ if ( FALSE ) {
   
   # Plot spatial points with custom palette
   goesaodc_plotScanSPDF(
-    sp = sp,
+    spdf = spdf,
     bbox = bbox_oregon,
     breaks = c(-Inf, 0, 1, 2, 3, 4, 5, Inf),
     paletteName = "Reds",

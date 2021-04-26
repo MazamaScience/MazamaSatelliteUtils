@@ -1,5 +1,3 @@
-#' @export
-#' 
 #' @title Create spatial points for multiple scan
 #' 
 #' @description Creates a SpatialPointsDataFrame of averaged AOD values across
@@ -11,7 +9,7 @@
 #' @param timezone Timezone used to interpret \code{datetime} and 
 #' \code{endtime}; Defaults to UTC.
 #' @param bbox Bounding box for the region of interest; Defaults to CONUS.
-#' @param dqfLevel Data quality flag level; Defaults to 3.
+#' @param dqfLevel Data quality flag level; Defaults to NULL.
 
 goesaodc_createMultiScanSPDF <- function(
   satID = NULL,
@@ -19,7 +17,7 @@ goesaodc_createMultiScanSPDF <- function(
   endtime = NULL,
   timezone = "UTC",
   bbox = bbox_CONUS,
-  dqfLevel = 3
+  dqfLevel = NULL
 ) {
   
   # ----- Validate parameters --------------------------------------------------
@@ -112,12 +110,7 @@ goesaodc_createMultiScanSPDF <- function(
       goesaodc_convertFilenameToDatetime() %>%
       MazamaCoreUtils::timeStamp(unit = "sec", timezone = "UTC")
     
-    # Do not drop NA rows, since we want to keep all scan tibbles the same size
-    tbList[[label]] <- goesaodc_createTibble(
-      nc = nc,
-      bbox = bbox,
-      dropNa = FALSE
-    )
+    tbList[[label]] <- goesaodc_createTibble(nc, bbox)
     
   }
   
@@ -150,14 +143,14 @@ goesaodc_createMultiScanSPDF <- function(
   
   # ----- Create spatial points -------------------------------------------------
   
-  sp <- sp::SpatialPointsDataFrame(
+  spdf <- sp::SpatialPointsDataFrame(
     coords = dplyr::select(avgTb, c(.data$lon, .data$lat)),
     data = dplyr::select(avgTb, -c(.data$lon, .data$lat))
   )
   
   # ----- Return ---------------------------------------------------------------
   
-  return(sp)
+  return(spdf)
   
 }
 
@@ -174,7 +167,7 @@ if ( FALSE ) {
   bbox_oregon <- c(-125, -116, 42, 47)
   
   # Create points from scans covering a full hour
-  sp <- goesaodc_createMultiScanSPDF(
+  spdf <- goesaodc_createMultiScanSPDF(
     satID = "G17",
     datetime = "2020-09-08 12",
     endtime = "2020-09-08 13",
@@ -183,7 +176,7 @@ if ( FALSE ) {
   )
   
   # Plot points
-  goesaodc_plotScanSPDF(sp) +
+  goesaodc_plotScanSPDF(spdf) +
     AirFirePlots::layer_states("OR")
   
 }
