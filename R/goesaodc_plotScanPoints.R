@@ -76,6 +76,12 @@ goesaodc_plotScanPoints <- function(
   
   # ----- Plot spatial points --------------------------------------------------
   
+  stateLayer <- if ( is.null(stateCodes) ) {
+    NULL
+  } else {
+    AirFirePlots::layer_states(stateCodes)
+  }
+  
   scanPlot <- 
     goesaodc_plotScanSPDF(
       sp = sp,
@@ -86,10 +92,8 @@ goesaodc_plotScanPoints <- function(
       paletteName = paletteName,
       title = title
     ) +
-    AirFirePlots::layer_states(
-      stateCodes = stateCodes
-    )
-  
+    stateLayer
+    
   # ----- Return ---------------------------------------------------------------
   
   return(scanPlot)

@@ -1,9 +1,11 @@
 # MazamaSatelliteUtils 0.4.7
 
 * Added `animateScanPoints_exec` executable script.
-* goesaodc_plotScanPoints() draws an empty plot when there is an error making
+* `goesaodc_plotScanPoints()` draws an empty plot when there is an error making
 spatial points.
-* goesaodc_plotScanSPDF() now has default palette limits
+* `goesaodc_plotScanPoints()` no longer crashes when state codes are not 
+provided.
+* `goesaodc_plotScanSPDF()` now has default palette limits.
 
 # MazamaSatelliteUtils 0.4.6
 
