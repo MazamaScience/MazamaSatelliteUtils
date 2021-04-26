@@ -44,34 +44,55 @@ goesaodc_plotScanPoints <- function(
   
   # ----- Create spatial points ------------------------------------------------
   
-  sp <- goesaodc_createScanSPDF(
-    satID = satID,
-    datetime = datetime,
-    endtime = endtime,
-    timezone = timezone,
-    filename = filename,
-    bbox = bbox,
-    dqfLevel = dqfLevel
-  )
+  result <- try({
+    
+    sp <- goesaodc_createScanSPDF(
+      satID = satID,
+      datetime = datetime,
+      endtime = endtime,
+      timezone = timezone,
+      filename = filename,
+      bbox = bbox,
+      dqfLevel = dqfLevel
+    )
+    
+  }, silent = TRUE)
+  
+  # Create dummy points if there is an error so an empty plot can be drawn
+  if ( "try-error" %in% class(result) ) {
+    
+    tbl <- tibble::tibble(
+      lon = 0,
+      lat = 90,
+      AOD = 0
+    )
+    
+    sp <- sp::SpatialPointsDataFrame(
+      coords = dplyr::select(tbl, c(.data$lon, .data$lat)),
+      data = dplyr::select(tbl, -c(.data$lon, .data$lat))
+    )
+    
+  }
   
   # ----- Plot spatial points --------------------------------------------------
   
-  p <- goesaodc_plotScanSPDF(
-    sp = sp,
-    bbox = bbox,
-    pointSize = pointSize,
-    pointShape = pointShape,
-    breaks = breaks,
-    paletteName = paletteName,
-    title = title
-  ) +
+  scanPlot <- 
+    goesaodc_plotScanSPDF(
+      sp = sp,
+      bbox = bbox,
+      pointSize = pointSize,
+      pointShape = pointShape,
+      breaks = breaks,
+      paletteName = paletteName,
+      title = title
+    ) +
     AirFirePlots::layer_states(
       stateCodes = stateCodes
     )
   
   # ----- Return ---------------------------------------------------------------
   
-  return(p)
+  return(scanPlot)
   
 }
 
@@ -120,6 +141,13 @@ if ( FALSE ) {
     bbox = bbox_oregon,
     stateCodes = "OR",
     title = "Oregon AOD from 12pm to 1pm PDT on Sept. 8, 2020"
+  )
+  
+  # Plot a faulty file
+  goesaodc_plotScanPoints(
+    filename = "OR_ABI-L2-AODC-M6_G17_s20202522231174_e20202522233547_c20202522235327.nc",
+    bbox = bbox_oregon,
+    stateCodes = "OR"
   )
   
 }
