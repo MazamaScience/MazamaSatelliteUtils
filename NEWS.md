@@ -1,3 +1,7 @@
+# MazamaSatelliteUtils 0.4.8
+
+* Added `goesaodc_createScanRaster()`.
+
 # MazamaSatelliteUtils 0.4.7
 
 * Added `animateScanPoints_exec` executable script.
