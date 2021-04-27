@@ -24,10 +24,11 @@
 #'   timezone = "America/Los_Angeles"
 #' )
 #' 
-#' print(MazamaCoreUtils::parseDatetime(
-#'   goesaodc_convertFilenameToDatetime(closestScanFile),
-#'   "America/Los_Angeles"
-#' ))
+#' # Print precise time of scan
+#' closestScanFile %>%
+#'   goesaodc_convertFilenameToDatetime() %>%                              # UTC
+#'   MazamaCoreUtils::parseDatetime(timezone = "America/Los_Angeles") %>%  # Local
+#'   print()
 #' }
 
 goasaodc_findClosestScanFile <- function(
@@ -76,6 +77,8 @@ goasaodc_findClosestScanFile <- function(
   )
   
   # Define a pattern for filenames covering the requested hour
+  # TODO: It's possible that the closest scan is in the next/prev hour, or day, 
+  # or year...
   startPattern <- strftime(datetime, "_s%Y%j%H", tz = "UTC")
   
   # Find files that match startPatterns

@@ -35,7 +35,7 @@ if ( interactive() ) {
   # RStudio session
   opt <- list(
     satID = "G17",
-    starttime = "2020-09-08 12:00",
+    starttime = "2020-09-08 14:00",
     endtime = "2020-09-08 15:00",
     timezone = "America/Los_Angeles",
     bbox = "-125, -116, 42, 47",
@@ -268,14 +268,17 @@ for ( scanFilename in scanFilenames ) {
   )
   frameFilePath <- file.path(tempdir(), frameFilename)
   
-  # Format the scan time
-  scanTimeUTC <-goesaodc_convertFilenameToDatetime(scanFilename)
-  scanTimeLocal <- MazamaCoreUtils::parseDatetime(scanTimeUTC, opt$timezone)
+  # Create the plot title label
+  localScanTime <- 
+    scanFilename %>%
+    goesaodc_convertFilenameToDatetime() %>%                # UTC time
+    MazamaCoreUtils::parseDatetime(timezone = opt$timezone) # Local time
+  title <- paste0("AOD for ", strftime(localScanTime, "%Y-%m-%d %H:%M:%S %Z"))
 
   if (opt$verbose)
     logger.trace(
       "Rendering frame for %s",
-      strftime(scanTimeLocal, "%Y-%m-%d %H:%M:%S %Z")
+      strftime(localScanTime, "%Y-%m-%d %H:%M:%S %Z")
     )
     
   # Draw plot
@@ -285,7 +288,7 @@ for ( scanFilename in scanFilenames ) {
     dqfLevel = opt$dqfLevel,
     breaks = c(-Inf, 0, 1, 2, 3, 4, 5, Inf),
     stateCodes = stateCodes,
-    title = paste0("AOD for ", strftime(scanTimeLocal, "%Y-%m-%d %H:%M:%S %Z"))
+    title = title
   )
   
   # Save frame file

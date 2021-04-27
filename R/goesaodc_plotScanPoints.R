@@ -126,16 +126,17 @@ if ( FALSE ) {
   
   # Plot Oregon with a scan file from Sep. 8, 2020
   filename <- "OR_ABI-L2-AODC-M6_G17_s20202530031174_e20202530033547_c20202530035523.nc"
-  title <- paste0("Oregon AOD for ", MazamaCoreUtils::parseDatetime(
-    goesaodc_convertFilenameToDatetime(filename), "America/Los_Angeles"), " PDT"
-  )
+  localTimeStr <-
+    filename %>%
+    goesaodc_convertFilenameToDatetime() %>%
+    MazamaCoreUtils::parseDatetime(timezone = "America/Los_Angeles")
   
   goesaodc_plotScanPoints(
     filename = filename,
     bbox = bbox_oregon,
     breaks = c(-Inf, 0, 1, 2, 3, 4, 5, Inf),
     stateCodes = "OR",
-    title = title
+    title = paste0("Oregon AOD for ", localTimeStr, " PDT")
   )
   
   # Plot Oregon from 12pm to 1pm on Sept. 8, 2020
