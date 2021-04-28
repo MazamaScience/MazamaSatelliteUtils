@@ -31,9 +31,48 @@ goesaodc_plotScanSPDF <- function(
   if ( !("SpatialPointsDataFrame" %in% class(spdf)) )
     stop("Parameter 'spdf' must be an object of class 'SpatialPointsDataFrame'")
   
-  # ----- Prepare data ---------------------------------------------------------
+  # ----- Create plot layers ---------------------------------------------------
   
-  # Define color scale
+  # Create points layer
+  if ( nrow(spdf@data) > 0 ) {
+    
+    df <- data.frame(spdf)
+    
+    pointsLayer <- ggplot2::geom_point(
+      data = df,
+      ggplot2::aes(
+        x = .data$lon,
+        y = .data$lat,
+        color = .data$AOD
+      ),
+      size = pointSize,
+      shape = pointShape
+    )
+    
+  } else {
+    
+    # Define dummy data
+    df <- data.frame(
+      lon = 0,
+      lat = 0,
+      AOD = 0
+    )
+    
+    # Create invisible points layer. The aesthetics must still be set so the 
+    # plot axes and legend to be drawn.
+    pointsLayer <- ggplot2::geom_point(
+      data = df,
+      ggplot2::aes(
+        x = .data$lon,
+        y = .data$lat,
+        color = .data$AOD 
+      ),
+      size = 0
+    )
+    
+  }
+  
+  # Create color scale
   colorScale <- NULL
   if ( is.null(breaks) ) {
     colorScale <- ggplot2::scale_color_gradient(
@@ -50,9 +89,6 @@ goesaodc_plotScanSPDF <- function(
     )
   }
   
-  # Convert SpatialPointsDataFrame a to regular dataframe
-  df <- data.frame(spdf)
-  
   # ----- Create plot ----------------------------------------------------------
   
   scanPlot <-
@@ -64,16 +100,7 @@ goesaodc_plotScanSPDF <- function(
       project = TRUE,
       expand = FALSE
     ) +
-    ggplot2::geom_point(
-      data = df,
-      ggplot2::aes(
-        x = .data$lon,
-        y = .data$lat,
-        color = .data$AOD
-      ),
-      size = pointSize,
-      shape = pointShape
-    ) +
+    pointsLayer +
     colorScale
   
   # ----- Return ---------------------------------------------------------------
