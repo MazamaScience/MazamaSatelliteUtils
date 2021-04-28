@@ -62,7 +62,7 @@ goesaodc_createScanRaster <- function(
   ncols <- ( ( lonHi - lonLo ) / cellSize ) + 1
   nrows <- ( ( latHi - latLo ) / cellSize ) + 1
   
-  raster <- raster::raster(
+  scanRaster <- raster::raster(
     nrows = nrows, 
     ncols = ncols,
     xmn = lonLo, 
@@ -87,11 +87,12 @@ goesaodc_createScanRaster <- function(
   )
   
   # Rasterize spatial points
-  raster <- raster::rasterize(spdf, raster, fun = fun)
+  if ( nrow(spdf@data) > 0 )
+    scanRaster <- raster::rasterize(spdf, scanRaster, fun = fun)
   
   # ----- Return ---------------------------------------------------------------
   
-  return(raster)
+  return(scanRaster)
   
 }
 

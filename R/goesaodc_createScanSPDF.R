@@ -59,29 +59,45 @@ goesaodc_createScanSPDF <- function(
   
   # ----- Create spatial points ------------------------------------------------
   
-  if ( is.null(filename) && !is.null(endtime) ) {
+  result <- try({
     
-    # Average the AOD values across all scans in the time range
-    spdf <- goesaodc_createMultiScanSPDF(
-      satID = satID,
-      datetime = datetime,
-      endtime = endtime,
-      timezone = timezone,
-      bbox = bbox,
-      dqfLevel = dqfLevel
-    )
+    if ( is.null(filename) && !is.null(endtime) ) {
+      
+      # Average the AOD values across all scans in the time range
+      spdf <- goesaodc_createMultiScanSPDF(
+        satID = satID,
+        datetime = datetime,
+        endtime = endtime,
+        timezone = timezone,
+        bbox = bbox,
+        dqfLevel = dqfLevel
+      )
+      
+    } else {
+      
+      # Get the AOD values for the scan closest to the requested time
+      spdf <- goesaodc_createSingleScanSPDF(
+        satID = satID,
+        datetime = datetime,
+        timezone = timezone,
+        filename = filename,
+        bbox = bbox,
+        dqfLevel = dqfLevel
+      )
+      
+    }
     
-  } else {
+  }, silent = TRUE)
+  
+  # Create an empty SPDF if there was an error reading the scan file
+  if ( "try-error" %in% class(result) ) {
     
-    # Get the AOD values for the scan closest to the requested time
-    spdf <- goesaodc_createSingleScanSPDF(
-      satID = satID,
-      datetime = datetime,
-      timezone = timezone,
-      filename = filename,
-      bbox = bbox,
-      dqfLevel = dqfLevel
-    )
+    spdf <- sp::SpatialPointsDataFrame(
+      coords = data.frame(lon = 0, lat = 0),
+      data = data.frame(AOD = 0)
+    )[-1,]
+    
+    warning(result, immediate. = TRUE)
     
   }
   

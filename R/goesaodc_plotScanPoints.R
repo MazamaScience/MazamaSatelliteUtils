@@ -43,38 +43,16 @@ goesaodc_plotScanPoints <- function(
   # ----- Validate parameters --------------------------------------------------
   
   # ----- Create spatial points ------------------------------------------------
-  
-  result <- try({
     
-    spdf <- goesaodc_createScanSPDF(
-      satID = satID,
-      datetime = datetime,
-      endtime = endtime,
-      timezone = timezone,
-      filename = filename,
-      bbox = bbox,
-      dqfLevel = dqfLevel
-    )
-    
-  }, silent = TRUE)
-  
-  # Create dummy points if there is an error so an empty plot can be drawn
-  if ( "try-error" %in% class(result) ) {
-    
-    tbl <- tibble::tibble(
-      lon = 0,
-      lat = 90,
-      AOD = 0
-    )
-    
-    spdf <- sp::SpatialPointsDataFrame(
-      coords = dplyr::select(tbl, c(.data$lon, .data$lat)),
-      data = dplyr::select(tbl, -c(.data$lon, .data$lat))
-    )
-    
-    warning(result)
-    
-  }
+  spdf <- goesaodc_createScanSPDF(
+    satID = satID,
+    datetime = datetime,
+    endtime = endtime,
+    timezone = timezone,
+    filename = filename,
+    bbox = bbox,
+    dqfLevel = dqfLevel
+  )
   
   # ----- Plot spatial points --------------------------------------------------
   
