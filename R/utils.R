@@ -62,7 +62,7 @@ bboxToVector <- function(
   # ----- Extract data ---------------------------------------------------------
   
   if (
-    all(class(bbox) == c("matrix", "array")) &&
+    all(class(bbox) == "matrix") &&
     all(colnames(bbox) == c("min", "max")) &&
     all(rownames(bbox) == c("x", "y"))
   ) {
