@@ -3,15 +3,14 @@ context("test-goesaodc_createTibble")
 # ---- TEST PARAMS -------------------------------------------------------------
 
 goesaodc_downloadAOD(
-  satID = "G16", 
-  datetime = "201924918", 
-  timezone = "UTC", 
-  isJulian = TRUE
+  satID = "G17", 
+  datetime = "2020-09-09 0", 
+  timezone = "UTC"
 )
 
-ncFile <- "OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc"
+scanFile <- "OR_ABI-L2-AODC-M6_G17_s20202530031174_e20202530033547_c20202530035523.nc"
 
-nc <- goesaodc_openFile(ncFile)
+nc <- goesaodc_openFile(scanFile)
 kincade_bbox <- c(-124, -120, 36, 39)
 
 # ---- Original, full extent use case ------------------------------------------
