@@ -39,7 +39,7 @@ if ( interactive() ) {
     endtime = "2020-09-08 15:00",
     timezone = "America/Los_Angeles",
     bbox = "-125, -116, 42, 47",
-    dqfLevel = NULL,
+    dqfLevel = 3,
     stateCodes = "OR",
     satelliteDataDir = "~/Data/Satellite",
     spatialDataDir = "~/Data/Spatial",
@@ -84,7 +84,7 @@ if ( interactive() ) {
     ),
     make_option(
       c("--dqfLevel"),
-      default = NULL,
+      default = 3,
       help = ""
     ),
     make_option(

@@ -11,7 +11,7 @@ goesaodc_createScanRaster(
   timezone = "UTC",
   filename = NULL,
   bbox = bbox_CONUS,
-  dqfLevel = NULL,
+  dqfLevel = 3,
   cellSize = NULL,
   fun = mean
 )

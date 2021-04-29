@@ -22,7 +22,9 @@
 #' \code{endtime}; Defaults to UTC.
 #' @param filename Name of a scan file.
 #' @param bbox Bounding box for the region of interest; Defaults to CONUS.
-#' @param dqfLevel Data quality flag level; Defaults to NULL.
+#' @param dqfLevel Allowed data quality level. All readings with a DQF value
+#' above this level will have their AOD values set to NA. Must be either 0, 1, 
+#' 2, or 3, with 0 being the highest quality. Defaults to 3.
 
 goesaodc_createScanSPDF <- function(
   satID = NULL,
@@ -31,7 +33,7 @@ goesaodc_createScanSPDF <- function(
   timezone = "UTC",
   filename = NULL,
   bbox = bbox_CONUS,
-  dqfLevel = NULL
+  dqfLevel = 3
 ) {
   
   # ----- Validate parameters --------------------------------------------------
@@ -56,6 +58,9 @@ goesaodc_createScanSPDF <- function(
     }
     
   }
+  
+  if ( !(dqfLevel %in% c(0, 1, 2, 3)) )
+    stop(paste0("Parameter 'dqfLevel' must be 0, 1, 2, or 3"))
   
   # ----- Create spatial points ------------------------------------------------
   

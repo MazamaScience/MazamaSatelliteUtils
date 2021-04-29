@@ -54,14 +54,12 @@ goesaodc_createTibble <- function(
   MazamaCoreUtils::stopIfNull(nc)
   MazamaCoreUtils::stopIfNull(bbox)
   
-  if ( !(dqfLevel %in% c(0, 1, 2, 3)) ) {
+  if ( !(dqfLevel %in% c(0, 1, 2, 3)) )
     stop(paste0("Parameter 'dqfLevel' must be 0, 1, 2, or 3"))
-  }
   
   # Check that nc has GOES projection
-  if ( !goesaodc_isGoesProjection(nc) ) {
+  if ( !goesaodc_isGoesProjection(nc) )
     stop("Parameter 'nc' does not have standard GOES-R projection information.")
-  }
 
   if ( "list" %in% class(nc) ) {
     ncList <- nc

@@ -9,7 +9,9 @@
 #' @param timezone Timezone used to interpret \code{datetime} and 
 #' \code{endtime}; Defaults to UTC.
 #' @param bbox Bounding box for the region of interest; Defaults to CONUS.
-#' @param dqfLevel Data quality flag level; Defaults to NULL.
+#' @param dqfLevel Allowed data quality level. All readings with a DQF value
+#' above this level will have their AOD values set to NA. Must be either 0, 1, 
+#' 2, or 3, with 0 being the highest quality. Defaults to 3.
 
 goesaodc_createMultiScanSPDF <- function(
   satID = NULL,
@@ -17,7 +19,7 @@ goesaodc_createMultiScanSPDF <- function(
   endtime = NULL,
   timezone = "UTC",
   bbox = bbox_CONUS,
-  dqfLevel = NULL
+  dqfLevel = 3
 ) {
   
   # ----- Validate parameters --------------------------------------------------

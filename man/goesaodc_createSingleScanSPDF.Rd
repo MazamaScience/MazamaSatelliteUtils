@@ -10,7 +10,7 @@ goesaodc_createSingleScanSPDF(
   timezone = "UTC",
   filename = NULL,
   bbox = bbox_CONUS,
-  dqfLevel = NULL
+  dqfLevel = 3
 )
 }
 \arguments{
@@ -25,7 +25,9 @@ goesaodc_createSingleScanSPDF(
 
 \item{bbox}{Bounding box for the region of interest; Defaults to CONUS.}
 
-\item{dqfLevel}{Data quality flag level; Defaults to NULL.}
+\item{dqfLevel}{Allowed data quality level. All readings with a DQF value
+above this level will have their AOD values set to NA. Must be either 0, 1, 
+2, or 3, with 0 being the highest quality. Defaults to 3.}
 }
 \description{
 Creates a SpatialPointsDataFrame from a single scan file 
