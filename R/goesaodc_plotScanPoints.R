@@ -114,7 +114,8 @@ if ( FALSE ) {
     bbox = bbox_oregon,
     breaks = c(-Inf, 0, 1, 2, 3, 4, 5, Inf),
     stateCodes = "OR",
-    title = paste0("Oregon AOD for ", localTimeStr, " PDT")
+    title = paste0("Oregon AOD for ", localTimeStr, " PDT"),
+    dqfLevel = 2
   )
   
   # Plot Oregon from 12pm to 1pm on Sept. 8, 2020
@@ -128,11 +129,38 @@ if ( FALSE ) {
     title = "Oregon AOD from 12pm to 1pm PDT on Sept. 8, 2020"
   )
   
+  # Plot a scan with NA AOD values
+  goesaodc_plotScanPoints(
+    satID = "G17",
+    datetime = "2019-10-27 10:00",
+    timezone = "America/Los_Angeles",
+    bbox = c(-124, -120, 36, 39)
+  )
+  
+  # Plot averaged scans with NA AOD values
+  goesaodc_plotScanPoints(
+    satID = "G17",
+    datetime = "2019-10-27 10:00",
+    endtime = "2019-10-27 11:00",
+    timezone = "America/Los_Angeles",
+    bbox = c(-124, -120, 36, 39),
+    stateCodes = "CA",
+    title = "San Francisco AOD from 10am to 11am on Oct. 27, 2019"
+  )
+  
   # Plot a faulty file
   goesaodc_plotScanPoints(
     filename = "OR_ABI-L2-AODC-M6_G17_s20202522231174_e20202522233547_c20202522235327.nc",
     bbox = bbox_oregon,
     stateCodes = "OR"
+  )
+  
+  # Plot a non-existant scan
+  goesaodc_plotScanPoints(
+    satID = "G17",
+    datetime = "1970-01-01 12:00",
+    timezone = "America/Los_Angeles",
+    bbox = bbox_oregon
   )
   
 }
