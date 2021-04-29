@@ -93,6 +93,7 @@ goesaodc_createTibble <- function(
   # Guarantee W, E, S, N order
   bbox <- bboxToVector(bbox)
   
+  # Crops readings to be within the bbox
   tbl <-
     tbl %>%
     dplyr::filter(
@@ -102,9 +103,12 @@ goesaodc_createTibble <- function(
       .data$lat <= bbox[4]
     )
   
-  # Convert AOD readings to NA for points outside the DQF threshold
-  # TODO: Can this be done in a cleaner way with dplyr mutate()?
-  tbl[tbl$DQF > dqfLevel, which(colnames(tbl) == "AOD")] <- NA
+  # Replaces AOD value with NA when the reading is outside the quality threshold 
+  tbl <-
+    tbl %>%
+    dplyr::mutate(
+      AOD = ifelse(DQF > dqfLevel, NA, AOD)
+    )
     
   # ----- Return ---------------------------------------------------------------
   
