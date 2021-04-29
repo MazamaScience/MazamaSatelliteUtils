@@ -1,6 +1,8 @@
 # MazamaSatelliteUtils 0.4.8
 
 * Added `goesaodc_createScanRaster()`.
+* `goesaodc_createScanSPDF()` function now returns an empty 
+SpatialPointsDataFrame when it cannot read scan files.
 
 # MazamaSatelliteUtils 0.4.7
 
