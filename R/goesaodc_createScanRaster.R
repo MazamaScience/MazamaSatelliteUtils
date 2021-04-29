@@ -34,7 +34,7 @@ goesaodc_createScanRaster <- function(
   timezone = "UTC",
   filename = NULL,
   bbox = bbox_CONUS,
-  dqfLevel = NULL,
+  dqfLevel = 3,
   cellSize = NULL,
   fun = mean
 ) {
@@ -45,18 +45,50 @@ goesaodc_createScanRaster <- function(
   
   # ----- Define raster grid ---------------------------------------------------
   
-  # Set extent
+  # If a filename was given, extract the satellite ID from it
+  if ( is.null(satID) ) {
+    MazamaCoreUtils::stopIfNull(filename)
+    filePattern <- "OR_ABI-L2-AODC-M[0-9]_(G16|G17)_s[0-9]+_e[0-9]+_c[0-9]+\\.nc"
+    satID <- stringr::str_match(filename, filePattern)[1,2]
+  }
+  
+  # Get the grid file for the requested satellite
+  if ( toupper(satID) == "G16") {
+    gridFile <- "goesEastGrid.rda"
+  } else if ( toupper(satID) == "G17" ) {
+    gridFile <- "goesWestGrid.rda"
+  } else {
+    stop("Parameter 'satID' must be either 'G16' or 'G17'")
+  }
+  
+  # Assemble the correct filepath based on satID and Data directory
+  gridFilePath <- file.path(getSatelliteDataDir(), gridFile)
+  
+  # Test for grid existence and if found, load it. Stop with appropriate message
+  # if missing
+  if ( file.exists(gridFilePath) ) {
+    goesGrid <- get(load(gridFilePath))
+  } else {
+    stop(paste0("Grid file '", gridFilePath, "'not found. Run 
+    'installGoesGrids()' first."))
+  }
+  
+  # Determine grid extent
   if ( !is.null(bbox) ) {
+    
     boundaries <- bboxToVector(bbox)
     lonLo <- boundaries[1]
     lonHi <- boundaries[2]
     latLo <- boundaries[3]
     latHi <- boundaries[4]
+    
   } else {
+    
     lonLo <- min(goesGrid$longitude, na.rm = TRUE)
     lonHi <- max(goesGrid$longitude, na.rm = TRUE)
     latLo <- min(goesGrid$latitude, na.rm = TRUE)
     latHi <- max(goesGrid$latitude, na.rm = TRUE)
+    
   }
   
   ncols <- ( ( lonHi - lonLo ) / cellSize ) + 1
@@ -138,7 +170,8 @@ if ( FALSE ) {
     oregonRaster,
     varName = "AOD",
     breaks = c(-Inf, 0, 1, 2, 3, 4, 5, Inf),
-    palette = "YlOrRd"
+    palette = "YlOrRd",
+    expand = FALSE
   ) +
     AirFirePlots::layer_states("OR")
   
