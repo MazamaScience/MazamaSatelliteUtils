@@ -1,6 +1,7 @@
 # MazamaSatelliteUtils 0.4.8
 
 * Added `goesaodc_createScanRaster()`.
+* Added `goesaodc_plotScanRaster()`.
 * `goesaodc_createScanSPDF()` function now returns an empty 
 SpatialPointsDataFrame when it cannot read scan files.
 * DQF filtering is now performed when generating both single and averaged scan 
