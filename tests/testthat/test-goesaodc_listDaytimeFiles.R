@@ -64,7 +64,7 @@ test_that("local files are listed correctly for daytime", {
         satID = "G16", 
         datetime = "2019-09-06 16",
         timezone = "America/Los_Angeles", 
-        useRemote = FALSE
+        useRemote = TRUE
       )
     ),
     168
