@@ -86,10 +86,11 @@ goesaodc_createSingleScanSPDF <- function(
   
   nc <- goesaodc_openFile(filename)
   
-  spdf <- goesaodc_createSpatialPoints(
-    nc = nc,
-    bbox = bbox,
-    dqfLevel = dqfLevel
+  tbl <- goesaodc_createTibble(nc, bbox, dqfLevel)
+  
+  spdf <- sp::SpatialPointsDataFrame(
+    coords = dplyr::select(tbl, c(.data$lon, .data$lat)),
+    data = dplyr::select(tbl, -c(.data$lon, .data$lat))
   )
     
   # ----- Return ---------------------------------------------------------------
