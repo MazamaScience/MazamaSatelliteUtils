@@ -4,12 +4,16 @@
 \alias{goesaodc_createTibble}
 \title{Create a tibble from a ncdf4 handle}
 \usage{
-goesaodc_createTibble(nc = NULL, bbox = bbox_CONUS)
+goesaodc_createTibble(nc = NULL, bbox = bbox_CONUS, dqfLevel = 3)
 }
 \arguments{
 \item{nc}{ncdf4 handle or a list of handles.}
 
 \item{bbox}{Bounding box for the region of interest; Defaults to CONUS.}
+
+\item{dqfLevel}{Allowed data quality level. All readings with a DQF value
+above this level will have their AOD values set to NA. Must be either 0, 1, 
+2, or 3, with 0 being the highest quality. Defaults to 3.}
 }
 \value{
 Tibble (dataframe) with NetCDF variables and associated locations.

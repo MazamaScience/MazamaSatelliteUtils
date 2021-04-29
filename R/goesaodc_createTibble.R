@@ -10,6 +10,9 @@
 #' 
 #' @param nc ncdf4 handle or a list of handles.
 #' @param bbox Bounding box for the region of interest; Defaults to CONUS.
+#' @param dqfLevel Allowed data quality level. All readings with a DQF value
+#' above this level will have their AOD values set to NA. Must be either 0, 1, 
+#' 2, or 3, with 0 being the highest quality. Defaults to 3.
 #' 
 #' @return Tibble (dataframe) with NetCDF variables and associated locations.
 #
@@ -42,13 +45,18 @@
 
 goesaodc_createTibble <- function(
   nc = NULL, 
-  bbox = bbox_CONUS
+  bbox = bbox_CONUS,
+  dqfLevel = 3
 ) {
   
   # ----- Validate parameters --------------------------------------------------
   
   MazamaCoreUtils::stopIfNull(nc)
   MazamaCoreUtils::stopIfNull(bbox)
+  
+  if ( !(dqfLevel %in% c(0, 1, 2, 3)) ) {
+    stop(paste0("Parameter 'dqfLevel' must be 0, 1, 2, or 3"))
+  }
   
   # Check that nc has GOES projection
   if ( !goesaodc_isGoesProjection(nc) ) {
@@ -93,6 +101,10 @@ goesaodc_createTibble <- function(
       .data$lat >= bbox[3] &
       .data$lat <= bbox[4]
     )
+  
+  # Convert AOD readings to NA for points outside the DQF threshold
+  # TODO: Can this be done in a cleaner way with dplyr mutate()?
+  tbl[tbl$DQF > dqfLevel, which(colnames(tbl) == "AOD")] <- NA
     
   # ----- Return ---------------------------------------------------------------
   
