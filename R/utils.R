@@ -62,7 +62,7 @@ bboxToVector <- function(
   # ----- Extract data ---------------------------------------------------------
   
   if (
-    all(class(bbox) == "matrix") &&
+    "matrix" %in% class(bbox) &&
     all(colnames(bbox) == c("min", "max")) &&
     all(rownames(bbox) == c("x", "y"))
   ) {
@@ -73,10 +73,7 @@ bboxToVector <- function(
     s <- bbox[2, 1]
     n <- bbox[2, 2]
     
-  } else if (
-    class(bbox) == "Extent" &&
-    typeof(bbox) == "S4"
-  ) {
+  } else if ( all(class(bbox) == "Extent" && typeof(bbox) == "S4") ) {
     
     # Support for raster::extent() type
     w <- bbox[1]
@@ -84,10 +81,7 @@ bboxToVector <- function(
     s <- bbox[3]
     n <- bbox[4]
     
-  } else if (
-    is.numeric(bbox) &&
-    is.vector(bbox)
-  ) {
+  } else if ( all(is.numeric(bbox) && is.vector(bbox)) ) {
     
     if ( length(bbox) != 4 ) 
       stop("Parameter 'bbox' should be of length 4. Try c(W, E, S, N).")
