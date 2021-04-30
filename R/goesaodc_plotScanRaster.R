@@ -70,7 +70,7 @@ goesaodc_plotScanRaster <- function(
     fun = fun
   )
   
-  # ----- Plot raster ----------------------------------------------------------
+  # ----- Create plot layers ---------------------------------------------------
   
   xlim <- bbox[1:2]
   ylim <- bbox[3:4]
@@ -103,7 +103,7 @@ goesaodc_plotScanRaster <- function(
     alpha = rasterAlpha
   )
   
-  # Create state borders layer
+  # Create states layer
   stateLayer <- if ( is.null(stateCodes) ) {
     NULL
   } else {
@@ -125,6 +125,8 @@ goesaodc_plotScanRaster <- function(
       limits = c(-1, 6)
     )
   }
+  
+  # ----- Create plot ----------------------------------------------------------
   
   scanPlot <-
     baseLayer +
