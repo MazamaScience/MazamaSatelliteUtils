@@ -105,7 +105,7 @@ goesaodc_createTibble <- function(
   tbl <-
     tbl %>%
     dplyr::mutate(
-      AOD = ifelse(DQF > dqfLevel, NA, AOD)
+      AOD = ifelse(.data$DQF > dqfLevel, NA, .data$AOD)
     )
     
   # ----- Return ---------------------------------------------------------------
