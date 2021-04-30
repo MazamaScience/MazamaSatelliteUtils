@@ -2,7 +2,7 @@
 % Please edit documentation in R/goesaodc_plotScanPoints.R
 \name{goesaodc_plotScanPoints}
 \alias{goesaodc_plotScanPoints}
-\title{Create an AOD points plot}
+\title{Plot a GOES AOD scan as points}
 \usage{
 goesaodc_plotScanPoints(
   satID = NULL,
@@ -30,7 +30,7 @@ goesaodc_plotScanPoints(
 \item{timezone}{Timezone used to interpret \code{datetime} and 
 \code{endtime}; Defaults to UTC.}
 
-\item{filename}{The name of the scan file.}
+\item{filename}{Scan file name.}
 
 \item{bbox}{Bounding box for the region of interest; Defaults to CONUS.}
 
@@ -52,9 +52,14 @@ square).}
 \item{title}{Title of the plot.}
 }
 \description{
-Creates a plot of AOD points using GOES scans. If no 
-\code{endtime} is given, then only the scan closest to \code{datetime} will
-be used. If an \code{endtime} is provided, then the plotted points will be
-the average of the scans in the given time range. If \code{filename} is 
-given, just the points for that scan file will be drawn.
+Draws a GOES AOD scan as a plot of points. A scan can be 
+specified in the following ways:
+\itemize{
+ \item{Satellite + time info: Set by \code{satID} and \code{datetime}. If no 
+   \code{endtime} is given, then only the scan closest to \code{datetime} 
+   will be used. If an \code{endtime} is provided, then the points plotted
+   will be the average of the all scans in the given time range.}
+ \item{File name: Set by \code{filename}.}
+}
+A file name takes precedence over satellite + time info if both are given.
 }

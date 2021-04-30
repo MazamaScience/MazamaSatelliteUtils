@@ -1,19 +1,24 @@
 #' @export
 #' 
-#' @title Create an AOD points plot
+#' @title Plot a GOES AOD scan as points
 #' 
-#' @description Creates a plot of AOD points using GOES scans. If no 
-#' \code{endtime} is given, then only the scan closest to \code{datetime} will
-#' be used. If an \code{endtime} is provided, then the plotted points will be
-#' the average of the scans in the given time range. If \code{filename} is 
-#' given, just the points for that scan file will be drawn.
+#' @description Draws a GOES AOD scan as a plot of points. A scan can be 
+#' specified in the following ways:
+#' \itemize{
+#'  \item{Satellite + time info: Set by \code{satID} and \code{datetime}. If no 
+#'    \code{endtime} is given, then only the scan closest to \code{datetime} 
+#'    will be used. If an \code{endtime} is provided, then the points plotted
+#'    will be the average of the all scans in the given time range.}
+#'  \item{File name: Set by \code{filename}.}
+#' }
+#' A file name takes precedence over satellite + time info if both are given.
 #' 
 #' @param satID ID of the source GOES satellite ('G16' or 'G17').
 #' @param datetime Datetime in Ymd HMS format or a \code{POSIXct}.
 #' @param endtime End time in Ymd HMS format or a \code{POSIXct}.
 #' @param timezone Timezone used to interpret \code{datetime} and 
 #' \code{endtime}; Defaults to UTC.
-#' @param filename The name of the scan file.
+#' @param filename Scan file name.
 #' @param bbox Bounding box for the region of interest; Defaults to CONUS.
 #' @param dqfLevel Allowed data quality level. All readings with a DQF value
 #' above this level will have their AOD values set to NA. Must be either 0, 1, 
@@ -45,7 +50,7 @@ goesaodc_plotScanPoints <- function(
   # ----- Validate parameters --------------------------------------------------
   
   # ----- Create spatial points ------------------------------------------------
-    
+  
   spdf <- goesaodc_createScanSPDF(
     satID = satID,
     datetime = datetime,
@@ -56,31 +61,98 @@ goesaodc_plotScanPoints <- function(
     dqfLevel = dqfLevel
   )
   
-  # ----- Plot spatial points --------------------------------------------------
+  # ----- Create plot layers ---------------------------------------------------
   
-  stateLayer <- if ( is.null(stateCodes) ) {
+  # Create base layer
+  baseLayer <- AirFirePlots::plot_base(
+    title = title,
+    clab = "AOD",
+    xlim = bbox[1:2],
+    ylim = bbox[3:4],
+    project = TRUE,
+    expand = FALSE
+  )
+  
+  # Create points layer
+  pointsLayer <- if ( nrow(spdf@data) > 0 ) {
+    
+    # geom_point() doesn't accept raw SpatialPointsDataFrames
+    df <- data.frame(spdf)
+    
+    ggplot2::geom_point(
+      data = df,
+      ggplot2::aes(
+        x = .data$lon,
+        y = .data$lat,
+        color = .data$AOD
+      ),
+      size = pointSize,
+      shape = pointShape
+    )
+    
+  } else {
+    
+    # Define dummy data
+    df <- data.frame(lon = 0, lat = 0, AOD = 0, DQF = 3)
+    
+    # Create invisible points layer. The aesthetics must still be set so the 
+    # plot axes and legend to be drawn.
+    ggplot2::geom_point(
+      data = df,
+      ggplot2::aes(
+        x = .data$lon,
+        y = .data$lat,
+        color = .data$AOD 
+      ),
+      size = 0
+    ) 
+    
+  }
+  
+  # Create states layer
+  statesLayer <- if ( is.null(stateCodes) ) {
     NULL
   } else {
     AirFirePlots::layer_states(stateCodes)
   }
   
-  scanPlot <- 
-    goesaodc_plotScanSPDF(
-      spdf = spdf,
-      bbox = bbox,
-      pointSize = pointSize,
-      pointShape = pointShape,
-      breaks = breaks,
-      paletteName = paletteName,
-      title = title
-    ) +
-    stateLayer
+  # Create color scale
+  colorScale <- if ( is.null(breaks) ) {
     
+    ggplot2::scale_color_gradient(
+      low = "#FFFFB2",
+      high = "#BD0026",
+      na.value = "gray50",
+      limits = c(0, 5)
+    )
+    
+  } else {
+    
+    ggplot2::scale_color_stepsn(
+      breaks = breaks,
+      colors = RColorBrewer::brewer.pal(
+        length(breaks - 1),
+        paletteName
+      ),
+      limits = c(-1, 6)
+    )
+    
+  }
+  
+  # ----- Create plot ----------------------------------------------------------
+  
+  scanPlot <-
+    baseLayer +
+    pointsLayer +
+    statesLayer + 
+    colorScale
+  
   # ----- Return ---------------------------------------------------------------
   
   return(scanPlot)
   
 }
+
 
 if ( FALSE ) {
   
@@ -94,7 +166,7 @@ if ( FALSE ) {
   
   bbox_oregon <- c(-125, -116, 42, 47)
   
-  # Plot Oregon at 5:30pm on Sep. 8, 2020
+  # Plot points for a scan specified by satellite + time info
   goesaodc_plotScanPoints(
     satID = "G17",
     datetime = "2020-09-08 17:30",
@@ -104,23 +176,15 @@ if ( FALSE ) {
     title = "Oregon AOD at 5:30pm PDT on Sep. 8, 2020"
   )
   
-  # Plot Oregon with a scan file from Sep. 8, 2020
-  filename <- "OR_ABI-L2-AODC-M6_G17_s20202530031174_e20202530033547_c20202530035523.nc"
-  localTimeStr <-
-    filename %>%
-    goesaodc_convertFilenameToDatetime() %>%
-    MazamaCoreUtils::parseDatetime(timezone = "America/Los_Angeles")
-  
+  # Plot points for a scan specified by file name
   goesaodc_plotScanPoints(
-    filename = filename,
+    filename = "OR_ABI-L2-AODC-M6_G17_s20202530031174_e20202530033547_c20202530035523.nc",
     bbox = bbox_oregon,
     breaks = c(-Inf, 0, 1, 2, 3, 4, 5, Inf),
-    stateCodes = "OR",
-    title = paste0("Oregon AOD for ", localTimeStr, " PDT"),
-    dqfLevel = 2
+    stateCodes = "OR"
   )
   
-  # Plot Oregon from 12pm to 1pm on Sept. 8, 2020
+  # Plot average points for a range of scans
   goesaodc_plotScanPoints(
     satID = "G17",
     datetime = "2020-09-08 12",
@@ -131,7 +195,7 @@ if ( FALSE ) {
     title = "Oregon AOD from 12pm to 1pm PDT on Sept. 8, 2020"
   )
   
-  # Plot a scan with NA AOD values
+  # Plot points for a scan with NA AOD values
   goesaodc_plotScanPoints(
     satID = "G17",
     datetime = "2019-10-27 10:00",
@@ -139,7 +203,7 @@ if ( FALSE ) {
     bbox = c(-124, -120, 36, 39)
   )
   
-  # Plot averaged scans with NA AOD values
+  # Plot average points for a range of scans with NA AOD values
   goesaodc_plotScanPoints(
     satID = "G17",
     datetime = "2019-10-27 10:00",
@@ -150,14 +214,14 @@ if ( FALSE ) {
     title = "San Francisco AOD from 10am to 11am on Oct. 27, 2019"
   )
   
-  # Plot a faulty file
+  # Plot points for a faulty scan
   goesaodc_plotScanPoints(
     filename = "OR_ABI-L2-AODC-M6_G17_s20202522231174_e20202522233547_c20202522235327.nc",
     bbox = bbox_oregon,
     stateCodes = "OR"
   )
   
-  # Plot a non-existant scan
+  # Plot points for a non-existent scan
   goesaodc_plotScanPoints(
     satID = "G17",
     datetime = "1970-01-01 12:00",
