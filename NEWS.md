@@ -5,7 +5,8 @@
 * `goesaodc_createScanSPDF()` function now returns an empty 
 SpatialPointsDataFrame when it cannot read scan files.
 * DQF filtering is now performed when generating both single and averaged scan 
-SPDFs.
+SPDFs, and no longer causes errors when DQF values are `NULL`.
+* `dqfLevel` params across functions and scripts now default to 3.
 
 # MazamaSatelliteUtils 0.4.7
 
