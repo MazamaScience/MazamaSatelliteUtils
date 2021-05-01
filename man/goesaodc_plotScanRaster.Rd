@@ -17,8 +17,9 @@ goesaodc_plotScanRaster(
   includeMap = TRUE,
   zoom = NULL,
   stateCodes = NULL,
-  breaks = NULL,
   paletteName = "YlOrRd",
+  breaks = NULL,
+  limits = NULL,
   rasterAlpha = 0.75,
   title = NULL
 )
@@ -54,9 +55,13 @@ integer from 1 to 15.}
 
 \item{stateCodes}{Codes of state outlines to draw.}
 
+\item{paletteName}{The name of an RColorBrewer palette. Defaults to 'YlOrRd'.}
+
 \item{breaks}{Vector of AOD values to use as palette breaks.}
 
-\item{paletteName}{The name of an RColorBrewer palette. Defaults to 'YlOrRd'.}
+\item{limits}{Upper and lower AOD values to use as color scale bounds. 
+Setting this guarantees that the color legend is displayed even if the scan 
+has nothing but NA AOD values.}
 
 \item{rasterAlpha}{Alpha value of the raster. Defaults to 0.75.}
 

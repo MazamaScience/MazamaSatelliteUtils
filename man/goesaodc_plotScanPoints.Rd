@@ -14,8 +14,9 @@ goesaodc_plotScanPoints(
   dqfLevel = 3,
   pointSize = 0.5,
   pointShape = 15,
-  breaks = NULL,
   paletteName = "YlOrRd",
+  breaks = NULL,
+  limits = NULL,
   stateCodes = NULL,
   title = NULL
 )
@@ -43,9 +44,13 @@ above this level will have their AOD values set to NA. Must be either 0, 1,
 \item{pointShape}{Shape of the plot points (index); Defaults to 15 (filled 
 square).}
 
+\item{paletteName}{The name of an RColorBrewer palette; Defaults to 'YlOrRd'.}
+
 \item{breaks}{Vector of AOD values to use as palette breaks.}
 
-\item{paletteName}{The name of an RColorBrewer palette; Defaults to 'YlOrRd'.}
+\item{limits}{Upper and lower AOD values to use as color scale bounds. 
+Setting this guarantees that the color legend is displayed even if the scan 
+has nothing but NA AOD values.}
 
 \item{stateCodes}{Codes of state outlines to draw.}
 

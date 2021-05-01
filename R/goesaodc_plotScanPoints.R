@@ -26,8 +26,11 @@
 #' @param pointSize Size of plot points; Defaults to 0.5.
 #' @param pointShape Shape of the plot points (index); Defaults to 15 (filled 
 #' square).
-#' @param breaks Vector of AOD values to use as palette breaks.
 #' @param paletteName The name of an RColorBrewer palette; Defaults to 'YlOrRd'.
+#' @param breaks Vector of AOD values to use as palette breaks.
+#' @param limits Upper and lower AOD values to use as color scale bounds. 
+#' Setting this guarantees that the color legend is displayed even if the scan 
+#' has nothing but NA AOD values.
 #' @param stateCodes Codes of state outlines to draw.
 #' @param title Title of the plot.
 
@@ -41,8 +44,9 @@ goesaodc_plotScanPoints <- function(
   dqfLevel = 3,
   pointSize = 0.5,
   pointShape = 15,
-  breaks = NULL,
   paletteName = "YlOrRd",
+  breaks = NULL,
+  limits = NULL,
   stateCodes = NULL,
   title = NULL
 ) {
@@ -61,6 +65,9 @@ goesaodc_plotScanPoints <- function(
     dqfLevel = dqfLevel
   )
   
+  # ggplot2::geom_points() cannot take in a raw SpatialPointsDataFrame
+  df <- data.frame(spdf)
+  
   # ----- Create plot layers ---------------------------------------------------
   
   # Create base layer
@@ -74,40 +81,16 @@ goesaodc_plotScanPoints <- function(
   )
   
   # Create points layer
-  pointsLayer <- if ( nrow(spdf@data) > 0 ) {
-    
-    # geom_point() doesn't accept raw SpatialPointsDataFrames
-    df <- data.frame(spdf)
-    
-    ggplot2::geom_point(
-      data = df,
-      ggplot2::aes(
-        x = .data$lon,
-        y = .data$lat,
-        color = .data$AOD
-      ),
-      size = pointSize,
-      shape = pointShape
-    )
-    
-  } else {
-    
-    # Define dummy data
-    df <- data.frame(lon = 0, lat = 0, AOD = 0, DQF = 3)
-    
-    # Create invisible points layer. The aesthetics must still be set so the 
-    # plot axes and legend to be drawn.
-    ggplot2::geom_point(
-      data = df,
-      ggplot2::aes(
-        x = .data$lon,
-        y = .data$lat,
-        color = .data$AOD 
-      ),
-      size = 0
-    ) 
-    
-  }
+  pointsLayer <- ggplot2::geom_point(
+    data = df,
+    ggplot2::aes(
+      x = .data$lon,
+      y = .data$lat,
+      color = .data$AOD
+    ),
+    size = pointSize,
+    shape = pointShape
+  )
   
   # Create states layer
   statesLayer <- if ( is.null(stateCodes) ) {
@@ -118,25 +101,21 @@ goesaodc_plotScanPoints <- function(
   
   # Create color scale
   colorScale <- if ( is.null(breaks) ) {
-    
     ggplot2::scale_color_gradient(
       low = "#FFFFB2",
       high = "#BD0026",
       na.value = "gray50",
-      limits = c(0, 5)
+      limits = limits
     )
-    
   } else {
-    
     ggplot2::scale_color_stepsn(
       breaks = breaks,
       colors = RColorBrewer::brewer.pal(
         length(breaks - 1),
         paletteName
       ),
-      limits = c(-1, 6)
+      limits = limits
     )
-    
   }
   
   # ----- Create plot ----------------------------------------------------------
@@ -164,7 +143,7 @@ if ( FALSE ) {
   
   loadSpatialData("NaturalEarthAdm1")
   
-  bbox_oregon <- c(-125, -116, 42, 47)
+  bbox_oregon <- c(-125, -116, 42, 46.5)
   
   # Plot points for a scan specified by satellite + time info
   goesaodc_plotScanPoints(

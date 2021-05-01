@@ -26,8 +26,11 @@
 #' @param zoom Zoom level of the topographic map, if it is included. Must be an
 #' integer from 1 to 15.
 #' @param stateCodes Codes of state outlines to draw.
-#' @param breaks Vector of AOD values to use as palette breaks.
 #' @param paletteName The name of an RColorBrewer palette. Defaults to 'YlOrRd'.
+#' @param breaks Vector of AOD values to use as palette breaks.
+#' @param limits Upper and lower AOD values to use as color scale bounds. 
+#' Setting this guarantees that the color legend is displayed even if the scan 
+#' has nothing but NA AOD values.
 #' @param rasterAlpha Alpha value of the raster. Defaults to 0.75.
 #' @param title Title of the plot.
 
@@ -41,11 +44,12 @@ goesaodc_plotScanRaster <- function(
   dqfLevel = 3,
   cellSize = NULL,
   fun = mean,
-  includeMap = TRUE,
+  includeMap = FALSE,
   zoom = NULL,
   stateCodes = NULL,
-  breaks = NULL,
   paletteName = "YlOrRd",
+  breaks = NULL,
+  limits = NULL,
   rasterAlpha = 0.75,
   title = NULL
 ) {
@@ -58,7 +62,7 @@ goesaodc_plotScanRaster <- function(
   
   # ----- Create raster --------------------------------------------------------
   
-  scanRaster <- goesaodc_createScanRaster(
+  raster <- goesaodc_createScanRaster(
     satID = satID,
     datetime = datetime,
     endtime = endtime,
@@ -98,31 +102,34 @@ goesaodc_plotScanRaster <- function(
   
   # Create raster layer
   rasterLayer <- AirFirePlots::layer_raster(
-    raster = scanRaster,
+    raster = raster,
     varName = "AOD",
     alpha = rasterAlpha
   )
   
   # Create states layer
-  stateLayer <- if ( is.null(stateCodes) ) {
+  statesLayer <- if ( is.null(stateCodes) ) {
     NULL
   } else {
     AirFirePlots::layer_states(stateCodes)
   }
   
-  # Create color scale
-  if ( is.null(breaks) ) {
-    colorScale <- ggplot2::scale_fill_gradient(
+  # Create fill scale
+  fillScale <- if ( is.null(breaks) ) {
+    ggplot2::scale_fill_gradient(
       low = "#FFFFB2",
       high = "#BD0026",
       na.value = "gray50",
-      limits = c(0, 5)
+      limits = limits
     )
   } else {
-    colorScale <- ggplot2::scale_fill_stepsn(
+    ggplot2::scale_fill_stepsn(
       breaks = breaks,
-      colors = RColorBrewer::brewer.pal(length(breaks - 1), paletteName),
-      limits = c(-1, 6)
+      colors = RColorBrewer::brewer.pal(
+        length(breaks - 1),
+        paletteName
+      ),
+      limits = limits
     )
   }
   
@@ -132,8 +139,8 @@ goesaodc_plotScanRaster <- function(
     baseLayer +
     mapLayer +
     rasterLayer +
-    stateLayer +
-    colorScale
+    statesLayer +
+    fillScale
   
   # ----- Return ---------------------------------------------------------------
   
@@ -151,16 +158,80 @@ if ( FALSE ) {
   
   loadSpatialData("NaturalEarthAdm1")
   
-  # Plot a scan with NA AOD values
+  bbox_oregon <- c(-125, -116, 42, 46.5)
+  
+  # Plot raster for a scan specified by satellite + time info
+  goesaodc_plotScanRaster(
+    satID = "G17",
+    datetime = "2020-09-08 17:30",
+    timezone = "America/Los_Angeles",
+    bbox = bbox_oregon,
+    cellSize = 0.05,
+    stateCodes = "OR",
+    title = "Oregon AOD at 5:30pm PDT on Sep. 8, 2020"
+  )
+  
+  # Plot raster for a scan specified by file name
+  goesaodc_plotScanRaster(
+    filename = "OR_ABI-L2-AODC-M6_G17_s20202530031174_e20202530033547_c20202530035523.nc",
+    bbox = bbox_oregon,
+    cellSize = 0.05,
+    breaks = c(-Inf, 0, 1, 2, 3, 4, 5, Inf),
+    stateCodes = "OR"
+  )
+  
+  # Plot raster points for a range of scans
+  goesaodc_plotScanRaster(
+    satID = "G17",
+    datetime = "2020-09-08 12",
+    endtime = "2020-09-08 13",
+    timezone = "America/Los_Angeles",
+    bbox = bbox_oregon,
+    cellSize = 0.05,
+    stateCodes = "OR",
+    title = "Oregon AOD from 12pm to 1pm PDT on Sept. 8, 2020"
+  )
+  
+  # Plot raster for a scan with NA AOD values
   goesaodc_plotScanRaster(
     satID = "G17",
     datetime = "2019-10-27 10:00",
     timezone = "America/Los_Angeles",
     bbox = c(-124, -120, 36, 39),
-    cellSize = 0.03,
+    cellSize = 0.05,
     rasterAlpha = 0.6,
     includeMap = TRUE,
     zoom = 7
+  )
+  
+  # Plot average raster for a range of scans with NA AOD values
+  goesaodc_plotScanPoints(
+    satID = "G17",
+    datetime = "2019-10-27 10:00",
+    endtime = "2019-10-27 11:00",
+    timezone = "America/Los_Angeles",
+    bbox = c(-124, -120, 36, 39),
+    stateCodes = "CA",
+    title = "San Francisco AOD from 10am to 11am on Oct. 27, 2019"
+  )
+  
+  # Plot raster for a faulty scan
+  goesaodc_plotScanRaster(
+    filename = "OR_ABI-L2-AODC-M6_G17_s20202522231174_e20202522233547_c20202522235327.nc",
+    bbox = bbox_oregon,
+    cellSize = 0.05,
+    stateCodes = "OR",
+    breaks = c(-Inf, 0, 1, 2, 3, 4, 5, Inf),
+    limits = c(-1, 6)
+  )
+  
+  # Plot raster for a non-existent scan
+  goesaodc_plotScanRaster(
+    satID = "G17",
+    datetime = "1970-01-01 12:00",
+    timezone = "America/Los_Angeles",
+    bbox = bbox_oregon,
+    cellSize = 0.05
   )
   
 }
