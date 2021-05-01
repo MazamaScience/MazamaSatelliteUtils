@@ -14,7 +14,7 @@ goesaodc_plotScanRaster(
   dqfLevel = 3,
   cellSize = NULL,
   fun = mean,
-  includeMap = TRUE,
+  includeMap = FALSE,
   zoom = NULL,
   stateCodes = NULL,
   paletteName = "YlOrRd",

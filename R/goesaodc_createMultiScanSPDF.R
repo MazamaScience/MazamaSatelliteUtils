@@ -177,8 +177,4 @@ if ( FALSE ) {
     bbox = bbox_oregon
   )
   
-  # Plot points
-  goesaodc_plotScanSPDF(spdf) +
-    AirFirePlots::layer_states("OR")
-  
 }

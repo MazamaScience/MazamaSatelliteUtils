@@ -1,5 +1,6 @@
 # MazamaSatelliteUtils 0.4.9
 
+* Removed `goesaodc_plotScanSPDF()` function.
 * `goesaodc_createScanSPDF()` now returns an SPDF of NA values if it cannot read
 the scan.
 * Added `limits` param to `goesaodc_plotScanPoints()` function.

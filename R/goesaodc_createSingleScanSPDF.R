@@ -133,15 +133,11 @@ if ( FALSE ) {
     MazamaCoreUtils::parseDatetime(timezone = "America/Los_Angeles") # Local
   
   # Create points from a named scan file
-  spdf <- goesaodc_createSingleScanSPDF(
+  goesaodc_createSingleScanSPDF(
     filename = filename,
     bbox = bbox_oregon,
     dqfLevel = 3
   )
-  
-  # Plot points
-  goesaodc_plotScanSPDF(spdf, bbox = bbox_oregon, title = title) +
-    AirFirePlots::layer_states("OR")
   
 }
 

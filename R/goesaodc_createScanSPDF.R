@@ -143,16 +143,12 @@ if ( FALSE ) {
   )
   
   # Create averaged points from scans covering a time range
-  spdf <- goesaodc_createScanSPDF(
+  goesaodc_createScanSPDF(
     satID = "G17",
     datetime = "2020-09-08 12",
     endtime = "2020-09-08 13",
     timezone = "America/Los_Angeles",
     bbox = bbox_oregon
   )
-  
-  # Plot averaged points
-  goesaodc_plotScanSPDF(spdf, bbox = bbox_oregon) +
-    AirFirePlots::layer_states("OR")
   
 }
