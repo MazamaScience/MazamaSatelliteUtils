@@ -94,16 +94,11 @@ goesaodc_createScanSPDF <- function(
     
   }, silent = TRUE)
   
-  # Create an empty SPDF if there was an error reading the scan file
+  # If there was an error reading the scan file, create an SPDF filled with NA 
+  # AOD and DQF values for the requested satellite
   if ( "try-error" %in% class(result) ) {
-    
-    spdf <- sp::SpatialPointsDataFrame(
-      coords = data.frame(lon = 0, lat = 0),
-      data = data.frame(AOD = 0)
-    )[-1,]
-    
+    spdf <- goesaodc_createEmptyScanSPDF(satID, filename, bbox)
     warning(result, immediate. = TRUE)
-    
   }
   
   # ----- Return ---------------------------------------------------------------
@@ -136,6 +131,13 @@ if ( FALSE ) {
   # Create points from a named scan file
   goesaodc_createScanSPDF(
     filename = "OR_ABI-L2-AODC-M6_G17_s20202530031174_e20202530033547_c20202530035523.nc",
+    bbox = bbox_oregon,
+    dqfLevel = 3
+  )
+  
+  # Create SPDF for a faulty scan
+  goesaodc_createScanSPDF(
+    filename = "OR_ABI-L2-AODC-M6_G17_s20202522231174_e20202522233547_c20202522235327.nc",
     bbox = bbox_oregon,
     dqfLevel = 3
   )
