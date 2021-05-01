@@ -21,17 +21,17 @@
 #' @param cellSize Size of Raster cells measured in degrees lon/lat.
 #' @param fun Function used to summarize multiple point values within a single 
 #' cell; Defaults to \code{mean}.
-#' @param includeMap Logical flag to draw a topographic map under the raster.
-#' Defaults to FALSE.
-#' @param zoom Zoom level of the topographic map, if it is included. Must be an
-#' integer from 1 to 15.
-#' @param stateCodes Codes of state outlines to draw.
 #' @param paletteName The name of an RColorBrewer palette. Defaults to 'YlOrRd'.
 #' @param breaks Vector of AOD values to use as palette breaks.
 #' @param limits Upper and lower AOD values to use as color scale bounds. 
 #' Setting this guarantees that the color legend is displayed even if the scan 
 #' has nothing but NA AOD values.
 #' @param rasterAlpha Alpha value of the raster. Defaults to 0.75.
+#' @param includeMap Logical flag to draw a topographic map under the raster.
+#' Defaults to FALSE.
+#' @param zoom Zoom level of the topographic map, if it is included. Must be an
+#' integer from 1 to 15.
+#' @param stateCodes Codes of state outlines to draw.
 #' @param title Title of the plot.
 
 goesaodc_plotScanRaster <- function(
@@ -44,13 +44,13 @@ goesaodc_plotScanRaster <- function(
   dqfLevel = 3,
   cellSize = NULL,
   fun = mean,
-  includeMap = FALSE,
-  zoom = NULL,
-  stateCodes = NULL,
   paletteName = "YlOrRd",
   breaks = NULL,
   limits = NULL,
   rasterAlpha = 0.75,
+  includeMap = FALSE,
+  zoom = NULL,
+  stateCodes = NULL,
   title = NULL
 ) {
   
@@ -129,6 +129,7 @@ goesaodc_plotScanRaster <- function(
         length(breaks - 1),
         paletteName
       ),
+      na.value = "gray50",
       limits = limits
     )
   }

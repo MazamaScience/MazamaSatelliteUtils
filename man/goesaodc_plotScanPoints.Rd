@@ -17,6 +17,8 @@ goesaodc_plotScanPoints(
   paletteName = "YlOrRd",
   breaks = NULL,
   limits = NULL,
+  includeMap = FALSE,
+  zoom = NULL,
   stateCodes = NULL,
   title = NULL
 )
@@ -51,6 +53,12 @@ square).}
 \item{limits}{Upper and lower AOD values to use as color scale bounds. 
 Setting this guarantees that the color legend is displayed even if the scan 
 has nothing but NA AOD values.}
+
+\item{includeMap}{Logical flag to draw a topographic map under the raster.
+Defaults to FALSE.}
+
+\item{zoom}{Zoom level of the topographic map, if it is included. Must be an
+integer from 1 to 15.}
 
 \item{stateCodes}{Codes of state outlines to draw.}
 

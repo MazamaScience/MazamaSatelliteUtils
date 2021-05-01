@@ -14,13 +14,13 @@ goesaodc_plotScanRaster(
   dqfLevel = 3,
   cellSize = NULL,
   fun = mean,
-  includeMap = FALSE,
-  zoom = NULL,
-  stateCodes = NULL,
   paletteName = "YlOrRd",
   breaks = NULL,
   limits = NULL,
   rasterAlpha = 0.75,
+  includeMap = FALSE,
+  zoom = NULL,
+  stateCodes = NULL,
   title = NULL
 )
 }
@@ -47,14 +47,6 @@ above this level will have their AOD values set to NA. Must be either 0, 1,
 \item{fun}{Function used to summarize multiple point values within a single 
 cell; Defaults to \code{mean}.}
 
-\item{includeMap}{Logical flag to draw a topographic map under the raster.
-Defaults to FALSE.}
-
-\item{zoom}{Zoom level of the topographic map, if it is included. Must be an
-integer from 1 to 15.}
-
-\item{stateCodes}{Codes of state outlines to draw.}
-
 \item{paletteName}{The name of an RColorBrewer palette. Defaults to 'YlOrRd'.}
 
 \item{breaks}{Vector of AOD values to use as palette breaks.}
@@ -64,6 +56,14 @@ Setting this guarantees that the color legend is displayed even if the scan
 has nothing but NA AOD values.}
 
 \item{rasterAlpha}{Alpha value of the raster. Defaults to 0.75.}
+
+\item{includeMap}{Logical flag to draw a topographic map under the raster.
+Defaults to FALSE.}
+
+\item{zoom}{Zoom level of the topographic map, if it is included. Must be an
+integer from 1 to 15.}
+
+\item{stateCodes}{Codes of state outlines to draw.}
 
 \item{title}{Title of the plot.}
 }

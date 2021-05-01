@@ -31,6 +31,10 @@
 #' @param limits Upper and lower AOD values to use as color scale bounds. 
 #' Setting this guarantees that the color legend is displayed even if the scan 
 #' has nothing but NA AOD values.
+#' @param includeMap Logical flag to draw a topographic map under the raster.
+#' Defaults to FALSE.
+#' @param zoom Zoom level of the topographic map, if it is included. Must be an
+#' integer from 1 to 15.
 #' @param stateCodes Codes of state outlines to draw.
 #' @param title Title of the plot.
 
@@ -47,11 +51,17 @@ goesaodc_plotScanPoints <- function(
   paletteName = "YlOrRd",
   breaks = NULL,
   limits = NULL,
+  includeMap = FALSE,
+  zoom = NULL,
   stateCodes = NULL,
   title = NULL
 ) {
   
   # ----- Validate parameters --------------------------------------------------
+  
+  if ( includeMap )
+    if ( is.null(zoom) )
+      stop("Parameter 'zoom' must be set when including a map layer")
   
   # ----- Create spatial points ------------------------------------------------
   
@@ -70,15 +80,29 @@ goesaodc_plotScanPoints <- function(
   
   # ----- Create plot layers ---------------------------------------------------
   
+  xlim <- bbox[1:2]
+  ylim <- bbox[3:4]
+  
   # Create base layer
   baseLayer <- AirFirePlots::plot_base(
     title = title,
     clab = "AOD",
-    xlim = bbox[1:2],
-    ylim = bbox[3:4],
+    xlim = xlim,
+    ylim = ylim,
     project = TRUE,
     expand = FALSE
   )
+  
+  # Create map layer
+  mapLayer <- if ( includeMap ) {
+    AirFirePlots::layer_map(
+      zoom = zoom,
+      xlim = xlim,
+      ylim = ylim
+    )
+  } else {
+    NULL
+  }
   
   # Create points layer
   pointsLayer <- ggplot2::geom_point(
@@ -114,6 +138,7 @@ goesaodc_plotScanPoints <- function(
         length(breaks - 1),
         paletteName
       ),
+      na.value = "gray50",
       limits = limits
     )
   }
@@ -122,6 +147,7 @@ goesaodc_plotScanPoints <- function(
   
   scanPlot <-
     baseLayer +
+    mapLayer +
     pointsLayer +
     statesLayer + 
     colorScale
@@ -160,7 +186,9 @@ if ( FALSE ) {
     filename = "OR_ABI-L2-AODC-M6_G17_s20202530031174_e20202530033547_c20202530035523.nc",
     bbox = bbox_oregon,
     breaks = c(-Inf, 0, 1, 2, 3, 4, 5, Inf),
-    stateCodes = "OR"
+    stateCodes = "OR",
+    includeMap = TRUE,
+    zoom = 7
   )
   
   # Plot average points for a range of scans
