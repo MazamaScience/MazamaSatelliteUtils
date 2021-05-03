@@ -166,13 +166,4 @@ if ( FALSE ) {
     fun = mean
   )[,"AOD"]
   
-  AirFirePlots::plot_raster(
-    oregonRaster,
-    varName = "AOD",
-    breaks = c(-Inf, 0, 1, 2, 3, 4, 5, Inf),
-    palette = "YlOrRd",
-    expand = FALSE
-  ) +
-    AirFirePlots::layer_states("OR")
-  
 }

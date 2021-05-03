@@ -145,7 +145,7 @@ goesaodc_plotScanPoints <- function(
     )
   } else {
     ggplot2::scale_color_stepsn(
-      breaks = breaks,
+      breaks = paletteBreaks,
       colors = RColorBrewer::brewer.pal(
         length(paletteBreaks - 1),
         paletteName
