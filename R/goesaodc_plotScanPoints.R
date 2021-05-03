@@ -53,6 +53,7 @@ goesaodc_plotScanPoints <- function(
   paletteName = "YlOrRd",
   breaks = NULL,
   limits = NULL,
+  pointAlpha = 0.75,
   includeMap = FALSE,
   zoom = NULL,
   stateCodes = NULL,
@@ -115,7 +116,8 @@ goesaodc_plotScanPoints <- function(
       color = .data$AOD
     ),
     size = pointSize,
-    shape = pointShape
+    shape = pointShape,
+    alpha = pointAlpha
   )
   
   # Create states layer

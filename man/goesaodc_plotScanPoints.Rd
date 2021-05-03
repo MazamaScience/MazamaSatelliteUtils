@@ -17,6 +17,7 @@ goesaodc_plotScanPoints(
   paletteName = "YlOrRd",
   breaks = NULL,
   limits = NULL,
+  pointAlpha = 0.75,
   includeMap = FALSE,
   zoom = NULL,
   stateCodes = NULL,
