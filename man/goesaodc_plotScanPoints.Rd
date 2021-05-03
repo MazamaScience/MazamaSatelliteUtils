@@ -54,8 +54,11 @@ square).}
 Setting this guarantees that the color legend is displayed even if the scan 
 has nothing but NA AOD values.}
 
-\item{includeMap}{Logical flag to draw a topographic map under the raster.
-Defaults to FALSE.}
+\item{pointAlpha}{Alpha value of the points. Defaults to 0.75.}
+
+\item{includeMap}{Logical flag to draw a topographic map image under the 
+raster. Since the image is Mercator projected, the plot coordinate system 
+will be Mercator projected to match. Defaults to FALSE.}
 
 \item{zoom}{Zoom level of the topographic map, if it is included. Must be an
 integer from 1 to 15.}

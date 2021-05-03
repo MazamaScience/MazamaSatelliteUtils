@@ -57,8 +57,10 @@ has nothing but NA AOD values.}
 
 \item{rasterAlpha}{Alpha value of the raster. Defaults to 0.75.}
 
-\item{includeMap}{Logical flag to draw a topographic map under the raster.
-Defaults to FALSE.}
+\item{includeMap}{Logical flag to draw a topographic map image under the 
+raster. Since the image is Mercator projected, the plot coordinate system 
+will be Mercator projected to match. This significantly slows down the 
+drawing of rasters. Defaults to FALSE.}
 
 \item{zoom}{Zoom level of the topographic map, if it is included. Must be an
 integer from 1 to 15.}

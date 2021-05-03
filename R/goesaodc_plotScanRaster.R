@@ -27,8 +27,10 @@
 #' Setting this guarantees that the color legend is displayed even if the scan 
 #' has nothing but NA AOD values.
 #' @param rasterAlpha Alpha value of the raster. Defaults to 0.75.
-#' @param includeMap Logical flag to draw a topographic map under the raster.
-#' Defaults to FALSE.
+#' @param includeMap Logical flag to draw a topographic map image under the 
+#' raster. Since the image is Mercator projected, the plot coordinate system 
+#' will be Mercator projected to match. This significantly slows down the 
+#' drawing of rasters. Defaults to FALSE.
 #' @param zoom Zoom level of the topographic map, if it is included. Must be an
 #' integer from 1 to 15.
 #' @param stateCodes Codes of state outlines to draw.
@@ -85,7 +87,7 @@ goesaodc_plotScanRaster <- function(
     flab = "AOD",
     xlim = xlim,
     ylim = ylim,
-    project = FALSE,
+    project = includeMap,
     expand = FALSE
   )
   
