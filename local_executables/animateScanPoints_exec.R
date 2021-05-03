@@ -10,14 +10,15 @@
 #  --starttime="2020-09-08 5:00"
 #  --endtime="2020-09-08 6:00"
 #  --timezone="America/Los_Angeles"
-#  --bbox="c-125, -116, 42, 47" 
+#  --bbox="c-125, -116, 42, 47"
+#  --legendLimits="0, 5"
 #  --stateCodes="OR" 
 #  --satelliteDataDir="~/Data/Satellite"
 #  --spatialDataDir="~/Data/Spatial" 
 #  --outputDir="~/Desktop"
 #  --verbose TRUE
 
-# ./animateScanPoints_exec.R --satID G17 --starttime="2020-09-08 16:00" --endtime="2020-09-08 18:00" --timezone="America/Los_Angeles" --bbox="-125, -116, 42, 47" --stateCodes="OR" --satelliteDataDir="~/Data/Satellite" --spatialDataDir="~/Data/Spatial" --outputDir="~/Desktop/" --verbose TRUE
+# ./animateScanPoints_exec.R --satID G17 --starttime="2020-09-08 16:00" --endtime="2020-09-08 18:00" --timezone="America/Los_Angeles" --bbox="-125, -116, 42, 47" --legendLimits="0, 5" --stateCodes="OR" --satelliteDataDir="~/Data/Satellite" --spatialDataDir="~/Data/Spatial" --outputDir="~/Desktop/" --verbose TRUE
 
 VERSION = "0.1.0"
 
@@ -35,11 +36,19 @@ if ( interactive() ) {
   # RStudio session
   opt <- list(
     satID = "G17",
-    starttime = "2020-09-08 14:00",
-    endtime = "2020-09-08 15:00",
+    starttime = "2020-09-08 09:00",
+    endtime = "2020-09-08 10:00",
     timezone = "America/Los_Angeles",
     bbox = "-125, -116, 42, 47",
     dqfLevel = 3,
+    pointSize = 0.3,
+    pointShape = 15,
+    paletteName = "YlOrRd",
+    paletteBreaks = NULL,
+    legendLimits = "-0.5, 5.5",
+    pointAlpha = 0.5,
+    includeMap = TRUE,
+    zoom = 7,
     stateCodes = "OR",
     satelliteDataDir = "~/Data/Satellite",
     spatialDataDir = "~/Data/Spatial",
@@ -85,6 +94,46 @@ if ( interactive() ) {
     make_option(
       c("--dqfLevel"),
       default = 3,
+      help = ""
+    ),
+    make_option(
+      c("--pointSize"),
+      default = 0.5,
+      help = ""
+    ),
+    make_option(
+      c("--pointShape"),
+      default = 15,
+      help = ""
+    ),
+    make_option(
+      c("--pointAlpha"),
+      default = NULL,
+      help = ""
+    ),
+    make_option(
+      c("--paletteName"),
+      default = "YlOrRd",
+      help = ""
+    ),
+    make_option(
+      c("--paletteBreaks"),
+      default = NULL,
+      help = ""
+    ),
+    make_option(
+      c("--legendLimits"),
+      default = NULL,
+      help = ""
+    ),
+    make_option(
+      c("--includeMap"),
+      default = FALSE,
+      help = ""
+    ),
+    make_option(
+      c("--zoom"),
+      default = NULL,
       help = ""
     ),
     make_option(
@@ -210,13 +259,6 @@ setSatelliteDataDir(opt$satelliteDataDir)
 loadSpatialData("USCensusStates")
 loadSpatialData("NaturalEarthAdm1")
 
-# Parse the bbox vector
-bbox <- as.numeric(unlist(strsplit(opt$bbox, ",")))
-bbox <- bboxToVector(bbox)
-
-# Parse the state codes
-stateCodes <- trimws(unlist(strsplit(opt$stateCodes, ",")))
-
 # Parse the starttime and endtime
 starttime <- MazamaCoreUtils::parseDatetime(
   opt$starttime,
@@ -227,6 +269,24 @@ endtime <- MazamaCoreUtils::parseDatetime(
   opt$endtime,
   timezone = opt$timezone
 )
+
+# Parse the bbox vector
+bbox <- as.numeric(unlist(strsplit(opt$bbox, ",")))
+bbox <- bboxToVector(bbox)
+
+# Parse the palette breaks
+if ( !is.null(opt$paletteBreaks) ) {
+  paletteBreaks <- as.numeric(unlist(strsplit(opt$paletteBreaks, ",")))
+} else {
+  paletteBreaks <- NULL
+}
+
+# Parse the palette limits
+legendLimits <- as.numeric(unlist(strsplit(opt$legendLimits, ",")))
+
+# Parse the state codes
+if ( !is.null(opt$stateCodes) )
+  stateCodes <- trimws(unlist(strsplit(opt$stateCodes, ",")))
 
 if ( opt$verbose ) {
   logger.trace(
@@ -261,11 +321,8 @@ for ( scanFilename in scanFilenames ) {
   
   # Frame setup
   frameNumber <- frameNumber + 1
-  frameFilename <- paste0(
-    videoTimeStamp, "_",
-    stringr::str_pad(frameNumber, 3, 'left', '0'),
-    ".png"
-  )
+  paddedFrameNumber <- stringr::str_pad(frameNumber, 3, 'left', '0')
+  frameFilename <- paste0(videoTimeStamp, "_", paddedFrameNumber, ".png")
   frameFilePath <- file.path(tempdir(), frameFilename)
   
   # Create the plot title label
@@ -273,6 +330,7 @@ for ( scanFilename in scanFilenames ) {
     scanFilename %>%
     goesaodc_convertFilenameToDatetime() %>%                # UTC time
     MazamaCoreUtils::parseDatetime(timezone = opt$timezone) # Local time
+  
   title <- paste0("AOD for ", strftime(localScanTime, "%Y-%m-%d %H:%M:%S %Z"))
 
   if (opt$verbose)
@@ -286,7 +344,14 @@ for ( scanFilename in scanFilenames ) {
     filename = scanFilename,
     bbox = bbox,
     dqfLevel = opt$dqfLevel,
-    breaks = c(-Inf, 0, 1, 2, 3, 4, 5, Inf),
+    pointSize = opt$pointSize,
+    pointShape = opt$pointShape,
+    pointAlpha = opt$pointAlpha,
+    paletteName = opt$paletteName,
+    paletteBreaks = paletteBreaks,
+    legendLimits = legendLimits,
+    includeMap = opt$includeMap,
+    zoom = opt$zoom,
     stateCodes = stateCodes,
     title = title
   )
@@ -306,10 +371,7 @@ for ( scanFilename in scanFilenames ) {
   
 # ----- Create video from frames -----------------------------------------------
 
-videoFilename <- paste0(
-  videoTimeStamp, "_DQF", opt$dqfLevel, ".mp4"
-)
-
+videoFilename <- paste0(videoTimeStamp, "_DQF", opt$dqfLevel, ".mp4")
 videoFilePath <- file.path(opt$outputDir, videoFilename)
 
 # Define system calls to ffmpeg to create video from frames

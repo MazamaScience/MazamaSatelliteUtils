@@ -26,14 +26,14 @@
 #' @param pointSize Size of plot points; Defaults to 0.5.
 #' @param pointShape Shape of the plot points (index); Defaults to 15 (filled 
 #' square).
-#' @param paletteName The name of an RColorBrewer palette; Defaults to 'YlOrRd'.
-#' @param breaks Vector of AOD values to use as palette breaks.
-#' @param limits Upper and lower AOD values to use as color scale bounds. 
-#' Setting this guarantees that the color legend is displayed even if the scan 
-#' has nothing but NA AOD values.
 #' @param pointAlpha Transparency of the points If not explicitly defined, it 
 #' will default to 1.0 when \code{includeMap=FALSE} and 0.75 when
 #' \code{includeMap=TRUE}.
+#' @param paletteName The name of an RColorBrewer palette; Defaults to 'YlOrRd'.
+#' @param paletteBreaks Vector of AOD values to use as palette breaks.
+#' @param legendLimits Upper and lower AOD values for the color legend. Setting 
+#' this guarantees that the legend is displayed even if the scan has nothing but
+#' NA AOD values. All values outside the range will be set to NA.
 #' @param includeMap Logical flag to draw a topographic map image under the 
 #' raster. Since the image is Mercator projected, the plot coordinate system 
 #' will be Mercator projected to match. Defaults to FALSE.
@@ -52,10 +52,10 @@ goesaodc_plotScanPoints <- function(
   dqfLevel = 3,
   pointSize = 0.5,
   pointShape = 15,
-  paletteName = "YlOrRd",
-  breaks = NULL,
-  limits = NULL,
   pointAlpha = NULL,
+  paletteName = "YlOrRd",
+  paletteBreaks = NULL,
+  legendLimits = NULL,
   includeMap = FALSE,
   zoom = NULL,
   stateCodes = NULL,
@@ -136,22 +136,22 @@ goesaodc_plotScanPoints <- function(
   }
   
   # Create color scale
-  colorScale <- if ( is.null(breaks) ) {
+  colorScale <- if ( is.null(paletteBreaks) ) {
     ggplot2::scale_color_gradient(
       low = "#FFFFB2",
       high = "#BD0026",
       na.value = "gray50",
-      limits = limits
+      limits = legendLimits
     )
   } else {
     ggplot2::scale_color_stepsn(
       breaks = breaks,
       colors = RColorBrewer::brewer.pal(
-        length(breaks - 1),
+        length(paletteBreaks - 1),
         paletteName
       ),
       na.value = "gray50",
-      limits = limits
+      limits = legendLimits
     )
   }
   
@@ -197,10 +197,7 @@ if ( FALSE ) {
   goesaodc_plotScanPoints(
     filename = "OR_ABI-L2-AODC-M6_G17_s20202530031174_e20202530033547_c20202530035523.nc",
     bbox = bbox_oregon,
-    breaks = c(-Inf, 0, 1, 2, 3, 4, 5, Inf),
-    stateCodes = "OR",
-    includeMap = TRUE,
-    zoom = 7
+    stateCodes = "OR"
   )
   
   # Plot average points for a range of scans

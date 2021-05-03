@@ -14,10 +14,10 @@ goesaodc_plotScanRaster(
   dqfLevel = 3,
   cellSize = NULL,
   fun = mean,
-  paletteName = "YlOrRd",
-  breaks = NULL,
-  limits = NULL,
   rasterAlpha = NULL,
+  paletteName = "YlOrRd",
+  paletteBreaks = NULL,
+  legendLimits = NULL,
   includeMap = FALSE,
   zoom = NULL,
   stateCodes = NULL,
@@ -47,17 +47,17 @@ above this level will have their AOD values set to NA. Must be either 0, 1,
 \item{fun}{Function used to summarize multiple point values within a single 
 cell; Defaults to \code{mean}.}
 
-\item{paletteName}{The name of an RColorBrewer palette. Defaults to 'YlOrRd'.}
-
-\item{breaks}{Vector of AOD values to use as palette breaks.}
-
-\item{limits}{Upper and lower AOD values to use as color scale bounds. 
-Setting this guarantees that the color legend is displayed even if the scan 
-has nothing but NA AOD values.}
-
 \item{rasterAlpha}{Transparency of the raster. If not explicitly defined, it 
 will default to 1.0 when \code{includeMap=FALSE} and 0.75 when
 \code{includeMap=TRUE}.}
+
+\item{paletteName}{The name of an RColorBrewer palette. Defaults to 'YlOrRd'.}
+
+\item{paletteBreaks}{Vector of AOD values to use as palette breaks.}
+
+\item{legendLimits}{Upper and lower AOD values for the fill legend. Setting 
+this guarantees that the legend is displayed even if the scan has nothing but
+NA AOD values. All values outside the range will be set to NA.}
 
 \item{includeMap}{Logical flag to draw a topographic map image under the 
 raster. Since the image is Mercator projected, the plot coordinate system 

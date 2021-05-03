@@ -21,14 +21,14 @@
 #' @param cellSize Size of Raster cells measured in degrees lon/lat.
 #' @param fun Function used to summarize multiple point values within a single 
 #' cell; Defaults to \code{mean}.
-#' @param paletteName The name of an RColorBrewer palette. Defaults to 'YlOrRd'.
-#' @param breaks Vector of AOD values to use as palette breaks.
-#' @param limits Upper and lower AOD values to use as color scale bounds. 
-#' Setting this guarantees that the color legend is displayed even if the scan 
-#' has nothing but NA AOD values.
 #' @param rasterAlpha Transparency of the raster. If not explicitly defined, it 
 #' will default to 1.0 when \code{includeMap=FALSE} and 0.75 when
 #' \code{includeMap=TRUE}.
+#' @param paletteName The name of an RColorBrewer palette. Defaults to 'YlOrRd'.
+#' @param paletteBreaks Vector of AOD values to use as palette breaks.
+#' @param legendLimits Upper and lower AOD values for the fill legend. Setting 
+#' this guarantees that the legend is displayed even if the scan has nothing but
+#' NA AOD values. All values outside the range will be set to NA.
 #' @param includeMap Logical flag to draw a topographic map image under the 
 #' raster. Since the image is Mercator projected, the plot coordinate system 
 #' will be Mercator projected to match. This significantly slows down the 
@@ -48,10 +48,10 @@ goesaodc_plotScanRaster <- function(
   dqfLevel = 3,
   cellSize = NULL,
   fun = mean,
-  paletteName = "YlOrRd",
-  breaks = NULL,
-  limits = NULL,
   rasterAlpha = NULL,
+  paletteName = "YlOrRd",
+  paletteBreaks = NULL,
+  legendLimits = NULL,
   includeMap = FALSE,
   zoom = NULL,
   stateCodes = NULL,
@@ -125,22 +125,22 @@ goesaodc_plotScanRaster <- function(
   }
   
   # Create fill scale
-  fillScale <- if ( is.null(breaks) ) {
+  fillScale <- if ( is.null(paletteBreaks) ) {
     ggplot2::scale_fill_gradient(
       low = "#FFFFB2",
       high = "#BD0026",
       na.value = "gray50",
-      limits = limits
+      limits = legendLimits
     )
   } else {
     ggplot2::scale_fill_stepsn(
       breaks = breaks,
       colors = RColorBrewer::brewer.pal(
-        length(breaks - 1),
+        length(paletteBreaks - 1),
         paletteName
       ),
       na.value = "gray50",
-      limits = limits
+      limits = legendLimits
     )
   }
   
@@ -187,7 +187,7 @@ if ( FALSE ) {
     filename = "OR_ABI-L2-AODC-M6_G17_s20202530031174_e20202530033547_c20202530035523.nc",
     bbox = bbox_oregon,
     cellSize = 0.05,
-    breaks = c(-Inf, 0, 1, 2, 3, 4, 5, Inf),
+    paletteBreaks = c(-Inf, 0, 1, 2, 3, 4, 5, Inf),
     stateCodes = "OR"
   )
   
@@ -209,7 +209,7 @@ if ( FALSE ) {
     datetime = "2019-10-27 10:00",
     timezone = "America/Los_Angeles",
     bbox = c(-124, -120, 36, 39),
-    cellSize = 0.05,
+    cellSize = 0.1,
     rasterAlpha = 0.6,
     includeMap = TRUE,
     zoom = 7
@@ -222,8 +222,7 @@ if ( FALSE ) {
     endtime = "2019-10-27 11:00",
     timezone = "America/Los_Angeles",
     bbox = c(-124, -120, 36, 39),
-    stateCodes = "CA",
-    title = "San Francisco AOD from 10am to 11am on Oct. 27, 2019"
+    stateCodes = "CA"
   )
   
   # Plot raster for a faulty scan
@@ -232,8 +231,7 @@ if ( FALSE ) {
     bbox = bbox_oregon,
     cellSize = 0.05,
     stateCodes = "OR",
-    breaks = c(-Inf, 0, 1, 2, 3, 4, 5, Inf),
-    limits = c(-1, 6)
+    legendLimits = c(0, 5)
   )
   
   # Plot raster for a non-existent scan
