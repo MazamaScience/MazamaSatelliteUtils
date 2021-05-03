@@ -17,7 +17,7 @@ goesaodc_plotScanRaster(
   paletteName = "YlOrRd",
   breaks = NULL,
   limits = NULL,
-  rasterAlpha = 0.75,
+  rasterAlpha = NULL,
   includeMap = FALSE,
   zoom = NULL,
   stateCodes = NULL,
@@ -55,7 +55,9 @@ cell; Defaults to \code{mean}.}
 Setting this guarantees that the color legend is displayed even if the scan 
 has nothing but NA AOD values.}
 
-\item{rasterAlpha}{Alpha value of the raster. Defaults to 0.75.}
+\item{rasterAlpha}{Transparency of the raster. If not explicitly defined, it 
+will default to 1.0 when \code{includeMap=FALSE} and 0.75 when
+\code{includeMap=TRUE}.}
 
 \item{includeMap}{Logical flag to draw a topographic map image under the 
 raster. Since the image is Mercator projected, the plot coordinate system 

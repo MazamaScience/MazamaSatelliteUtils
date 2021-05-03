@@ -26,7 +26,9 @@
 #' @param limits Upper and lower AOD values to use as color scale bounds. 
 #' Setting this guarantees that the color legend is displayed even if the scan 
 #' has nothing but NA AOD values.
-#' @param rasterAlpha Alpha value of the raster. Defaults to 0.75.
+#' @param rasterAlpha Transparency of the raster. If not explicitly defined, it 
+#' will default to 1.0 when \code{includeMap=FALSE} and 0.75 when
+#' \code{includeMap=TRUE}.
 #' @param includeMap Logical flag to draw a topographic map image under the 
 #' raster. Since the image is Mercator projected, the plot coordinate system 
 #' will be Mercator projected to match. This significantly slows down the 
@@ -49,7 +51,7 @@ goesaodc_plotScanRaster <- function(
   paletteName = "YlOrRd",
   breaks = NULL,
   limits = NULL,
-  rasterAlpha = 0.75,
+  rasterAlpha = NULL,
   includeMap = FALSE,
   zoom = NULL,
   stateCodes = NULL,
@@ -61,6 +63,12 @@ goesaodc_plotScanRaster <- function(
   if ( includeMap )
     if ( is.null(zoom) )
       stop("Parameter 'zoom' must be set when including a map layer")
+  
+  rasterAlpha <- if ( is.null(rasterAlpha) ) {
+    ifelse(includeMap, 0.75, 1.0)
+  } else {
+    rasterAlpha
+  }
   
   # ----- Create raster --------------------------------------------------------
   
