@@ -1,3 +1,9 @@
+# MazamaSatelliteUtils 0.4.10
+
+* Added `animateScanRaster_exec` executable script.
+* Renamed `breaks` and `limits` params in `goesaodc_plotScanPoints()` and
+`goesaodc_plotScanRaster()` functions to `paletteBreaks` and `legendLimits`.
+
 # MazamaSatelliteUtils 0.4.9
 
 * Removed `goesaodc_plotScanSPDF()` function.
