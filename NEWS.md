@@ -1,3 +1,11 @@
+# MazamaSatelliteUtils 0.4.11
+
+* Renamed all `goesaodc_create*SPDF()` functions to `goesaodc_create*Points()`.
+* `goesaodc_plotScanPoints()` function now take in an SPDF.
+* `goesaodc_plotScanRaster()` function now take in a raster.
+* Fixed option type parsing in animation scripts.
+* Added to the 'Visualizing GOES AOD' article.
+
 # MazamaSatelliteUtils 0.4.10
 
 * Added `animateScanRaster_exec` executable script.
