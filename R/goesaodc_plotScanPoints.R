@@ -1,24 +1,8 @@
 #' @export
 #' 
-#' @title Plot a GOES AOD scan as points
+#' @title Plot GOES AOD scan points
 #' 
-#' @description Draws a GOES AOD scan as a plot of points. A scan can be 
-#' specified in the following ways:
-#' \itemize{
-#'  \item{Satellite + time info: Set by \code{satID} and \code{datetime}. If no 
-#'    \code{endtime} is given, then only the scan closest to \code{datetime} 
-#'    will be used. If an \code{endtime} is provided, then the points plotted
-#'    will be the average of the all scans in the given time range.}
-#'  \item{File name: Set by \code{filename}.}
-#' }
-#' A file name takes precedence over satellite + time info if both are given.
-#' 
-#' @param satID ID of the source GOES satellite ('G16' or 'G17').
-#' @param datetime Datetime in Ymd HMS format or a \code{POSIXct}.
-#' @param endtime End time in Ymd HMS format or a \code{POSIXct}.
-#' @param timezone Timezone used to interpret \code{datetime} and 
-#' \code{endtime}; Defaults to UTC.
-#' @param filename Scan file name.
+#' @param spdf A SpatialPointsDataFrame with AOD and DQF variables.
 #' @param bbox Bounding box for the region of interest; Defaults to CONUS.
 #' @param dqfLevel Allowed data quality level. All readings with a DQF value
 #' above this level will have their AOD values set to NA. Must be either 0, 1, 
@@ -43,13 +27,8 @@
 #' @param title Title of the plot.
 
 goesaodc_plotScanPoints <- function(
-  satID = NULL,
-  datetime = NULL,
-  endtime = NULL,
-  timezone = "UTC",
-  filename = NULL,
+  spdf = NULL,
   bbox = bbox_CONUS,
-  dqfLevel = 3,
   pointSize = 0.5,
   pointShape = 15,
   pointAlpha = NULL,
@@ -64,6 +43,12 @@ goesaodc_plotScanPoints <- function(
   
   # ----- Validate parameters --------------------------------------------------
   
+  if ( !("SpatialPointsDataFrame" %in% class(spdf)) )
+    stop("Parameter 'spdf' must be an object of type 'SpatialPointsDataFrame'")
+  
+  if ( !all(c("AOD", "DQF") %in% names(spdf)))
+    stop("Parameter 'spdf' must have 'AOD' and 'DQF' variables")
+  
   if ( includeMap )
     if ( is.null(zoom) )
       stop("Parameter 'zoom' must be set when including a map layer")
@@ -73,21 +58,6 @@ goesaodc_plotScanPoints <- function(
   } else {
     pointAlpha
   }
-  
-  # ----- Create spatial points ------------------------------------------------
-  
-  spdf <- goesaodc_createScanSPDF(
-    satID = satID,
-    datetime = datetime,
-    endtime = endtime,
-    timezone = timezone,
-    filename = filename,
-    bbox = bbox,
-    dqfLevel = dqfLevel
-  )
-  
-  # ggplot2::geom_points() cannot take in a raw SpatialPointsDataFrame
-  df <- data.frame(spdf)
   
   # ----- Create plot layers ---------------------------------------------------
   
@@ -117,7 +87,7 @@ goesaodc_plotScanPoints <- function(
   
   # Create points layer
   pointsLayer <- ggplot2::geom_point(
-    data = df,
+    data = data.frame(spdf), 
     ggplot2::aes(
       x = .data$lon,
       y = .data$lat,
@@ -137,13 +107,16 @@ goesaodc_plotScanPoints <- function(
   
   # Create color scale
   colorScale <- if ( is.null(paletteBreaks) ) {
+    
     ggplot2::scale_color_gradient(
       low = "#FFFFB2",
       high = "#BD0026",
       na.value = "gray50",
       limits = legendLimits
     )
+    
   } else {
+    
     ggplot2::scale_color_stepsn(
       breaks = paletteBreaks,
       colors = RColorBrewer::brewer.pal(
@@ -153,6 +126,7 @@ goesaodc_plotScanPoints <- function(
       na.value = "gray50",
       limits = legendLimits
     )
+    
   }
   
   # ----- Create plot ----------------------------------------------------------
@@ -181,69 +155,37 @@ if ( FALSE ) {
   
   loadSpatialData("NaturalEarthAdm1")
   
-  bbox_oregon <- c(-125, -116, 42, 46.5)
+  bboxKingcadeFire <- c(-124, -120, 36, 39)
   
-  # Plot points for a scan specified by satellite + time info
-  goesaodc_plotScanPoints(
-    satID = "G17",
-    datetime = "2020-09-08 17:30",
-    timezone = "America/Los_Angeles",
-    bbox = bbox_oregon,
-    stateCodes = "OR",
-    title = "Oregon AOD at 5:30pm PDT on Sep. 8, 2020"
-  )
-  
-  # Plot points for a scan specified by file name
-  goesaodc_plotScanPoints(
-    filename = "OR_ABI-L2-AODC-M6_G17_s20202530031174_e20202530033547_c20202530035523.nc",
-    paletteBreaks = c(-Inf, 0, 1, 2, 3, 4, 5, Inf),
-    bbox = bbox_oregon,
-    stateCodes = "OR"
-  )
-  
-  # Plot average points for a range of scans
-  goesaodc_plotScanPoints(
-    satID = "G17",
-    datetime = "2020-09-08 12",
-    endtime = "2020-09-08 13",
-    timezone = "America/Los_Angeles",
-    bbox = bbox_oregon,
-    stateCodes = "OR",
-    title = "Oregon AOD from 12pm to 1pm PDT on Sept. 8, 2020"
-  )
-  
-  # Plot points for a scan with NA AOD values
-  goesaodc_plotScanPoints(
+  scanPoints <- goesaodc_createScanPoints(
     satID = "G17",
     datetime = "2019-10-27 10:00",
     timezone = "America/Los_Angeles",
-    bbox = c(-124, -120, 36, 39)
+    bbox = bboxKingcadeFire
   )
   
-  # Plot average points for a range of scans with NA AOD values
-  goesaodc_plotScanPoints(
-    satID = "G17",
-    datetime = "2019-10-27 10:00",
-    endtime = "2019-10-27 11:00",
-    timezone = "America/Los_Angeles",
-    bbox = c(-124, -120, 36, 39),
-    stateCodes = "CA",
-    title = "San Francisco AOD from 10am to 11am on Oct. 27, 2019"
-  )
-  
-  # Plot points for a faulty scan
-  goesaodc_plotScanPoints(
+  faultyScanPoints <- goesaodc_createScanPoints(
     filename = "OR_ABI-L2-AODC-M6_G17_s20202522231174_e20202522233547_c20202522235327.nc",
-    bbox = bbox_oregon,
-    stateCodes = "OR"
+    bbox = bboxKingcadeFire
   )
   
-  # Plot points for a non-existent scan
+  # Plot points for a scan
   goesaodc_plotScanPoints(
-    satID = "G17",
-    datetime = "1970-01-01 12:00",
-    timezone = "America/Los_Angeles",
-    bbox = bbox_oregon
+    spdf = scanPoints,
+    bbox = bboxKingcadeFire,
+    paletteBreaks = c(-Inf, 0, 1, 2, 3, 4, 5, Inf),
+    includeMap = TRUE,
+    zoom = 8,
+    stateCodes = "CA",
+    title = "Kincade fire"
+  )
+  
+  # Plot points for a scan filled with NA AOD values
+  goesaodc_plotScanPoints(
+    spdf = faultyScanPoints,
+    bbox = bboxKingcadeFire,
+    legendLimits = c(-1, 6),
+    stateCodes = "CA"
   )
   
 }

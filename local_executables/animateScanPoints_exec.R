@@ -362,12 +362,18 @@ for ( scanFilename in scanFilenames ) {
       "Rendering frame for %s",
       strftime(localScanTime, "%Y-%m-%d %H:%M:%S %Z")
     )
-    
-  # Draw plot
-  scanPlot <- goesaodc_plotScanPoints(
+  
+  # Create scan points
+  scanPoints <- goesaodc_createScanPoints(
     filename = scanFilename,
     bbox = bbox,
-    dqfLevel = opt$dqfLevel,
+    dqfLevel = opt$dqfLevel
+  )
+  
+  # Draw scan plot
+  scanPlot <- goesaodc_plotScanPoints(
+    spdf = scanPoints,
+    bbox = bbox,
     pointSize = opt$pointSize,
     pointShape = opt$pointShape,
     pointAlpha = opt$pointAlpha,
@@ -425,4 +431,3 @@ if ( !file.exists(errorLog) )
 
 logger.info("Completed successfully!")
   
-

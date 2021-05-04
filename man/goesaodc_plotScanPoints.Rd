@@ -2,16 +2,11 @@
 % Please edit documentation in R/goesaodc_plotScanPoints.R
 \name{goesaodc_plotScanPoints}
 \alias{goesaodc_plotScanPoints}
-\title{Plot a GOES AOD scan as points}
+\title{Plot GOES AOD scan points}
 \usage{
 goesaodc_plotScanPoints(
-  satID = NULL,
-  datetime = NULL,
-  endtime = NULL,
-  timezone = "UTC",
-  filename = NULL,
+  spdf = NULL,
   bbox = bbox_CONUS,
-  dqfLevel = 3,
   pointSize = 0.5,
   pointShape = 15,
   pointAlpha = NULL,
@@ -25,22 +20,9 @@ goesaodc_plotScanPoints(
 )
 }
 \arguments{
-\item{satID}{ID of the source GOES satellite ('G16' or 'G17').}
-
-\item{datetime}{Datetime in Ymd HMS format or a \code{POSIXct}.}
-
-\item{endtime}{End time in Ymd HMS format or a \code{POSIXct}.}
-
-\item{timezone}{Timezone used to interpret \code{datetime} and 
-\code{endtime}; Defaults to UTC.}
-
-\item{filename}{Scan file name.}
+\item{spdf}{A SpatialPointsDataFrame with AOD and DQF variables.}
 
 \item{bbox}{Bounding box for the region of interest; Defaults to CONUS.}
-
-\item{dqfLevel}{Allowed data quality level. All readings with a DQF value
-above this level will have their AOD values set to NA. Must be either 0, 1, 
-2, or 3, with 0 being the highest quality. Defaults to 3.}
 
 \item{pointSize}{Size of plot points; Defaults to 0.5.}
 
@@ -69,16 +51,11 @@ integer from 1 to 15.}
 \item{stateCodes}{Codes of state outlines to draw.}
 
 \item{title}{Title of the plot.}
+
+\item{dqfLevel}{Allowed data quality level. All readings with a DQF value
+above this level will have their AOD values set to NA. Must be either 0, 1, 
+2, or 3, with 0 being the highest quality. Defaults to 3.}
 }
 \description{
-Draws a GOES AOD scan as a plot of points. A scan can be 
-specified in the following ways:
-\itemize{
- \item{Satellite + time info: Set by \code{satID} and \code{datetime}. If no 
-   \code{endtime} is given, then only the scan closest to \code{datetime} 
-   will be used. If an \code{endtime} is provided, then the points plotted
-   will be the average of the all scans in the given time range.}
- \item{File name: Set by \code{filename}.}
-}
-A file name takes precedence over satellite + time info if both are given.
+Plot GOES AOD scan points
 }
