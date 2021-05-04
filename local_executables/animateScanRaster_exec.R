@@ -52,9 +52,9 @@ if ( interactive() ) {
     stateCodes = "OR",
     satelliteDataDir = "~/Data/Satellite",
     spatialDataDir = "~/Data/Spatial",
-    frameRate = 6,
     outputDir = "~/Desktop",
     logDir = getwd(),
+    frameRate = 6,
     verbose = TRUE,
     version = FALSE
   )
@@ -68,107 +68,128 @@ if ( interactive() ) {
     
     make_option(
       c("--satID"),
+      type = "character",
       default = NULL,
       help = ""
     ),
     make_option(
       c("--starttime"),
+      type = "character",
       default = NULL,
       help = ""
     ),
     make_option(
       c("--endtime"),
+      type = "character",
       default = NULL,
       help = ""
     ),
     make_option(
       c("--timezone"),
+      type = "character",
       default = "UTC",
       help = ""
     ),
     make_option(
       c("--bbox"),
+      type = "character",
       default = bbox_CONUS,
       help = ""
     ),
     make_option(
       c("--dqfLevel"),
+      type = "integer",
       default = 3,
       help = ""
     ),
     make_option(
       c("--cellSize"),
+      type = "double",
       default = NULL,
       help = ""
     ),
     make_option(
       c("--rasterAlpha"),
+      type = "double",
       default = NULL,
       help = ""
     ),
     make_option(
       c("--paletteName"),
+      type = "character",
       default = "YlOrRd",
       help = ""
     ),
     make_option(
       c("--paletteBreaks"),
+      type = "character",
       default = NULL,
       help = ""
     ),
     make_option(
       c("--legendLimits"),
+      type = "character",
       default = NULL,
       help = ""
     ),
     make_option(
       c("--includeMap"),
+      type = "logical",
       default = FALSE,
       help = ""
     ),
     make_option(
       c("--zoom"),
+      type = "integer",
       default = NULL,
       help = ""
     ),
     make_option(
       c("--stateCodes"),
+      type = "character",
       default = NULL,
       help = ""
     ),
     make_option(
       c("--satelliteDataDir"),
+      type = "character",
       default = NULL,
       help = ""
     ),
     make_option(
       c("--spatialDataDir"),
+      type = "character",
       default = NULL,
       help = ""
     ),
     make_option(
-      c("--frameRate"),
-      default = 4,
-      help = ""
-    ),
-    make_option(
       c("--outputDir"),
+      type = "character",
       default = getwd(),
       help = ""
     ),
     make_option(
       c("--logDir"),
+      type = "character",
       default = getwd(),
       help = ""
     ),
     make_option(
+      c("--frameRate"),
+      type = "double",
+      default = 4,
+      help = ""
+    ),
+    make_option(
       c("--verbose"),
+      type = "logical",
       default = FALSE,
       help = ""
     ),
     make_option(
       c("--version"),
       action = "store_true",
+      type = "logical",
       default = FALSE,
       help = ""
     )
