@@ -108,7 +108,7 @@ goesaodc_createScanRaster <- function(
   # ----- Create raster --------------------------------------------------------
   
   # Get spatial points data
-  spdf <- goesaodc_createScanSPDF(
+  spdf <- goesaodc_createScanPoints(
     satID = satID,
     datetime = datetime,
     endtime = endtime,
@@ -138,32 +138,41 @@ if ( FALSE ) {
   
   loadSpatialData("NaturalEarthAdm1")
   
-  bbox_oregon <- c(-125, -116, 42, 46.5)
+  bboxOregon <- c(-125, -116, 42, 46.5)
   
-  # Create points from a scan specified by satellite + time
+  # Create a raster for a scan specified by satellite + time
   goesaodc_createScanRaster(
     satID = "G17",
     datetime = "2020-09-08 17:30",
     timezone = "America/Los_Angeles",
-    bbox = bbox_oregon,
-    cellSize = 0.2
+    bbox = bboxOregon,
+    cellSize = 0.05
   )
   
-  # Create points from a named scan file
+  # Create a raster for a scan file
   oregonRaster <- goesaodc_createScanRaster(
     filename = "OR_ABI-L2-AODC-M6_G17_s20202530031174_e20202530033547_c20202530035523.nc",
-    bbox = bbox_oregon,
-    cellSize = 0.04
+    bbox = bboxOregon,
+    dqfLevel = 2,
+    cellSize = 0.05
   )
   
-  coords <- data.frame(lon = -124, lat = 44)
-
-  raster::extract(
-    x = oregonRaster,
-    y = coords, 
-    method = "simple",
-    buffer = 1,
-    fun = mean
-  )[,"AOD"]
+  # Create a raster from scans averaged over a time range
+  goesaodc_createScanRaster(
+    satID = "G17",
+    datetime = "2020-09-08 12:00",
+    endtime = "2020-09-08 13:00",
+    timezone = "America/Los_Angeles",
+    bbox = bbox_oregon,
+    cellSize = 0.05
+  )
+  
+  # Create a raster for a faulty scan
+  goesaodc_createScanRaster(
+    filename = "OR_ABI-L2-AODC-M6_G17_s20202522231174_e20202522233547_c20202522235327.nc",
+    bbox = bbox_oregon,
+    dqfLevel = 3,
+    cellSize = 0.05
+  )
   
 }
