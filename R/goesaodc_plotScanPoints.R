@@ -147,7 +147,7 @@ goesaodc_plotScanPoints <- function(
     ggplot2::scale_color_stepsn(
       breaks = paletteBreaks,
       colors = RColorBrewer::brewer.pal(
-        length(paletteBreaks - 1),
+        length(paletteBreaks) - 1,
         paletteName
       ),
       na.value = "gray50",
@@ -196,6 +196,7 @@ if ( FALSE ) {
   # Plot points for a scan specified by file name
   goesaodc_plotScanPoints(
     filename = "OR_ABI-L2-AODC-M6_G17_s20202530031174_e20202530033547_c20202530035523.nc",
+    paletteBreaks = c(-Inf, 0, 1, 2, 3, 4, 5, Inf),
     bbox = bbox_oregon,
     stateCodes = "OR"
   )

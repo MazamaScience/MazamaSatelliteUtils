@@ -136,7 +136,7 @@ goesaodc_plotScanRaster <- function(
     ggplot2::scale_fill_stepsn(
       breaks = paletteBreaks,
       colors = RColorBrewer::brewer.pal(
-        length(paletteBreaks - 1),
+        length(paletteBreaks) - 1,
         paletteName
       ),
       na.value = "gray50",
