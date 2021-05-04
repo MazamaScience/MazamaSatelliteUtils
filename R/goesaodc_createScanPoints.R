@@ -26,7 +26,7 @@
 #' above this level will have their AOD values set to NA. Must be either 0, 1, 
 #' 2, or 3, with 0 being the highest quality. Defaults to 3.
 
-goesaodc_createScanSPDF <- function(
+goesaodc_createScanPoints <- function(
   satID = NULL,
   datetime = NULL,
   endtime = NULL,
@@ -69,7 +69,7 @@ goesaodc_createScanSPDF <- function(
     if ( is.null(filename) && !is.null(endtime) ) {
       
       # Average the AOD values across all scans in the time range
-      spdf <- goesaodc_createMultiScanSPDF(
+      spdf <- goesaodc_createMultiScanPoints(
         satID = satID,
         datetime = datetime,
         endtime = endtime,
@@ -81,7 +81,7 @@ goesaodc_createScanSPDF <- function(
     } else {
       
       # Get the AOD values for the scan closest to the requested time
-      spdf <- goesaodc_createSingleScanSPDF(
+      spdf <- goesaodc_createSingleScanPoints(
         satID = satID,
         datetime = datetime,
         timezone = timezone,
@@ -97,7 +97,7 @@ goesaodc_createScanSPDF <- function(
   # If there was an error reading the scan file, create an SPDF filled with NA 
   # AOD and DQF values for the requested satellite
   if ( "try-error" %in% class(result) ) {
-    spdf <- goesaodc_createEmptyScanSPDF(satID, filename, bbox)
+    spdf <- goesaodc_createEmptyScanPoints(satID, filename, bbox)
     warning(result, immediate. = TRUE)
   }
   
@@ -117,38 +117,37 @@ if ( FALSE ) {
   
   loadSpatialData("NaturalEarthAdm1")
   
-  bbox_oregon <- c(-125, -116, 42, 47)
+  bboxOregon <- c(-125, -116, 42, 47)
   
-  # Create points from a scan specified by satellite + time
-  goesaodc_createScanSPDF(
+  # Create points for a scan specified by satellite + time
+  goesaodc_createScanPoints(
     satID = "G17",
     datetime = "2020-09-08 17:30",
     timezone = "America/Los_Angeles",
-    bbox = bbox_oregon,
+    bbox = bboxOregon,
     dqfLevel = 3
   )
   
-  # Create points from a named scan file
-  goesaodc_createScanSPDF(
+  # Create points for a scan file
+  goesaodc_createScanPoints(
     filename = "OR_ABI-L2-AODC-M6_G17_s20202530031174_e20202530033547_c20202530035523.nc",
-    bbox = bbox_oregon,
-    dqfLevel = 3
+    bbox = bboxOregon,
+    dqfLevel = 2
   )
   
-  # Create SPDF for a faulty scan
-  goesaodc_createScanSPDF(
-    filename = "OR_ABI-L2-AODC-M6_G17_s20202522231174_e20202522233547_c20202522235327.nc",
-    bbox = bbox_oregon,
-    dqfLevel = 3
-  )
-  
-  # Create averaged points from scans covering a time range
-  goesaodc_createScanSPDF(
+  # Create points from scans averaged over a time range
+  goesaodc_createScanPoints(
     satID = "G17",
-    datetime = "2020-09-08 12",
-    endtime = "2020-09-08 13",
+    datetime = "2020-09-08 12:00",
+    endtime = "2020-09-08 13:00",
     timezone = "America/Los_Angeles",
-    bbox = bbox_oregon
+    bbox = bboxOregon
+  )
+  
+  # Create points for a faulty scan
+  goesaodc_createScanPoints(
+    filename = "OR_ABI-L2-AODC-M6_G17_s20202522231174_e20202522233547_c20202522235327.nc",
+    bbox = bboxOregon
   )
   
 }

@@ -16,7 +16,7 @@
 #' above this level will have their AOD values set to NA. Must be either 0, 1, 
 #' 2, or 3, with 0 being the highest quality. Defaults to 3.
 
-goesaodc_createSingleScanSPDF <- function(
+goesaodc_createSingleScanPoints <- function(
   satID = NULL,
   datetime = NULL,
   timezone = "UTC",
@@ -117,7 +117,7 @@ if ( FALSE ) {
   bbox_oregon <- c(-125, -116, 42, 47)
   
   # Create points from a scan specified by satellite and time
-  goesaodc_createSingleScanSPDF(
+  goesaodc_createSingleScanPoints(
     satID = "G17",
     datetime = "2020-09-08 17:30",
     timezone = "America/Los_Angeles",
@@ -133,7 +133,7 @@ if ( FALSE ) {
     MazamaCoreUtils::parseDatetime(timezone = "America/Los_Angeles") # Local
   
   # Create points from a named scan file
-  goesaodc_createSingleScanSPDF(
+  goesaodc_createSingleScanPoints(
     filename = filename,
     bbox = bbox_oregon,
     dqfLevel = 3
