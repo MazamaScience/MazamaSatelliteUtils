@@ -1,19 +1,8 @@
 #' @export
 #' 
-#' @title Create raster plots of AOD data 
+#' @title Plot GOES AOD rasters 
 #' 
-#' @description Creates a raster plot of AOD data from a GOES scan. If no 
-#' \code{endtime} is given, then only the scan closest to \code{datetime} will
-#' be used. If an \code{endtime} is provided, then the plotted raster will be
-#' the average of the scans in the given time range. If \code{filename} is 
-#' given, just the raster for that scan file will be drawn.
-#' 
-#' @param satID ID of the source GOES satellite ('G16' or 'G17').
-#' @param datetime Datetime in Ymd HMS format or a \code{POSIXct}.
-#' @param endtime End time in Ymd HMS format or a \code{POSIXct}.
-#' @param timezone Timezone used to interpret \code{datetime} and 
-#' \code{endtime}. Defaults to UTC.
-#' @param filename The name of the scan file.
+#' @param raster A RasterBrick with AOD and DQF variables.
 #' @param bbox Bounding box for the region of interest. Defaults to CONUS.
 #' @param dqfLevel Allowed data quality level. All readings with a DQF value
 #' above this level will have their AOD values set to NA. Must be either 0, 1, 
@@ -39,11 +28,7 @@
 #' @param title Title of the plot.
 
 goesaodc_plotScanRaster <- function(
-  satID = NULL,
-  datetime = NULL,
-  endtime = NULL,
-  timezone = "UTC",
-  filename = NULL,
+  raster = NULL,
   bbox = bbox_CONUS,
   dqfLevel = 3,
   cellSize = NULL,
@@ -60,6 +45,12 @@ goesaodc_plotScanRaster <- function(
   
   # ----- Validate parameters --------------------------------------------------
   
+  if ( !("RasterBrick" %in% class(raster)) )
+    stop("Parameter 'raster' must be an object of type 'RasterBrick'")
+  
+  if ( !all(c("AOD", "DQF") %in% names(raster)))
+    stop("Parameter 'raster' must have 'AOD' and 'DQF' variables")
+  
   if ( includeMap )
     if ( is.null(zoom) )
       stop("Parameter 'zoom' must be set when including a map layer")
@@ -69,20 +60,6 @@ goesaodc_plotScanRaster <- function(
   } else {
     rasterAlpha
   }
-  
-  # ----- Create raster --------------------------------------------------------
-  
-  raster <- goesaodc_createScanRaster(
-    satID = satID,
-    datetime = datetime,
-    endtime = endtime,
-    timezone = timezone,
-    filename = filename,
-    bbox = bbox,
-    dqfLevel = dqfLevel,
-    cellSize = cellSize,
-    fun = fun
-  )
   
   # ----- Create plot layers ---------------------------------------------------
   
@@ -126,13 +103,16 @@ goesaodc_plotScanRaster <- function(
   
   # Create fill scale
   fillScale <- if ( is.null(paletteBreaks) ) {
+    
     ggplot2::scale_fill_gradient(
       low = "#FFFFB2",
       high = "#BD0026",
       na.value = "gray50",
       limits = legendLimits
     )
+    
   } else {
+    
     ggplot2::scale_fill_stepsn(
       breaks = paletteBreaks,
       colors = RColorBrewer::brewer.pal(
@@ -142,6 +122,7 @@ goesaodc_plotScanRaster <- function(
       na.value = "gray50",
       limits = legendLimits
     )
+    
   }
   
   # ----- Create plot ----------------------------------------------------------
@@ -159,6 +140,7 @@ goesaodc_plotScanRaster <- function(
   
 }
 
+
 if ( FALSE ) {
   
   library(MazamaSatelliteUtils)
@@ -169,78 +151,39 @@ if ( FALSE ) {
   
   loadSpatialData("NaturalEarthAdm1")
   
-  bbox_oregon <- c(-125, -116, 42, 46.5)
+  bboxKingcadeFire <- c(-124, -120, 36, 39)
   
-  # Plot raster for a scan specified by satellite + time info
-  goesaodc_plotScanRaster(
-    satID = "G17",
-    datetime = "2020-09-08 17:30",
-    timezone = "America/Los_Angeles",
-    bbox = bbox_oregon,
-    cellSize = 0.05,
-    stateCodes = "OR",
-    title = "Oregon AOD at 5:30pm PDT on Sep. 8, 2020"
-  )
-  
-  # Plot raster for a scan specified by file name
-  goesaodc_plotScanRaster(
-    filename = "OR_ABI-L2-AODC-M6_G17_s20202530031174_e20202530033547_c20202530035523.nc",
-    bbox = bbox_oregon,
-    cellSize = 0.05,
-    paletteBreaks = c(-Inf, 0, 1, 2, 3, 4, 5, Inf),
-    stateCodes = "OR"
-  )
-  
-  # Plot raster points for a range of scans
-  goesaodc_plotScanRaster(
-    satID = "G17",
-    datetime = "2020-09-08 12",
-    endtime = "2020-09-08 13",
-    timezone = "America/Los_Angeles",
-    bbox = bbox_oregon,
-    cellSize = 0.05,
-    stateCodes = "OR",
-    title = "Oregon AOD from 12pm to 1pm PDT on Sept. 8, 2020"
-  )
-  
-  # Plot raster for a scan with NA AOD values
-  goesaodc_plotScanRaster(
+  scanRaster <- goesaodc_createScanRaster(
     satID = "G17",
     datetime = "2019-10-27 10:00",
     timezone = "America/Los_Angeles",
-    bbox = c(-124, -120, 36, 39),
-    cellSize = 0.1,
-    rasterAlpha = 0.6,
-    includeMap = TRUE,
-    zoom = 7
-  )
-  
-  # Plot average raster for a range of scans with NA AOD values
-  goesaodc_plotScanPoints(
-    satID = "G17",
-    datetime = "2019-10-27 10:00",
-    endtime = "2019-10-27 11:00",
-    timezone = "America/Los_Angeles",
-    bbox = c(-124, -120, 36, 39),
-    stateCodes = "CA"
-  )
-  
-  # Plot raster for a faulty scan
-  goesaodc_plotScanRaster(
-    filename = "OR_ABI-L2-AODC-M6_G17_s20202522231174_e20202522233547_c20202522235327.nc",
-    bbox = bbox_oregon,
-    cellSize = 0.05,
-    stateCodes = "OR",
-    legendLimits = c(0, 5)
-  )
-  
-  # Plot raster for a non-existent scan
-  goesaodc_plotScanRaster(
-    satID = "G17",
-    datetime = "1970-01-01 12:00",
-    timezone = "America/Los_Angeles",
-    bbox = bbox_oregon,
+    bbox = bboxKingcadeFire,
     cellSize = 0.05
+  )
+  
+  faultyScanRaster <- goesaodc_createScanRaster(
+    filename = "OR_ABI-L2-AODC-M6_G17_s20202522231174_e20202522233547_c20202522235327.nc",
+    bbox = bboxKingcadeFire,
+    cellSize = 0.05
+  )
+
+  # Plot a raster for a scan
+  goesaodc_plotScanRaster(
+    raster = scanRaster,
+    bbox = bboxKingcadeFire,
+    paletteBreaks = c(-Inf, 0, 1, 2, 3, 4, 5, Inf),
+    includeMap = TRUE,
+    zoom = 8,
+    stateCodes = "CA",
+    title = "Kincade fire"
+  )
+  
+  # Plot a raster for a scan filled with NA AOD values
+  goesaodc_plotScanRaster(
+    raster = faultyScanRaster,
+    bbox = bboxKingcadeFire,
+    legendLimits = c(-1, 6),
+    stateCodes = "CA"
   )
   
 }

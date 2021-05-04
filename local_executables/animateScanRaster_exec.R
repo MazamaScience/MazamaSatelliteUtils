@@ -355,12 +355,18 @@ for ( scanFilename in scanFilenames ) {
       strftime(localScanTime, "%Y-%m-%d %H:%M:%S %Z")
     )
   
-  # Draw plot
-  scanPlot <- goesaodc_plotScanRaster(
+  # Create scan raster
+  scanRaster <- goesaodc_createScanRaster(
     filename = scanFilename,
     bbox = bbox,
     dqfLevel = opt$dqfLevel,
-    cellSize = opt$cellSize,
+    cellSize = opt$cellSize
+  )
+  
+  # Draw plot
+  scanPlot <- goesaodc_plotScanRaster(
+    raster = scanRaster,
+    bbox = bbox,
     rasterAlpha = opt$rasterAlpha,
     paletteName = opt$paletteName,
     paletteBreaks = paletteBreaks,
@@ -415,5 +421,3 @@ if ( !file.exists(errorLog) )
   dummy <- file.create(errorLog)
 
 logger.info("Completed successfully!")
-
-

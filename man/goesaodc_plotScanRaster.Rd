@@ -2,14 +2,10 @@
 % Please edit documentation in R/goesaodc_plotScanRaster.R
 \name{goesaodc_plotScanRaster}
 \alias{goesaodc_plotScanRaster}
-\title{Create raster plots of AOD data}
+\title{Plot GOES AOD rasters}
 \usage{
 goesaodc_plotScanRaster(
-  satID = NULL,
-  datetime = NULL,
-  endtime = NULL,
-  timezone = "UTC",
-  filename = NULL,
+  raster = NULL,
   bbox = bbox_CONUS,
   dqfLevel = 3,
   cellSize = NULL,
@@ -25,16 +21,7 @@ goesaodc_plotScanRaster(
 )
 }
 \arguments{
-\item{satID}{ID of the source GOES satellite ('G16' or 'G17').}
-
-\item{datetime}{Datetime in Ymd HMS format or a \code{POSIXct}.}
-
-\item{endtime}{End time in Ymd HMS format or a \code{POSIXct}.}
-
-\item{timezone}{Timezone used to interpret \code{datetime} and 
-\code{endtime}. Defaults to UTC.}
-
-\item{filename}{The name of the scan file.}
+\item{raster}{A RasterBrick with AOD and DQF variables.}
 
 \item{bbox}{Bounding box for the region of interest. Defaults to CONUS.}
 
@@ -72,9 +59,5 @@ integer from 1 to 15.}
 \item{title}{Title of the plot.}
 }
 \description{
-Creates a raster plot of AOD data from a GOES scan. If no 
-\code{endtime} is given, then only the scan closest to \code{datetime} will
-be used. If an \code{endtime} is provided, then the plotted raster will be
-the average of the scans in the given time range. If \code{filename} is 
-given, just the raster for that scan file will be drawn.
+Plot GOES AOD rasters
 }
