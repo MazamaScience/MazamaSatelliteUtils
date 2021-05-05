@@ -58,26 +58,33 @@ unless the grid resolution is _very_ high.
 - High-resolution rasters render very slowly on Mercator-projected coordinate 
 systems.
 
-## Specifying Scans
+## Plotting Steps
 
-Both `goesaodc_plotScanPoints()` and `goesaodc_plotScanRaster()` allow you to 
-visualize the AOD values of a single scan or multiple scans averaged together. 
-Specifying which scan(s) you want to see can be done in two ways:
+The basic steps to visualizing GOES AOD data is to:
 
-1. Set the `satID` and `datetime` parameters. These will be used to find the 
+1. Generate a points/raster object with `goesaodc_createScanPoints()` or
+`goesaodc_createScanRaster()`. You can filter this data by location and quality 
+level.
+2. Draw the points/raster object with `goesaodc_plotScanPoints()` or 
+`goesaodc_plotScanRaster()`.
+
+The `goesaodc_createScan*()` functions require that you identify one or more 
+scans to turn into a points/raster object. There are 2 ways you can do this:
+
+1. Setting the `satID` and `datetime` parameters. These will be used to find the 
 scan taken closest to that time by the given satellite. If `endtime` is set as
 well, then all scans taken from `datetime` up to (but not including) `endtime`
 will be gathered and have their corresponding sample readings averaged. You can
-set the timezone of the given times with `timezone`, otherwise they will be
-interpreted in UTC.
+set the timezone of `datetime` and `endtime` with the `timezone` parameter.
+Otherwise, they will be interpreted in UTC.
 
-2. Set the `filename` parameter to the name of a single scan file. Multiple
+2. Setting the `filename` parameter to the name of a single scan file. Multiple
 file names cannot be given since they might not be in chronological order.
 
 ## Plotting Points
 
 Point plots are fast and precise, so they are great for getting a quick visual 
-of AOD data. For that reason, let's start our exploration with points plots. Our
+of AOD data. For that reason, let's start our exploration with point plots. Our
 first step is to load the **MazamaSatelliteUtils** package and specify a 
 directory to store downloaded GOES scan files.
 
@@ -87,17 +94,22 @@ library(MazamaSatelliteUtils)
 setSatelliteDataDir("~/Data/Satellite")
 ```
 
-Now we can plot the points for a single scan specified by satellite ID and time.
-Let's take a look at the Oregon fires in September, 2020. We'll use GOES-17 here
-since it covers the west coast:
+Now let's create a `SpatitialPointsDataFrame` for a scan specified by satellite 
+ID + time and then plot it. This example takes a look at the Oregon fires in 
+September, 2020, as seen by GOES-17:
 
 ```{r fig.width=7, fig.height=5, fig.align="center"}
 bboxOregon <- c(-125, -116, 42, 46.5)
 
-goesaodc_plotScanPoints(
+scanPoints <- goesaodc_createScanPoints(
   satID = "G17",
   datetime = "2020-09-08 9:00",
   timezone = "America/Los_Angeles",
+  bbox = bboxOregon
+)
+
+goesaodc_plotScanPoints(
+  spdf = scanPoints,
   bbox = bboxOregon,
   title = "Oregon AOD at 9:00am PDT on Sept. 8, 2020"
 )
@@ -119,14 +131,19 @@ setSpatialDataDir("~/Data/Spatial")
 loadSpatialData("NaturalEarthAdm1")
 
 # Get the name of the scan file taken closest to 9am on 2020-09-08 by GOES-17
-scanFile <- MazamaSatelliteUtils::goasaodc_findClosestScanFile(
+scanFilename <- MazamaSatelliteUtils::goasaodc_findClosestScanFile(
   satID = "G17",
   datetime = "2020-09-08 9:00",
   timezone = "America/Los_Angeles"
 )
 
+scanPoints <- goesaodc_createScanPoints(
+  filename = scanFilename,
+  bbox = bboxOregon
+)
+
 goesaodc_plotScanPoints(
-  filename = scanFile,
+  spdf = scanPoints,
   bbox = bboxOregon,
   pointAlpha = 0.5,
   paletteName = "Blues",
@@ -147,9 +164,8 @@ a DQF flag above this level will have its AOD value replaced with `NA`:
 
 ```{r fig.width=7, fig.height=5, fig.align="center"}
 goesaodc_plotScanPoints(
-  filename = scanFile,
+  spdf = scanPoints,
   bbox = bboxOregon,
-  dqfLevel = 2,
   stateCodes = "OR"
 )
 ```
@@ -160,7 +176,7 @@ will be drawn in the `NA` color:
 
 ```{r fig.width=7, fig.height=5, fig.align="center"}
 goesaodc_plotScanPoints(
-  filename = scanFile,
+  spdf = scanPoints,
   bbox = bboxOregon,
   legendLimits = c(0, 4),
   stateCodes = "OR"
@@ -174,7 +190,7 @@ the point shape in mm, _not_ axis units.
 
 ```{r fig.width=7, fig.height=5, fig.align="center"}
 goesaodc_plotScanPoints(
-  filename = scanFile,
+  spdf = scanPoints,
   bbox = c(-123, -121, 45, 46),
   pointShape = 1,
   pointSize = 2,
@@ -182,14 +198,19 @@ goesaodc_plotScanPoints(
 )
 ```
 
-Lastly, let's demonstrate what a multi-scan points plot looks like:
+Lastly, let's demonstrate what an averaged multi-scan points plot looks like:
 
 ```{r fig.width=7, fig.height=5, fig.align="center"}
-goesaodc_plotScanPoints(
+averagedScanPoints <- goesaodc_createScanPoints(
   satID = "G17",
   datetime = "2020-09-08 9:00",
   endtime = "2020-09-08 10:00",
   timezone = "America/Los_Angeles",
+  bbox = bboxOregon
+)
+
+goesaodc_plotScanPoints(
+  spdf = averagedScanPoints,
   bbox = bboxOregon,
   stateCodes = "OR"
 )
@@ -202,10 +223,15 @@ scan points that fall into each grid cell. Users are required to pass in a
 `cellSize` that defines the dimensions of each grid cell in lon/lat degrees.
 
 ```{r fig.width=7, fig.height=5, fig.align="center"}
-goesaodc_plotScanRaster(
-  filename = scanFile,
+scanRaster <- goesaodc_createScanRaster(
+  filename = scanFilename,
   bbox = bboxOregon,
   cellSize = 0.05,
+)
+
+goesaodc_plotScanRaster(
+  raster = scanRaster,
+  bbox = bboxOregon,
   stateCodes = "OR"
 )
 ```
@@ -220,9 +246,8 @@ to render.
 
 ```{r warning=FALSE, fig.width=7, fig.height=5, fig.align="center"}
 goesaodc_plotScanRaster(
-  filename = scanFile,
+  raster = scanRaster,
   bbox = bboxOregon,
-  cellSize = 0.05,
   includeMap = TRUE,
   zoom = 7,
   stateCodes = "OR"
@@ -236,30 +261,27 @@ static images of GOES AOD data. You can create animated videos of AOD as well
 using the `goesaodc_animateScanPoints_exec.R` and 
 `goesaodc_animateScanRaster_exec.R` executable scripts. These scripts take in 
 the same parameters as their plot counterparts (except `datetime` is now 
-`starttime`), but require several additional arguments as well:
+`starttime`), but they require several additional arguments:
 
-* `satelliteDataDir`: Path to the directory where satellite data is 
-downloaded to and read from.
-* `spatialDataDir`: Path to the directory where spatial data is downloaded to 
-and read from.
-* `outputDir`: Path to the directory where the video should be saved to.
-* `logDir`: Path to the directory where the output log files should be saved to.
-* `frameRate`: Framerate of the video in fps.
-* `verbose`: Logical flag whether to print out progress messages in the console.
-* `version`: Logical flag whether to print out the current version of the 
+* `satelliteDataDir`: The directory where satellite data is downloaded to and 
+read from.
+* `spatialDataDir`: The directory where spatial data is downloaded to and read 
+from.
+* `outputDir`: The directory where the video should be saved to.
+* `logDir`: The directory where the output log files should be saved to.
+* `frameRate`: The framerate of the video in fps.
+* `verbose`: A logical flag whether to print out progress messages in the 
+console.
+* `version`: A logical flag whether to print out the current version of the 
 executable script.
 
 Another thing to note: Since animations are made up of individual plots, it's
-essential that they all share a consistent color legend because:
+essential that they all share a consistent color legend so that the color scale 
+bounds don't change between frames and that the legend should still be drawn 
+even if all the AOD values for a frame are `NA`. This is achieved by _requiring_
+the user to set the `legendLimits` parameter.
 
-1. The color scale bounds shouldn't change between frames.
-2. A legend should still be drawn even if all the AOD values for a frame are 
-`NA`.
-
-Therefore, the animation scripts _require_ that you set the `legendLimits`
-parameter. This is enough to guarantee the two points above. 
-
-Here's an some example of animating points:
+Here's an example of animating points:
 
 ```
 ./animateScanPoints_exec.R \
@@ -285,7 +307,7 @@ Here's an some example of animating points:
   --verbose=TRUE
 ```
 
-And here's an example of animating rasters:
+And another for animating rasters:
 
 ```
 ./animateScanPoints_exec.R \
