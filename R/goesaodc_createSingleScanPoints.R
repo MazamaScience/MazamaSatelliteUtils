@@ -114,29 +114,21 @@ if ( FALSE ) {
   
   loadSpatialData("NaturalEarthAdm1")
   
-  bbox_oregon <- c(-125, -116, 42, 47)
+  bboxOregon <- c(-125, -116, 42, 47)
   
   # Create points from a scan specified by satellite and time
   goesaodc_createSingleScanPoints(
     satID = "G17",
     datetime = "2020-09-08 17:30",
     timezone = "America/Los_Angeles",
-    bbox = bbox_oregon,
+    bbox = bboxOregon,
     dqfLevel = 3
   )
   
-  filename <- "OR_ABI-L2-AODC-M6_G17_s20202530031174_e20202530033547_c20202530035523.nc"
-  
-  title <- 
-    filename %>%
-    goesaodc_convertFilenameToDatetime() %>%                         # UTC
-    MazamaCoreUtils::parseDatetime(timezone = "America/Los_Angeles") # Local
-  
-  # Create points from a named scan file
+  # Create points from a scan file
   goesaodc_createSingleScanPoints(
-    filename = filename,
-    bbox = bbox_oregon,
-    dqfLevel = 3
+    filename = "OR_ABI-L2-AODC-M6_G17_s20202530031174_e20202530033547_c20202530035523.nc",
+    bbox = bboxOregon
   )
   
 }

@@ -26,9 +26,8 @@
 #' 
 #' # Print precise time of scan
 #' closestScanFile %>%
-#'   goesaodc_convertFilenameToDatetime() %>%                              # UTC
-#'   MazamaCoreUtils::parseDatetime(timezone = "America/Los_Angeles") %>%  # Local
-#'   print()
+#'   goesaodc_convertFilenameToDatetime() %>%                          # UTC
+#'   MazamaCoreUtils::parseDatetime(timezone = "America/Los_Angeles")  # Local
 #' }
 
 goasaodc_findClosestScanFile <- function(
@@ -56,9 +55,7 @@ goasaodc_findClosestScanFile <- function(
   
   # Build nc file regex pattern
   ncFilePattern <- paste0(
-    "OR_ABI-L2-AODC-M[0-9]_",
-    satID,
-    "_s[0-9]+_e[0-9]+_c[0-9]+\\.nc"
+    "OR_ABI-L2-AODC-M[0-9]_", satID, "_s[0-9]+_e[0-9]+_c[0-9]+\\.nc"
   )
   
   # Find all remote nc files
