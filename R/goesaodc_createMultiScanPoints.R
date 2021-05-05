@@ -12,6 +12,29 @@
 #' @param dqfLevel Allowed data quality level. All readings with a DQF value
 #' above this level will have their AOD values set to NA. Must be either 0, 1, 
 #' 2, or 3, with 0 being the highest quality. Defaults to 3.
+#' 
+#' @examples
+#' \donttest{
+#' library(MazamaSatelliteUtils)
+#' library(MazamaSpatialUtils)
+#' 
+#' setSatelliteDataDir("~/Data/Satellite")
+#' setSpatialDataDir("~/Data/Spatial")
+#' 
+#' loadSpatialData("NaturalEarthAdm1")
+#' 
+#' bboxOregon <- c(-125, -116, 42, 47)
+#' 
+#' # Create points from scans covering a full hour
+#' goesaodc_createMultiScanPoints(
+#'   satID = "G17",
+#'   datetime = "2020-09-08 12:00",
+#'   endtime = "2020-09-08 13:00",
+#'   timezone = "America/Los_Angeles",
+#'   bbox = bboxOregon,
+#'   dqfLevel = 2
+#' )
+#' }
 
 goesaodc_createMultiScanPoints <- function(
   satID = NULL,
@@ -153,28 +176,5 @@ goesaodc_createMultiScanPoints <- function(
   # ----- Return ---------------------------------------------------------------
   
   return(spdf)
-  
-}
-
-if ( FALSE ) {
-  
-  library(MazamaSatelliteUtils)
-  library(MazamaSpatialUtils)
-  
-  setSatelliteDataDir("~/Data/Satellite")
-  setSpatialDataDir("~/Data/Spatial")
-  
-  loadSpatialData("NaturalEarthAdm1")
-  
-  bbox_oregon <- c(-125, -116, 42, 47)
-  
-  # Create points from scans covering a full hour
-  spdf <- goesaodc_createMultiScanPoints(
-    satID = "G17",
-    datetime = "2020-09-08 12",
-    endtime = "2020-09-08 13",
-    timezone = "America/Los_Angeles",
-    bbox = bbox_oregon
-  )
   
 }

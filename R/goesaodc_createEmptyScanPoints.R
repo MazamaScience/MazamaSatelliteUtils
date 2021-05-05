@@ -7,6 +7,16 @@
 #' @param satID ID of the source GOES satellite ('G16' or 'G17').
 #' @param filename Name of a scan file.
 #' @param bbox Bounding box for the region of interest. Defaults to CONUS.
+#' 
+#' @examples
+#' \donttest{
+#' library(MazamaSatelliteUtils)
+#' setSatelliteDataDir("~/Data/Satellite")
+#' 
+#' goesaodc_createScanEmptyPoints(satID = "G16")
+#' goesaodc_createScanEmptyPoints(satID = "G17")
+#' goesaodc_createScanEmptyPoints(filename = "OR_ABI-L2-AODC-M6_G17_s20202530031174_e20202530033547_c20202530035523.nc")
+#' }
 
 goesaodc_createEmptyScanPoints <- function(
   satID = NULL,
@@ -149,16 +159,3 @@ goesaodc_createEmptyScanPoints <- function(
   return(spdf)
   
 }
-
-
-if ( FALSE ) {
-
-  library(MazamaSatelliteUtils)
-  setSatelliteDataDir("~/Data/Satellite")
- 
-  goesaodc_createScanEmptyPoints(satID = "G16")
-  goesaodc_createScanEmptyPoints(satID = "G17")
-  goesaodc_createScanEmptyPoints(filename = "OR_ABI-L2-AODC-M6_G17_s20202530031174_e20202530033547_c20202530035523.nc")
-  
-}
-

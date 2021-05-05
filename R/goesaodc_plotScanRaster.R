@@ -26,6 +26,52 @@
 #' integer from 1 to 15.
 #' @param stateCodes Codes of state outlines to draw.
 #' @param title Title of the plot.
+#' 
+#' @examples
+#' \donttest{
+#' library(MazamaSatelliteUtils)
+#' library(MazamaSpatialUtils)
+#' 
+#' setSatelliteDataDir("~/Data/Satellite")
+#' setSpatialDataDir("~/Data/Spatial")
+#' 
+#' loadSpatialData("NaturalEarthAdm1")
+#' 
+#' bboxKingcadeFire <- c(-124, -120, 36, 39)
+#' 
+#' scanRaster <- goesaodc_createScanRaster(
+#'   satID = "G17",
+#'   datetime = "2019-10-27 10:00",
+#'   timezone = "America/Los_Angeles",
+#'   bbox = bboxKingcadeFire,
+#'   cellSize = 0.05
+#' )
+#' 
+#' faultyScanRaster <- goesaodc_createScanRaster(
+#'   filename = "OR_ABI-L2-AODC-M6_G17_s20202522231174_e20202522233547_c20202522235327.nc",
+#'   bbox = bboxKingcadeFire,
+#'   cellSize = 0.05
+#' )
+#' 
+#' # Plot a raster for a scan
+#' goesaodc_plotScanRaster(
+#'   raster = scanRaster,
+#'   bbox = bboxKingcadeFire,
+#'   paletteBreaks = c(-Inf, 0, 1, 2, 3, 4, 5, Inf),
+#'   includeMap = TRUE,
+#'   zoom = 8,
+#'   stateCodes = "CA",
+#'   title = "Kincade fire"
+#' )
+#' 
+#' # Plot a raster for a scan filled with NA AOD values
+#' goesaodc_plotScanRaster(
+#'   raster = faultyScanRaster,
+#'   bbox = bboxKingcadeFire,
+#'   legendLimits = c(-1, 6),
+#'   stateCodes = "CA"
+#' )
+#' }
 
 goesaodc_plotScanRaster <- function(
   raster = NULL,
@@ -137,53 +183,5 @@ goesaodc_plotScanRaster <- function(
   # ----- Return ---------------------------------------------------------------
   
   return(scanPlot)
-  
-}
-
-
-if ( FALSE ) {
-  
-  library(MazamaSatelliteUtils)
-  library(MazamaSpatialUtils)
-  
-  setSatelliteDataDir("~/Data/Satellite")
-  setSpatialDataDir("~/Data/Spatial")
-  
-  loadSpatialData("NaturalEarthAdm1")
-  
-  bboxKingcadeFire <- c(-124, -120, 36, 39)
-  
-  scanRaster <- goesaodc_createScanRaster(
-    satID = "G17",
-    datetime = "2019-10-27 10:00",
-    timezone = "America/Los_Angeles",
-    bbox = bboxKingcadeFire,
-    cellSize = 0.05
-  )
-  
-  faultyScanRaster <- goesaodc_createScanRaster(
-    filename = "OR_ABI-L2-AODC-M6_G17_s20202522231174_e20202522233547_c20202522235327.nc",
-    bbox = bboxKingcadeFire,
-    cellSize = 0.05
-  )
-
-  # Plot a raster for a scan
-  goesaodc_plotScanRaster(
-    raster = scanRaster,
-    bbox = bboxKingcadeFire,
-    paletteBreaks = c(-Inf, 0, 1, 2, 3, 4, 5, Inf),
-    includeMap = TRUE,
-    zoom = 8,
-    stateCodes = "CA",
-    title = "Kincade fire"
-  )
-  
-  # Plot a raster for a scan filled with NA AOD values
-  goesaodc_plotScanRaster(
-    raster = faultyScanRaster,
-    bbox = bboxKingcadeFire,
-    legendLimits = c(-1, 6),
-    stateCodes = "CA"
-  )
   
 }

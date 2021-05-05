@@ -26,6 +26,54 @@
 #' @param cellSize Size of Raster cells measured in degrees lon/lat.
 #' @param fun Function used to summarize multiple point values within a single 
 #' cell; Defaults to \code{mean}.
+#' 
+#' @examples
+#' \donttest{
+#' library(MazamaSatelliteUtils)
+#' library(MazamaSpatialUtils)
+#' 
+#' setSatelliteDataDir("~/Data/Satellite")
+#' setSpatialDataDir("~/Data/Spatial")
+#' 
+#' loadSpatialData("NaturalEarthAdm1")
+#' 
+#' bboxOregon <- c(-125, -116, 42, 46.5)
+#' 
+#' # Create a raster for a scan specified by satellite + time
+#' goesaodc_createScanRaster(
+#'   satID = "G17",
+#'   datetime = "2020-09-08 17:30",
+#'   timezone = "America/Los_Angeles",
+#'   bbox = bboxOregon,
+#'   cellSize = 0.05
+#' )
+#' 
+#' # Create a raster for a scan file
+#' oregonRaster <- goesaodc_createScanRaster(
+#'   filename = "OR_ABI-L2-AODC-M6_G17_s20202530031174_e20202530033547_c20202530035523.nc",
+#'   bbox = bboxOregon,
+#'   dqfLevel = 2,
+#'   cellSize = 0.05
+#' )
+#' 
+#' # Create a raster from scans averaged over a time range
+#' goesaodc_createScanRaster(
+#'   satID = "G17",
+#'   datetime = "2020-09-08 12:00",
+#'  endtime = "2020-09-08 13:00",
+#'  timezone = "America/Los_Angeles",
+#'   bbox = bbox_oregon,
+#'   cellSize = 0.05
+#' )
+#' 
+#' # Create a raster for a faulty scan
+#' goesaodc_createScanRaster(
+#'   filename = "OR_ABI-L2-AODC-M6_G17_s20202522231174_e20202522233547_c20202522235327.nc",
+#'   bbox = bbox_oregon,
+#'   dqfLevel = 3,
+#'   cellSize = 0.05
+#' )
+#' }
 
 goesaodc_createScanRaster <- function(
   satID = NULL,
@@ -125,54 +173,5 @@ goesaodc_createScanRaster <- function(
   # ----- Return ---------------------------------------------------------------
   
   return(scanRaster)
-  
-}
-
-if ( FALSE ) {
-  
-  library(MazamaSatelliteUtils)
-  library(MazamaSpatialUtils)
-  
-  setSatelliteDataDir("~/Data/Satellite")
-  setSpatialDataDir("~/Data/Spatial")
-  
-  loadSpatialData("NaturalEarthAdm1")
-  
-  bboxOregon <- c(-125, -116, 42, 46.5)
-  
-  # Create a raster for a scan specified by satellite + time
-  goesaodc_createScanRaster(
-    satID = "G17",
-    datetime = "2020-09-08 17:30",
-    timezone = "America/Los_Angeles",
-    bbox = bboxOregon,
-    cellSize = 0.05
-  )
-  
-  # Create a raster for a scan file
-  oregonRaster <- goesaodc_createScanRaster(
-    filename = "OR_ABI-L2-AODC-M6_G17_s20202530031174_e20202530033547_c20202530035523.nc",
-    bbox = bboxOregon,
-    dqfLevel = 2,
-    cellSize = 0.05
-  )
-  
-  # Create a raster from scans averaged over a time range
-  goesaodc_createScanRaster(
-    satID = "G17",
-    datetime = "2020-09-08 12:00",
-    endtime = "2020-09-08 13:00",
-    timezone = "America/Los_Angeles",
-    bbox = bbox_oregon,
-    cellSize = 0.05
-  )
-  
-  # Create a raster for a faulty scan
-  goesaodc_createScanRaster(
-    filename = "OR_ABI-L2-AODC-M6_G17_s20202522231174_e20202522233547_c20202522235327.nc",
-    bbox = bbox_oregon,
-    dqfLevel = 3,
-    cellSize = 0.05
-  )
   
 }
