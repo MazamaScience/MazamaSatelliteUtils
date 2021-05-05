@@ -41,8 +41,7 @@ closestScanFile <- goasaodc_findClosestScanFile(
 
 # Print precise time of scan
 closestScanFile \%>\%
-  goesaodc_convertFilenameToDatetime() \%>\%                              # UTC
-  MazamaCoreUtils::parseDatetime(timezone = "America/Los_Angeles") \%>\%  # Local
-  print()
+  goesaodc_convertFilenameToDatetime() \%>\%                          # UTC
+  MazamaCoreUtils::parseDatetime(timezone = "America/Los_Angeles")  # Local
 }
 }

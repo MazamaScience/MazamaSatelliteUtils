@@ -22,3 +22,13 @@ Creates a SpatialPointsDataFrame of AOD readings from one or
 more GOES scans. Scans are specified either by filename or satellite + time 
 information.
 }
+\examples{
+\donttest{
+library(MazamaSatelliteUtils)
+setSatelliteDataDir("~/Data/Satellite")
+
+goesaodc_createScanEmptyPoints(satID = "G16")
+goesaodc_createScanEmptyPoints(satID = "G17")
+goesaodc_createScanEmptyPoints(filename = "OR_ABI-L2-AODC-M6_G17_s20202530031174_e20202530033547_c20202530035523.nc")
+}
+}
