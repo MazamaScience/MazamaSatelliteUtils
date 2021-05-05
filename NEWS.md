@@ -1,5 +1,7 @@
 # MazamaSatelliteUtils 0.4.12
 
+* `goesaodc_createScanPoints()` function now returns a list of 
+`SpatialPointsDataFrames` when multiple scans are requested.
 * Removed 'Kincade Fire Example' article.
 * Removed `createSpatialPointsVideo_exec` script.
 * Removed `goesaodc_areaPlot()` function.
