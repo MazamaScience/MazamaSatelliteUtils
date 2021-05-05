@@ -2,7 +2,7 @@
 % Please edit documentation in R/goesaodc_createScanRaster.R
 \name{goesaodc_createScanRaster}
 \alias{goesaodc_createScanRaster}
-\title{Create Rasters from GOES scans}
+\title{Create rasters from GOES scans}
 \usage{
 goesaodc_createScanRaster(
   satID = NULL,
@@ -38,18 +38,16 @@ goesaodc_createScanRaster(
 cell; Defaults to \code{mean}.}
 }
 \description{
-Creates a Raster of AOD readings from one or more GOES scans. 
-Scans are specified either by filename or by satellite + time information.
+Creates a \code{RasterBrick} of AOD and DQF readings from a GOES
+scan, or a list of \code{RasterBrick}s from a series of GOES scans.
 }
 \details{
-If \code{filename} is given, just data for that scan file will be 
-processed. Otherwise, scan(s) must be specified by \code{satID}, 
-\code{datetime}, and \code{timezone}, which will determine the closest scan 
-taken to that time. An average Raster of a series of scans can be requested 
-by also supplying \code{endtime}. All scans taken from \code{datetime} 
-(inclusive) up to \code{endtime} (exclusive) will be processed by taking the 
-average value of each reading point and rasterizing the result (not by 
-rasterizing each scan and then taking the average).
+A single scan can be identified by either giving its 
+\code{filename}, or by providing the \code{satID}, \code{datetime}, and 
+\code{timezone} (which will be used to determine the closest matching scan). 
+A series of scans cannot be specified using filenames. The satellite + time 
+info must be given along with an \code{endtime} so that all scans starting at
+\code{datetime} up to (but not including) \code{endtime} will be processed.
 }
 \examples{
 \donttest{
@@ -73,7 +71,7 @@ goesaodc_createScanRaster(
 )
 
 # Create a raster for a scan file
-oregonRaster <- goesaodc_createScanRaster(
+goesaodc_createScanRaster(
   filename = "OR_ABI-L2-AODC-M6_G17_s20202530031174_e20202530033547_c20202530035523.nc",
   bbox = bboxOregon,
   dqfLevel = 2,
@@ -84,17 +82,16 @@ oregonRaster <- goesaodc_createScanRaster(
 goesaodc_createScanRaster(
   satID = "G17",
   datetime = "2020-09-08 12:00",
- endtime = "2020-09-08 13:00",
- timezone = "America/Los_Angeles",
-  bbox = bbox_oregon,
+  endtime = "2020-09-08 13:00",
+  timezone = "America/Los_Angeles",
+  bbox = bboxOregon,
   cellSize = 0.05
 )
 
 # Create a raster for a faulty scan
 goesaodc_createScanRaster(
   filename = "OR_ABI-L2-AODC-M6_G17_s20202522231174_e20202522233547_c20202522235327.nc",
-  bbox = bbox_oregon,
-  dqfLevel = 3,
+  bbox = bboxOregon,
   cellSize = 0.05
 )
 }
