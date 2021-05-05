@@ -3,6 +3,7 @@
 * Removed 'Kincade Fire Example' article.
 * Removed `createSpatialPointsVideo_exec` script.
 * Removed `goesaodc_areaPlot()` function.
+* Removed `goesaodc_createDaytimeRasterStack()` function.
 
 # MazamaSatelliteUtils 0.4.11
 
