@@ -2,8 +2,9 @@
 #' 
 #' @title Create points from GOES scans
 #' 
-#' @description Creates a \code{SpatialPointsDataFrame} from a GOES scan, or a 
-#' list of \code{SpatialPointsDataFrame}s from a series of GOES scans.
+#' @description Creates a \code{SpatialPointsDataFrame} of AOD and DQF readings
+#' from a GOES scan, or a list of \code{SpatialPointsDataFrame}s from a series 
+#' of GOES scans.
 #' 
 #' @details A single scan can be identified by either giving its 
 #' \code{filename}, or by providing the \code{satID}, \code{datetime}, and 

@@ -34,8 +34,9 @@ above this level will have their AOD values set to NA. Must be either 0, 1,
 2, or 3, with 0 being the highest quality. Defaults to 3.}
 }
 \description{
-Creates a \code{SpatialPointsDataFrame} from a GOES scan, or a 
-list of \code{SpatialPointsDataFrame}s from a series of GOES scans.
+Creates a \code{SpatialPointsDataFrame} of AOD and DQF readings
+from a GOES scan, or a list of \code{SpatialPointsDataFrame}s from a series 
+of GOES scans.
 }
 \details{
 A single scan can be identified by either giving its 
@@ -73,7 +74,7 @@ goesaodc_createScanPoints(
   dqfLevel = 2
 )
 
-# Create points from multiple scans over a time range
+# Create points for multiple scans over a time range
 goesaodc_createScanPoints(
   satID = "G17",
   datetime = "2020-09-08 12:00",
