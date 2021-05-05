@@ -46,8 +46,8 @@ goesaodc_plotScanPoints <- function(
   if ( !("SpatialPointsDataFrame" %in% class(spdf)) )
     stop("Parameter 'spdf' must be an object of type 'SpatialPointsDataFrame'")
   
-  if ( !all(c("AOD", "DQF") %in% names(spdf)))
-    stop("Parameter 'spdf' must have 'AOD' and 'DQF' variables")
+  if ( !("AOD" %in% names(spdf)) )
+    stop("Parameter 'spdf' must have an 'AOD' variable")
   
   if ( includeMap )
     if ( is.null(zoom) )
