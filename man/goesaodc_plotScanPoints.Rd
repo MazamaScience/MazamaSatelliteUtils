@@ -51,10 +51,6 @@ integer from 1 to 15.}
 \item{stateCodes}{Codes of state outlines to draw.}
 
 \item{title}{Title of the plot.}
-
-\item{dqfLevel}{Allowed data quality level. All readings with a DQF value
-above this level will have their AOD values set to NA. Must be either 0, 1, 
-2, or 3, with 0 being the highest quality. Defaults to 3.}
 }
 \description{
 Plot GOES AOD scan points
@@ -90,7 +86,7 @@ goesaodc_plotScanPoints(
   paletteBreaks = c(-Inf, 0, 1, 2, 3, 4, 5, Inf),
   includeMap = TRUE,
   zoom = 8,
- stateCodes = "CA",
+  stateCodes = "CA",
   title = "Kincade fire"
 )
 
