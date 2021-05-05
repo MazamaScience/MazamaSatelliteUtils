@@ -1,19 +1,16 @@
 #' @export
 #' 
-#' @title Create spatial points from GOES scans
+#' @title Create points from GOES scans
 #' 
-#' @description Creates a SpatialPointsDataFrame of AOD readings from one or 
-#' more GOES scans. Scans are specified either by filename or satellite + time 
-#' information.
+#' @description Creates a \code{SpatialPointsDataFrame} from a GOES scan, or a 
+#' list of \code{SpatialPointsDataFrame}s from a series of GOES scans.
 #' 
-#' @details
-#' If \code{filename} is given, just points for that scan file will be 
-#' processed. Otherwise, scan(s) must be specified by \code{satID}, 
-#' \code{datetime}, and \code{timezone}, which will determine the closest scan 
-#' taken to that time. An average SPDF of a series of scans can be requested by 
-#' also supplying \code{endtime}. All scans taken from \code{datetime} 
-#' (inclusive) up to \code{endtime} (exclusive) will be processed by taking the 
-#' average value of each point.
+#' @details A single scan can be identified by either giving its 
+#' \code{filename}, or by providing the \code{satID}, \code{datetime}, and 
+#' \code{timezone} (which will be used to determine the closest matching scan). 
+#' A series of scans cannot be specified using filenames. The satellite + time 
+#' info must be given along with an \code{endtime} so that all scans starting at
+#' \code{datetime} up to (but not including) \code{endtime} will be processed.
 #' 
 #' @param satID ID of the source GOES satellite ('G16' or 'G17').
 #' @param datetime Datetime in Ymd HMS format or a \code{POSIXct}.
@@ -21,8 +18,9 @@
 #' @param timezone Timezone used to interpret \code{datetime} and 
 #' \code{endtime}; Defaults to UTC.
 #' @param filename Name of a scan file.
-#' @param bbox Bounding box for the region of interest; Defaults to CONUS.
-#' @param dqfLevel Allowed data quality level. All readings with a DQF value
+#' @param bbox Bounding box for the region of interest. All points outside of 
+#' this area will be removed. Defaults to CONUS.
+#' @param dqfLevel Allowed data quality level. All points with a DQF value
 #' above this level will have their AOD values set to NA. Must be either 0, 1, 
 #' 2, or 3, with 0 being the highest quality. Defaults to 3.
 #' 
@@ -54,7 +52,7 @@
 #'   dqfLevel = 2
 #' )
 #' 
-#' # Create points from scans averaged over a time range
+#' # Create points for multiple scans over a time range
 #' goesaodc_createScanPoints(
 #'   satID = "G17",
 #'   datetime = "2020-09-08 12:00",
@@ -112,19 +110,62 @@ goesaodc_createScanPoints <- function(
     
     if ( is.null(filename) && !is.null(endtime) ) {
       
-      # Average the AOD values across all scans in the time range
-      spdf <- goesaodc_createMultiScanPoints(
+      # Create a multi-scan spdf list
+      startFilename <- goasaodc_findClosestScanFile(
         satID = satID,
         datetime = datetime,
-        endtime = endtime,
-        timezone = timezone,
-        bbox = bbox,
-        dqfLevel = dqfLevel
+        timezone = timezone
       )
+      
+      endFilename <- goasaodc_findClosestScanFile(
+        satID = satID,
+        datetime = endtime,
+        timezone = timezone
+      )
+      
+      satUrl <- paste0(
+        "https://tools-1.airfire.org/Satellite/",
+        ifelse(satID == "G16", "GOES-16/AODC/", "GOES-17/AODC/")
+      )
+      
+      # Get all remote netCDF files
+      links <-
+        xml2::read_html(satUrl) %>%
+        xml2::xml_child("body") %>%
+        xml2::xml_child("table") %>%
+        xml2::xml_find_all("//a") %>%
+        xml2::xml_attr("href")
+      
+      allScanFiles <- links[ -(1:5) ]
+      
+      startIndex <- which(startFilename == allScanFiles)[1]
+      endIndex <- which(endFilename == allScanFiles)[1] - 1 # Exclusive end bound
+      
+      filenames <- allScanFiles[startIndex:endIndex]
+      
+      spdfList <- list()
+      
+      for ( filename in filenames ) {
+        
+        scanLabel <- 
+          filename %>%
+          goesaodc_convertFilenameToDatetime() %>%
+          MazamaCoreUtils::timeStamp(unit = "sec", timezone = "UTC")
+        
+        spdf <- goesaodc_createSingleScanPoints(
+          filename = filename,
+          bbox = bbox,
+          dqfLevel = dqfLevel
+        )
+        
+        spdfList[[scanLabel]] <- spdf
+        
+      }
+      
+      return(spdfList)
       
     } else {
       
-      # Get the AOD values for the scan closest to the requested time
       spdf <- goesaodc_createSingleScanPoints(
         satID = satID,
         datetime = datetime,
@@ -134,6 +175,8 @@ goesaodc_createScanPoints <- function(
         dqfLevel = dqfLevel
       )
       
+      return(spdf)
+      
     }
     
   }, silent = TRUE)
@@ -141,9 +184,141 @@ goesaodc_createScanPoints <- function(
   # If there was an error reading the scan file, create an SPDF filled with NA 
   # AOD and DQF values for the requested satellite
   if ( "try-error" %in% class(result) ) {
-    spdf <- goesaodc_createEmptyScanPoints(satID, filename, bbox)
     warning(result, immediate. = TRUE)
+    spdf <- goesaodc_createEmptyScanPoints(satID, filename, bbox)
+    return(spdf)
   }
+  
+}
+
+
+#' @title Create spatial points for a single scan
+#' 
+#' @description Creates a \code{SpatialPointsDataFrame} from a GOES scan.
+#' 
+#' @details A scan can be identified by either giving its \code{filename}, or by
+#' providing the \code{satID}, \code{datetime}, and \code{timezone} (which will 
+#' be used to determine the closest matching scan). 
+#' 
+#' @param satID ID of the source GOES satellite ('G16' or 'G17').
+#' @param datetime Datetime in Ymd HMS format or a \code{POSIXct}.
+#' @param timezone Timezone used to interpret \code{datetime} and 
+#' \code{endtime}; Defaults to UTC.
+#' @param filename The name of the scan file.
+#' @param bbox Bounding box for the region of interest; Defaults to CONUS.
+#' @param dqfLevel Allowed data quality level. All readings with a DQF value
+#' above this level will have their AOD values set to NA. Must be either 0, 1, 
+#' 2, or 3, with 0 being the highest quality. Defaults to 3.
+#' 
+#' @examples
+#' \donttest{
+#' library(MazamaSatelliteUtils)
+#' library(MazamaSpatialUtils)
+#' 
+#' setSatelliteDataDir("~/Data/Satellite")
+#' setSpatialDataDir("~/Data/Spatial")
+#' 
+#' loadSpatialData("NaturalEarthAdm1")
+#' 
+#' bboxOregon <- c(-125, -116, 42, 47)
+#' 
+#' # Create points from a scan specified by satellite and time
+#' goesaodc_createSingleScanPoints(
+#'   satID = "G17",
+#'   datetime = "2020-09-08 17:30",
+#'   timezone = "America/Los_Angeles",
+#'   bbox = bboxOregon
+#' )
+#' 
+#' # Create points from a scan file
+#' goesaodc_createSingleScanPoints(
+#'   filename = "OR_ABI-L2-AODC-M6_G17_s20202530031174_e20202530033547_c20202530035523.nc",
+#'   bbox = bboxOregon,
+#'   dqfLevel = 2
+#' )
+#' }
+
+goesaodc_createSingleScanPoints <- function(
+  satID = NULL,
+  datetime = NULL,
+  timezone = "UTC",
+  filename = NULL,
+  bbox = bbox_CONUS,
+  dqfLevel = 3
+) {
+  
+  # ----- Validate parameters --------------------------------------------------
+  
+  if ( is.null(filename) ) {
+    
+    MazamaCoreUtils::stopIfNull(satID)
+    
+    satID <- toupper(satID)
+    if ( !(satID %in% c("G16", "G17")) )
+      stop("Parameter 'satID' must be either 'G16' or 'G17'")
+    
+    MazamaCoreUtils::stopIfNull(datetime)
+    
+    # Use timezone from POSIXct datetime, or passed in timezone
+    if ( lubridate::is.POSIXt(datetime) ) {
+      timezone <- lubridate::tz(datetime)
+    } else {
+      if ( !timezone %in% OlsonNames() ) {
+        stop(sprintf("timezone \"%s\" is not recognized", timezone))
+      }
+    }
+    
+  }
+  
+  if ( !(dqfLevel %in% c(0, 1, 2, 3)) )
+    stop(paste0("Parameter 'dqfLevel' must be 0, 1, 2, or 3"))
+  
+  # ----- Get scan file --------------------------------------------------------
+  
+  if ( is.null(filename) ) {
+    
+    # Find which scan file is closest to the requested time
+    filename <- goasaodc_findClosestScanFile(
+      satID = satID,
+      datetime = datetime,
+      timezone = timezone
+    )
+    
+  }
+  
+  # Download the file if it isn't available locally
+  if ( !(filename %in% list.files(getSatelliteDataDir())) ) {
+    
+    satUrl <- ifelse(satID == "G16", "GOES-16/AODC/", "GOES-17/AODC/")
+    
+    fileUrl <- paste0(
+      "https://tools-1.airfire.org/Satellite/",
+      satUrl,
+      filename
+    )
+    
+    filePath <- file.path(getSatelliteDataDir(), filename)
+    
+    utils::download.file(
+      fileUrl,
+      destfile = filePath, 
+      quiet = TRUE, 
+      method = "auto", 
+      mode = "wb"
+    )
+    
+  }
+  
+  # ----- Create spatial points ------------------------------------------------
+  
+  nc <- goesaodc_openFile(filename)
+  
+  tbl <- goesaodc_createTibble(nc, bbox, dqfLevel)
+  
+  spdf <- sp::SpatialPointsDataFrame(
+    coords = dplyr::select(tbl, c(.data$lon, .data$lat)),
+    data = dplyr::select(tbl, -c(.data$lon, .data$lat))
+  )
   
   # ----- Return ---------------------------------------------------------------
   

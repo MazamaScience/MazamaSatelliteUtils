@@ -2,7 +2,7 @@
 % Please edit documentation in R/goesaodc_createScanPoints.R
 \name{goesaodc_createScanPoints}
 \alias{goesaodc_createScanPoints}
-\title{Create spatial points from GOES scans}
+\title{Create points from GOES scans}
 \usage{
 goesaodc_createScanPoints(
   satID = NULL,
@@ -26,25 +26,24 @@ goesaodc_createScanPoints(
 
 \item{filename}{Name of a scan file.}
 
-\item{bbox}{Bounding box for the region of interest; Defaults to CONUS.}
+\item{bbox}{Bounding box for the region of interest. All points outside of 
+this area will be removed. Defaults to CONUS.}
 
-\item{dqfLevel}{Allowed data quality level. All readings with a DQF value
+\item{dqfLevel}{Allowed data quality level. All points with a DQF value
 above this level will have their AOD values set to NA. Must be either 0, 1, 
 2, or 3, with 0 being the highest quality. Defaults to 3.}
 }
 \description{
-Creates a SpatialPointsDataFrame of AOD readings from one or 
-more GOES scans. Scans are specified either by filename or satellite + time 
-information.
+Creates a \code{SpatialPointsDataFrame} from a GOES scan, or a 
+list of \code{SpatialPointsDataFrame}s from a series of GOES scans.
 }
 \details{
-If \code{filename} is given, just points for that scan file will be 
-processed. Otherwise, scan(s) must be specified by \code{satID}, 
-\code{datetime}, and \code{timezone}, which will determine the closest scan 
-taken to that time. An average SPDF of a series of scans can be requested by 
-also supplying \code{endtime}. All scans taken from \code{datetime} 
-(inclusive) up to \code{endtime} (exclusive) will be processed by taking the 
-average value of each point.
+A single scan can be identified by either giving its 
+\code{filename}, or by providing the \code{satID}, \code{datetime}, and 
+\code{timezone} (which will be used to determine the closest matching scan). 
+A series of scans cannot be specified using filenames. The satellite + time 
+info must be given along with an \code{endtime} so that all scans starting at
+\code{datetime} up to (but not including) \code{endtime} will be processed.
 }
 \examples{
 \donttest{
@@ -74,7 +73,7 @@ goesaodc_createScanPoints(
   dqfLevel = 2
 )
 
-# Create points from scans averaged over a time range
+# Create points from multiple scans over a time range
 goesaodc_createScanPoints(
   satID = "G17",
   datetime = "2020-09-08 12:00",
