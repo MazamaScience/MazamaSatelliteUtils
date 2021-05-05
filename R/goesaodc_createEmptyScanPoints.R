@@ -13,9 +13,11 @@
 #' library(MazamaSatelliteUtils)
 #' setSatelliteDataDir("~/Data/Satellite")
 #' 
-#' goesaodc_createScanEmptyPoints(satID = "G16")
-#' goesaodc_createScanEmptyPoints(satID = "G17")
-#' goesaodc_createScanEmptyPoints(filename = "OR_ABI-L2-AODC-M6_G17_s20202530031174_e20202530033547_c20202530035523.nc")
+#' MazamaSatelliteUtils:::goesaodc_createEmptyScanPoints(satID = "G16")
+#' MazamaSatelliteUtils:::goesaodc_createEmptyScanPoints(satID = "G17")
+#' MazamaSatelliteUtils:::goesaodc_createEmptyScanPoints(
+#'   filename = "OR_ABI-L2-AODC-M6_G17_s20202530031174_e20202530033547_c20202530035523.nc"
+#' )
 #' }
 
 goesaodc_createEmptyScanPoints <- function(
