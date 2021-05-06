@@ -4,6 +4,7 @@
 `SpatialPointsDataFrames` when multiple scans are requested.
 * `goesaodc_createScanRaster()` function now returns a list of 
 `RasterBricks` when multiple scans are requested.
+* Added `goesaodc_aggregateScanPoints()` function.
 * Removed 'Kincade Fire Example' article.
 * Removed `createSpatialPointsVideo_exec` script.
 * Removed `goesaodc_areaPlot()` function.
