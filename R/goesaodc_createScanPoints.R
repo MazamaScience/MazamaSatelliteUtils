@@ -3,7 +3,7 @@
 #' @title Create AOD points from GOES scans
 #' 
 #' @description Creates a \code{SpatialPointsDataFrame} of AOD readings from a 
-#' GOES scan, or a list of \code{SpatialPointsDataFrame}s from a series of GOES 
+#' GOES scan, or a list of \code{SpatialPointsDataFrame}s from a series of 
 #' scans.
 #' 
 #' @details A single scan can be identified by either giving its 

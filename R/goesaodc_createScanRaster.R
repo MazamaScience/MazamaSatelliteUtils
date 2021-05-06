@@ -2,8 +2,8 @@
 #' 
 #' @title Create rasters from GOES scans
 #' 
-#' @description Creates a \code{RasterBrick} of AOD and DQF readings from a GOES
-#' scan, or a list of \code{RasterBrick}s from a series of GOES scans.
+#' @description Creates a \code{RasterLayer} of AOD readings from a GOES scan, 
+#' or a list of \code{RasterLayer}s from a series of scans.
 #' 
 #' @details A single scan can be identified by either giving its 
 #' \code{filename}, or by providing the \code{satID}, \code{datetime}, and 
