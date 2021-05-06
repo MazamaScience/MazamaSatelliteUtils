@@ -54,18 +54,18 @@ goesaodc_aggregateScanPoints <- function(
   # ----- Aggregate point AOD values -------------------------------------------
   
   aggregateSpdf <- sp::SpatialPointsDataFrame(
-    coords = scanPointsList[[1]]@coords,
+    coords = spdfList[[1]]@coords,
     data = data.frame(
-      AOD = rep(NA, dim(scanPointsList[[1]])[1])
+      AOD = rep(NA, dim(spdfList[[1]])[1])
     )
   )
   
-  aodValues <- rep(NA, length(scanPointsList))
+  aodValues <- rep(NA, length(spdfList))
   
-  for ( i in 1:dim(scanPointsList[[1]])[1] ) {
+  for ( i in 1:dim(spdfList[[1]])[1] ) {
     
-    for ( j in 1:length(scanPointsList) ) {
-      spdf <- scanPointsList[[j]]
+    for ( j in 1:length(spdfList) ) {
+      spdf <- spdfList[[j]]
       aodValues[j] <- spdf$AOD[i]
     }
     
