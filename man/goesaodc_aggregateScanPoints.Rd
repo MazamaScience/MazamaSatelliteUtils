@@ -4,13 +4,16 @@
 \alias{goesaodc_aggregateScanPoints}
 \title{Aggregate GOES scan points}
 \usage{
-goesaodc_aggregateScanPoints(spdfList = NULL, fun = mean)
+goesaodc_aggregateScanPoints(spdfList = NULL, fun = mean, na.rm = FALSE)
 }
 \arguments{
 \item{spdfList}{A \code{list} of GOES scan \code{SpatialPointsDataFrame}s.}
 
 \item{fun}{The function to use for aggregating AOD values. Defaults to 
 \code{mean}.}
+
+\item{na.rm}{Logical flag whether to remove NA values before performing the
+\code{fun} function. Defaults to \code{FALSE}.}
 }
 \description{
 Creates a \code{SpatialPointsDataFrame} of aggregated AOD 
@@ -31,6 +34,9 @@ scanPointsList <- goesaodc_createScanPoints(
   bbox = bboxOregon
 )
 
-goesaodc_aggregateScanPoints(scanPointsList)
+goesaodc_aggregateScanPoints(
+  spdfList = scanPointsList,
+  na.rm = TRUE
+)
 }
 }

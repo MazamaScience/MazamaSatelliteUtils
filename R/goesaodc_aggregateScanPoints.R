@@ -8,6 +8,8 @@
 #' @param spdfList A \code{list} of GOES scan \code{SpatialPointsDataFrame}s.
 #' @param fun The function to use for aggregating AOD values. Defaults to 
 #' \code{mean}.
+#' @param na.rm Logical flag whether to remove NA values before performing the
+#' \code{fun} function. Defaults to \code{FALSE}.
 #' 
 #' @examples
 #' \donttest{
@@ -24,12 +26,16 @@
 #'   bbox = bboxOregon
 #' )
 #' 
-#' goesaodc_aggregateScanPoints(scanPointsList)
+#' goesaodc_aggregateScanPoints(
+#'   spdfList = scanPointsList,
+#'   na.rm = TRUE
+#' )
 #' }
 
 goesaodc_aggregateScanPoints <- function(
   spdfList = NULL,
-  fun = mean
+  fun = mean,
+  na.rm = FALSE
 ) {
   
   # ----- Validate parameters --------------------------------------------------
@@ -63,8 +69,7 @@ goesaodc_aggregateScanPoints <- function(
       aodValues[j] <- spdf$AOD[i]
     }
     
-    fun <- mean
-    aggregateSpdf$AOD[i] <- mean(aodValues)
+    aggregateSpdf$AOD[i] <- do.call(fun, list(aodValues, na.rm = na.rm))
     
   }
   
