@@ -28,12 +28,7 @@
 #' @examples
 #' \donttest{
 #' library(MazamaSatelliteUtils)
-#' library(MazamaSpatialUtils)
-#' 
 #' setSatelliteDataDir("~/Data/Satellite")
-#' setSpatialDataDir("~/Data/Spatial")
-#' 
-#' loadSpatialData("NaturalEarthAdm1")
 #' 
 #' bboxOregon <- c(-125, -116, 42, 47)
 #' 

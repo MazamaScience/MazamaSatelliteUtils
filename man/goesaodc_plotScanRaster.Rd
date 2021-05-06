@@ -21,7 +21,7 @@ goesaodc_plotScanRaster(
 )
 }
 \arguments{
-\item{raster}{A RasterBrick with AOD and DQF variables.}
+\item{raster}{A RasterBrick with an AOD variable.}
 
 \item{bbox}{Bounding box for the region of interest. Defaults to CONUS.}
 

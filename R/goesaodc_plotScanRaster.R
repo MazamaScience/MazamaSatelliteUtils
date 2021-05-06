@@ -2,7 +2,7 @@
 #' 
 #' @title Plot GOES AOD rasters 
 #' 
-#' @param raster A RasterBrick with AOD and DQF variables.
+#' @param raster A RasterBrick with an AOD variable.
 #' @param bbox Bounding box for the region of interest. Defaults to CONUS.
 #' @param dqfLevel Allowed data quality level. All readings with a DQF value
 #' above this level will have their AOD values set to NA. Must be either 0, 1, 

@@ -1,8 +1,8 @@
 #' @export
 #' 
-#' @title Plot GOES AOD scan points
+#' @title Plot GOES AOD points
 #' 
-#' @param spdf A SpatialPointsDataFrame with AOD and DQF variables.
+#' @param spdf A SpatialPointsDataFrame with an AOD variable.
 #' @param bbox Bounding box for the region of interest; Defaults to CONUS.
 #' @param pointSize Size of plot points; Defaults to 0.5.
 #' @param pointShape Shape of the plot points (index); Defaults to 15 (filled 

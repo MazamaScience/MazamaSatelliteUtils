@@ -52,12 +52,7 @@ info must be given along with an \code{endtime} so that all scans starting at
 \examples{
 \donttest{
 library(MazamaSatelliteUtils)
-library(MazamaSpatialUtils)
-
 setSatelliteDataDir("~/Data/Satellite")
-setSpatialDataDir("~/Data/Spatial")
-
-loadSpatialData("NaturalEarthAdm1")
 
 bboxOregon <- c(-125, -116, 42, 46.5)
 

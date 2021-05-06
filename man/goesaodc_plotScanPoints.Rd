@@ -2,7 +2,7 @@
 % Please edit documentation in R/goesaodc_plotScanPoints.R
 \name{goesaodc_plotScanPoints}
 \alias{goesaodc_plotScanPoints}
-\title{Plot GOES AOD scan points}
+\title{Plot GOES AOD points}
 \usage{
 goesaodc_plotScanPoints(
   spdf = NULL,
@@ -20,7 +20,7 @@ goesaodc_plotScanPoints(
 )
 }
 \arguments{
-\item{spdf}{A SpatialPointsDataFrame with AOD and DQF variables.}
+\item{spdf}{A SpatialPointsDataFrame with an AOD variable.}
 
 \item{bbox}{Bounding box for the region of interest; Defaults to CONUS.}
 
@@ -53,7 +53,7 @@ integer from 1 to 15.}
 \item{title}{Title of the plot.}
 }
 \description{
-Plot GOES AOD scan points
+Plot GOES AOD points
 }
 \examples{
 \donttest{
