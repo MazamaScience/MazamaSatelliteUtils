@@ -1,10 +1,10 @@
 #' @export
 #' 
-#' @title Create points from GOES scans
+#' @title Create AOD points from GOES scans
 #' 
-#' @description Creates a \code{SpatialPointsDataFrame} of AOD and DQF readings
-#' from a GOES scan, or a list of \code{SpatialPointsDataFrame}s from a series 
-#' of GOES scans.
+#' @description Creates a \code{SpatialPointsDataFrame} of AOD readings from a 
+#' GOES scan, or a list of \code{SpatialPointsDataFrame}s from a series of GOES 
+#' scans.
 #' 
 #' @details A single scan can be identified by either giving its 
 #' \code{filename}, or by providing the \code{satID}, \code{datetime}, and 
@@ -43,7 +43,6 @@
 #'   datetime = "2020-09-08 17:30",
 #'   timezone = "America/Los_Angeles",
 #'   bbox = bboxOregon,
-#'   dqfLevel = 3
 #' )
 #' 
 #' # Create points for a scan file
@@ -193,7 +192,7 @@ goesaodc_createScanPoints <- function(
 }
 
 
-#' @title Create spatial points for a single scan
+#' @title Create AOD points from a single GOES scan
 #' 
 #' @description Creates a \code{SpatialPointsDataFrame} from a GOES scan.
 #' 
@@ -318,7 +317,7 @@ goesaodc_createSingleScanPoints <- function(
   
   spdf <- sp::SpatialPointsDataFrame(
     coords = dplyr::select(tbl, c(.data$lon, .data$lat)),
-    data = dplyr::select(tbl, -c(.data$lon, .data$lat))
+    data = dplyr::select(tbl, .data$AOD)
   )
   
   # ----- Return ---------------------------------------------------------------

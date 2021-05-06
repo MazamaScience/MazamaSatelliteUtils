@@ -1,5 +1,7 @@
 # MazamaSatelliteUtils 0.4.12
 
+* `goesaodc_createScanPoints()` and `goesaodc_createScanRaster()` no longer 
+store DQF.
 * `goesaodc_createScanPoints()` function now returns a list of 
 `SpatialPointsDataFrames` when multiple scans are requested.
 * `goesaodc_createScanRaster()` function now returns a list of 

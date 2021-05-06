@@ -7,14 +7,14 @@
 goesaodc_aggregateScanPoints(spdfList = NULL, fun = mean)
 }
 \arguments{
-\item{spdfList}{A \code{list} of GOES scan \code{SpatialPointsDataFrame}s}
+\item{spdfList}{A \code{list} of GOES scan \code{SpatialPointsDataFrame}s.}
 
 \item{fun}{The function to use for aggregating AOD values. Defaults to 
 \code{mean}.}
 }
 \description{
-Creates a \code{SpatialPointsDataFrame} of AOD readings from a 
-\code{list} of GOES scan \code{SpatialPointsDataFrame}s.
+Creates a \code{SpatialPointsDataFrame} of aggregated AOD 
+readings from a \code{list} of GOES scan \code{SpatialPointsDataFrame}s.
 }
 \examples{
 \donttest{

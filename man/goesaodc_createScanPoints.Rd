@@ -2,7 +2,7 @@
 % Please edit documentation in R/goesaodc_createScanPoints.R
 \name{goesaodc_createScanPoints}
 \alias{goesaodc_createScanPoints}
-\title{Create points from GOES scans}
+\title{Create AOD points from GOES scans}
 \usage{
 goesaodc_createScanPoints(
   satID = NULL,
@@ -34,9 +34,9 @@ above this level will have their AOD values set to NA. Must be either 0, 1,
 2, or 3, with 0 being the highest quality. Defaults to 3.}
 }
 \description{
-Creates a \code{SpatialPointsDataFrame} of AOD and DQF readings
-from a GOES scan, or a list of \code{SpatialPointsDataFrame}s from a series 
-of GOES scans.
+Creates a \code{SpatialPointsDataFrame} of AOD readings from a 
+GOES scan, or a list of \code{SpatialPointsDataFrame}s from a series of GOES 
+scans.
 }
 \details{
 A single scan can be identified by either giving its 
@@ -64,7 +64,6 @@ goesaodc_createScanPoints(
   datetime = "2020-09-08 17:30",
   timezone = "America/Los_Angeles",
   bbox = bboxOregon,
-  dqfLevel = 3
 )
 
 # Create points for a scan file

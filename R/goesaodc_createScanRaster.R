@@ -172,7 +172,7 @@ goesaodc_createScanRaster <- function(
       raster <- raster::rasterize(
         spdfList[[i]],
         scanRaster,
-        field = c("AOD", "DQF"),
+        field = "AOD",
         fun = fun
       )
       rasterList[[scanLabel]] <- raster
@@ -185,7 +185,7 @@ goesaodc_createScanRaster <- function(
     raster <- raster::rasterize(
       spdf,
       scanRaster,
-      field = c("AOD", "DQF"),
+      field = "AOD",
       fun = fun
     )
     

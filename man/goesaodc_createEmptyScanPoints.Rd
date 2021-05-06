@@ -2,7 +2,7 @@
 % Please edit documentation in R/goesaodc_createEmptyScanPoints.R
 \name{goesaodc_createEmptyScanPoints}
 \alias{goesaodc_createEmptyScanPoints}
-\title{Create an empty GOES scan SPDF}
+\title{Create NA AOD points from a GOES scan}
 \usage{
 goesaodc_createEmptyScanPoints(
   satID = NULL,
@@ -18,9 +18,8 @@ goesaodc_createEmptyScanPoints(
 \item{bbox}{Bounding box for the region of interest. Defaults to CONUS.}
 }
 \description{
-Creates a SpatialPointsDataFrame of AOD readings from one or 
-more GOES scans. Scans are specified either by filename or satellite + time 
-information.
+Creates a \code{SpatialPointsDataFrame} of NA AOD readings from 
+a GOES scan,
 }
 \examples{
 \donttest{

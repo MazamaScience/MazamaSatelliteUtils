@@ -2,7 +2,7 @@
 % Please edit documentation in R/goesaodc_createScanPoints.R
 \name{goesaodc_createSingleScanPoints}
 \alias{goesaodc_createSingleScanPoints}
-\title{Create spatial points for a single scan}
+\title{Create AOD points from a single GOES scan}
 \usage{
 goesaodc_createSingleScanPoints(
   satID = NULL,

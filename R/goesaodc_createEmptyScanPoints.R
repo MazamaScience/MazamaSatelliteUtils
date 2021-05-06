@@ -1,8 +1,7 @@
-#' @title Create an empty GOES scan SPDF
+#' @title Create NA AOD points from a GOES scan
 #' 
-#' @description Creates a SpatialPointsDataFrame of AOD readings from one or 
-#' more GOES scans. Scans are specified either by filename or satellite + time 
-#' information.
+#' @description Creates a \code{SpatialPointsDataFrame} of NA AOD readings from 
+#' a GOES scan,
 #' 
 #' @param satID ID of the source GOES satellite ('G16' or 'G17').
 #' @param filename Name of a scan file.
@@ -153,7 +152,7 @@ goesaodc_createEmptyScanPoints <- function(
   
   spdf <- sp::SpatialPointsDataFrame(
     coords = dplyr::select(tbl, c(.data$lon, .data$lat)),
-    data = dplyr::select(tbl, -c(.data$lon, .data$lat))
+    data = dplyr::select(tbl, .data$AOD)
   )
   
   # ----- Return ---------------------------------------------------------------

@@ -2,10 +2,10 @@
 #' 
 #' @title Aggregate GOES scan points
 #' 
-#' @description Creates a \code{SpatialPointsDataFrame} of AOD readings from a 
-#' \code{list} of GOES scan \code{SpatialPointsDataFrame}s.
+#' @description Creates a \code{SpatialPointsDataFrame} of aggregated AOD 
+#' readings from a \code{list} of GOES scan \code{SpatialPointsDataFrame}s.
 #' 
-#' @param spdfList A \code{list} of GOES scan \code{SpatialPointsDataFrame}s
+#' @param spdfList A \code{list} of GOES scan \code{SpatialPointsDataFrame}s.
 #' @param fun The function to use for aggregating AOD values. Defaults to 
 #' \code{mean}.
 #' 
@@ -45,13 +45,12 @@ goesaodc_aggregateScanPoints <- function(
       stop("All elements in parameter 'spdfList' must be 'SpatialPointsDataFrame' objects")
   }
   
-  # ----- Aggregate point AOD --------------------------------------------------
+  # ----- Aggregate point AOD values -------------------------------------------
   
   aggregateSpdf <- sp::SpatialPointsDataFrame(
     coords = scanPointsList[[1]]@coords,
     data = data.frame(
-      AOD = rep(NA, dim(scanPointsList[[1]])[1]),
-      DQF = rep(NA, dim(scanPointsList[[1]])[1])
+      AOD = rep(NA, dim(scanPointsList[[1]])[1])
     )
   )
   
