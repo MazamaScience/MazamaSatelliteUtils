@@ -91,11 +91,8 @@ goesaodc_plotScanRaster <- function(
   
   # ----- Validate parameters --------------------------------------------------
   
-  if ( !("RasterBrick" %in% class(raster)) )
-    stop("Parameter 'raster' must be an object of type 'RasterBrick'")
-  
-  if ( !("AOD" %in% names(raster)) )
-    stop("Parameter 'raster' must have an 'AOD' variable")
+  if ( !("RasterLayer" %in% class(raster)) )
+    stop("Parameter 'raster' must be an object of type 'RasterLayer'")
   
   if ( includeMap )
     if ( is.null(zoom) )
