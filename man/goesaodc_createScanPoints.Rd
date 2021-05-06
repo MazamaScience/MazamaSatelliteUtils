@@ -35,7 +35,7 @@ above this level will have their AOD values set to NA. Must be either 0, 1,
 }
 \description{
 Creates a \code{SpatialPointsDataFrame} of AOD readings from a 
-GOES scan, or a list of \code{SpatialPointsDataFrame}s from a series of GOES 
+GOES scan, or a list of \code{SpatialPointsDataFrame}s from a series of 
 scans.
 }
 \details{
