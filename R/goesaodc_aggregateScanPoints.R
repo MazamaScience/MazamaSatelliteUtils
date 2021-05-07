@@ -28,7 +28,7 @@
 #' 
 #' goesaodc_aggregateScanPoints(
 #'   spdfList = scanPointsList,
-#'   na.rm = TRUE
+#'   na.rm = FALSE
 #' )
 #' }
 
@@ -51,30 +51,27 @@ goesaodc_aggregateScanPoints <- function(
       stop("All elements in parameter 'spdfList' must be 'SpatialPointsDataFrame' objects")
   }
   
-  # ----- Aggregate point AOD values -------------------------------------------
+  # ----- Average point AOD values -------------------------------------------
   
-  aggregateSpdf <- sp::SpatialPointsDataFrame(
-    coords = spdfList[[1]]@coords,
+  aodVectors <- lapply(scanPointsList, function(scanPoints) {
+    tibble::as_tibble(scanPoints)$AOD
+  })
+  
+  avgAodValues <-
+    aodVectors %>%
+    dplyr::bind_cols() %>%
+    dplyr::rowwise() %>%
+    rowMeans(na.rm = na.rm)
+  
+  avgSpdf <- sp::SpatialPointsDataFrame(
+    coords = scanPointsList[[1]]@coords,
     data = data.frame(
-      AOD = rep(NA, dim(spdfList[[1]])[1])
+      AOD = avgPointValues
     )
   )
   
-  aodValues <- rep(NA, length(spdfList))
-  
-  for ( i in 1:dim(spdfList[[1]])[1] ) {
-    
-    for ( j in 1:length(spdfList) ) {
-      spdf <- spdfList[[j]]
-      aodValues[j] <- spdf$AOD[i]
-    }
-    
-    aggregateSpdf$AOD[i] <- do.call(fun, list(aodValues, na.rm = na.rm))
-    
-  }
-  
   # ----- Return ---------------------------------------------------------------
   
-  return(aggregateSpdf)
+  return(avgSpdf)
   
 }
