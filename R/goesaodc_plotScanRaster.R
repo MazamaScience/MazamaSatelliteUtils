@@ -4,10 +4,6 @@
 #' 
 #' @param raster A RasterBrick with an AOD variable.
 #' @param bbox Bounding box for the region of interest. Defaults to CONUS.
-#' @param dqfLevel Allowed data quality level. All readings with a DQF value
-#' above this level will have their AOD values set to NA. Must be either 0, 1, 
-#' 2, or 3, with 0 being the highest quality. Defaults to 3.
-#' @param cellSize Size of Raster cells measured in degrees lon/lat.
 #' @param fun Function used to summarize multiple point values within a single 
 #' cell; Defaults to \code{mean}.
 #' @param rasterAlpha Transparency of the raster. If not explicitly defined, it 
@@ -76,8 +72,6 @@
 goesaodc_plotScanRaster <- function(
   raster = NULL,
   bbox = bbox_CONUS,
-  dqfLevel = 3,
-  cellSize = NULL,
   fun = mean,
   rasterAlpha = NULL,
   paletteName = "YlOrRd",
