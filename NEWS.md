@@ -1,3 +1,7 @@
+# MazamaSatelliteUtils 0.4.13
+
+* feat: added 'goesaodc_listScanFiles()' function. 
+
 # MazamaSatelliteUtils 0.4.12
 
 * `goesaodc_createScanPoints()` and `goesaodc_createScanRaster()` no longer 
