@@ -8,6 +8,8 @@ store DQF.
 `RasterBricks` when multiple scans are requested.
 * Added `goesaodc_calcAverageScanPoints()` function.
 * Added `goesaodc_calcAveragecanRaster()` function.
+* Added `goesaodc_calcTrendScanPoints()` function.
+* Added `goesaodc_calcTrendScanRasters()` function.
 * Removed 'Kincade Fire Example' article.
 * Removed `createSpatialPointsVideo_exec` script.
 * Removed `goesaodc_areaPlot()` function.

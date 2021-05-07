@@ -28,7 +28,7 @@
 #' 
 #' goesaodc_calcTrendScanPoints(
 #'   spdfList = scanPointsList,
-#'   na.rm = FALSE
+#'   na.rm = TRUE
 #' )
 #' }
 
