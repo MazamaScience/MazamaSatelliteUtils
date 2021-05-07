@@ -57,28 +57,20 @@ goesaodc_listScanFiles <- function(
       stop(sprintf("timezone \"%s\" is not recognized", timezone))
   }
   
-  # ----- Get all scan files ---------------------------------------------------
+  # ----- Get all available scan files -----------------------------------------
   
-  # Create satUrl for remote searching
   if ( useRemote ) {
-    if ( satID == "G16" ) {
-      satUrl <- paste0(baseUrl, "GOES-16/AODC")
-    } else if ( satID == "G17" ) {
-      satUrl <- paste0(baseUrl, "GOES-17/AODC")
-    } else {
-      stop("Parameter 'satID' must be either 'G16' (East) or 'G17' (West)")
+    
+    # Create url for remote searching
+    if ( useRemote ) {
+      if ( satID == "G16" ) {
+        satUrl <- paste0(baseUrl, "GOES-16/AODC")
+      } else if ( satID == "G17" ) {
+        satUrl <- paste0(baseUrl, "GOES-17/AODC")
+      } else {
+        stop("Parameter 'satID' must be either 'G16' (East) or 'G17' (West)")
+      }
     }
-  }
-  
-  # Build pattern for scan files
-  scanFilePattern <- paste0("OR_ABI-L2-AODC-M[0-9]_", satID, "_s[0-9]+_e[0-9]+_c[0-9]+\\.nc")
-  
-  if ( !useRemote ) {
-    
-    # Create a list of all local scan files
-    allScanFiles <- list.files(getSatelliteDataDir(), pattern = scanFilePattern)
-    
-  } else {
     
     # Create a list of all remote scan files
     links <-
@@ -89,6 +81,12 @@ goesaodc_listScanFiles <- function(
       xml2::xml_attr("href")
     
     allScanFiles <- links[ -(1:5) ]
+    
+  } else {
+    
+    # Create a list of all local scan files
+    scanFilePattern <- paste0("OR_ABI-L2-AODC-M[0-9]_", satID, "_s[0-9]+_e[0-9]+_c[0-9]+\\.nc")
+    allScanFiles <- list.files(getSatelliteDataDir(), pattern = scanFilePattern)
     
   }
   

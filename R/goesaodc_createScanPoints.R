@@ -261,11 +261,9 @@ goesaodc_createSingleScanPoints <- function(
       satID <- stringr::str_match(filename, filePattern)[1,2]
     }
     
-    satUrl <- ifelse(satID == "G16", "GOES-16/AODC/", "GOES-17/AODC/")
-    
     fileUrl <- paste0(
       "https://tools-1.airfire.org/Satellite/",
-      satUrl,
+      ifelse(satID == "G16", "GOES-16/AODC/", "GOES-17/AODC/"),
       filename
     )
     

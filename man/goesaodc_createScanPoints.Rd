@@ -56,7 +56,7 @@ bboxOregon <- c(-125, -116, 42, 47)
 # Create points for a scan specified by satellite + time
 goesaodc_createScanPoints(
   satID = "G17",
-  datetime = "2020-09-08 17:30",
+  datetime = "2020-09-08 12:30",
   timezone = "America/Los_Angeles",
   bbox = bboxOregon,
 )
