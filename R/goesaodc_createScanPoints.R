@@ -279,6 +279,12 @@ goesaodc_createSingleScanPoints <- function(
   # Download the file if it isn't available locally
   if ( !(filename %in% list.files(getSatelliteDataDir())) ) {
     
+    if ( is.null(satID) ) {
+      MazamaCoreUtils::stopIfNull(filename)
+      filePattern <- "OR_ABI-L2-AODC-M[0-9]_(G16|G17)_s[0-9]+_e[0-9]+_c[0-9]+\\.nc"
+      satID <- stringr::str_match(filename, filePattern)[1,2]
+    }
+    
     satUrl <- ifelse(satID == "G16", "GOES-16/AODC/", "GOES-17/AODC/")
     
     fileUrl <- paste0(
