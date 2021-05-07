@@ -131,10 +131,11 @@ setSpatialDataDir("~/Data/Spatial")
 loadSpatialData("NaturalEarthAdm1")
 
 # Get the name of the scan file taken closest to 9am on 2020-09-08 by GOES-17
-scanFilename <- MazamaSatelliteUtils::goasaodc_findClosestScanFile(
+scanFilename <- MazamaSatelliteUtils::goesaodc_listScanFiles(
   satID = "G17",
   datetime = "2020-09-08 9:00",
-  timezone = "America/Los_Angeles"
+  timezone = "America/Los_Angeles",
+  useRemote = TRUE
 )
 
 scanPoints <- goesaodc_createScanPoints(

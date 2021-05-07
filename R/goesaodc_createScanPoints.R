@@ -35,7 +35,7 @@
 #' # Create points for a scan specified by satellite + time
 #' goesaodc_createScanPoints(
 #'   satID = "G17",
-#'   datetime = "2020-09-08 17:30",
+#'   datetime = "2020-09-08 12:30",
 #'   timezone = "America/Los_Angeles",
 #'   bbox = bboxOregon,
 #' )
@@ -106,40 +106,15 @@ goesaodc_createScanPoints <- function(
     if ( is.null(filename) && !is.null(endtime) ) {
       
       # Create a multi-scan spdf list
-      startFilename <- goasaodc_findClosestScanFile(
+      filenames <- goesaodc_listScanFiles(
         satID = satID,
         datetime = datetime,
-        timezone = timezone
+        endtime = endtime,
+        timezone = timezone,
+        useRemote = TRUE
       )
-      
-      endFilename <- goasaodc_findClosestScanFile(
-        satID = satID,
-        datetime = endtime,
-        timezone = timezone
-      )
-      
-      satUrl <- paste0(
-        "https://tools-1.airfire.org/Satellite/",
-        ifelse(satID == "G16", "GOES-16/AODC/", "GOES-17/AODC/")
-      )
-      
-      # Get all remote netCDF files
-      links <-
-        xml2::read_html(satUrl) %>%
-        xml2::xml_child("body") %>%
-        xml2::xml_child("table") %>%
-        xml2::xml_find_all("//a") %>%
-        xml2::xml_attr("href")
-      
-      allScanFiles <- links[ -(1:5) ]
-      
-      startIndex <- which(startFilename == allScanFiles)[1]
-      endIndex <- which(endFilename == allScanFiles)[1] - 1 # Exclusive end bound
-      
-      filenames <- allScanFiles[startIndex:endIndex]
       
       spdfList <- list()
-      
       for ( filename in filenames ) {
         
         scanLabel <- 
@@ -268,10 +243,11 @@ goesaodc_createSingleScanPoints <- function(
   if ( is.null(filename) ) {
     
     # Find which scan file is closest to the requested time
-    filename <- goasaodc_findClosestScanFile(
+    filename <- goesaodc_listScanFiles(
       satID = satID,
       datetime = datetime,
-      timezone = timezone
+      timezone = timezone,
+      useRemote = TRUE
     )
     
   }

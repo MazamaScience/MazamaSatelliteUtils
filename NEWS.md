@@ -1,6 +1,7 @@
 # MazamaSatelliteUtils 0.4.13
 
-* feat: added 'goesaodc_listScanFiles()' function. 
+* Added 'goesaodc_listScanFiles()' function.
+* Removed 'goesaodc_findClosestScanFile()' function.
 
 # MazamaSatelliteUtils 0.4.12
 
