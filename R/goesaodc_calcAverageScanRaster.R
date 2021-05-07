@@ -1,15 +1,13 @@
 #' @export
 #' 
-#' @title Aggregate GOES scan rasters
+#' @title Calculate the average of a series of GOES scan rasters
 #' 
-#' @description Creates a \code{RasterLayer} of aggregated AOD readings from a 
+#' @description Creates a \code{RasterLayer} of averaged AOD readings from a 
 #' \code{RasterBrick} of GOES scan \code{RasterLayers}s.
 #' 
 #' @param rasterBrick A \code{RasterBrick} of GOES scan \code{RasterLayers}s.
-#' @param fun The function to use for aggregating AOD values. Defaults to 
-#' \code{mean}.
-#' @param na.rm Logical flag whether to remove NA values before performing the
-#' \code{fun} function. Defaults to \code{FALSE}.
+#' @param na.rm Logical flag whether to remove NA values before calculating the 
+#' average. Defaults to \code{FALSE}.
 #' 
 #' @examples
 #' \donttest{
@@ -28,15 +26,14 @@
 #'   cellSize = 0.05
 #' )
 #' 
-#' goesaodc_aggregateScanRasters(
+#' goesaodc_calcAverageScanRaster(
 #'   rasterBrick = scanRasterBrick,
 #'   na.rm = TRUE
 #' )
 #' }
 
-goesaodc_aggregateScanRasters <- function(
+goesaodc_calcAverageScanRaster <- function(
   rasterBrick = NULL,
-  fun = mean,
   na.rm = FALSE
 ) {
   
@@ -48,7 +45,7 @@ goesaodc_aggregateScanRasters <- function(
   if ( dim(rasterBrick)[3] == 0 )
     stop("Parameter 'rasterBrick' must contain at least one 'RasterLayer'")
   
-  # ----- Aggregate cell AOD values --------------------------------------------
+  # ----- Calculate average cell AOD values ------------------------------------
   
   aggregateRaster <- raster::calc(
     rasterBrick,

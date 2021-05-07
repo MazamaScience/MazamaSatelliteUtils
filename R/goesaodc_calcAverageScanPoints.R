@@ -1,15 +1,13 @@
 #' @export
 #' 
-#' @title Aggregate GOES scan points
+#' @title Calculate the average of a series of GOES scan points
 #' 
-#' @description Creates a \code{SpatialPointsDataFrame} of aggregated AOD 
+#' @description Creates a \code{SpatialPointsDataFrame} of averaged AOD 
 #' readings from a \code{list} of GOES scan \code{SpatialPointsDataFrame}s.
 #' 
 #' @param spdfList A \code{list} of GOES scan \code{SpatialPointsDataFrame}s.
-#' @param fun The function to use for aggregating AOD values. Defaults to 
-#' \code{mean}.
-#' @param na.rm Logical flag whether to remove NA values before performing the
-#' \code{fun} function. Defaults to \code{FALSE}.
+#' @param na.rm Logical flag whether to remove NA values before calculating the
+#' average. Defaults to \code{FALSE}.
 #' 
 #' @examples
 #' \donttest{
@@ -26,15 +24,14 @@
 #'   bbox = bboxOregon
 #' )
 #' 
-#' goesaodc_aggregateScanPoints(
+#' goesaodc_calcAverageScanPoints(
 #'   spdfList = scanPointsList,
 #'   na.rm = FALSE
 #' )
 #' }
 
-goesaodc_aggregateScanPoints <- function(
+goesaodc_calcAverageScanPoints <- function(
   spdfList = NULL,
-  fun = mean,
   na.rm = FALSE
 ) {
   
@@ -51,9 +48,9 @@ goesaodc_aggregateScanPoints <- function(
       stop("All elements in parameter 'spdfList' must be 'SpatialPointsDataFrame' objects")
   }
   
-  # ----- Average point AOD values -------------------------------------------
+  # ----- Calculate average point AOD values -----------------------------------
   
-  aodVectors <- lapply(scanPointsList, function(scanPoints) {
+  aodVectors <- lapply(spdfList, function(scanPoints) {
     tibble::as_tibble(scanPoints)$AOD
   })
   
@@ -64,9 +61,9 @@ goesaodc_aggregateScanPoints <- function(
     rowMeans(na.rm = na.rm)
   
   avgSpdf <- sp::SpatialPointsDataFrame(
-    coords = scanPointsList[[1]]@coords,
+    coords = spdfList[[1]]@coords,
     data = data.frame(
-      AOD = avgPointValues
+      AOD = avgAodValues
     )
   )
   
