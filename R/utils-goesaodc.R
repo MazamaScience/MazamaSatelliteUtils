@@ -237,7 +237,7 @@ goesaodc_convertFilenameToDatetime <- function(
   
   filePattern <- "OR_ABI-L2-AODC-M[0-9]_G(16|17)_s[0-9]+_e[0-9]+_c[0-9]+\\.nc"
   
-  if ( regexpr(filePattern, file) == -1 ) {
+  if ( all(regexpr(filePattern, file) == -1) ) {
     stop("argument 'file' does not match expected file name format")
   }
   
