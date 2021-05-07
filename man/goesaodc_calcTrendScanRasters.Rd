@@ -34,5 +34,10 @@ scanRasterBrick <- goesaodc_createScanRaster(
   bbox = bboxOregon,
   cellSize = 0.05
 )
+
+goesaodc_calcTrendScanRasters(
+  rasterBrick = scanRasterBrick,
+  na.rm = TRUE
+)
 }
 }

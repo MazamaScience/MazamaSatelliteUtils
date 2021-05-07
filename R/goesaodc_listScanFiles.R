@@ -17,7 +17,7 @@
 #'   datetime = "2020-09-08 12:30",
 #'   timezone = "UTC",
 #'   useRemote = TRUE
-#' ) %>% goesaodc_convertFilenameToDatetime
+#' )
 #' 
 #' goesaodc_listScanFiles(
 #'   satID = "G17",
@@ -25,7 +25,7 @@
 #'   endtime = "2020-09-08 13:00",
 #'   timezone = "UTC",
 #'   useRemote = TRUE
-#' ) %>% goesaodc_convertFilenameToDatetime
+#' )
 #' }
 
 goesaodc_listScanFiles <- function(
