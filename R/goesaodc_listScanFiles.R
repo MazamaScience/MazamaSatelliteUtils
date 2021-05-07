@@ -1,3 +1,33 @@
+#' @export
+#'
+#' @title List GOES AOD scan files
+#'
+#' @description Lists GOES AOD scan files for a given datetime or time range. If
+#' just \code{datetime} is given, then only the scan file closest to that time
+#' will be listed. If \code{endtime} is specified as well, then all scans from
+#' \code{datetime} up to (but not including) \code{endtime} will be listed.
+#' 
+#' @examples
+#' \donttest{
+#' library(MazamaSatelliteUtils)
+#' setSatelliteDataDir("~/Data/Satellite")
+#' 
+#' goesaodc_listScanFiles(
+#'   satID = "G17",
+#'   datetime = "2020-09-08 12:30",
+#'   timezone = "UTC",
+#'   useRemote = TRUE
+#' ) %>% goesaodc_convertFilenameToDatetime
+#' 
+#' goesaodc_listScanFiles(
+#'   satID = "G17",
+#'   datetime = "2020-09-08 12:00",
+#'   endtime = "2020-09-08 13:00",
+#'   timezone = "UTC",
+#'   useRemote = TRUE
+#' ) %>% goesaodc_convertFilenameToDatetime
+#' }
+
 goesaodc_listScanFiles <- function(
   satID = NULL,
   datetime = NULL,
@@ -72,12 +102,12 @@ goesaodc_listScanFiles <- function(
   )
   
   # Find the scan file closest to datetime
-  startFilename <- goasaodc_findClosestScanFileV2(
+  startFilename <- goesaodc_findClosestScanFile(
     scanFiles = allScanFiles,
     datetime = datetime
   )
   
-  startIndex <- which(startFilename == allScanFiles)[1]
+  startClosestIndex <- which(startFilename == allScanFiles)[1]
   
   # Return all the scan files in the time range
   if ( !is.null(endtime) ) {
@@ -90,12 +120,20 @@ goesaodc_listScanFiles <- function(
     )
     
     # Find the scan file closest to endtime
-    endFilename <- goasaodc_findClosestScanFileV2(
+    endFilename <- goesaodc_findClosestScanFile(
       scanFiles = allScanFiles,
       datetime = endtime
     )
     
-    endIndex <- which(endFilename == allScanFiles)[1] - 1 # Exclusive endtime bound
+    endClosestIndex <- which(endFilename == allScanFiles)[1]
+    
+    # The first scan file must be >= datetime
+    startScanTimeDiff <- goesaodc_convertFilenameToDatetime(startFilename) - datetime
+    startIndex <- ifelse(startScanTimeDiff < 0, startClosestIndex + 1, startClosestIndex)
+      
+    # The last scan file must be < endtime
+    endScanTimeDiff <- goesaodc_convertFilenameToDatetime(startFilename) - datetime
+    endIndex <- ifelse(endScanTimeDiff >= 0, endClosestIndex - 1, endClosestIndex)
     
     scanFiles <- allScanFiles[startIndex:endIndex]
     
@@ -104,7 +142,7 @@ goesaodc_listScanFiles <- function(
   }
   
   # Return the scan file closest to datetime
-  scanFile <- allScanFiles[startIndex]
+  scanFile <- allScanFiles[startClosestIndex]
   
   # ----- Return ---------------------------------------------------------------
   
@@ -113,7 +151,7 @@ goesaodc_listScanFiles <- function(
 }
 
 
-goasaodc_findClosestScanFileV2 <- function(
+goesaodc_findClosestScanFile <- function(
   scanFiles = NULL,
   datetime = NULL
 ) {
@@ -163,28 +201,5 @@ goasaodc_findClosestScanFileV2 <- function(
   # ----- Return ---------------------------------------------------------------
   
   return(closestScanFile)
-  
-}
-
-
-if (FALSE) {
-  
-  library(MazamaSatelliteUtils)
-  setSatelliteDataDir("~/Data/Satellite")
-  
-  goesaodc_listScanFiles(
-    satID = "G17",
-    datetime = "2020-09-08 12:00",
-    timezone = "UTC",
-    useRemote = TRUE
-  )
-  
-  goesaodc_listScanFiles(
-    satID = "G17",
-    datetime = "2020-09-08 12:00",
-    endtime = "2020-09-08 13:00",
-    timezone = "UTC",
-    useRemote = TRUE
-  )
   
 }
