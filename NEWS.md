@@ -1,3 +1,28 @@
+# MazamaSatelliteUtils 0.4.14
+
+* Renamed the following functions:
+  * `goesaodc_openFile()` to `goesaodc_openScanFile()`
+  * `goesaodc_createTibble()` to `goesaodc_createScanTibble`
+* Removed the following functions/scripts:
+  * `goesaodc_listFiles()`
+  * `goesaodc_listDaytimeFiles()`
+  * `goesaodc_downloadAOD()`
+  * `goesaodc_downloadDaytimeAOD()`
+  * `goesaodc_findClosestScanFile()`
+  * `goesaodc_createSpatialPoints()`
+  * `goesaodc_createRaster()`
+  * `goesaodc_createRasterStack()`
+  * `goesaodc_createDaytimeRasterStack()` 
+  * `goesaodc_plotSpatialPoints()`
+  * `goesaodc_areaPlot()`
+  * `raster_createLocationTimeseries()`
+  * `createSpatialPointsVideo_exec.R`
+* Removed the following articles:
+  * Milepost 97 Example           
+  * AOD Data Structures
+  * Grid Sizes
+  * Working With GOES AOD Rasters
+
 # MazamaSatelliteUtils 0.4.13
 
 * Added `goesaodc_listScanFiles()` function.

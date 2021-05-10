@@ -31,7 +31,7 @@
 #'
 #' nc <- goesaodc_openScanFile(scanFile)
 #'
-#' tbl <- goesaodc_createTibble(nc)
+#' tbl <- goesaodc_createScanTibble(nc)
 #' head(tbl)
 #' 
 #' # Tibble based on bbox filtered region
@@ -39,11 +39,11 @@
 #' # Kincade fire region
 #' bbox <- c(-124, -120, 36, 39)
 #' 
-#' filtered_tbl <- goesaodc_createTibble(nc, bbox)
+#' filtered_tbl <- goesaodc_createScanTibble(nc, bbox)
 #' head(filtered_tbl)
 #' }
 
-goesaodc_createTibble <- function(
+goesaodc_createScanTibble <- function(
   nc = NULL, 
   bbox = bbox_CONUS,
   dqfLevel = 3
