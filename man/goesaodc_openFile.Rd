@@ -29,16 +29,13 @@ console or calling function.
 library(MazamaSatelliteUtils)
 setSatelliteDataDir("~/Data/Satellite")
 
-goesaodc_downloadAOD(
+scanFile <- goesaodc_downloadScanFiles(
   satID = "G16", 
-  datetime = "201924918", 
-  timezone = "UTC", 
-  isJulian = TRUE
+  datetime = "2019-09-06 18:00", 
+  timezone = "UTC"
 )
-  
-netCDF <- "OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc"
 
-nc <- goesaodc_openFile(netCDF)
+goesaodc_openFile(scanFile)
 }
 }
 \seealso{

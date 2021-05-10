@@ -14,6 +14,26 @@ goesaodc_listScanFiles(
   baseUrl = "https://tools-1.airfire.org/Satellite/"
 )
 }
+\arguments{
+\item{satID}{ID of the source GOES satellite ('G16' or 'G17').}
+
+\item{datetime}{Datetime in Ymd HMS format or a \code{POSIXct}.}
+
+\item{endtime}{End time in Ymd HMS format or a \code{POSIXct}.}
+
+\item{timezone}{Timezone used to interpret \code{datetime} and 
+\code{endtime}; Defaults to UTC.}
+
+\item{isJulian}{Logical value determining whether \code{datetime} (and
+optionally \code{endtime}) should be interpreted as a Julian date with day of
+ year as a decimal number. Defaults to FALSE.}
+
+\item{useRemote}{Logical specifying whether to look for files in 
+\code{getSatelliteDataDir()} or \code{baseUrl}. Defaults to FALSE.}
+
+\item{baseUrl}{URL of remote database. Defaults to 
+"https://tools-1.airfire.org/Satellite/".}
+}
 \description{
 Lists GOES AOD scan files for a given datetime or time range. If
 just \code{datetime} is given, then only the scan file closest to that time

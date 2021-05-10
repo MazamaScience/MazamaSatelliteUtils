@@ -8,6 +8,19 @@
 #' all scans from \code{datetime} up to (but not including) \code{endtime} will 
 #' be downloaded.
 #' 
+#' @param satID ID of the source GOES satellite ('G16' or 'G17').
+#' @param datetime Datetime in Ymd HMS format or a \code{POSIXct}.
+#' @param endtime End time in Ymd HMS format or a \code{POSIXct}.
+#' @param timezone Timezone used to interpret \code{datetime} and 
+#' \code{endtime}; Defaults to UTC.
+#' @param isJulian Logical value determining whether \code{datetime} (and
+#' optionally \code{endtime}) should be interpreted as a Julian date with day of
+#'  year as a decimal number. Defaults to FALSE.
+#' @param filenames Names of scan files to download.
+#' @param verbose Logical flag whether to print download progress messages.
+#' @param baseUrl URL of remote database. Defaults to 
+#' "https://tools-1.airfire.org/Satellite/".
+#' 
 #' @examples
 #' \donttest{
 #' library(MazamaSatelliteUtils)
@@ -43,8 +56,8 @@ goesaodc_downloadScanFiles <- function(
   
   # ----- Determine which scan files to download -------------------------------
   
-  if ( is.null(filenames) ) {
-    filenames <- goesaodc_listScanFiles(
+  requestedFilenames <- if ( is.null(filenames) ) {
+    goesaodc_listScanFiles(
       satID = satID,
       datetime = datetime,
       endtime = endtime,
@@ -53,15 +66,30 @@ goesaodc_downloadScanFiles <- function(
       useRemote = TRUE,
       baseUrl = baseUrl
     )
+  } else {
+    filenames
   }
   
-  # TODO: Identify scan files not already on disk
+  # TODO: Only download the requested files that aren't already available 
+  # locally
+  
+  # localFilenames <- goesaodc_listScanFiles(
+  #   satID = satID,
+  #   datetime = datetime,
+  #   endtime = endtime,
+  #   timezone = timezone,
+  #   isJulian = isJulian,
+  #   useRemote = FALSE
+  # )
+  # 
+  # missingFilenames <- setdiff(requestedFilenames, localFilenames)
+  
+  missingFilenames <- requestedFilenames
   
   # ----- Download scan files --------------------------------------------------
   
-  for ( i in 1:length(filenames) ) {
-    
-    filename <- filenames[i]
+  i <- 1
+  for ( filename in missingFilenames ) {
     
     if ( is.null(satID) ) {
       MazamaCoreUtils::stopIfNull(filename)
@@ -89,17 +117,22 @@ goesaodc_downloadScanFiles <- function(
     
     if ( "try-error" %in% class(result) ) {
       err_msg <- geterrmessage()
-      if ( MazamaCoreUtils::logger.isInitialized() ) {
+      if ( MazamaCoreUtils::logger.isInitialized() )
         MazamaCoreUtils::logger.warn(err_msg)
-      }
     } else {
       if ( verbose ) {
-        message(paste0("Downloaded (", i, "/", length(filenames), "): ", filename))
+        message(paste0(
+          "Downloaded ",
+          "(", i, "/", length(missingFilenames), "): ",
+          filename
+        ))
       }
     }
     
+    i <- i + 1
+    
   }
   
-  return(filenames)
+  return(requestedFilenames)
   
 }

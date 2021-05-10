@@ -25,18 +25,19 @@
 #' oregon <- subset(USCensusStates, stateCode == "OR")
 #' bbox <- sp::bbox(oregon)
 #' 
-#' goesaodc_downloadAOD(
+#' scanFile <- goesaodc_downloadScanFiles(
 #'   satID = "G16", 
-#'   datetime = "201924918", 
-#'   timezone = "UTC", 
-#'   isJulian = TRUE
+#'   datetime = "2019-09-06 18:00", 
+#'   timezone = "UTC"
 #' )
-#'   
-#' ncFile <- "OR_ABI-L2-AODC-M6_G16_s20192491826095_e20192491828468_c20192491835127.nc"
-#' nc <- goesaodc_openFile(ncFile)
 #' 
-#' raster <- goesaodc_createRaster(nc, res = 0.1, dqfLevel = 2)
-#' extent <- raster::extent(raster)
+#' scanRaster <- goesaodc_createScanRaster(
+#'   filename = scanFile,
+#'   cellSize = 0.1,
+#'   dqfLevel = 2
+#' )
+#' 
+#' extent <- raster::extent(scanRaster)
 #' 
 #' # Convert bbox
 #' bbox

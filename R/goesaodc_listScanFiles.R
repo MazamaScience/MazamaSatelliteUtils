@@ -7,6 +7,19 @@
 #' will be listed. If \code{endtime} is specified as well, then all scans from
 #' \code{datetime} up to (but not including) \code{endtime} will be listed.
 #' 
+#' @param satID ID of the source GOES satellite ('G16' or 'G17').
+#' @param datetime Datetime in Ymd HMS format or a \code{POSIXct}.
+#' @param endtime End time in Ymd HMS format or a \code{POSIXct}.
+#' @param timezone Timezone used to interpret \code{datetime} and 
+#' \code{endtime}; Defaults to UTC.
+#' @param isJulian Logical value determining whether \code{datetime} (and
+#' optionally \code{endtime}) should be interpreted as a Julian date with day of
+#'  year as a decimal number. Defaults to FALSE.
+#' @param useRemote Logical specifying whether to look for files in 
+#' \code{getSatelliteDataDir()} or \code{baseUrl}. Defaults to FALSE.
+#' @param baseUrl URL of remote database. Defaults to 
+#' "https://tools-1.airfire.org/Satellite/".
+#' 
 #' @examples
 #' \donttest{
 #' library(MazamaSatelliteUtils)
@@ -161,43 +174,40 @@ goesaodc_findClosestScanFile <- function(
   
   # ----- Subset scan files ----------------------------------------------------
   
-  # Find files covering the hour of the requested time
-  # TODO: It's possible that the closest scan is in the next/prev hour, or day, 
-  # or year...
-  hourScanFilesPattern <- strftime(datetime, "_s%Y%j%H", tz = "UTC")
-  hourScanFilesIndices <- which(stringr::str_detect(scanFiles, hourScanFilesPattern))
-  hourScanFiles <- scanFiles[hourScanFilesIndices]
+  # Find files covering the day of the requested time
+  # TODO: It's possible that the closest scan is in the next or previous day, or
+  # year...
   
-  if ( length(hourScanFiles) == 0 )
-    stop("No scan files found for this hour.")
+  dayFilesPattern <- strftime(datetime, "_s%Y%j", tz = "UTC")
+  dayFilesIndices <- which(stringr::str_detect(scanFiles, dayFilesPattern))
+  dayFilenames <- scanFiles[dayFilesIndices]
   
   # ----- Find closest scan file -----------------------------------------------
   
-  closestScanFile <- hourScanFiles[1]
-  shortestDuration <- lubridate::time_length(lubridate::duration(1, "hours"))
+  closestFilename <- dayFilenames[1]
+  shortestDuration <- lubridate::time_length(lubridate::duration(1, "year"))
   
-  for ( scanFile in hourScanFiles ) {
+  for ( filename in dayFilenames ) {
     
     # Convert filename to POSIXt
-    scanFileDatetime <- goesaodc_convertFilenameToDatetime(scanFile)
+    fileDatetime <- goesaodc_convertFilenameToDatetime(filename)
     
     # Calculate difference from requested datetime
-    interval <- lubridate::interval(scanFileDatetime, datetime)
+    interval <- lubridate::interval(fileDatetime, datetime)
     duration <- lubridate::time_length(interval)
     
     # Check if this is the closest scan to the requested datetime
     if ( abs(duration) < shortestDuration ) {
-      closestScanFile = scanFile
+      closestFilename <- filename
       shortestDuration <- duration
     }
     
-    # TODO: Quick exit if current interval is longer than the last. Probably 
-    # overkill if an hour only has ~12 scans
+    # TODO: Quick exit if the current duration is longer than the last
     
   }
   
   # ----- Return ---------------------------------------------------------------
   
-  return(closestScanFile)
+  return(closestFilename)
   
 }

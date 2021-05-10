@@ -23,13 +23,13 @@
 #'
 #' setSatelliteDataDir("~/Data/Satellite")
 #' 
-#' netCDF <- goesaodc_downloadAOD(
+#' scanFile <- goesaodc_downloadScanFiles(
 #'   satID = "G17", 
-#'   datetime = "2019-10-27 10", 
+#'   datetime = "2019-10-27 10:00",
 #'   timezone = "America/Los_Angeles" 
-#' )[1]
+#' )
 #'
-#' nc <- goesaodc_openFile(netCDF)
+#' nc <- goesaodc_openFile(scanFile)
 #'
 #' tbl <- goesaodc_createTibble(nc)
 #' head(tbl)

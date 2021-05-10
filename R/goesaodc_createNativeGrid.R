@@ -23,25 +23,27 @@
 #'
 #' setSatelliteDataDir("~/Data/Satellite")
 #' 
-#' goesaodc_downloadAOD(
+#' goesaodc_downloadScanFiles(
 #'   satID = "G17", 
 #'   datetime = "2019-10-27 14:00",
+#'   endtime = "2019-10-27 15:00",
 #'   timezone = "America/Los_Angeles"
 #' )
 #'
-#' files <- goesaodc_listFiles(
+#' scanFilenames <- goesaodc_listScanFiles(
 #'   satID = "G17",
 #'   datetime = "2019-10-27 14:00",
+#'   endtime = "2019-10-27 15:00",
 #'   timezone = "America/Los_Angeles"
 #' )
 #' 
 #' ncList <- list()
-#' for ( file in files ) {
+#' for ( filename in scanFilenames ) {
 #'   label <- 
-#'     file %>%
+#'     filename %>%
 #'     goesaodc_convertFilenameToDatetime() %>%
 #'     MazamaCoreUtils::timeStamp(unit = "sec", timezone = "UTC")
-#'   ncList[[label]] <- goesaodc_openFile(basename(file))
+#'   ncList[[label]] <- goesaodc_openFile(basename(filename))
 #' }
 #'
 #' # Kincade fire region
@@ -273,8 +275,12 @@ if ( FALSE ) {
   setSatelliteDataDir("~/Data/Satellite")
   
   # nc file
-  #files <- goesaodc_downloadAOD("G17", 2019102714, timezone = "America/Los_Angeles")
-  files <- goesaodc_listFiles("G17", "2019-10-27 14:00", timezone = "America/Los_Angeles")
+  files <- goesaodc_listScanFiles(
+    satID = "G17",
+    datetime = "2019-10-27 14:00",
+    endtime = "2019-10-27 15:00",
+    timezone = "America/Los_Angeles"
+  )
   
   ncList <- list()
   for ( file in files ) {

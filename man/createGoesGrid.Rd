@@ -25,19 +25,16 @@ a GOES East or West grid in the directory previously set with
 \examples{
 \donttest{
 library(MazamaSatelliteUtils)
-
 setSatelliteDataDir("~/Data/Satellite")
-outputDir <- getSatelliteDataDir()
 
-nc_file <- goesaodc_listFiles(
+scanFilename <- goesaodc_listScanFiles(
   satID = "G16", 
-  datetime = "201924918",
+  datetime = "2019-9-6 18:00",
   timezone = "UTC",
-  isJulian = TRUE
-)[1]
+)
    
-nc <- goesaodc_openFile(nc_file)
-G16_filepath <- file.path(outputDir, "goesEastGrid.rda")
+nc <- goesaodc_openFile(scanFilename)
+G16_filepath <- file.path(getSatelliteDataDir(), "goesEastGrid.rda")
 
 createGoesGrid(nc, G16_filepath)
 } 
