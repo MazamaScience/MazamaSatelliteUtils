@@ -54,8 +54,8 @@ goesaodc_calcTrendScanRasters <- function(
   trendValues <- 
     tibble::tibble(half1Avg, half2Avg) %>%
     dplyr::rowwise() %>%
-    dplyr::mutate(trend = half2Avg - half1Avg) %>%
-    dplyr::pull(trend)
+    dplyr::mutate(trend = .data$half2Avg - .data$half1Avg) %>%
+    dplyr::pull(.data$trend)
   
   trendRaster <- raster::raster(rasterBrick)
   values(trendRaster) <- trendValues

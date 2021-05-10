@@ -52,11 +52,11 @@ goesaodc_calcTrendScanPoints <- function(
   trendValues <- 
     tibble::tibble(half1Avg, half2Avg) %>%
     dplyr::rowwise() %>%
-    dplyr::mutate(trend = half2Avg - half1Avg) %>%
-    dplyr::pull(trend)
+    dplyr::mutate(trend = .data$half2Avg - .data$half1Avg) %>%
+    dplyr::pull(.data$trend)
   
   trendSpdf <- sp::SpatialPointsDataFrame(
-    coords = scanPointsList[[1]]@coords,
+    coords = spdfList[[1]]@coords,
     data = data.frame(
       AOD = trendValues
     )
