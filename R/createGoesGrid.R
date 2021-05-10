@@ -25,7 +25,7 @@
 #'   timezone = "UTC",
 #' )
 #'    
-#' nc <- goesaodc_openFile(scanFilename)
+#' nc <- goesaodc_openScanFile(scanFilename)
 #' G16_filepath <- file.path(getSatelliteDataDir(), "goesEastGrid.rda")
 #' 
 #' createGoesGrid(nc, G16_filepath)

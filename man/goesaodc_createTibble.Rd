@@ -36,7 +36,7 @@ scanFile <- goesaodc_downloadScanFiles(
   timezone = "America/Los_Angeles" 
 )
 
-nc <- goesaodc_openFile(scanFile)
+nc <- goesaodc_openScanFile(scanFile)
 
 tbl <- goesaodc_createTibble(nc)
 head(tbl)

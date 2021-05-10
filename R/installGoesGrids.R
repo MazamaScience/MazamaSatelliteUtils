@@ -54,7 +54,7 @@ installGoesGrids <- function(
       timezone = "UTC"
     )
     
-    nc <- goesaodc_openFile(nc_file)
+    nc <- goesaodc_openScanFile(nc_file)
     createGoesGrid(nc, G16_filepath)
     
     message(paste0("... done!"))
@@ -87,7 +87,7 @@ installGoesGrids <- function(
       timezone = "UTC"
     )
     
-    nc <- goesaodc_openFile(nc_file)
+    nc <- goesaodc_openScanFile(nc_file)
     createGoesGrid(nc, G17_filepath)
     message(paste0("... done!"))
     

@@ -281,7 +281,7 @@ goesaodc_createSingleScanPoints <- function(
   
   # ----- Create spatial points ------------------------------------------------
   
-  nc <- goesaodc_openFile(filename)
+  nc <- goesaodc_openScanFile(filename)
   
   tbl <- goesaodc_createTibble(nc, bbox, dqfLevel)
   

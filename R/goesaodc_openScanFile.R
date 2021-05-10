@@ -29,10 +29,10 @@
 #'   timezone = "UTC"
 #' )
 #' 
-#' goesaodc_openFile(scanFile)
+#' goesaodc_openScanFile(scanFile)
 #' }
 
-goesaodc_openFile <- function(
+goesaodc_openScanFile <- function(
   filename = NULL,
   dataDir = getSatelliteDataDir()
 ) {
@@ -48,7 +48,7 @@ goesaodc_openFile <- function(
   
   if ( length(filename) == 1 ) {
     
-    nc <- goesaodc_openSingleFile(filename, dataDir)
+    nc <- goesaodc_openSingleScanFile(filename, dataDir)
     
   } else {
     
@@ -62,7 +62,7 @@ goesaodc_openFile <- function(
         goesaodc_convertFilenameToDatetime() %>%
         MazamaCoreUtils::timeStamp(unit = "sec", timezone = "UTC")
       
-      nc[[label]] <- goesaodc_openSingleFile(fn, dataDir)
+      nc[[label]] <- goesaodc_openSingleScanFile(fn, dataDir)
       
     }
     
@@ -75,7 +75,7 @@ goesaodc_openFile <- function(
 }
 
 # Internal helper function
-goesaodc_openSingleFile <- function(
+goesaodc_openSingleScanFile <- function(
   filename = NULL,
   dataDir = getSatelliteDataDir()
 ) {
