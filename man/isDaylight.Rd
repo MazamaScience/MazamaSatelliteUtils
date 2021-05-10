@@ -45,14 +45,16 @@ scanFile <- goesaodc_downloadScanFiles(
   timezone = "UTC"
 )
 
-nc <- goesaodc_openFile(scanFile)
-
-raster <- goesaodc_createRaster(nc, res = 0.1, dqfLevel = 2)
+raster <- goesaodc_createScanRaster(
+  filename = scanFile,
+  cellSize = 0.1,
+  dqfLevel = 2
+)
 
 extent <- raster::extent(raster)
 
 isDaylight(
-  datetime = "2019-09-06 12",
+  datetime = "2019-09-06 12:00",
   bbox = extent,
   timezone = "UTC"
 )
