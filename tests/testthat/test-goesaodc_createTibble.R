@@ -1,4 +1,4 @@
-context("test-goesaodc_createTibble")
+context("test-goesaodc_createScanTibble")
 
 # ---- TEST PARAMS -------------------------------------------------------------
 
@@ -8,7 +8,7 @@ scanFile <- goesaodc_downloadScanFiles(
   timezone = "UTC"
 )
 
-nc <- goesaodc_openFile(scanFile)
+nc <- goesaodc_openScanFile(scanFile)
 kincade_bbox <- c(-124, -120, 36, 39)
 
 # ---- Original, full extent use case ------------------------------------------
@@ -16,7 +16,7 @@ kincade_bbox <- c(-124, -120, 36, 39)
 test_that("create tibble from full extents", {
   
   expect_error( 
-    goesaodc_createTibble(nc),
+    goesaodc_createScanTibble(nc),
     NA
   )
   
@@ -27,7 +27,7 @@ test_that("create tibble from full extents", {
 test_that("create tibble from filtered bbox extents", {
   
   expect_error(
-    goesaodc_createTibble(nc, bbox = kincade_bbox),
+    goesaodc_createScanTibble(nc, bbox = kincade_bbox),
     NA
   )
   
@@ -37,7 +37,7 @@ test_that("create tibble from filtered bbox extents", {
 
 test_that("tibble bbox filtering is correct", {
   
-  filter_tbl <- goesaodc_createTibble(
+  filter_tbl <- goesaodc_createScanTibble(
     nc,
     bbox = kincade_bbox
   )

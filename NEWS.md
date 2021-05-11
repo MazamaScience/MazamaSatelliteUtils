@@ -1,5 +1,7 @@
 # MazamaSatelliteUtils 0.4.14
 
+* `goesaodc_createScanPoints()` and `goesaodc_createScanRaster()` functions no
+longer take `satID`, `datetime`, `endtime`, and `timezone` parameters.
 * Renamed the following functions:
   * `goesaodc_openFile()` to `goesaodc_openScanFile()`
   * `goesaodc_createTibble()` to `goesaodc_createScanTibble`

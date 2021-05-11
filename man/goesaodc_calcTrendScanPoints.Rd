@@ -25,11 +25,15 @@ setSatelliteDataDir("~/Data/Satellite")
 
 bboxOregon <- c(-125, -116, 42, 47)
 
-scanPointsList <- goesaodc_createScanPoints(
+scanFiles <- goesaodc_listScanFiles(
   satID = "G17",
   datetime = "2020-09-08 12:00",
   endtime = "2020-09-08 13:00",
-  timezone = "America/Los_Angeles",
+  timezone = "America/Los_Angeles"
+)
+
+scanPointsList <- goesaodc_createScanPoints(
+  filename = scanFiles,
   bbox = bboxOregon
 )
 

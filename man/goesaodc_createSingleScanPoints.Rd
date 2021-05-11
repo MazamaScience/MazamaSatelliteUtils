@@ -5,22 +5,12 @@
 \title{Create AOD points from a single GOES scan}
 \usage{
 goesaodc_createSingleScanPoints(
-  satID = NULL,
-  datetime = NULL,
-  timezone = "UTC",
   filename = NULL,
   bbox = bbox_CONUS,
   dqfLevel = 3
 )
 }
 \arguments{
-\item{satID}{ID of the source GOES satellite ('G16' or 'G17').}
-
-\item{datetime}{Datetime in Ymd HMS format or a \code{POSIXct}.}
-
-\item{timezone}{Timezone used to interpret \code{datetime} and 
-\code{endtime}; Defaults to UTC.}
-
 \item{filename}{The name of the scan file.}
 
 \item{bbox}{Bounding box for the region of interest; Defaults to CONUS.}
@@ -30,12 +20,7 @@ above this level will have their AOD values set to NA. Must be either 0, 1,
 2, or 3, with 0 being the highest quality. Defaults to 3.}
 }
 \description{
-Creates a \code{SpatialPointsDataFrame} from a GOES scan.
-}
-\details{
-A scan can be identified by either giving its \code{filename}, or by
-providing the \code{satID}, \code{datetime}, and \code{timezone} (which will 
-be used to determine the closest matching scan).
+Creates a \code{SpatialPointsDataFrame} from a GOES scan file.
 }
 \examples{
 \donttest{
@@ -44,19 +29,15 @@ setSatelliteDataDir("~/Data/Satellite")
 
 bboxOregon <- c(-125, -116, 42, 47)
 
-# Create points from a scan specified by satellite and time
-MazamaSatelliteUtils:::goesaodc_createSingleScanPoints(
+scanFile <- goesaodc_listScanFiles(
   satID = "G17",
-  datetime = "2020-09-08 17:30",
-  timezone = "America/Los_Angeles",
-  bbox = bboxOregon
+  datetime = "2020-09-08 12:30",
+  timezone = "America/Los_Angeles"
 )
 
-# Create points from a scan file
 MazamaSatelliteUtils:::goesaodc_createSingleScanPoints(
-  filename = "OR_ABI-L2-AODC-M6_G17_s20202530031174_e20202530033547_c20202530035523.nc",
-  bbox = bboxOregon,
-  dqfLevel = 2
+  filename = scanFile,
+  bbox = bboxOregon
 )
 }
 }

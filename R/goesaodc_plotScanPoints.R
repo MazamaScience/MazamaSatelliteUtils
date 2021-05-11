@@ -35,10 +35,14 @@
 #' 
 #' bboxKingcadeFire <- c(-124, -120, 36, 39)
 #' 
-#' scanPoints <- goesaodc_createScanPoints(
+#' scanFile <- goesaodc_listScanFiles(
 #'   satID = "G17",
 #'   datetime = "2019-10-27 10:00",
-#'   timezone = "America/Los_Angeles",
+#'   timezone = "America/Los_Angeles"
+#' )
+#' 
+#' scanPoints <- goesaodc_createScanPoints(
+#'   filename = scanFile,
 #'   bbox = bboxKingcadeFire
 #' )
 #' 

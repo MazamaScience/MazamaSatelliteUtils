@@ -3,20 +3,8 @@
 #' @title Create rasters from GOES scans
 #' 
 #' @description Creates a \code{RasterLayer} of AOD readings from a GOES scan, 
-#' or a \code{RasterBrick} of \code{RasterLayer}s from a series of scans.
+#' file or a \code{RasterBrick} of \code{RasterLayer}s from a series of files.
 #' 
-#' @details A single scan can be identified by either giving its 
-#' \code{filename}, or by providing the \code{satID}, \code{datetime}, and 
-#' \code{timezone} (which will be used to determine the closest matching scan). 
-#' A series of scans cannot be specified using filenames. The satellite + time 
-#' info must be given along with an \code{endtime} so that all scans starting at
-#' \code{datetime} up to (but not including) \code{endtime} will be processed.
-#' 
-#' @param satID ID of the source GOES satellite ('G16' or 'G17').
-#' @param datetime Datetime in Ymd HMS format or a \code{POSIXct}.
-#' @param endtime End time in Ymd HMS format or a \code{POSIXct}.
-#' @param timezone Timezone used to interpret \code{datetime} and 
-#' \code{endtime}; Defaults to UTC.
 #' @param filename Name of a scan file.
 #' @param bbox Bounding box for the region of interest; Defaults to CONUS.
 #' @param dqfLevel Data quality flag level; Defaults to NULL.
@@ -31,18 +19,16 @@
 #' 
 #' bboxOregon <- c(-125, -116, 42, 46.5)
 #' 
-#' # Create a raster for a scan specified by satellite + time
-#' goesaodc_createScanRaster(
+#' scanFiles <- goesaodc_listScanFiles(
 #'   satID = "G17",
-#'   datetime = "2020-09-08 17:30",
-#'   timezone = "America/Los_Angeles",
-#'   bbox = bboxOregon,
-#'   cellSize = 0.05
+#'   datetime = "2020-09-08 12:00",
+#'   endtime = "2020-09-08 13:00",
+#'   timezone = "America/Los_Angeles"
 #' )
 #' 
 #' # Create a raster for a scan file
 #' goesaodc_createScanRaster(
-#'   filename = "OR_ABI-L2-AODC-M6_G17_s20202530031174_e20202530033547_c20202530035523.nc",
+#'   filename = scanFiles[1],
 #'   bbox = bboxOregon,
 #'   dqfLevel = 2,
 #'   cellSize = 0.05
@@ -50,10 +36,7 @@
 #' 
 #' # Create a raster from scans averaged over a time range
 #' goesaodc_createScanRaster(
-#'   satID = "G17",
-#'   datetime = "2020-09-08 12:00",
-#'   endtime = "2020-09-08 13:00",
-#'   timezone = "America/Los_Angeles",
+#'   filename = scanFiles,
 #'   bbox = bboxOregon,
 #'   cellSize = 0.05
 #' )
@@ -67,10 +50,6 @@
 #' }
 
 goesaodc_createScanRaster <- function(
-  satID = NULL,
-  datetime = NULL,
-  endtime = NULL,
-  timezone = "UTC",
   filename = NULL,
   bbox = bbox_CONUS,
   dqfLevel = 3,
@@ -80,16 +59,16 @@ goesaodc_createScanRaster <- function(
   
   # ----- Validate parameters --------------------------------------------------
   
+  MazamaCoreUtils::stopIfNull(filename)
   MazamaCoreUtils::stopIfNull(cellSize)
+  
+  if ( !(dqfLevel %in% c(0, 1, 2, 3)) )
+    stop(paste0("Parameter 'dqfLevel' must be 0, 1, 2, or 3"))
   
   # ----- Define raster grid ---------------------------------------------------
   
-  # If a filename was given, extract the satellite ID from it
-  if ( is.null(satID) ) {
-    MazamaCoreUtils::stopIfNull(filename)
-    filePattern <- "OR_ABI-L2-AODC-M[0-9]_(G16|G17)_s[0-9]+_e[0-9]+_c[0-9]+\\.nc"
-    satID <- stringr::str_match(filename, filePattern)[1,2]
-  }
+  filePattern <- "OR_ABI-L2-AODC-M[0-9]_(G16|G17)_s[0-9]+_e[0-9]+_c[0-9]+\\.nc"
+  satID <- stringr::str_match(filename, filePattern)[1,2]
   
   # Get the grid file for the requested satellite
   if ( toupper(satID) == "G16" ) {
@@ -97,7 +76,7 @@ goesaodc_createScanRaster <- function(
   } else if ( toupper(satID) == "G17" ) {
     gridFile <- "goesWestGrid.rda"
   } else {
-    stop("Parameter 'satID' must be either 'G16' or 'G17'")
+    stop("Scan file satellite ID does not match 'G16' or 'G17'")
   }
   
   # Assemble the correct filepath based on satID and Data directory
@@ -148,10 +127,6 @@ goesaodc_createScanRaster <- function(
   
   # Get spatial points data
   spdf <- goesaodc_createScanPoints(
-    satID = satID,
-    datetime = datetime,
-    endtime = endtime,
-    timezone = timezone,
     filename = filename,
     bbox = bbox,
     dqfLevel = dqfLevel
@@ -162,7 +137,7 @@ goesaodc_createScanRaster <- function(
     spdfList <- spdf
     rasterList <- list()
     
-    for ( i in 1:length(spdfList) ) {
+    for ( i in seq_along(spdfList) ) {
       scanLabel <- names(spdfList)[i]
       raster <- raster::rasterize(
         spdfList[[i]],

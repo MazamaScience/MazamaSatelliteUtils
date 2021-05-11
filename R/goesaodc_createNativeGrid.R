@@ -23,32 +23,24 @@
 #'
 #' setSatelliteDataDir("~/Data/Satellite")
 #' 
-#' goesaodc_downloadScanFiles(
+#' scanFile <- goesaodc_downloadScanFiles(
 #'   satID = "G17", 
 #'   datetime = "2019-10-27 14:00",
-#'   endtime = "2019-10-27 15:00",
-#'   timezone = "America/Los_Angeles"
-#' )
-#'
-#' scanFiles <- goesaodc_listScanFiles(
-#'   satID = "G17",
-#'   datetime = "2019-10-27 14:00",
-#'   endtime = "2019-10-27 15:00",
 #'   timezone = "America/Los_Angeles"
 #' )
 #' 
-#' ncList <- goesaodc_openScanFile(scanFiles)
+#' nc <- goesaodc_openScanFile(scanFile)
 #'
 #' # Kincade fire region
 #' kincade_bbox <- c(-124, -120, 36, 39)
 #' 
 #' layout(matrix(seq(2)))
 #' 
-#' nativeGrid <- goesaodc_createNativeGrid(ncList[1], kincade_bbox)
+#' nativeGrid <- goesaodc_createNativeGrid(nc, kincade_bbox)
 #' image(nativeGrid$AOD[,ncol(nativeGrid$AOD):1])
 #' title("Single timestep")
 #' 
-#' nativeGrid <- goesaodc_createNativeGrid(ncList, kincade_bbox)
+#' nativeGrid <- goesaodc_createNativeGrid(nc, kincade_bbox)
 #' image(nativeGrid$AOD[,ncol(nativeGrid$AOD):1])
 #' title("Average of 12 timesteps")
 #'

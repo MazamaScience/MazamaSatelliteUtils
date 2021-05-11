@@ -23,12 +23,16 @@ setSatelliteDataDir("~/Data/Satellite")
 
 bboxOregon <- c(-125, -116, 42, 47)
 
-# Create a raster from scans averaged over a time range
-scanRasterBrick <- goesaodc_createScanRaster(
+scanFiles <- goesaodc_listScanFiles(
   satID = "G17",
   datetime = "2020-09-08 12:00",
   endtime = "2020-09-08 13:00",
-  timezone = "America/Los_Angeles",
+  timezone = "America/Los_Angeles"
+)
+
+# Create a raster from scans averaged over a time range
+scanRasterBrick <- goesaodc_createScanRaster(
+  filename = scanFiles,
   bbox = bboxOregon,
   cellSize = 0.05
 )

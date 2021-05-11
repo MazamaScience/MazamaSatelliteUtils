@@ -65,10 +65,14 @@ loadSpatialData("NaturalEarthAdm1")
 
 bboxKingcadeFire <- c(-124, -120, 36, 39)
 
-scanRaster <- goesaodc_createScanRaster(
+scanFile <- goesaodc_listScanFiles(
   satID = "G17",
   datetime = "2019-10-27 10:00",
-  timezone = "America/Los_Angeles",
+  timezone = "America/Los_Angeles"
+)
+
+scanRaster <- goesaodc_createScanRaster(
+  filename = scanFile,
   bbox = bboxKingcadeFire,
   cellSize = 0.05
 )

@@ -4,26 +4,9 @@
 \alias{goesaodc_createScanPoints}
 \title{Create AOD points from GOES scans}
 \usage{
-goesaodc_createScanPoints(
-  satID = NULL,
-  datetime = NULL,
-  endtime = NULL,
-  timezone = "UTC",
-  filename = NULL,
-  bbox = bbox_CONUS,
-  dqfLevel = 3
-)
+goesaodc_createScanPoints(filename = NULL, bbox = bbox_CONUS, dqfLevel = 3)
 }
 \arguments{
-\item{satID}{ID of the source GOES satellite ('G16' or 'G17').}
-
-\item{datetime}{Datetime in Ymd HMS format or a \code{POSIXct}.}
-
-\item{endtime}{End time in Ymd HMS format or a \code{POSIXct}.}
-
-\item{timezone}{Timezone used to interpret \code{datetime} and 
-\code{endtime}; Defaults to UTC.}
-
 \item{filename}{Name of a scan file.}
 
 \item{bbox}{Bounding box for the region of interest. All points outside of 
@@ -35,16 +18,8 @@ above this level will have their AOD values set to NA. Must be either 0, 1,
 }
 \description{
 Creates a \code{SpatialPointsDataFrame} of AOD readings from a 
-GOES scan, or a list of \code{SpatialPointsDataFrame}s from a series of 
-scans.
-}
-\details{
-A single scan can be identified by either giving its 
-\code{filename}, or by providing the \code{satID}, \code{datetime}, and 
-\code{timezone} (which will be used to determine the closest matching scan). 
-A series of scans cannot be specified using filenames. The satellite + time 
-info must be given along with an \code{endtime} so that all scans starting at
-\code{datetime} up to (but not including) \code{endtime} will be processed.
+GOES scan file, or a list of \code{SpatialPointsDataFrame}s from a series of 
+files.
 }
 \examples{
 \donttest{
@@ -53,31 +28,27 @@ setSatelliteDataDir("~/Data/Satellite")
 
 bboxOregon <- c(-125, -116, 42, 47)
 
-# Create points for a scan specified by satellite + time
-goesaodc_createScanPoints(
+scanFiles <- goesaodc_listScanFiles(
   satID = "G17",
-  datetime = "2020-09-08 12:30",
-  timezone = "America/Los_Angeles",
-  bbox = bboxOregon,
+  datetime = "2020-09-08 12:00",
+  endtime = "2020-09-08 13:00",
+  timezone = "America/Los_Angeles"
 )
 
-# Create points for a scan file
+# Create an SPDF from a single scan file
 goesaodc_createScanPoints(
-  filename = "OR_ABI-L2-AODC-M6_G17_s20202530031174_e20202530033547_c20202530035523.nc",
+  filename = scanFiles[1],
   bbox = bboxOregon,
   dqfLevel = 2
 )
 
-# Create points for multiple scans over a time range
+# Create a list of SPDFs from multiple scan files
 goesaodc_createScanPoints(
-  satID = "G17",
-  datetime = "2020-09-08 12:00",
-  endtime = "2020-09-08 13:00",
-  timezone = "America/Los_Angeles",
+  filename = scanFiles,
   bbox = bboxOregon
 )
 
-# Create points for a faulty scan
+# Create an empty SPDF from a faulty scan
 goesaodc_createScanPoints(
   filename = "OR_ABI-L2-AODC-M6_G17_s20202522231174_e20202522233547_c20202522235327.nc",
   bbox = bboxOregon
