@@ -31,13 +31,13 @@
 #'   cellSize = 0.05
 #' )
 #' 
-#' goesaodc_calcTrendScanRasters(
+#' goesaodc_calcTrendScanRaster(
 #'   rasterBrick = scanRasterBrick,
 #'   na.rm = TRUE
 #' )
 #' }
 
-goesaodc_calcTrendScanRasters <- function(
+goesaodc_calcTrendScanRaster <- function(
   rasterBrick = NULL,
   na.rm = FALSE
 ) {
