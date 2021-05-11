@@ -6,19 +6,19 @@
 # Test this script from the command line with:
 #
 # ./animateScanPoints_exec.R
-#  --satID G17
-#  --starttime="2020-09-08 5:00"
-#  --endtime="2020-09-08 6:00"
+#  --satID="G17"
+#  --starttime="2020-09-08 12:00"
+#  --endtime="2020-09-08 13:00"
 #  --timezone="America/Los_Angeles"
 #  --bbox="c-125, -116, 42, 47"
-#  --legendLimits="0, 5"
+#  --legendLimits="-0.5, 5.5"
 #  --stateCodes="OR" 
 #  --satelliteDataDir="~/Data/Satellite"
 #  --spatialDataDir="~/Data/Spatial" 
 #  --outputDir="~/Desktop"
 #  --verbose TRUE
 
-# ./animateScanPoints_exec.R --satID G17 --starttime="2020-09-08 16:00" --endtime="2020-09-08 18:00" --timezone="America/Los_Angeles" --bbox="-125, -116, 42, 47" --legendLimits="0, 5" --stateCodes="OR" --satelliteDataDir="~/Data/Satellite" --spatialDataDir="~/Data/Spatial" --outputDir="~/Desktop/" --verbose TRUE
+# ./animateScanPoints_exec.R --satID="G17" --starttime="2020-09-08 12:00" --endtime="2020-09-08 13:00" --timezone="America/Los_Angeles" --bbox="-125, -116, 42, 47" --legendLimits="-0.5, 5.5" --stateCodes="OR" --satelliteDataDir="~/Data/Satellite" --spatialDataDir="~/Data/Spatial" --outputDir="~/Desktop" --verbose="TRUE"
 
 VERSION = "0.1.0"
 
@@ -36,8 +36,8 @@ if ( interactive() ) {
   # RStudio session
   opt <- list(
     satID = "G17",
-    starttime = "2020-09-08 09:00",
-    endtime = "2020-09-08 10:00",
+    starttime = "2020-09-08 12:00",
+    endtime = "2020-09-08 13:00",
     timezone = "America/Los_Angeles",
     bbox = "-125, -116, 42, 47",
     dqfLevel = 3,
@@ -323,11 +323,12 @@ if ( opt$verbose ) {
 logger.trace("Downloading scan files")
 
 # Download scan files
-scanFilenames <- goesaodc_downloadAOD(
+scanFilenames <- goesaodc_downloadScanFiles(
   satID = opt$satID,
   datetime = starttime,
   endtime = endtime,
-  timezone = opt$timezone
+  timezone = opt$timezone,
+  verbose = opt$verbose
 )
 
 # ----- Create frame files -----------------------------------------------------
