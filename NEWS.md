@@ -24,6 +24,7 @@ longer take `satID`, `datetime`, `endtime`, and `timezone` parameters.
   * AOD Data Structures
   * Grid Sizes
   * Working With GOES AOD Rasters
+* Updated 'Visualizing GOES AOD' article.
 
 # MazamaSatelliteUtils 0.4.13
 
