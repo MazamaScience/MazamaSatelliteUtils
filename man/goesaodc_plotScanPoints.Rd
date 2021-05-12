@@ -10,6 +10,7 @@ goesaodc_plotScanPoints(
   pointSize = 0.5,
   pointShape = 15,
   pointAlpha = NULL,
+  paletteColors = c("#FFFFB2", "#BD0026"),
   paletteName = "YlOrRd",
   paletteBreaks = NULL,
   legendLimits = NULL,
@@ -30,9 +31,13 @@ goesaodc_plotScanPoints(
 \item{pointShape}{Shape of the plot points (index); Defaults to 15 (filled 
 square).}
 
-\item{pointAlpha}{Transparency of the points If not explicitly defined, it 
+\item{pointAlpha}{Transparency of the points. If not explicitly defined, it 
 will default to 1.0 when \code{includeMap=FALSE} and 0.75 when
 \code{includeMap=TRUE}.}
+
+\item{paletteColors}{Vector of colors to use as a gradient for the color 
+legend. Will be ignored if \code{breaks} is set. Defaults to 
+\code{c("#FFFFB2", "#BD0026")}.}
 
 \item{paletteName}{The name of an RColorBrewer palette; Defaults to 'YlOrRd'.}
 

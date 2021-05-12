@@ -9,6 +9,7 @@ goesaodc_plotScanRaster(
   bbox = bbox_CONUS,
   fun = mean,
   rasterAlpha = NULL,
+  paletteColors = c("#FFFFB2", "#BD0026"),
   paletteName = "YlOrRd",
   paletteBreaks = NULL,
   legendLimits = NULL,
@@ -30,6 +31,10 @@ cell; Defaults to \code{mean}.}
 \item{rasterAlpha}{Transparency of the raster. If not explicitly defined, it 
 will default to 1.0 when \code{includeMap=FALSE} and 0.75 when
 \code{includeMap=TRUE}.}
+
+\item{paletteColors}{Vector of colors to use as a gradient for the color 
+legend. Will be ignored if \code{breaks} is set. Defaults to 
+\code{c("#FFFFB2", "#BD0026")}.}
 
 \item{paletteName}{The name of an RColorBrewer palette. Defaults to 'YlOrRd'.}
 

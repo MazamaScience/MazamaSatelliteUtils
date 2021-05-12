@@ -7,9 +7,12 @@
 #' @param pointSize Size of plot points; Defaults to 0.5.
 #' @param pointShape Shape of the plot points (index); Defaults to 15 (filled 
 #' square).
-#' @param pointAlpha Transparency of the points If not explicitly defined, it 
+#' @param pointAlpha Transparency of the points. If not explicitly defined, it 
 #' will default to 1.0 when \code{includeMap=FALSE} and 0.75 when
 #' \code{includeMap=TRUE}.
+#' @param paletteColors Vector of colors to use as a gradient for the color 
+#' legend. Will be ignored if \code{breaks} is set. Defaults to 
+#' \code{c("#FFFFB2", "#BD0026")}.
 #' @param paletteName The name of an RColorBrewer palette; Defaults to 'YlOrRd'.
 #' @param paletteBreaks Vector of AOD values to use as palette breaks.
 #' @param legendLimits Upper and lower AOD values for the color legend. Setting 
@@ -78,6 +81,7 @@ goesaodc_plotScanPoints <- function(
   pointSize = 0.5,
   pointShape = 15,
   pointAlpha = NULL,
+  paletteColors = c("#FFFFB2", "#BD0026"),
   paletteName = "YlOrRd",
   paletteBreaks = NULL,
   legendLimits = NULL,
@@ -154,16 +158,12 @@ goesaodc_plotScanPoints <- function(
   
   # Create color scale
   colorScale <- if ( is.null(paletteBreaks) ) {
-    
-    ggplot2::scale_color_gradient(
-      low = "#FFFFB2",
-      high = "#BD0026",
+    ggplot2::scale_color_gradientn(
+      colors = paletteColors,
       na.value = "gray50",
       limits = legendLimits
     )
-    
   } else {
-    
     ggplot2::scale_color_stepsn(
       breaks = paletteBreaks,
       colors = RColorBrewer::brewer.pal(
@@ -173,7 +173,6 @@ goesaodc_plotScanPoints <- function(
       na.value = "gray50",
       limits = legendLimits
     )
-    
   }
   
   # ----- Create plot ----------------------------------------------------------

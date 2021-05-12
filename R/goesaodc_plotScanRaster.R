@@ -9,6 +9,9 @@
 #' @param rasterAlpha Transparency of the raster. If not explicitly defined, it 
 #' will default to 1.0 when \code{includeMap=FALSE} and 0.75 when
 #' \code{includeMap=TRUE}.
+#' @param paletteColors Vector of colors to use as a gradient for the color 
+#' legend. Will be ignored if \code{breaks} is set. Defaults to 
+#' \code{c("#FFFFB2", "#BD0026")}.
 #' @param paletteName The name of an RColorBrewer palette. Defaults to 'YlOrRd'.
 #' @param paletteBreaks Vector of AOD values to use as palette breaks.
 #' @param legendLimits Upper and lower AOD values for the fill legend. Setting 
@@ -79,6 +82,7 @@ goesaodc_plotScanRaster <- function(
   bbox = bbox_CONUS,
   fun = mean,
   rasterAlpha = NULL,
+  paletteColors = c("#FFFFB2", "#BD0026"),
   paletteName = "YlOrRd",
   paletteBreaks = NULL,
   legendLimits = NULL,
@@ -146,16 +150,12 @@ goesaodc_plotScanRaster <- function(
   
   # Create fill scale
   fillScale <- if ( is.null(paletteBreaks) ) {
-    
-    ggplot2::scale_fill_gradient(
-      low = "#FFFFB2",
-      high = "#BD0026",
+    ggplot2::scale_fill_gradientn(
+      colors = paletteColors,
       na.value = "gray50",
       limits = legendLimits
     )
-    
   } else {
-    
     ggplot2::scale_fill_stepsn(
       breaks = paletteBreaks,
       colors = RColorBrewer::brewer.pal(
@@ -165,7 +165,6 @@ goesaodc_plotScanRaster <- function(
       na.value = "gray50",
       limits = legendLimits
     )
-    
   }
   
   # ----- Create plot ----------------------------------------------------------
