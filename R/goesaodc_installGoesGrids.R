@@ -10,7 +10,7 @@
 #' that directory. If .nc files are missing, will download appropriate ones 
 #' and use them to create the grids.
 #' 
-#' @seealso \code{\link{createGoesGrid}}
+#' @seealso \code{\link{goesaodc_createGoesGrid}}
 #' 
 #' @return Invisibly returns a vector of local GOES 16 and 17 grid files.
 #' \code{datetime}.
@@ -55,7 +55,7 @@ goesaodc_installGoesGrids <- function(
     )
     
     nc <- goesaodc_openScanFile(scanFile)
-    createGoesGrid(nc, G16_filepath)
+    goesaodc_createGoesGrid(nc, G16_filepath)
     
     message(paste0("... done!"))
     
@@ -88,7 +88,7 @@ goesaodc_installGoesGrids <- function(
     )
     
     nc <- goesaodc_openScanFile(scanFile)
-    createGoesGrid(nc, G17_filepath)
+    goesaodc_createGoesGrid(nc, G17_filepath)
     message(paste0("... done!"))
     
   }
@@ -126,10 +126,10 @@ goesaodc_installGoesGrids <- function(
 #' nc <- goesaodc_openScanFile(scanFilename)
 #' G16_filepath <- file.path(getSatelliteDataDir(), "goesEastGrid.rda")
 #' 
-#' createGoesGrid(nc, G16_filepath)
+#' MazamaSatelliteUtils:::goesaodc_createGoesGrid(nc, G16_filepath)
 #' } 
 
-createGoesGrid <- function (
+goesaodc_createGoesGrid <- function (
   nc = NULL,
   gridFilepath = NULL
 ) {
