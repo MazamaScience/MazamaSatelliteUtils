@@ -5,7 +5,7 @@
 #
 # Test this script from the command line with:
 #
-# ./animateScanRasters_exec.R
+# ./goesaodc_animateScanRasters_exec.R
 #  --satID="G17"
 #  --starttime="2020-09-08 12:00"
 #  --endtime="2020-09-08 13:00"
@@ -19,7 +19,7 @@
 #  --outputDir="~/Desktop"
 #  --verbose TRUE
 
-# ./animateScanRasters_exec.R --satID="G17" --starttime="2020-09-08 12:00" --endtime="2020-09-08 13:00" --timezone="America/Los_Angeles" --bbox="-125, -116, 42, 47" --cellSize=0.1 --legendLimits="-0.5, 5.5" --stateCodes="OR" --satelliteDataDir="~/Data/Satellite" --spatialDataDir="~/Data/Spatial" --outputDir="~/Desktop/" --verbose="TRUE"
+# ./goesaodc_animateScanRasters_exec.R --satID="G17" --starttime="2020-09-08 12:00" --endtime="2020-09-08 13:00" --timezone="America/Los_Angeles" --bbox="-125, -116, 42, 47" --cellSize=0.1 --legendLimits="-0.5, 5.5" --stateCodes="OR" --satelliteDataDir="~/Data/Satellite" --spatialDataDir="~/Data/Spatial" --outputDir="~/Desktop/" --verbose="TRUE"
 
 VERSION = "0.1.0"
 
@@ -201,7 +201,7 @@ if ( interactive() ) {
 
 # Print out version and quit
 if (opt$version) {
-  cat(paste0("animateScanRasters_exec.R", VERSION, "\n"))
+  cat(paste0("goesaodc_animateScanRasters_exec.R", VERSION, "\n"))
   quit()
 }
 
@@ -244,14 +244,14 @@ if ( !dir.exists(opt$logDir) )
 # ----- Set up logging ---------------------------------------------------------
 
 logger.setup(
-  traceLog = file.path(opt$logDir, "animateScanRasters_TRACE.log"),
-  debugLog = file.path(opt$logDir, "animateScanRasters_DEBUG.log"),
-  infoLog  = file.path(opt$logDir, "animateScanRasters_INFO.log"),
-  errorLog = file.path(opt$logDir, "animateScanRasters_ERROR.log")
+  traceLog = file.path(opt$logDir, "goesaodc_animateScanRasters_TRACE.log"),
+  debugLog = file.path(opt$logDir, "goesaodc_animateScanRasters_DEBUG.log"),
+  infoLog  = file.path(opt$logDir, "goesaodc_animateScanRasters_INFO.log"),
+  errorLog = file.path(opt$logDir, "goesaodc_animateScanRasters_ERROR.log")
 )
 
 # For use at the very end
-errorLog <- file.path(opt$logDir, "animateScanRasters_ERROR.log")
+errorLog <- file.path(opt$logDir, "goesaodc_animateScanRasters_ERROR.log")
 
 if ( interactive() )
   logger.setLevel(TRACE)
@@ -260,7 +260,7 @@ if ( interactive() )
 options(warn = -1) # -1 = ignore, 0 = save/print, 1 = print, 2 = error
 
 # Start logging
-logger.info("Running animateScanRasters_exec.R version %s", VERSION)
+logger.info("Running goesaodc_animateScanRasters_exec.R version %s", VERSION)
 sessionString <- paste(capture.output(sessionInfo()), collapse = "\n")
 logger.debug("R session:\n\n%s\n", sessionString)
 

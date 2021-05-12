@@ -285,8 +285,8 @@ goesaodc_plotScanSpdf(
 
 `goesaodc_plotScanSpdf()` and `goesaodc_plotScanRaster()` allow you to plot 
 static images of GOES AOD data. You can create animated videos of AOD as well 
-using the `goesaodc_animateScanPoints_exec.R` and 
-`goesaodc_animateScanRaster_exec.R` executable scripts. These scripts take in 
+using the `goesaodc_animateScanSpdfs_exec.R` and 
+`goesaodc_animateScanRasters_exec.R` executable scripts. These scripts take in 
 the same parameters as their plot counterparts (except `datetime` is now 
 `starttime`), but they require several additional arguments:
 
@@ -311,7 +311,7 @@ the user to set the `legendLimits` parameter.
 Here's an example of animating points:
 
 ```
-./animateScanSpdfs_exec.R \
+./goesaodc_animateScanSpdfs_exec.R \
   --satID="G17" \
   --starttime="2020-09-08 09:00" \
   --endtime="2020-09-08 10:00" \
@@ -337,7 +337,7 @@ Here's an example of animating points:
 And another for animating rasters:
 
 ```
-./animateScanRasters_exec.R \
+./goesaodc_animateScanRasters_exec.R \
   --satID="G17" \
   --starttime="2020-09-08 09:00" \
   --endtime="2020-09-08 10:00" \
