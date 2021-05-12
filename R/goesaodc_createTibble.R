@@ -5,11 +5,11 @@
 #' @title Create a tibble from a ncdf4 handle
 #' 
 #' @description Creates a tibble from a netCDF file with columns: AOD, DQF, lon 
-#' and lat. This information is sufficient to plot as points or create a raster 
-#' object.
+#' and lat.
 #' 
 #' @param nc ncdf4 handle or a list of handles.
-#' @param bbox Bounding box for the region of interest; Defaults to CONUS.
+#' @param bbox Bounding box for the region of interest. All points outside of 
+#' this area will be removed. Defaults to CONUS.
 #' @param dqfLevel Allowed data quality level. All readings with a DQF value
 #' above this level will have their AOD values set to NA. Must be either 0, 1, 
 #' 2, or 3, with 0 being the highest quality. Defaults to 3.

@@ -39,7 +39,7 @@ will default to 1.0 when \code{includeMap=FALSE} and 0.75 when
 legend. Will be ignored if \code{breaks} is set. Defaults to 
 \code{c("#FFFFB2", "#BD0026")}.}
 
-\item{paletteName}{Name of an RColorBrewer palette; Defaults to 'YlOrRd'.}
+\item{paletteName}{Name of an RColorBrewer palette. Defaults to 'YlOrRd'.}
 
 \item{paletteBreaks}{Vector of AOD values to use as palette breaks.}
 

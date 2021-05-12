@@ -1,6 +1,6 @@
 #' @export
 #' 
-#' @title Install GOES grids in satelliteDataDir
+#' @title Install GOES grids
 #' 
 #' @description Creates data files with geolocation information for GOES-16 
 #' (East) and GOES-17 (West) satellite products.  Checks for the presence of

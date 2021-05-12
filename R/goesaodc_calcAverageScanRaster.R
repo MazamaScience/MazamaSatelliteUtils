@@ -1,6 +1,6 @@
 #' @export
 #' 
-#' @title Calculate the average of a series of GOES scan rasters
+#' @title Calculate the average raster of a series of GOES scan rasters
 #' 
 #' @description Creates a \code{RasterLayer} of averaged AOD readings from a 
 #' \code{RasterBrick} of GOES scan \code{RasterLayers}s.
@@ -51,7 +51,7 @@ goesaodc_calcAverageScanRaster <- function(
   
   # ----- Calculate average cell AOD values ------------------------------------
   
-  aggregateRaster <- raster::calc(
+  avgRaster <- raster::calc(
     rasterBrick,
     fun = mean,
     na.rm = na.rm
@@ -59,6 +59,6 @@ goesaodc_calcAverageScanRaster <- function(
   
   # ----- Return ---------------------------------------------------------------
   
-  return(aggregateRaster)
+  return(avgRaster)
   
 }

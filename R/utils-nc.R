@@ -9,7 +9,7 @@
 #' string with the variable's name or an object of class ncvar4. As a special 
 #' case, if \code{varid == 0}, then a global (file) attribute will be read 
 #' rather than a particular variable's attribute.
-#' @param verbose Logical flag to print attribute structure; Defaults to TRUE.
+#' @param verbose Logical flag to print attribute structure. Defaults to TRUE.
 #'
 #' @return Invisibly returns a named list of netCDF attributes.
 

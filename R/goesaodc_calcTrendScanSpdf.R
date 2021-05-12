@@ -1,6 +1,6 @@
 #' @export
 #' 
-#' @title Calculate the trend SPDF of a series of GOES AOD scan SPDFs
+#' @title Calculate the trend SPDF of a series of GOES scan SPDFs
 #' 
 #' @description Creates a \code{SpatialPointsDataFrame} of AOD reading trends 
 #' from a \code{list} of GOES scan \code{SpatialPointsDataFrame}s. A trend value

@@ -9,7 +9,7 @@ goesaodc_createNativeGrid(nc = NULL, bbox = bbox_CONUS)
 \arguments{
 \item{nc}{ncdf4 handle or a list of handles.}
 
-\item{bbox}{Bounding box for the region of interest; Defaults to CONUS.}
+\item{bbox}{Bounding box for the region of interest. Defaults to CONUS.}
 }
 \value{
 List with lon, lat, AOD and DQF matrices
@@ -20,7 +20,7 @@ longitude, latitude, AOD values, and DQF values. The arrays are defined in
 native i, j coordinates and are thus curvilinear as opposed to rectilinear 
 geospatial coordinates.
 
-The \code{nc} parameter can be either a single netcdf handle or a list of 
+The \code{nc} parameter can be either a single netCDF handle or a list of 
 handles. If a list of handles is provided, grid cell values for AOD and DQF 
 will be averaged across all nc handles. This "native grid" averaging 
 provides a simple way to convert 5-minute data into an hourly average.

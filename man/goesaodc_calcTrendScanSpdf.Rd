@@ -2,7 +2,7 @@
 % Please edit documentation in R/goesaodc_calcTrendScanSpdf.R
 \name{goesaodc_calcTrendScanSpdf}
 \alias{goesaodc_calcTrendScanSpdf}
-\title{Calculate the trend SPDF of a series of GOES AOD scan SPDFs}
+\title{Calculate the trend SPDF of a series of GOES scan SPDFs}
 \usage{
 goesaodc_calcTrendScanSpdf(spdfList = NULL, na.rm = FALSE)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/goesaodc_installGoesGrids.R
 \name{goesaodc_installGoesGrids}
 \alias{goesaodc_installGoesGrids}
-\title{Install GOES grids in satelliteDataDir}
+\title{Install GOES grids}
 \usage{
 goesaodc_installGoesGrids()
 }

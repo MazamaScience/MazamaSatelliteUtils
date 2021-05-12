@@ -2,7 +2,7 @@
 % Please edit documentation in R/goesaodc_calcTrendScanRasters.R
 \name{goesaodc_calcTrendScanRaster}
 \alias{goesaodc_calcTrendScanRaster}
-\title{Calculate the trend of a series of GOES scan rasters}
+\title{Calculate the trend raster of a series of GOES scan rasters}
 \usage{
 goesaodc_calcTrendScanRaster(rasterBrick = NULL, na.rm = FALSE)
 }
@@ -16,7 +16,7 @@ trend. Defaults to \code{FALSE}.}
 Creates a \code{SpatialPointsDataFrame} of AOD reading trends 
 from a GOES scan \code{rasterBrick}. A trend value for a cell is calculated 
 by taking the difference between it's average value in the first half of the 
-scan series and it's average value in the second.
+scan series and it's average value in the second half.
 }
 \examples{
 \donttest{

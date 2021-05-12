@@ -2,7 +2,7 @@
 % Please edit documentation in R/goesaodc_calcAverageScanRaster.R
 \name{goesaodc_calcAverageScanRaster}
 \alias{goesaodc_calcAverageScanRaster}
-\title{Calculate the average of a series of GOES scan rasters}
+\title{Calculate the average raster of a series of GOES scan rasters}
 \usage{
 goesaodc_calcAverageScanRaster(rasterBrick = NULL, na.rm = FALSE)
 }

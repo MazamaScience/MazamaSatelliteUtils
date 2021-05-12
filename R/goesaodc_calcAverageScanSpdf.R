@@ -1,6 +1,6 @@
 #' @export
 #' 
-#' @title Calculate the average SPDF of a series of GOES AOD scan SPDFs
+#' @title Calculate the average SPDF of a series of GOES scan SPDFs
 #' 
 #' @description Creates a \code{SpatialPointsDataFrame} of averaged AOD 
 #' readings from a \code{list} of GOES scan \code{SpatialPointsDataFrame}s.

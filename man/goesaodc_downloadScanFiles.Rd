@@ -18,20 +18,23 @@ goesaodc_downloadScanFiles(
 \arguments{
 \item{satID}{ID of the source GOES satellite ('G16' or 'G17').}
 
-\item{datetime}{Datetime in Ymd HMS format or a \code{POSIXct}.}
+\item{datetime}{Datetime as a Ymd HMS or Julian formatted string, or a 
+\code{POSIXct}.}
 
-\item{endtime}{End time in Ymd HMS format or a \code{POSIXct}.}
+\item{endtime}{End time as a Ymd HMS or Julian formatted string, or a 
+\code{POSIXct}.}
 
 \item{timezone}{Timezone used to interpret \code{datetime} and 
-\code{endtime}; Defaults to UTC.}
+\code{endtime}. Defaults to UTC.}
 
-\item{isJulian}{Logical value determining whether \code{datetime} (and
+\item{isJulian}{Logical flag determining whether \code{datetime} (and
 optionally \code{endtime}) should be interpreted as a Julian date with day of
- year as a decimal number. Defaults to FALSE.}
+year as a decimal number. Defaults to FALSE.}
 
-\item{filenames}{Names of scan files to download.}
+\item{filenames}{Names of scan files.}
 
-\item{verbose}{Logical flag whether to print download progress messages.}
+\item{verbose}{Logical flag determining whether to print download progress 
+messages.}
 
 \item{baseUrl}{URL of remote database. Defaults to 
 "https://tools-1.airfire.org/Satellite/".}

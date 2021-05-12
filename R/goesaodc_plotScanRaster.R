@@ -1,11 +1,11 @@
 #' @export
 #' 
-#' @title Plot GOES AOD rasters 
+#' @title Plot a GOES scan raster 
 #' 
-#' @param raster A RasterBrick with an AOD variable.
-#' @param bbox Bounding box for the region of interest. Defaults to CONUS.
+#' @param raster A RasterLayer with an AOD variable.
+#' @param bbox Bounding box for the visible region. Defaults to CONUS.
 #' @param fun Function used to summarize multiple point values within a single 
-#' cell; Defaults to \code{mean}.
+#' cell. Defaults to \code{mean}.
 #' @param rasterAlpha Transparency of the raster. If not explicitly defined, it 
 #' will default to 1.0 when \code{includeMap=FALSE} and 0.75 when
 #' \code{includeMap=TRUE}.

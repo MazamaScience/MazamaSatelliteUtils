@@ -17,12 +17,14 @@ goesaodc_listScanFiles(
 \arguments{
 \item{satID}{ID of the source GOES satellite ('G16' or 'G17').}
 
-\item{datetime}{Datetime in Ymd HMS format or a \code{POSIXct}.}
+\item{datetime}{Datetime as a Ymd HMS or Julian formatted string, or a 
+\code{POSIXct}.}
 
-\item{endtime}{End time in Ymd HMS format or a \code{POSIXct}.}
+\item{endtime}{End time as a Ymd HMS or Julian formatted string, or a 
+\code{POSIXct}.}
 
 \item{timezone}{Timezone used to interpret \code{datetime} and 
-\code{endtime}; Defaults to UTC.}
+\code{endtime}. Defaults to UTC.}
 
 \item{isJulian}{Logical value determining whether \code{datetime} (and
 optionally \code{endtime}) should be interpreted as a Julian date with day of

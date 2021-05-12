@@ -13,7 +13,7 @@
 #' @param paletteColors Vector of colors defining the gradient for the color 
 #' legend. Will be ignored if \code{breaks} is set. Defaults to 
 #' \code{c("#FFFFB2", "#BD0026")}.
-#' @param paletteName Name of an RColorBrewer palette; Defaults to 'YlOrRd'.
+#' @param paletteName Name of an RColorBrewer palette. Defaults to 'YlOrRd'.
 #' @param paletteBreaks Vector of AOD values to use as palette breaks.
 #' @param legendLimits Upper and lower values for the color legend. Setting this
 #'  guarantees that the legend will appear even if the SPDF has nothing but

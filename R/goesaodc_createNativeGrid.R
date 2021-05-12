@@ -7,13 +7,13 @@
 #' native i, j coordinates and are thus curvilinear as opposed to rectilinear 
 #' geospatial coordinates.
 #' 
-#' The \code{nc} parameter can be either a single netcdf handle or a list of 
+#' The \code{nc} parameter can be either a single netCDF handle or a list of 
 #' handles. If a list of handles is provided, grid cell values for AOD and DQF 
 #' will be averaged across all nc handles. This "native grid" averaging 
 #' provides a simple way to convert 5-minute data into an hourly average.
 #' 
 #' @param nc ncdf4 handle or a list of handles.
-#' @param bbox Bounding box for the region of interest; Defaults to CONUS.
+#' @param bbox Bounding box for the region of interest. Defaults to CONUS.
 #' 
 #' @return List with lon, lat, AOD and DQF matrices
 #
@@ -202,17 +202,6 @@ goesaodc_createNativeGrid <- function (
     
   }
   
-  # DEBUGGING
-  # Plot the native grid for a cheap movie (note that we need to reverse j)
-  
-  if ( FALSE ) {
-    
-    for ( nativeGrid in nativeGridList ) {
-      image(nativeGrid$AOD[,ncol(nativeGrid$AOD):1])
-    }
-    
-  }
-  
   # ----- Calculate the average AOD and DQF ------------------------------------
   
   nativeGrid <- nativeGridList[[1]]
@@ -236,53 +225,8 @@ goesaodc_createNativeGrid <- function (
     
   }
   
-  # DEBUGGING
-  if ( FALSE ) {
-    image(nativeGrid$AOD[,ncol(nativeGrid$AOD):1])
-  }
-  
   # ----- Return ---------------------------------------------------------------
   
   return(nativeGrid)
-  
-}
-
-# ===== DEBUGGING ==============================================================
-
-if ( FALSE ) {
-  
-  library(MazamaSpatialUtils)
-  setSpatialDataDir("~/Data/Spatial")
-  loadSpatialData("USCensusStates")
-  loadSpatialData("USCensusCounties")
-  
-  library(MazamaSatelliteUtils)
-  setSatelliteDataDir("~/Data/Satellite")
-  
-  # nc file
-  files <- goesaodc_listScanFiles(
-    satID = "G17",
-    datetime = "2019-10-27 14:00",
-    endtime = "2019-10-27 15:00",
-    timezone = "America/Los_Angeles"
-  )
-  
-  ncList <- list()
-  for ( file in files ) {
-    label <- 
-      file %>%
-      goesaodc_convertFilenameToDatetime() %>%
-      MazamaCoreUtils::timeStamp(unit = "sec", timezone = "UTC")
-    ncList[[label]] <- goesaodc_openScanFile(basename(file))
-  }
-  
-  
-  # bbox
-  ca <- subset(USCensusStates, stateCode == "CA")
-  bbox <- sp::bbox(ca) %>% bboxToVector()
-  
-  nativeGrid <- goesaodc_createNativeGrid(ncList, bbox)
-  
-  image(nativeGrid$AOD[,ncol(nativeGrid$AOD):1])
   
 }

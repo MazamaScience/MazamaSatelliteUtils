@@ -1,7 +1,6 @@
 #' @export
 #' 
-#' @title Calculate the sunrise and sunset hours for a specific date and 
-#' location
+#' @title Calculate the sunrise and sunset hours for a time and place
 #' 
 #' @description Returns the sunrise and sunset hours for specified dates within 
 #' a bounding box based on sun ephemerides calculations. Sunrise is calculated
@@ -29,13 +28,14 @@
 #' \item{\code{datetime} is \code{POSIXct} -- use bbox of the timezone attribute}
 #' }
 #' 
-#' @param datetime Datetime in any Ymd H [MS] format or \code{POSIXct}.
-#' @param longitude Longitude of the location of interest in decimal degrees E.
-#' @param latitude Latitude of the location of interest in decimal degrees N.
-#' @param bbox Bounding box for the region of interest.
+#' @param datetime Datetime as a Ymd HMS or Julian formatted string, or a 
+#' \code{POSIXct}.
+#' @param longitude Longitude of the location in decimal degrees E.
+#' @param latitude Latitude of the location in decimal degrees N.
+#' @param bbox Bounding box for the region.
 #' @param timezone Timezone used to interpret \code{datetime}.
-#' @param isJulian Logical value determining whether \code{datetime} should be 
-#' interpreted as a Julian date with day of year as a decimal number; Defaults 
+#' @param isJulian Logical flag determining whether \code{datetime} should be 
+#' interpreted as a Julian date with day of year as a decimal number. Defaults 
 #' to FALSE.
 #' 
 #' @return List containing \code{POSIXct} \code{sunrise} and \code{sunset} times 

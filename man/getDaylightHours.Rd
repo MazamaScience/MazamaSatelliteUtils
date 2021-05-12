@@ -2,8 +2,7 @@
 % Please edit documentation in R/getDaylightHours.R
 \name{getDaylightHours}
 \alias{getDaylightHours}
-\title{Calculate the sunrise and sunset hours for a specific date and 
-location}
+\title{Calculate the sunrise and sunset hours for a time and place}
 \usage{
 getDaylightHours(
   datetime = NULL,
@@ -15,18 +14,19 @@ getDaylightHours(
 )
 }
 \arguments{
-\item{datetime}{Datetime in any Ymd H [MS] format or \code{POSIXct}.}
+\item{datetime}{Datetime as a Ymd HMS or Julian formatted string, or a 
+\code{POSIXct}.}
 
-\item{longitude}{Longitude of the location of interest in decimal degrees E.}
+\item{longitude}{Longitude of the location in decimal degrees E.}
 
-\item{latitude}{Latitude of the location of interest in decimal degrees N.}
+\item{latitude}{Latitude of the location in decimal degrees N.}
 
-\item{bbox}{Bounding box for the region of interest.}
+\item{bbox}{Bounding box for the region.}
 
 \item{timezone}{Timezone used to interpret \code{datetime}.}
 
-\item{isJulian}{Logical value determining whether \code{datetime} should be 
-interpreted as a Julian date with day of year as a decimal number; Defaults 
+\item{isJulian}{Logical flag determining whether \code{datetime} should be 
+interpreted as a Julian date with day of year as a decimal number. Defaults 
 to FALSE.}
 }
 \value{

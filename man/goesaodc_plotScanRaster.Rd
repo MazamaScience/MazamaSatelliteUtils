@@ -2,7 +2,7 @@
 % Please edit documentation in R/goesaodc_plotScanRaster.R
 \name{goesaodc_plotScanRaster}
 \alias{goesaodc_plotScanRaster}
-\title{Plot GOES AOD rasters}
+\title{Plot a GOES scan raster}
 \usage{
 goesaodc_plotScanRaster(
   raster = NULL,
@@ -21,12 +21,12 @@ goesaodc_plotScanRaster(
 )
 }
 \arguments{
-\item{raster}{A RasterBrick with an AOD variable.}
+\item{raster}{A RasterLayer with an AOD variable.}
 
-\item{bbox}{Bounding box for the region of interest. Defaults to CONUS.}
+\item{bbox}{Bounding box for the visible region. Defaults to CONUS.}
 
 \item{fun}{Function used to summarize multiple point values within a single 
-cell; Defaults to \code{mean}.}
+cell. Defaults to \code{mean}.}
 
 \item{rasterAlpha}{Transparency of the raster. If not explicitly defined, it 
 will default to 1.0 when \code{includeMap=FALSE} and 0.75 when
@@ -59,7 +59,7 @@ integer from 1 to 15.}
 \item{legendTitle}{Title of the plot legend.}
 }
 \description{
-Plot GOES AOD rasters
+Plot a GOES scan raster
 }
 \examples{
 \donttest{

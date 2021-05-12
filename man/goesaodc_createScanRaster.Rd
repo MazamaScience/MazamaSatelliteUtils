@@ -2,7 +2,7 @@
 % Please edit documentation in R/goesaodc_createScanRaster.R
 \name{goesaodc_createScanRaster}
 \alias{goesaodc_createScanRaster}
-\title{Create rasters from GOES scans}
+\title{Create a raster from a GOES AOD scan}
 \usage{
 goesaodc_createScanRaster(
   filename = NULL,
@@ -15,14 +15,16 @@ goesaodc_createScanRaster(
 \arguments{
 \item{filename}{Name of a scan file.}
 
-\item{bbox}{Bounding box for the region of interest; Defaults to CONUS.}
+\item{bbox}{Bounding box for the region of interest. All points outside of 
+this area will be removed and therefore won't be rasterized. Defaults to 
+CONUS.}
 
-\item{dqfLevel}{Data quality flag level; Defaults to NULL.}
+\item{dqfLevel}{Data quality flag level. Defaults to 3.}
 
 \item{cellSize}{Size of Raster cells measured in degrees lon/lat.}
 
-\item{fun}{Function used to summarize multiple point values within a single 
-cell; Defaults to \code{mean}.}
+\item{fun}{Function used to summarize point values within a single cell. 
+Defaults to \code{mean}.}
 }
 \description{
 Creates a \code{RasterLayer} of AOD readings from a GOES scan, 

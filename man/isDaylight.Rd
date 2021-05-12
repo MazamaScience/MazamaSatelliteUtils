@@ -9,9 +9,9 @@ isDaylight(datetime = NULL, timezone = "UTC", bbox = bbox_CONUS)
 \arguments{
 \item{datetime}{Datetime in any Ymd H [MS] format or \code{POSIXct}.}
 
-\item{timezone}{Timezone used to interpret \code{datetime}; Defaults to UTC.}
+\item{timezone}{Timezone used to interpret \code{datetime}. Defaults to UTC.}
 
-\item{bbox}{Bounding box for the region of interest; Defaults to CONUS.}
+\item{bbox}{Bounding box for the region of interest. Defaults to CONUS.}
 }
 \value{
 Logical vector.

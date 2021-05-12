@@ -1,16 +1,18 @@
 #' @export
 #' 
-#' @title Create rasters from GOES scans
+#' @title Create a raster from a GOES AOD scan
 #' 
 #' @description Creates a \code{RasterLayer} of AOD readings from a GOES scan, 
 #' file or a \code{RasterBrick} of \code{RasterLayer}s from a series of files.
 #' 
 #' @param filename Name of a scan file.
-#' @param bbox Bounding box for the region of interest; Defaults to CONUS.
-#' @param dqfLevel Data quality flag level; Defaults to NULL.
+#' @param bbox Bounding box for the region of interest. All points outside of 
+#' this area will be removed and therefore won't be rasterized. Defaults to 
+#' CONUS.
+#' @param dqfLevel Data quality flag level. Defaults to 3.
 #' @param cellSize Size of Raster cells measured in degrees lon/lat.
-#' @param fun Function used to summarize multiple point values within a single 
-#' cell; Defaults to \code{mean}.
+#' @param fun Function used to summarize point values within a single cell. 
+#' Defaults to \code{mean}.
 #' 
 #' @examples
 #' \donttest{

@@ -7,9 +7,9 @@
 goesaodc_openScanFile(filename = NULL, dataDir = getSatelliteDataDir())
 }
 \arguments{
-\item{filename}{File name of GOES AOD file.}
+\item{filename}{Name of scan file.}
 
-\item{dataDir}{Data directory containing \code{filename}; Defaults to 
+\item{dataDir}{Data directory containing \code{filename}. Defaults to 
 \code{getSatelliteDataDir()}.}
 }
 \value{

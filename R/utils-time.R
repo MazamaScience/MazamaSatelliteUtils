@@ -3,8 +3,8 @@
 #' @title Determine whether times are during daylight within a region
 #' 
 #' @param datetime Datetime in any Ymd H [MS] format or \code{POSIXct}.
-#' @param timezone Timezone used to interpret \code{datetime}; Defaults to UTC.
-#' @param bbox Bounding box for the region of interest; Defaults to CONUS.
+#' @param timezone Timezone used to interpret \code{datetime}. Defaults to UTC.
+#' @param bbox Bounding box for the region of interest. Defaults to CONUS.
 #' 
 #' @return Logical vector.
 #' 

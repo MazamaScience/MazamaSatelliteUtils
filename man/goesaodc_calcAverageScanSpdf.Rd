@@ -2,7 +2,7 @@
 % Please edit documentation in R/goesaodc_calcAverageScanSpdf.R
 \name{goesaodc_calcAverageScanSpdf}
 \alias{goesaodc_calcAverageScanSpdf}
-\title{Calculate the average SPDF of a series of GOES AOD scan SPDFs}
+\title{Calculate the average SPDF of a series of GOES scan SPDFs}
 \usage{
 goesaodc_calcAverageScanSpdf(spdfList = NULL, na.rm = FALSE)
 }

@@ -8,10 +8,12 @@
 #' \code{datetime} up to (but not including) \code{endtime} will be listed.
 #' 
 #' @param satID ID of the source GOES satellite ('G16' or 'G17').
-#' @param datetime Datetime in Ymd HMS format or a \code{POSIXct}.
-#' @param endtime End time in Ymd HMS format or a \code{POSIXct}.
+#' @param datetime Datetime as a Ymd HMS or Julian formatted string, or a 
+#' \code{POSIXct}.
+#' @param endtime End time as a Ymd HMS or Julian formatted string, or a 
+#' \code{POSIXct}.
 #' @param timezone Timezone used to interpret \code{datetime} and 
-#' \code{endtime}; Defaults to UTC.
+#' \code{endtime}. Defaults to UTC.
 #' @param isJulian Logical value determining whether \code{datetime} (and
 #' optionally \code{endtime}) should be interpreted as a Julian date with day of
 #'  year as a decimal number. Defaults to FALSE.

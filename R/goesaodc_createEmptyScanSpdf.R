@@ -35,7 +35,7 @@ goesaodc_createEmptyScanSpdf <- function(
     satID <- stringr::str_match(filename, filePattern)[1,2]
   }
   
-  # Get the grid file for the requested satellite
+  # Determine the grid file for the satellite
   if ( toupper(satID) == "G16") {
     gridFile <- "goesEastGrid.rda"
   } else if ( toupper(satID) == "G17" ) {
@@ -44,7 +44,7 @@ goesaodc_createEmptyScanSpdf <- function(
     stop("Parameter 'satID' must be either 'G16' or 'G17'")
   }
   
-  # Load the satellite grid
+  # Load the satellite grid data
   gridFilePath <- file.path(getSatelliteDataDir(), gridFile)
   if ( file.exists(gridFilePath) ) {
     satGrid <- get(load(gridFilePath))
