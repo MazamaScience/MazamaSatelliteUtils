@@ -1,17 +1,16 @@
 #!/usr/local/bin/Rscript
 
-# This executable script generates a video of GOES AOD scan rasters over a time 
+# This executable script generates a video of GOES AOD scan points over a time 
 # range.
 #
 # Test this script from the command line with:
 #
-# ./animateScanRaster_exec.R
+# ./animateScanSpdfs_exec.R
 #  --satID="G17"
 #  --starttime="2020-09-08 12:00"
 #  --endtime="2020-09-08 13:00"
 #  --timezone="America/Los_Angeles"
 #  --bbox="c-125, -116, 42, 47"
-#  --cellSize=0.1
 #  --legendLimits="-0.5, 5.5"
 #  --stateCodes="OR" 
 #  --satelliteDataDir="~/Data/Satellite"
@@ -19,7 +18,7 @@
 #  --outputDir="~/Desktop"
 #  --verbose TRUE
 
-# ./animateScanRaster_exec.R --satID="G17" --starttime="2020-09-08 12:00" --endtime="2020-09-08 13:00" --timezone="America/Los_Angeles" --bbox="-125, -116, 42, 47" --cellSize=0.1 --legendLimits="-0.5, 5.5" --stateCodes="OR" --satelliteDataDir="~/Data/Satellite" --spatialDataDir="~/Data/Spatial" --outputDir="~/Desktop/" --verbose="TRUE"
+# ./animateScanSpdfs_exec.R --satID="G17" --starttime="2020-09-08 12:00" --endtime="2020-09-08 13:00" --timezone="America/Los_Angeles" --bbox="-125, -116, 42, 47" --legendLimits="-0.5, 5.5" --stateCodes="OR" --satelliteDataDir="~/Data/Satellite" --spatialDataDir="~/Data/Spatial" --outputDir="~/Desktop" --verbose="TRUE"
 
 VERSION = "0.1.0"
 
@@ -42,8 +41,9 @@ if ( interactive() ) {
     timezone = "America/Los_Angeles",
     bbox = "-125, -116, 42, 47",
     dqfLevel = 3,
-    cellSize = 0.1,
-    rasterAlpha = 0.6,
+    pointSize = 0.3,
+    pointShape = 15,
+    pointAlpha = 0.6,
     paletteName = "YlOrRd",
     paletteBreaks = NULL,
     legendLimits = "-0.5, 5.5",
@@ -103,13 +103,19 @@ if ( interactive() ) {
       help = ""
     ),
     make_option(
-      c("--cellSize"),
+      c("--pointSize"),
       type = "double",
-      default = NULL,
+      default = 0.5,
       help = ""
     ),
     make_option(
-      c("--rasterAlpha"),
+      c("--pointShape"),
+      type = "integer",
+      default = 15,
+      help = ""
+    ),
+    make_option(
+      c("--pointAlpha"),
       type = "double",
       default = NULL,
       help = ""
@@ -197,11 +203,13 @@ if ( interactive() ) {
   
   # Parse arguments
   opt <- parse_args(OptionParser(option_list = option_list))
+  
+  print(opt)
 }
 
 # Print out version and quit
 if (opt$version) {
-  cat(paste0("animateScanRaster_exec.R", VERSION, "\n"))
+  cat(paste0("animateScanSpdfs_exec.R", VERSION, "\n"))
   quit()
 }
 
@@ -244,14 +252,14 @@ if ( !dir.exists(opt$logDir) )
 # ----- Set up logging ---------------------------------------------------------
 
 logger.setup(
-  traceLog = file.path(opt$logDir, "animateScanRaster_TRACE.log"),
-  debugLog = file.path(opt$logDir, "animateScanRaster_DEBUG.log"),
-  infoLog  = file.path(opt$logDir, "animateScanRaster_INFO.log"),
-  errorLog = file.path(opt$logDir, "animateScanRaster_ERROR.log")
+  traceLog = file.path(opt$logDir, "animateScanSpdfs_TRACE.log"),
+  debugLog = file.path(opt$logDir, "animateScanSpdfs_DEBUG.log"),
+  infoLog  = file.path(opt$logDir, "animateScanSpdfs_INFO.log"),
+  errorLog = file.path(opt$logDir, "animateScanSpdfs_ERROR.log")
 )
 
 # For use at the very end
-errorLog <- file.path(opt$logDir, "animateScanRaster_ERROR.log")
+errorLog <- file.path(opt$logDir, "animateScanSpdfs_ERROR.log")
 
 if ( interactive() )
   logger.setLevel(TRACE)
@@ -260,7 +268,7 @@ if ( interactive() )
 options(warn = -1) # -1 = ignore, 0 = save/print, 1 = print, 2 = error
 
 # Start logging
-logger.info("Running animateScanRaster_exec.R version %s", VERSION)
+logger.info("Running animateScanSpdfs_exec.R version %s", VERSION)
 sessionString <- paste(capture.output(sessionInfo()), collapse = "\n")
 logger.debug("R session:\n\n%s\n", sessionString)
 
@@ -324,7 +332,7 @@ scanFilenames <- goesaodc_downloadScanFiles(
 )
 
 # ----- Create frame files -----------------------------------------------------
-
+  
 videoTimeStamp <- MazamaCoreUtils::timeStamp(
   starttime,
   unit = "hour",
@@ -349,26 +357,27 @@ for ( scanFilename in scanFilenames ) {
     MazamaCoreUtils::parseDatetime(timezone = opt$timezone) # Local time
   
   title <- paste0("AOD for ", strftime(localScanTime, "%Y-%m-%d %H:%M:%S %Z"))
-  
+
   if (opt$verbose)
     logger.trace(
       "Rendering frame for %s",
       strftime(localScanTime, "%Y-%m-%d %H:%M:%S %Z")
     )
   
-  # Create scan raster
-  scanRaster <- goesaodc_createScanRaster(
+  # Create scan points
+  scanPoints <- goesaodc_createScanSpdf(
     filename = scanFilename,
     bbox = bbox,
-    dqfLevel = opt$dqfLevel,
-    cellSize = opt$cellSize
+    dqfLevel = opt$dqfLevel
   )
   
-  # Draw plot
-  scanPlot <- goesaodc_plotScanRaster(
-    raster = scanRaster,
+  # Draw scan plot
+  scanPlot <- goesaodc_plotScanSpdf(
+    spdf = scanPoints,
     bbox = bbox,
-    rasterAlpha = opt$rasterAlpha,
+    pointSize = opt$pointSize,
+    pointShape = opt$pointShape,
+    pointAlpha = opt$pointAlpha,
     paletteName = opt$paletteName,
     paletteBreaks = paletteBreaks,
     legendLimits = legendLimits,
@@ -390,7 +399,7 @@ for ( scanFilename in scanFilenames ) {
   )
   
 }
-
+  
 # ----- Create video from frames -----------------------------------------------
 
 videoFilename <- paste0(videoTimeStamp, "_DQF", opt$dqfLevel, ".mp4")
@@ -422,3 +431,4 @@ if ( !file.exists(errorLog) )
   dummy <- file.create(errorLog)
 
 logger.info("Completed successfully!")
+  

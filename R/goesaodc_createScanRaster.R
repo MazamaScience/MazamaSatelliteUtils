@@ -126,7 +126,7 @@ goesaodc_createScanRaster <- function(
   # ----- Create raster --------------------------------------------------------
   
   # Get spatial points data
-  spdf <- goesaodc_createScanPoints(
+  spdf <- goesaodc_createScanSpdf(
     filename = filename,
     bbox = bbox,
     dqfLevel = dqfLevel

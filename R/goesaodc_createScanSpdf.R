@@ -1,6 +1,6 @@
 #' @export
 #' 
-#' @title Create AOD points from GOES scans
+#' @title Create an SPDF from a GOES AOD scan
 #' 
 #' @description Creates a \code{SpatialPointsDataFrame} of AOD readings from a 
 #' GOES scan file, or a list of \code{SpatialPointsDataFrame}s from a series of 
@@ -28,26 +28,26 @@
 #' )
 #' 
 #' # Create an SPDF from a single scan file
-#' goesaodc_createScanPoints(
+#' goesaodc_createScanSpdf(
 #'   filename = scanFiles[1],
 #'   bbox = bboxOregon,
 #'   dqfLevel = 2
 #' )
 #' 
 #' # Create a list of SPDFs from multiple scan files
-#' goesaodc_createScanPoints(
+#' goesaodc_createScanSpdf(
 #'   filename = scanFiles,
 #'   bbox = bboxOregon
 #' )
 #' 
 #' # Create an empty SPDF from a faulty scan
-#' goesaodc_createScanPoints(
+#' goesaodc_createScanSpdf(
 #'   filename = "OR_ABI-L2-AODC-M6_G17_s20202522231174_e20202522233547_c20202522235327.nc",
 #'   bbox = bboxOregon
 #' )
 #' }
 
-goesaodc_createScanPoints <- function(
+goesaodc_createScanSpdf <- function(
   filename = NULL,
   bbox = bbox_CONUS,
   dqfLevel = 3
@@ -60,14 +60,14 @@ goesaodc_createScanPoints <- function(
   if ( !(dqfLevel %in% c(0, 1, 2, 3)) )
     stop(paste0("Parameter 'dqfLevel' must be 0, 1, 2, or 3"))
   
-  # ----- Create spatial points ------------------------------------------------
+  # ----- Create SpatialPointsDataFrame ----------------------------------------
   
   result <- try({
     
     if ( length(filename) == 1 ) {
       
       # Create a single SPDF
-      spdf <- goesaodc_createSingleScanPoints(
+      spdf <- goesaodc_createSingleScanSpdf(
         filename = filename,
         bbox = bbox,
         dqfLevel = dqfLevel
@@ -88,7 +88,7 @@ goesaodc_createScanPoints <- function(
           goesaodc_convertFilenameToDatetime() %>%
           MazamaCoreUtils::timeStamp(unit = "sec", timezone = "UTC")
         
-        spdf <- goesaodc_createSingleScanPoints(
+        spdf <- goesaodc_createSingleScanSpdf(
           filename = filename,
           bbox = bbox,
           dqfLevel = dqfLevel
@@ -108,19 +108,20 @@ goesaodc_createScanPoints <- function(
   # AOD and DQF values for the requested satellite
   if ( "try-error" %in% class(result) ) {
     warning(result, immediate. = TRUE)
-    spdf <- goesaodc_createEmptyScanPoints(filename = filename, bbox = bbox)
+    spdf <- goesaodc_createEmptyScanSpdf(filename = filename, bbox = bbox)
     return(spdf)
   }
   
 }
 
 
-#' @title Create AOD points from a single GOES scan
+#' @title Create an SPDF from a single GOES AOD scan
 #' 
-#' @description Creates a \code{SpatialPointsDataFrame} from a GOES scan file.
+#' @description Creates a \code{SpatialPointsDataFrame} of AOD readings from a 
+#' GOES scan file.
 #' 
-#' @param filename The name of the scan file.
-#' @param bbox Bounding box for the region of interest; Defaults to CONUS.
+#' @param filename Name of the scan file.
+#' @param bbox Bounding box for the region of interest. Defaults to CONUS.
 #' @param dqfLevel Allowed data quality level. All readings with a DQF value
 #' above this level will have their AOD values set to NA. Must be either 0, 1, 
 #' 2, or 3, with 0 being the highest quality. Defaults to 3.
@@ -138,13 +139,13 @@ goesaodc_createScanPoints <- function(
 #'   timezone = "America/Los_Angeles"
 #' )
 #' 
-#' MazamaSatelliteUtils:::goesaodc_createSingleScanPoints(
+#' MazamaSatelliteUtils:::goesaodc_createSingleScanSpdf(
 #'   filename = scanFile,
 #'   bbox = bboxOregon
 #' )
 #' }
 
-goesaodc_createSingleScanPoints <- function(
+goesaodc_createSingleScanSpdf <- function(
   filename = NULL,
   bbox = bbox_CONUS,
   dqfLevel = 3
@@ -157,7 +158,7 @@ goesaodc_createSingleScanPoints <- function(
   if ( !(dqfLevel %in% c(0, 1, 2, 3)) )
     stop(paste0("Parameter 'dqfLevel' must be 0, 1, 2, or 3"))
   
-  # ----- Create spatial points ------------------------------------------------
+  # ----- Create SpatialPointsDataFrame ----------------------------------------
   
   # Download the file if it isn't available locally
   if ( !(filename %in% list.files(getSatelliteDataDir())) ) {

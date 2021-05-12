@@ -1,8 +1,11 @@
 # MazamaSatelliteUtils 0.4.15
 
-* Added `legendTitle` parameter to `goesaodc_plotScan...()` functions.
-* Added `paletteColors` paramter to `goesaodc_plotScan...()` functions.
+* Renamed all `goesaodc_...Points()` functions to `goesaodc_...Spdf()`.
+* Renamed `animateScanPoints_exec` and `animateScanRaster_exec` scripts to
+`goesaodc_animateScanSpdfs_exec` and `goesaodc_animateScanRasters_exec`.
 * Renamed `installGoesGrid()` function to `goesaodc_installGoesGrid()`.
+* Added `legendTitle` parameter to `goesaodc_plotScan...()` functions.
+* Added `paletteColors` paramter to `goesaodc_plotScan...()` functions
 * Hid `createGoesGrid()` function.
 
 # MazamaSatelliteUtils 0.4.14

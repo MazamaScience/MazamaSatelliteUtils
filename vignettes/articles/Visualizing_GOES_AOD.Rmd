@@ -124,7 +124,7 @@ goesaodc_listScanFiles(
 Now that we can identify and download the scan files we're interested in, the
 next step is to read them into R data structures. Here you have the choice of 
 turning scan files into SpatialPointsDataFrames (SPDFs) with 
-`goesaodc_createScanPoints()` or rasters with `goesaodc_createScanRaster()`. 
+`goesaodc_createScanSpdf()` or rasters with `goesaodc_createScanRaster()`. 
 These functions allow you to filter AOD readings using `bbox` and `dqfLevel`
 parameters so that only readings within `bbox` will be kept and all readings 
 with a DQF above `dqfLevel` will have their AOD values set to `NA`.
@@ -146,10 +146,10 @@ goesaodc_installGoesGrids()
 
 Creating an SPDF:
 
-```{r create_scan_points}
+```{r create_scan_spdf}
 bboxOregon <- c(-125, -116, 42, 46.5)
 
-scanPoints <- goesaodc_createScanPoints(
+scanPoints <- goesaodc_createScanSpdf(
   filename = scanFile,
   bbox = bboxOregon,
   dqfLevel = 2
@@ -170,11 +170,11 @@ scanRaster
 ```
 
 If you pass in a vector of filenames to `filename`, then 
-`goesaodc_createScanPoints()` will return a list of SPDFs and 
+`goesaodc_createScanSpdf()` will return a list of SPDFs and 
 `goesaodc_createScanRaster()` will return a RasterBrick.
 
-```{r create_scan_series_points_and_rasterbrick}
-scanPointsList <- goesaodc_createScanPoints(
+```{r create_scan_series_spdfs_and_rasterbrick}
+scanPointsList <- goesaodc_createScanSpdf(
   filename = scanFiles,
   bbox = bboxOregon
 )
@@ -192,7 +192,7 @@ multiple scans into a single SPDF or RasterLayer. For instance,
 across all the given scans:
 
 ```{r}
-averagedScanPoints <- goesaodc_calcAverageScanPoints(
+averagedScanPoints <- goesaodc_calcAverageScanSpdf(
   spdfList = scanPointsList,
   na.rm = TRUE
 )
@@ -210,7 +210,7 @@ calculated by taking the difference between it's average value in the first half
 of the scan list and it's average value in the second half.
 
 ```{r calc_trend_scan_points_and_rasters}
-trendScanPoints <- goesaodc_calcTrendScanPoints(
+trendScanPoints <- goesaodc_calcTrendScanSpdf(
   spdfList = scanPointsList,
   na.rm = TRUE
 )
@@ -226,7 +226,7 @@ the raw AOD values of the points they were made from.
 
 ### 3. Plotting
 
-At last, we can draw SPDFs/rasters with `goesaodc_plotScanPoints()` or
+At last, we can draw SPDFs/rasters with `goesaodc_plotScanSpdf()` or
 `goesaodc_plotScanRaster()`. These require you to pass in a single SPDF or 
 RasterLayer respectively. Point and cell colors have a gradient color scale by
 default, but you can set a discrete palette by passing in an RColorBrewer 
@@ -235,13 +235,13 @@ in gray.
 
 Plotting scan points:
 
-```{r plot_scan_points, warning=FALSE, message=FALSE, fig.width=7, fig.height=5, fig.align="center"}
+```{r plot_scan_spdf, warning=FALSE, message=FALSE, fig.width=7, fig.height=5, fig.align="center"}
 # Load state polygons
 library(MazamaSpatialUtils)
 setSpatialDataDir("~/Data/Spatial")
 loadSpatialData("NaturalEarthAdm1")
 
-goesaodc_plotScanPoints(
+goesaodc_plotScanSpdf(
   spdf = scanPoints,
   bbox = bboxOregon,
   pointAlpha = 0.5,
@@ -266,22 +266,24 @@ goesaodc_plotScanRaster(
 Since we have already seen how to aggregate multiple scans into a single SPDF or
 RasterLayer, we can also draw averaged or trend scans:
 
-```{r plot_aggregate_points_and_rasters, fig.width=7, fig.height=5, fig.align="center"}
-goesaodc_plotScanPoints(
+```{r plot_aggregate_spdfs, fig.width=7, fig.height=5, fig.align="center"}
+goesaodc_plotScanSpdf(
   spdf = averagedScanPoints,
-  bbox = bboxOregon
+  bbox = bboxOregon,
+  stateCodes = "OR"
 )
 
-goesaodc_plotScanPoints(
+goesaodc_plotScanSpdf(
   spdf = trendScanPoints,
   bbox = bboxOregon,
+  stateCodes = "OR",
   legendTitle = "AOD trend"
 )
 ```
 
 ## Animations
 
-`goesaodc_plotScanPoints()` and `goesaodc_plotScanRaster()` allow you to plot 
+`goesaodc_plotScanSpdf()` and `goesaodc_plotScanRaster()` allow you to plot 
 static images of GOES AOD data. You can create animated videos of AOD as well 
 using the `goesaodc_animateScanPoints_exec.R` and 
 `goesaodc_animateScanRaster_exec.R` executable scripts. These scripts take in 
@@ -309,7 +311,7 @@ the user to set the `legendLimits` parameter.
 Here's an example of animating points:
 
 ```
-./animateScanPoints_exec.R \
+./animateScanSpdfs_exec.R \
   --satID="G17" \
   --starttime="2020-09-08 09:00" \
   --endtime="2020-09-08 10:00" \
@@ -335,7 +337,7 @@ Here's an example of animating points:
 And another for animating rasters:
 
 ```
-./animateScanPoints_exec.R \
+./animateScanRasters_exec.R \
   --satID="G17" \
   --starttime="2020-09-08 09:00" \
   --endtime="2020-09-08 10:00" \

@@ -1,7 +1,8 @@
-#' @title Create NA AOD points from a GOES scan
+#' @title Create an empty SPDF for a GOES satellite
 #' 
-#' @description Creates a \code{SpatialPointsDataFrame} of NA AOD readings from 
-#' a GOES scan,
+#' @description Creates a \code{SpatialPointsDataFrame} of NA AOD readings for a
+#' GOES satellite. This is useful when trying to create an SPDF for a faulty
+#' scan file.
 #' 
 #' @param satID ID of the source GOES satellite ('G16' or 'G17').
 #' @param filename Name of a scan file.
@@ -12,14 +13,14 @@
 #' library(MazamaSatelliteUtils)
 #' setSatelliteDataDir("~/Data/Satellite")
 #' 
-#' MazamaSatelliteUtils:::goesaodc_createEmptyScanPoints(satID = "G16")
-#' MazamaSatelliteUtils:::goesaodc_createEmptyScanPoints(satID = "G17")
-#' MazamaSatelliteUtils:::goesaodc_createEmptyScanPoints(
+#' MazamaSatelliteUtils:::goesaodc_createEmptyScanSpdf(satID = "G16")
+#' MazamaSatelliteUtils:::goesaodc_createEmptyScanSpdf(satID = "G17")
+#' MazamaSatelliteUtils:::goesaodc_createEmptyScanSpdf(
 #'   filename = "OR_ABI-L2-AODC-M6_G17_s20202530031174_e20202530033547_c20202530035523.nc"
 #' )
 #' }
 
-goesaodc_createEmptyScanPoints <- function(
+goesaodc_createEmptyScanSpdf <- function(
   satID = NULL,
   filename = NULL,
   bbox = bbox_CONUS
