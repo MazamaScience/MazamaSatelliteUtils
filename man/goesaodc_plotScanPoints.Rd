@@ -16,7 +16,8 @@ goesaodc_plotScanPoints(
   includeMap = FALSE,
   zoom = NULL,
   stateCodes = NULL,
-  title = NULL
+  title = NULL,
+  legendTitle = "AOD"
 )
 }
 \arguments{
@@ -51,6 +52,8 @@ integer from 1 to 15.}
 \item{stateCodes}{Codes of state outlines to draw.}
 
 \item{title}{Title of the plot.}
+
+\item{legendTitle}{Title of the plot legend.}
 }
 \description{
 Plot GOES AOD points

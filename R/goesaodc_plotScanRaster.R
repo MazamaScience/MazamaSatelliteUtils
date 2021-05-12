@@ -22,6 +22,7 @@
 #' integer from 1 to 15.
 #' @param stateCodes Codes of state outlines to draw.
 #' @param title Title of the plot.
+#' @param legendTitle Title of the plot legend.
 #' 
 #' @examples
 #' \donttest{
@@ -84,7 +85,8 @@ goesaodc_plotScanRaster <- function(
   includeMap = FALSE,
   zoom = NULL,
   stateCodes = NULL,
-  title = NULL
+  title = NULL,
+  legendTitle = "AOD"
 ) {
   
   # ----- Validate parameters --------------------------------------------------
@@ -110,7 +112,7 @@ goesaodc_plotScanRaster <- function(
   # Create base layer
   baseLayer <- AirFirePlots::plot_base(
     title = title,
-    flab = "AOD",
+    flab = legendTitle,
     xlim = xlim,
     ylim = ylim,
     project = includeMap,

@@ -1,3 +1,7 @@
+# MazamaSatelliteUtils 0.4.15
+
+* Added `legendTitle` parameter to `goesaodc_plotScan...()` functions.
+
 # MazamaSatelliteUtils 0.4.14
 
 * `goesaodc_createScanPoints()` and `goesaodc_createScanRaster()` functions no
