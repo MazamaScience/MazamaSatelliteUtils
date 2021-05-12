@@ -2,6 +2,7 @@
 
 * Added `legendTitle` parameter to `goesaodc_plotScan...()` functions.
 * Added `paletteColors` paramter to `goesaodc_plotScan...()` functions.
+* Hid `createGoesGrid()` function.
 
 # MazamaSatelliteUtils 0.4.14
 
@@ -99,8 +100,8 @@ provided.
 # MazamaSatelliteUtils 0.4.6
 
 * Added `goesaodc_createScanSPDF()` function.
-* `goesaodc_createSingleScanSPDF()` and `goesaodc_createSingleScanSPDF()` 
-functions are now hidden.
+* Hid `goesaodc_createSingleScanSPDF()` and `goesaodc_createSingleScanSPDF()` 
+functions.
 * Renamed `goesaodc_singleScanToSPDF()` function to `goesaodc_createSingleScanSPDF()`.
 * Renamed `goesaodc_multiScanToSPDF()` function to `goesaodc_createMultiScanSPDF()`.
 * Added `pointShape`, `paletteName`, `stateCodes`, and `title` params to 
