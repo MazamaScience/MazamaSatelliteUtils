@@ -20,10 +20,10 @@
 #' library(MazamaSatelliteUtils)
 #' setSatelliteDataDir("~/Data/Satellite")
 #' 
-#' installGoesGrids()
+#' goesaodc_installGoesGrids()
 #' } 
 
-installGoesGrids <- function(
+goesaodc_installGoesGrids <- function(
 ) {
   
   outputDir <- getSatelliteDataDir()

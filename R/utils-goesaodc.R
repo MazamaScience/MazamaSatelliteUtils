@@ -194,7 +194,7 @@ goesaodc_isGoesProjection <- function(
   # Test for grid existence
   if ( !file.exists(file.path(satelliteDataDir, "goesEastGrid.rda")) ||
        !file.exists(file.path(satelliteDataDir, "goesEastGrid.rda")) ) {
-    stop("Grid files not found. Run 'installGoesGrids()' first")
+    stop("Grid files not found. Run 'goesaodc_installGoesGrids()' first")
   }
   
   projection <- goesaodc_getProjection(nc)

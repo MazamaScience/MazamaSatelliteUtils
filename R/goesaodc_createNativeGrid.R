@@ -92,7 +92,7 @@ goesaodc_createNativeGrid <- function (
   if ( file.exists(filePath) ) {
     goesGrid <- get(load(filePath))
   } else {
-    stop("Grid file not found. Run 'installGoesGrids()' first")
+    stop("Grid file not found. Run 'goesaodc_installGoesGrids()' first")
   }  
   
   # ----- Create a grid mask ---------------------------------------------------

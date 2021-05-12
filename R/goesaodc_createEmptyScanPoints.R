@@ -49,7 +49,7 @@ goesaodc_createEmptyScanPoints <- function(
     satGrid <- get(load(gridFilePath))
   } else {
     stop(paste0("Grid file '", gridFilePath, "'not found. Run 
-    'installGoesGrids()' first."))
+    'goesaodc_installGoesGrids()' first."))
   }
   
   # ----- Create a grid mask ---------------------------------------------------

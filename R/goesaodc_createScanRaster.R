@@ -88,7 +88,7 @@ goesaodc_createScanRaster <- function(
     goesGrid <- get(load(gridFilePath))
   } else {
     stop(paste0("Grid file '", gridFilePath, "'not found. Run 
-    'installGoesGrids()' first."))
+    'goesaodc_installGoesGrids()' first."))
   }
   
   # Determine grid extent

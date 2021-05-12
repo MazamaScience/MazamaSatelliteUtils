@@ -135,6 +135,15 @@ rasterizing the resulting points. A raster cell's AOD value is determined by
 summarizing the values of all the points that fall in it with the `fun` 
 function (defaults to `mean`).
 
+One more thing! Creating points and rasters requires that each scan reading is 
+assigned to the proper place in its GOES grid. Therefore, before running either 
+`goesaodc_createScan...()` function you must first install the GOES grid files 
+with `goesaodc_installGoesGrids()`.
+
+```{r install_goes_grids}
+goesaodc_installGoesGrids()
+```
+
 Creating an SPDF:
 
 ```{r create_scan_points}
