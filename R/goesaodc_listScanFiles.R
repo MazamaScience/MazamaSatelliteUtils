@@ -32,7 +32,7 @@
 #' 
 #' goesaodc_listScanFiles(
 #'   satID = "G17",
-#'   datetime = "2020-09-08 12:30",
+#'   datetime = "2000-09-08 12:30",
 #'   timezone = "UTC",
 #'   useRemote = TRUE
 #' )
@@ -123,6 +123,16 @@ goesaodc_listScanFiles <- function(
     datetime = datetime
   )
   
+  if ( is.null(startFilename) ) {
+    warning(
+      "No scan files found in the same day as the requested 'datetime'. If
+      parameter 'useRemote=FALSE', try running 'goesaodc_downloadScanFiles()' 
+      first.",
+      immediate. = TRUE
+    )
+    return(NULL)
+  }
+  
   startClosestIndex <- which(startFilename == allScanFiles)[1]
   
   # Return all the scan files in the time range
@@ -140,6 +150,16 @@ goesaodc_listScanFiles <- function(
       scanFiles = allScanFiles,
       datetime = endtime
     )
+    
+    if ( is.null(endFilename) ) {
+      warning(
+        "No scan files found in the same day as the requested 'endtime'. If 
+        parameter 'useRemote=FALSE', try running 'goesaodc_downloadScanFiles()' 
+        first.",
+        immediate. = TRUE
+      )
+      return(NULL)
+    }
     
     endClosestIndex <- which(endFilename == allScanFiles)[1]
     
