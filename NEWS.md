@@ -10,6 +10,8 @@
 name "AOD".
 * `goesaodc_calcTrendScan...()` functions produce data structures with the name
 "aodTrend".
+* `goesaodc_plotScan...()` functions now color points/cells based using the 
+first variable in their respective SPDF/raster instead of hardcoding to AOD.
 * Hid `createGoesGrid()` function.
 * Updated lots of function documentation.
 
