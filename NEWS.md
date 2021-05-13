@@ -12,6 +12,8 @@ name "AOD".
 "aodTrend".
 * `goesaodc_plotScan...()` functions now color points/cells based using the 
 first variable in their respective SPDF/raster instead of hardcoding to AOD.
+* `goesaodc_listScanFiles()` now returns `NULL` when no files are found for the
+day of the requested `datetime`.
 * Hid `createGoesGrid()` function.
 * Updated lots of function documentation.
 

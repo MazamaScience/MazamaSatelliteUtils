@@ -42,6 +42,10 @@ just \code{datetime} is given, then only the scan file closest to that time
 will be listed. If \code{endtime} is specified as well, then all scans from
 \code{datetime} up to (but not including) \code{endtime} will be listed.
 }
+\details{
+If \code{useRemote=FALSE} and there are no scan files available for 
+the day of the requested \code{datetime}, then \code{NULL} will be returned.
+}
 \examples{
 \donttest{
 library(MazamaSatelliteUtils)

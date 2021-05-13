@@ -7,6 +7,9 @@
 #' will be listed. If \code{endtime} is specified as well, then all scans from
 #' \code{datetime} up to (but not including) \code{endtime} will be listed.
 #' 
+#' @details If \code{useRemote=FALSE} and there are no scan files available for 
+#' the day of the requested \code{datetime}, then \code{NULL} will be returned.
+#' 
 #' @param satID ID of the source GOES satellite ('G16' or 'G17').
 #' @param datetime Datetime as a Ymd HMS or Julian formatted string, or a 
 #' \code{POSIXct}.
@@ -183,6 +186,11 @@ goesaodc_findClosestScanFile <- function(
   dayFilesPattern <- strftime(datetime, "_s%Y%j", tz = "UTC")
   dayFilesIndices <- which(stringr::str_detect(scanFiles, dayFilesPattern))
   dayFilenames <- scanFiles[dayFilesIndices]
+  
+  if ( length(dayFilenames) == 0 ) {
+    warning("No scan files found for the requested day.", immediate. = TRUE)
+    return(NULL)
+  }
   
   # ----- Find closest scan file -----------------------------------------------
   
