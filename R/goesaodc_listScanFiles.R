@@ -32,7 +32,7 @@
 #' 
 #' goesaodc_listScanFiles(
 #'   satID = "G17",
-#'   datetime = "2000-09-08 12:30",
+#'   datetime = "2020-09-08 12:30",
 #'   timezone = "UTC",
 #'   useRemote = TRUE
 #' )

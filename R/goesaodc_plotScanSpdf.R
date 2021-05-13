@@ -113,7 +113,7 @@ goesaodc_plotScanSpdf <- function(
   
   varNames <-
     df %>%
-    dplyr::select(-c(lon, lat, optional)) %>%
+    dplyr::select(-c(.data$lon, .data$lat, .data$optional)) %>%
     names()
   
   legendTitle <- ifelse(is.null(legendTitle), varNames[1], legendTitle)
