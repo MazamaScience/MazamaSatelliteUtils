@@ -13,14 +13,14 @@ vignette: >
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-This article will walk through how to visualize GOES AOD scans using high-level 
-functions available in the **MazamaSatelliteUtils** package.
+This article will walk through the steps of visualizing GOES AOD scans using 
+the high-level functions provided by the **MazamaSatelliteUtils** package.
 
 ## Point and Raster Plots 
 
 Each GOES scan records the AOD value for millions of fixed locations across the 
 continental US. **MazamaSatelliteUtils** allows you to visualize this data 
-either as points or a raster--each having their upsides and downsides when it 
+either with points or rasters--each having their upsides and downsides when it 
 comes to plotting.
 
 ### Point Plots
@@ -37,8 +37,8 @@ possible spatial resolution.
 - The arrangement of sample locations means points will likely overlap or have 
 gaps between them when plotted.
 - Point size is not determined by axis units. Therefore, the user will have to 
-manually determine the best point size for each plot they make depending on the
-plot dimensions and the area it covers.
+manually determine the best point size for each plot depending on the plot 
+dimensions and the geographic region it covers.
 
 ### Raster Plots
 
@@ -48,7 +48,7 @@ plot dimensions and the area it covers.
 'gaps' of `NA` AOD values.
 - Cells will never overlap of have gaps between them and their size is defined 
 using axis units. Therefore, the user does not have to adjust anything 
-depending on the size of the plot or the area it covers.
+depending on the size of the plot or the region it covers.
 
 **Cons:**
 
@@ -59,22 +59,19 @@ systems.
 
 ## How to Plot a Scan
 
-Visualizing GOES AOD data can be done in just a few steps:
-
 ### 1. Getting Scan Files
 
 First things first: since each scan is saved as a netCDF file on a remote 
 server, we need to download the files for the scans we want to see! We can do
 this with `goesaodc_downloadScanFiles()`, which downloads the scan file taken 
-closest to the given `datetime` by the named satellite. If an `endtime` is given
-as well, then all the satellite's scan files taken at or after `datetime` up to 
-(but not including) `endtime` will be downloaded. Scan files are stored in and
-read from the directory specified by `setSatelliteDataDir()`.
+closest to the given `datetime` by the named satellite. If an `endtime` is 
+provided as well, then all that satellite's scans taken at or after `datetime` 
+and up to (but not including) `endtime` will be downloaded. Scan files will be 
+stored in the directory specified by `setSatelliteDataDir()`.
 
 Downloading a single scan file:
 
 ```{r download_single_scan}
-# Load library and set the scan file folder
 library(MazamaSatelliteUtils)
 setSatelliteDataDir("~/Data/Satellite")
 
@@ -108,14 +105,15 @@ scanFiles %>%
   MazamaCoreUtils::parseDatetime(timezone = "America/Los_Angeles")
 ```
 
-You can also see what scan files are available locally or remotely with 
+You can also see what scan files are available either locally or remotely with 
 `goesaodc_listScanFiles()`:
 
 ```{r list_local_scan}
 goesaodc_listScanFiles(
   satID = "G17",
   datetime = "2020-09-08 12:30",
-  timezone = "America/Los_Angeles"
+  timezone = "America/Los_Angeles",
+  useRemote = FALSE
 )
 ```
 
@@ -123,22 +121,22 @@ goesaodc_listScanFiles(
 
 Now that we can identify and download the scan files we're interested in, the
 next step is to read them into R data structures. Here you have the choice of 
-turning scan files into SpatialPointsDataFrames (SPDFs) with 
-`goesaodc_createScanSpdf()` or rasters with `goesaodc_createScanRaster()`. 
+turning a scan into a SpatialPointsDataFrame (SPDF) with 
+`goesaodc_createScanSpdf()` or a raster with `goesaodc_createScanRaster()`. 
 These functions allow you to filter AOD readings using `bbox` and `dqfLevel`
 parameters so that only readings within `bbox` will be kept and all readings 
 with a DQF above `dqfLevel` will have their AOD values set to `NA`.
 
 An important point to note: A raster is created by first generating a 
-SpatialPointsDataFrame--which includes the filtering process--and *then* 
+SpatialPointsDataFrame (which includes the filtering process) and *then* 
 rasterizing the resulting points. A raster cell's AOD value is determined by 
 summarizing the values of all the points that fall in it with the `fun` 
 function (defaults to `mean`).
 
 One more thing! Creating points and rasters requires that each scan reading is 
-assigned to the proper place in its GOES grid. Therefore, before running either 
-`goesaodc_createScan...()` function you must first install the GOES grid files 
-with `goesaodc_installGoesGrids()`.
+assigned to the proper location in its GOES grid. Therefore, before running 
+either `goesaodc_createScan...()` function you must first install the GOES grid 
+files with `goesaodc_installGoesGrids()`.
 
 ```{r install_goes_grids}
 goesaodc_installGoesGrids()
@@ -189,7 +187,7 @@ scanRasterBrick <- goesaodc_createScanRaster(
 An SPDF list or a RasterBrick can be used to aggregate AOD readings from
 multiple scans into a single SPDF or RasterLayer. For instance, 
 `goesaodc_calcAverageScan...()` will find the average value for each point/cell
-across all the given scans:
+across all the scans in the data structure:
 
 ```{r}
 averageScanSpdf <- goesaodc_calcAverageScanSpdf(
@@ -206,8 +204,8 @@ averageScanRaster <- goesaodc_calcAverageScanRaster(
 
 The `goesaodc_calcTrendScan...()` functions calculate the "trend" for each 
 point/cell across all the given scans. A trend value for a point/cell is
-calculated by taking the difference between it's average value in the first half
-of the scan list and it's average value in the second half.
+calculated by subtracting it's average value in the second half of the scan 
+series by it's average value in the first half.
 
 ```{r calc_trend_scan_points_and_rasters}
 trendScanSpdf <- goesaodc_calcTrendScanSpdf(
@@ -221,8 +219,8 @@ trendScanRaster <- goesaodc_calcTrendScanRaster(
 )
 ```
 
-Note: Rasters calculate their averages and trends using their cell values--not
-the raw AOD values of the points they were made from.
+Note: Rasters calculate their averages and trends using their cell values--*not*
+the raw AOD values of the points they were rasterized from.
 
 ### 3. Plotting
 
@@ -264,7 +262,7 @@ goesaodc_plotScanRaster(
 ```
 
 Since we have already seen how to aggregate multiple scans into a single SPDF or
-RasterLayer, we can also draw averaged or trend scans:
+RasterLayer, we can also draw average or trend scans:
 
 ```{r plot_aggregate_spdfs, fig.width=7, fig.height=5, fig.align="center"}
 goesaodc_plotScanSpdf(
@@ -289,22 +287,21 @@ using the `goesaodc_animateScanSpdfs_exec.R` and
 the same parameters as their plot counterparts (except `datetime` is now 
 `starttime`), but they require several additional arguments:
 
-* `satelliteDataDir`: The directory where satellite data is downloaded to and 
-read from.
-* `spatialDataDir`: The directory where spatial data is downloaded to and read 
+* `satelliteDataDir`: Directory where satellite data is downloaded to and read 
 from.
-* `outputDir`: The directory where the video should be saved to.
-* `logDir`: The directory where the output log files should be saved to.
-* `frameRate`: The framerate of the video in fps.
-* `verbose`: A logical flag whether to print out progress messages in the 
-console.
-* `version`: A logical flag whether to print out the current version of the 
-executable script.
+* `spatialDataDir`: Directory where spatial data is downloaded to and read from.
+* `outputDir`: Directory where the video file should be saved to.
+* `logDir`: Directory where the output log files should be saved to.
+* `frameRate`: Framerate of the video in fps.
+* `verbose`: Logical flag determining whether to print out progress messages in 
+the console.
+* `version`: Logical flag determining whether to print out the current version 
+of the executable script.
 
 Another thing to note: Since animations are made up of individual plots, it's
-essential that they all share a consistent color legend so that the color scale 
-bounds don't change between frames and that the legend should still be drawn 
-even if all the AOD values for a frame are `NA`. This is achieved by _requiring_
+essential that they all share a consistent color legend both so that the color 
+scale bounds don't change between frames and that the legend should be drawn 
+even if all the AOD values for a frame are `NA`. This is achieved by requiring
 the user to set the `legendLimits` parameter.
 
 Here's an example of animating points:
@@ -333,7 +330,7 @@ Here's an example of animating points:
   --verbose=TRUE
 ```
 
-And another for animating rasters:
+And another for animating rasters (only difference is passing in `cellSize`):
 
 ```
 ./goesaodc_animateScanRasters_exec.R \

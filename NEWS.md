@@ -16,6 +16,7 @@ first variable in their respective SPDF/raster instead of hardcoding to AOD.
 day of the requested `datetime`.
 * Hid `createGoesGrid()` function.
 * Updated lots of function documentation.
+* Updated 'Visualizing GOES AOD' article.
 
 # MazamaSatelliteUtils 0.4.14
 
