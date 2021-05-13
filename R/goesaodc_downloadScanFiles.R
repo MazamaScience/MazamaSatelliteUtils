@@ -73,21 +73,9 @@ goesaodc_downloadScanFiles <- function(
     filenames
   }
   
-  # TODO: Only download the requested files that aren't already available 
-  # locally
-  
-  # localFilenames <- goesaodc_listScanFiles(
-  #   satID = satID,
-  #   datetime = datetime,
-  #   endtime = endtime,
-  #   timezone = timezone,
-  #   isJulian = isJulian,
-  #   useRemote = FALSE
-  # )
-  # 
-  # missingFilenames <- setdiff(requestedFilenames, localFilenames)
-  
-  missingFilenames <- requestedFilenames
+  # Only download the requested files that aren't already available locally
+  requestedFilepaths <- file.path(getSatelliteDataDir(), requestedFilenames)
+  missingFilenames <- requestedFilenames[!file.exists(requestedFilepaths)]
   
   # ----- Download scan files --------------------------------------------------
   
