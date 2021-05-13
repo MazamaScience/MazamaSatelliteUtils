@@ -163,6 +163,8 @@ goesaodc_createScanRaster <- function(
       fun = fun
     )
     
+    names(raster) <- "AOD"
+    
     return(raster)
     
   }

@@ -149,12 +149,12 @@ Creating an SPDF:
 ```{r create_scan_spdf}
 bboxOregon <- c(-125, -116, 42, 46.5)
 
-scanPoints <- goesaodc_createScanSpdf(
+scanSpdf <- goesaodc_createScanSpdf(
   filename = scanFile,
   bbox = bboxOregon,
   dqfLevel = 2
 )
-scanPoints
+scanSpdf
 ```
 
 Creating a raster:
@@ -174,7 +174,7 @@ If you pass in a vector of filenames to `filename`, then
 `goesaodc_createScanRaster()` will return a RasterBrick.
 
 ```{r create_scan_series_spdfs_and_rasterbrick}
-scanPointsList <- goesaodc_createScanSpdf(
+scanSpdfList <- goesaodc_createScanSpdf(
   filename = scanFiles,
   bbox = bboxOregon
 )
@@ -192,12 +192,12 @@ multiple scans into a single SPDF or RasterLayer. For instance,
 across all the given scans:
 
 ```{r}
-averagedScanPoints <- goesaodc_calcAverageScanSpdf(
-  spdfList = scanPointsList,
+averageScanSpdf <- goesaodc_calcAverageScanSpdf(
+  spdfList = scanSpdfList,
   na.rm = TRUE
 )
 
-averagedScanRaster <- goesaodc_calcAverageScanRaster(
+averageScanRaster <- goesaodc_calcAverageScanRaster(
   rasterBrick = scanRasterBrick,
   na.rm = TRUE
 )
@@ -210,8 +210,8 @@ calculated by taking the difference between it's average value in the first half
 of the scan list and it's average value in the second half.
 
 ```{r calc_trend_scan_points_and_rasters}
-trendScanPoints <- goesaodc_calcTrendScanSpdf(
-  spdfList = scanPointsList,
+trendScanSpdf <- goesaodc_calcTrendScanSpdf(
+  spdfList = scanSpdfList,
   na.rm = TRUE
 )
 
@@ -242,7 +242,7 @@ setSpatialDataDir("~/Data/Spatial")
 loadSpatialData("NaturalEarthAdm1")
 
 goesaodc_plotScanSpdf(
-  spdf = scanPoints,
+  spdf = scanSpdf,
   bbox = bboxOregon,
   pointAlpha = 0.5,
   includeMap = TRUE,
@@ -268,16 +268,15 @@ RasterLayer, we can also draw averaged or trend scans:
 
 ```{r plot_aggregate_spdfs, fig.width=7, fig.height=5, fig.align="center"}
 goesaodc_plotScanSpdf(
-  spdf = averagedScanPoints,
+  spdf = averageScanSpdf,
   bbox = bboxOregon,
   stateCodes = "OR"
 )
 
 goesaodc_plotScanSpdf(
-  spdf = trendScanPoints,
+  spdf = trendScanSpdf,
   bbox = bboxOregon,
   stateCodes = "OR",
-  legendTitle = "AOD trend"
 )
 ```
 

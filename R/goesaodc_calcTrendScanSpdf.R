@@ -2,7 +2,7 @@
 #' 
 #' @title Calculate the trend SPDF of a series of GOES scan SPDFs
 #' 
-#' @description Creates a \code{SpatialPointsDataFrame} of AOD reading trends 
+#' @description Creates a \code{SpatialPointsDataFrame} of AOD trend values 
 #' from a \code{list} of GOES scan \code{SpatialPointsDataFrame}s. A trend value
 #' for a point is calculated by taking the difference between it's average value
 #' in the first half of the scan series and it's average value in the second 
@@ -67,7 +67,7 @@ goesaodc_calcTrendScanSpdf <- function(
   trendSpdf <- sp::SpatialPointsDataFrame(
     coords = spdfList[[1]]@coords,
     data = data.frame(
-      AOD = trendValues
+      aodTrend = trendValues
     )
   )
   

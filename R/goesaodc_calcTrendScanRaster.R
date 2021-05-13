@@ -2,7 +2,7 @@
 #' 
 #' @title Calculate the trend raster of a series of GOES scan rasters
 #' 
-#' @description Creates a \code{SpatialPointsDataFrame} of AOD reading trends 
+#' @description Creates a \code{SpatialPointsDataFrame} of AOD trend values 
 #' from a GOES scan \code{rasterBrick}. A trend value for a cell is calculated 
 #' by taking the difference between it's average value in the first half of the 
 #' scan series and it's average value in the second half.
@@ -66,6 +66,7 @@ goesaodc_calcTrendScanRaster <- function(
   # Create trend raster with cell differences
   trendRaster <- raster::raster(rasterBrick)
   values(trendRaster) <- trendValues
+  names(trendRaster) <- "aodTrend"
   
   return(trendRaster)
   

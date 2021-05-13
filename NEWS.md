@@ -5,7 +5,11 @@
 `goesaodc_animateScanSpdfs_exec` and `goesaodc_animateScanRasters_exec`.
 * Renamed `installGoesGrid()` function to `goesaodc_installGoesGrid()`.
 * Added `legendTitle` parameter to `goesaodc_plotScan...()` functions.
-* Added `paletteColors` paramter to `goesaodc_plotScan...()` functions
+* Added `paletteColors` parameter to `goesaodc_plotScan...()` functions.
+* `goesaodc_createScanRaster()` function now produces a RasterLayer with the 
+name "AOD".
+* `goesaodc_calcTrendScan...()` functions produce data structures with the name
+"aodTrend".
 * Hid `createGoesGrid()` function.
 * Updated lots of function documentation.
 

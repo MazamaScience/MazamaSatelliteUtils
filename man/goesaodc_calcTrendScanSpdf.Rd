@@ -13,7 +13,7 @@ goesaodc_calcTrendScanSpdf(spdfList = NULL, na.rm = FALSE)
 calculating the trend. Defaults to \code{FALSE}.}
 }
 \description{
-Creates a \code{SpatialPointsDataFrame} of AOD reading trends 
+Creates a \code{SpatialPointsDataFrame} of AOD trend values 
 from a \code{list} of GOES scan \code{SpatialPointsDataFrame}s. A trend value
 for a point is calculated by taking the difference between it's average value
 in the first half of the scan series and it's average value in the second 
