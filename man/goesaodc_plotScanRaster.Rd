@@ -17,7 +17,7 @@ goesaodc_plotScanRaster(
   zoom = NULL,
   stateCodes = NULL,
   title = NULL,
-  legendTitle = "AOD"
+  legendTitle = NULL
 )
 }
 \arguments{

@@ -90,7 +90,7 @@ goesaodc_plotScanRaster <- function(
   zoom = NULL,
   stateCodes = NULL,
   title = NULL,
-  legendTitle = "AOD"
+  legendTitle = NULL
 ) {
   
   # ----- Validate parameters --------------------------------------------------
@@ -102,16 +102,22 @@ goesaodc_plotScanRaster <- function(
     if ( is.null(zoom) )
       stop("Parameter 'zoom' must be set when including a map layer")
   
+  # ----- Prepare for plotting -------------------------------------------------
+  
   rasterAlpha <- if ( is.null(rasterAlpha) ) {
     ifelse(includeMap, 0.75, 1.0)
   } else {
     rasterAlpha
   }
   
-  # ----- Create plot layers ---------------------------------------------------
+  varName <-names(raster)
+  
+  legendTitle <- ifelse(is.null(legendTitle), varName[1], legendTitle)
   
   xlim <- bbox[1:2]
   ylim <- bbox[3:4]
+  
+  # ----- Create plot layers ---------------------------------------------------
   
   # Create base layer
   baseLayer <- AirFirePlots::plot_base(
@@ -137,7 +143,7 @@ goesaodc_plotScanRaster <- function(
   # Create raster layer
   rasterLayer <- AirFirePlots::layer_raster(
     raster = raster,
-    varName = "AOD",
+    varName = varName,
     alpha = rasterAlpha
   )
   

@@ -45,19 +45,19 @@
 #'   timezone = "America/Los_Angeles"
 #' )
 #' 
-#' scanPoints <- goesaodc_createScanSpdf(
+#' scanSpdf <- goesaodc_createScanSpdf(
 #'   filename = scanFile,
 #'   bbox = bboxKingcadeFire
 #' )
 #' 
-#' faultyScanPoints <- goesaodc_createScanSpdf(
+#' emptyScanSpdf <- goesaodc_createScanSpdf(
 #'   filename = "OR_ABI-L2-AODC-M6_G17_s20202522231174_e20202522233547_c20202522235327.nc",
 #'   bbox = bboxKingcadeFire
 #' )
 #' 
-#' # Plot points for a scan
+#' # Plot SPDF for a scan
 #' goesaodc_plotScanSpdf(
-#'   spdf = scanPoints,
+#'   spdf = scanSpdf,
 #'   bbox = bboxKingcadeFire,
 #'   paletteBreaks = c(-Inf, 0, 1, 2, 3, 4, 5, Inf),
 #'   includeMap = TRUE,
@@ -66,9 +66,9 @@
 #'   title = "Kincade fire"
 #' )
 #' 
-#' # Plot points for a scan filled with NA AOD values
+#' # Plot SPDF for a scan filled with NA AOD values
 #' goesaodc_plotScanSpdf(
-#'   spdf = faultyScanPoints,
+#'   spdf = emptyScanSpdf,
 #'   bbox = bboxKingcadeFire,
 #'   legendLimits = c(-1, 6),
 #'   stateCodes = "CA"
@@ -89,7 +89,7 @@ goesaodc_plotScanSpdf <- function(
   zoom = NULL,
   stateCodes = NULL,
   title = NULL,
-  legendTitle = "AOD"
+  legendTitle = NULL
 ) {
   
   # ----- Validate parameters --------------------------------------------------
@@ -97,12 +97,13 @@ goesaodc_plotScanSpdf <- function(
   if ( !("SpatialPointsDataFrame" %in% class(spdf)) )
     stop("Parameter 'spdf' must be an object of type 'SpatialPointsDataFrame'")
   
-  if ( !("AOD" %in% names(spdf)) )
-    stop("Parameter 'spdf' must have an 'AOD' variable")
-  
   if ( includeMap )
     if ( is.null(zoom) )
       stop("Parameter 'zoom' must be set when including a map layer")
+  
+  # ----- Prepare for plotting -------------------------------------------------
+  
+  df <- data.frame(spdf)
   
   pointAlpha <- if ( is.null(pointAlpha) ) {
     ifelse(includeMap, 0.75, 1.0)
@@ -110,10 +111,17 @@ goesaodc_plotScanSpdf <- function(
     pointAlpha
   }
   
-  # ----- Create plot layers ---------------------------------------------------
+  varNames <-
+    df %>%
+    dplyr::select(-c(lon, lat, optional)) %>%
+    names()
+  
+  legendTitle <- ifelse(is.null(legendTitle), varNames[1], legendTitle)
   
   xlim <- bbox[1:2]
   ylim <- bbox[3:4]
+  
+  # ----- Create plot layers ---------------------------------------------------
   
   # Create base layer
   baseLayer <- AirFirePlots::plot_base(
@@ -138,11 +146,11 @@ goesaodc_plotScanSpdf <- function(
   
   # Create points layer
   pointsLayer <- ggplot2::geom_point(
-    data = data.frame(spdf), 
-    ggplot2::aes(
-      x = .data$lon,
-      y = .data$lat,
-      color = .data$AOD
+    data = df, 
+    ggplot2::aes_string(
+      x = "lon",
+      y = "lat",
+      color = varNames[1]
     ),
     size = pointSize,
     shape = pointShape,

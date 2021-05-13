@@ -18,7 +18,7 @@ goesaodc_plotScanSpdf(
   zoom = NULL,
   stateCodes = NULL,
   title = NULL,
-  legendTitle = "AOD"
+  legendTitle = NULL
 )
 }
 \arguments{
@@ -81,19 +81,19 @@ scanFile <- goesaodc_listScanFiles(
   timezone = "America/Los_Angeles"
 )
 
-scanPoints <- goesaodc_createScanSpdf(
+scanSpdf <- goesaodc_createScanSpdf(
   filename = scanFile,
   bbox = bboxKingcadeFire
 )
 
-faultyScanPoints <- goesaodc_createScanSpdf(
+emptyScanSpdf <- goesaodc_createScanSpdf(
   filename = "OR_ABI-L2-AODC-M6_G17_s20202522231174_e20202522233547_c20202522235327.nc",
   bbox = bboxKingcadeFire
 )
 
-# Plot points for a scan
+# Plot SPDF for a scan
 goesaodc_plotScanSpdf(
-  spdf = scanPoints,
+  spdf = scanSpdf,
   bbox = bboxKingcadeFire,
   paletteBreaks = c(-Inf, 0, 1, 2, 3, 4, 5, Inf),
   includeMap = TRUE,
@@ -102,9 +102,9 @@ goesaodc_plotScanSpdf(
   title = "Kincade fire"
 )
 
-# Plot points for a scan filled with NA AOD values
+# Plot SPDF for a scan filled with NA AOD values
 goesaodc_plotScanSpdf(
-  spdf = faultyScanPoints,
+  spdf = emptyScanSpdf,
   bbox = bboxKingcadeFire,
   legendLimits = c(-1, 6),
   stateCodes = "CA"
