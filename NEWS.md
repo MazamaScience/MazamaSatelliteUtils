@@ -1,6 +1,8 @@
 # MazamaSatelliteUtils 0.4.16
 
 * Added `naColor` parameter to `goesaodc_plotScanRaster()` function.
+* `goesaodc_animateScan...()` functions now display proper timezone in 
+timestamp.
 
 # MazamaSatelliteUtils 0.4.15
 
