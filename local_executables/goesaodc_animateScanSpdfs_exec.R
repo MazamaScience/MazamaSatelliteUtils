@@ -356,13 +356,16 @@ for ( scanFilename in scanFilenames ) {
     goesaodc_convertFilenameToDatetime() %>%                # UTC time
     MazamaCoreUtils::parseDatetime(timezone = opt$timezone) # Local time
   
-  title <- paste0("AOD for ", strftime(localScanTime, "%Y-%m-%d %H:%M:%S %Z"))
+  timeString <- strftime(
+    localScanTime,
+    format = "%Y-%m-%d %H:%M:%S %Z",
+    tz = attr(localScanTime, "tzone")
+  )
+  
+  title <- paste0("AOD for ", timeString)
 
   if (opt$verbose)
-    logger.trace(
-      "Rendering frame for %s",
-      strftime(localScanTime, "%Y-%m-%d %H:%M:%S %Z")
-    )
+    logger.trace("Rendering frame for %s", timeString)
   
   # Create scan points
   scanPoints <- goesaodc_createScanSpdf(
