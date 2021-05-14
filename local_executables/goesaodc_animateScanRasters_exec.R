@@ -307,8 +307,16 @@ if ( !is.null(opt$stateCodes) )
 if ( opt$verbose ) {
   logger.trace(
     "Animating scans from %s to %s",
-    strftime(starttime, "%Y-%m-%d %H:%M:%S %Z"),
-    strftime(endtime, "%Y-%m-%d %H:%M:%S %Z")
+    strftime(
+      starttime,
+      format = "%Y-%m-%d %H:%M:%S %Z",
+      tz = attr(starttime, "tzone")
+    ),
+    strftime(
+      endtime,
+      format = "%Y-%m-%d %H:%M:%S %Z",
+      tz = attr(endtime, "tzone")
+    )
   )
 }
 
