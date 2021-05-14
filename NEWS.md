@@ -3,7 +3,9 @@
 * Added `naColor` parameter to `goesaodc_plotScan...()` functions.
 * `goesaodc_animateScan...()` functions now display proper timezone in 
 timestamp.
-* Added 'GOES Coverage' article.
+* Added the following articles:
+  * GOES Coverage
+  * GOES Scan Distortion
 
 # MazamaSatelliteUtils 0.4.15
 

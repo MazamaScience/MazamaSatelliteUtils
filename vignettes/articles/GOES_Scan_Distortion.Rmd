@@ -1,0 +1,92 @@
+---
+title: "GOES Scan Distortion"
+author: "Mazama Science"
+date: "5/14/2021"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{GOES Scan Distortion}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+Each GOES satellite hovers over a fixed location on the globe. GOES-16 is 
+positioned at (0°N, 75.2°W) and GOES-17 at (0°N, 137.2°W). The further these 
+satellites scan from their position, the points they sample will grow further 
+and further apart. This means that there will be a high density of readings 
+directly under each satellite and a low density further away.
+
+We can visualize this by drawing a raster of a GOES scan where each cell is 
+colored by the total number of sample points that fall within its bounds:
+
+```{r setup, echo=FALSE, fig.width=7, fig.height=5, fig.align="center"}
+library(MazamaSatelliteUtils)
+library(MazamaSpatialUtils)
+
+setSatelliteDataDir("~/Data/Satellite")
+setSpatialDataDir("~/Data/Spatial")
+
+loadSpatialData("NaturalEarthAdm1")
+
+knitr::opts_chunk$set(echo = TRUE)
+
+# goesaodc_downloadScanFiles(
+#   satID = "G16",
+#   datetime = "2021-05-12 09:00",
+#   timezone = "America/Chicago",
+#   verbose = TRUE
+# )
+
+# goesaodc_downloadScanFiles(
+#   satID = "G17",
+#   datetime = "2021-05-12 09:00",
+#   timezone = "America/Chicago",
+#   verbose = TRUE
+# )
+
+scanFileG16 <- goesaodc_listScanFiles(
+  satID = "G16",
+  datetime = "2021-05-12 09:00",
+  timezone = "America/Chicago"
+)
+
+scanFileG17 <- goesaodc_listScanFiles(
+  satID = "G17",
+  datetime = "2021-05-12 09:00",
+  timezone = "America/Chicago"
+)
+
+scanRasterG16 <- goesaodc_createScanRaster(
+  filename = scanFileG16,
+  cellSize = 0.1,
+  dqfLevel = 3,
+  fun = "count"
+)
+
+scanRasterG17 <- goesaodc_createScanRaster(
+  filename = scanFileG17,
+  cellSize = 0.1,
+  dqfLevel = 3,
+  fun = "count"
+)
+
+goesaodc_plotScanRaster(
+  raster = scanRasterG16,
+  legendLimits = c(0, 25),
+  stateCodes = datasets::state.abb,
+  legendTitle = "# readings",
+  title = "GOES-16 Readings Per .1°x.1° Cell"
+)
+
+goesaodc_plotScanRaster(
+  raster = scanRasterG17,
+  legendLimits = c(0, 25),
+  stateCodes = datasets::state.abb,
+  legendTitle = "# readings",
+  title = "GOES-17 Readings Per .1°x.1° Cell"
+)
+```
+
+It's important to keep this distortion in mind when choosing which satellite 
+to use for analyzing a region's AOD data. The GOES-16 satellite has a scan range 
+covering the entire CONUS at DQF levels of 2 or higher, but it's sample points
+over the west coast states aren't as dense as those taken by GOES-17.
