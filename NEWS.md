@@ -1,3 +1,7 @@
+# MazamaSatelliteUtils 0.4.16
+
+* Added `naColor` parameter to `goesaodc_plotScanRaster()` function.
+
 # MazamaSatelliteUtils 0.4.15
 
 * Renamed all `goesaodc_...Points()` functions to `goesaodc_...Spdf()`.
