@@ -1,8 +1,9 @@
 # MazamaSatelliteUtils 0.4.16
 
-* Added `naColor` parameter to `goesaodc_plotScanRaster()` function.
+* Added `naColor` parameter to `goesaodc_plotScan...()` functions.
 * `goesaodc_animateScan...()` functions now display proper timezone in 
 timestamp.
+* Added 'GOES Coverage' article.
 
 # MazamaSatelliteUtils 0.4.15
 
