@@ -13,6 +13,7 @@
 #' @param paletteColors Vector of colors defining the gradient for the color 
 #' legend. Will be ignored if \code{breaks} is set. Defaults to 
 #' \code{c("#FFFFB2", "#BD0026")}.
+#' @param naColor Color to shade cells with NA AOD values.
 #' @param paletteName Name of an RColorBrewer palette. Defaults to 'YlOrRd'.
 #' @param paletteBreaks Vector of AOD values to use as palette breaks.
 #' @param legendLimits Upper and lower values for the color legend. Setting this
@@ -82,6 +83,7 @@ goesaodc_plotScanSpdf <- function(
   pointShape = 15,
   pointAlpha = NULL,
   paletteColors = c("#FFFFB2", "#BD0026"),
+  naColor = "gray50",
   paletteName = "YlOrRd",
   paletteBreaks = NULL,
   legendLimits = NULL,
@@ -168,7 +170,7 @@ goesaodc_plotScanSpdf <- function(
   colorScale <- if ( is.null(paletteBreaks) ) {
     ggplot2::scale_color_gradientn(
       colors = paletteColors,
-      na.value = "gray50",
+      na.value = naColor,
       limits = legendLimits
     )
   } else {
@@ -178,7 +180,7 @@ goesaodc_plotScanSpdf <- function(
         length(paletteBreaks) - 1,
         paletteName
       ),
-      na.value = "gray50",
+      na.value = naColor,
       limits = legendLimits
     )
   }

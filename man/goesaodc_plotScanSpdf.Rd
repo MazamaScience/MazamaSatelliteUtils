@@ -11,6 +11,7 @@ goesaodc_plotScanSpdf(
   pointShape = 15,
   pointAlpha = NULL,
   paletteColors = c("#FFFFB2", "#BD0026"),
+  naColor = "gray50",
   paletteName = "YlOrRd",
   paletteBreaks = NULL,
   legendLimits = NULL,
@@ -38,6 +39,8 @@ will default to 1.0 when \code{includeMap=FALSE} and 0.75 when
 \item{paletteColors}{Vector of colors defining the gradient for the color 
 legend. Will be ignored if \code{breaks} is set. Defaults to 
 \code{c("#FFFFB2", "#BD0026")}.}
+
+\item{naColor}{Color to shade cells with NA AOD values.}
 
 \item{paletteName}{Name of an RColorBrewer palette. Defaults to 'YlOrRd'.}
 
