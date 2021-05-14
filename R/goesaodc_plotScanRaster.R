@@ -12,6 +12,7 @@
 #' @param paletteColors Vector of colors to use as a gradient for the color 
 #' legend. Will be ignored if \code{breaks} is set. Defaults to 
 #' \code{c("#FFFFB2", "#BD0026")}.
+#' @param naColor Color to shade cells with NA AOD values.
 #' @param paletteName The name of an RColorBrewer palette. Defaults to 'YlOrRd'.
 #' @param paletteBreaks Vector of AOD values to use as palette breaks.
 #' @param legendLimits Upper and lower AOD values for the fill legend. Setting 
@@ -83,6 +84,7 @@ goesaodc_plotScanRaster <- function(
   fun = mean,
   rasterAlpha = NULL,
   paletteColors = c("#FFFFB2", "#BD0026"),
+  naColor = "gray50",
   paletteName = "YlOrRd",
   paletteBreaks = NULL,
   legendLimits = NULL,
@@ -158,7 +160,7 @@ goesaodc_plotScanRaster <- function(
   fillScale <- if ( is.null(paletteBreaks) ) {
     ggplot2::scale_fill_gradientn(
       colors = paletteColors,
-      na.value = "gray50",
+      na.value = naColor,
       limits = legendLimits
     )
   } else {
@@ -168,7 +170,7 @@ goesaodc_plotScanRaster <- function(
         length(paletteBreaks) - 1,
         paletteName
       ),
-      na.value = "gray50",
+      na.value = naColor,
       limits = legendLimits
     )
   }
