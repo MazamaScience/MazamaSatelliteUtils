@@ -1,0 +1,493 @@
+---
+title: "GOES Coverage"
+author: "Mazama Science"
+date: "5/13/2021"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{GOES Coverage}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, echo=FALSE}
+library(MazamaSatelliteUtils)
+library(MazamaSpatialUtils)
+
+setSatelliteDataDir("~/Data/Satellite")
+setSpatialDataDir("~/Data/Spatial")
+
+loadSpatialData("NaturalEarthAdm1")
+
+knitr::opts_chunk$set(echo = TRUE)
+cellSize <- 0.25
+```
+
+The GOES-16 and GOES-17 satellites together cover the east and west regions 
+of the continental US with their ABI scanners, but what exactly do their 
+coverage areas look like? Do they leave any regions out? This article will try 
+to answer these questions by plotting scans from each satellite at different 
+times and data quality levels.
+
+## GOES-16 Coverage
+
+The GOES-16 satellite operates at the GOES East position of 75.2°W. Let's plot
+one of its recent scans from 2021 with DQF levels of 3, 2, 1, 0 
+(highest to lowest quality).
+
+```{r goes16_2021_coverage, echo=FALSE, fig.width=7, fig.height=5, fig.align="center"}
+goesaodc_downloadScanFiles(
+  satID = "G16",
+  datetime = "2021-05-12 09:00",
+  timezone = "America/Chicago",
+  verbose = TRUE
+)
+
+scanFileG16 <- goesaodc_listScanFiles(
+  satID = "G16",
+  datetime = "2021-05-12 09:00",
+  timezone = "America/Chicago"
+)
+
+# Create G16 scan rasters
+
+scanRasterG162021dqf3 <- goesaodc_createScanRaster(
+  filename = scanFileG16,
+  cellSize = cellSize,
+  dqfLevel = 3
+)
+
+scanRasterG162021dqf2 <- goesaodc_createScanRaster(
+  filename = scanFileG16,
+  cellSize = cellSize,
+  dqfLevel = 2
+)
+
+scanRasterG162021dqf1 <- goesaodc_createScanRaster(
+  filename = scanFileG16,
+  cellSize = cellSize,
+  dqfLevel = 1
+)
+
+scanRasterG162021dqf0 <- goesaodc_createScanRaster(
+  filename = scanFileG16,
+  cellSize = cellSize,
+  dqfLevel = 0
+)
+
+# Plot G16 scan rasters
+
+goesaodc_plotScanRaster(
+  raster = scanRasterG162021dqf3,
+  naColor = "transparent",
+  legendLimits = c(-0.5, 5.5),
+  stateCodes = datasets::state.abb,
+  title = "GOES-16 DQF3 Coverage (2021-05-12)"
+)
+
+goesaodc_plotScanRaster(
+  raster = scanRasterG162021dqf2,
+  naColor = "transparent",
+  legendLimits = c(-0.5, 5.5),
+  stateCodes = datasets::state.abb,
+  title = "GOES-16 DQF2 Coverage (2021-05-12)"
+)
+
+goesaodc_plotScanRaster(
+  raster = scanRasterG162021dqf1,
+  naColor = "transparent",
+  legendLimits = c(-0.5, 5.5),
+  stateCodes = datasets::state.abb,
+  title = "GOES-16 DQF1 Coverage (2021-05-12)"
+)
+
+goesaodc_plotScanRaster(
+  raster = scanRasterG162021dqf0,
+  naColor = "transparent",
+  legendLimits = c(-0.5, 5.5),
+  stateCodes = datasets::state.abb,
+  title = "GOES-16 DQF0 Coverage (2021-05-12)"
+)
+```
+
+It looks like GOES-16's coverage depends on the given DQF level. When a DQF
+of 3 or 2 is requested, then the entire CONUS is covered. If the requested DQF 
+is lower than that, then most of the western states are cut out either partially
+or completely: Washington, Oregon, and Idaho have no coverage, and California, 
+Nevada, Montana, Utah, Wyoming, and the Dakotas are only semi-covered.
+
+Is this true across all of GOES-16's scans though? Since 
+MazamaSatelliteUtils stores GOES scans going back to March 2019, let's take a 
+look at a GOES-16 scan from 2 years prior to the one we just plotted.
+
+```{r goes16_2019_coverage, echo=FALSE, fig.width=7, fig.height=5, fig.align="center"}
+goesaodc_downloadScanFiles(
+  satID = "G16",
+  datetime = "2019-05-12 09:00",
+  timezone = "America/Chicago",
+  verbose = TRUE
+)
+
+scanFileG16 <- goesaodc_listScanFiles(
+  satID = "G16",
+  datetime = "2019-05-12 09:00",
+  timezone = "America/Chicago"
+)
+
+# Create G16 scan rasters
+
+scanRasterG162019dqf3 <- goesaodc_createScanRaster(
+  filename = scanFileG16,
+  cellSize = cellSize,
+  dqfLevel = 3
+)
+
+scanRasterG162019dqf2 <- goesaodc_createScanRaster(
+  filename = scanFileG16,
+  cellSize = cellSize,
+  dqfLevel = 2
+)
+
+scanRasterG162019dqf1 <- goesaodc_createScanRaster(
+  filename = scanFileG16,
+  cellSize = cellSize,
+  dqfLevel = 1
+)
+
+scanRasterG162019dqf0 <- goesaodc_createScanRaster(
+  filename = scanFileG16,
+  cellSize = cellSize,
+  dqfLevel = 0
+)
+
+# Plot G16 scan rasters
+
+goesaodc_plotScanRaster(
+  raster = scanRasterG162019dqf3,
+  naColor = "transparent",
+  legendLimits = c(-0.5, 5.5),
+  stateCodes = datasets::state.abb,
+  title = "GOES-16 DQF3 Coverage (2019-05-12)"
+)
+
+goesaodc_plotScanRaster(
+  raster = scanRasterG162019dqf2,
+  naColor = "transparent",
+  legendLimits = c(-0.5, 5.5),
+  stateCodes = datasets::state.abb,
+  title = "GOES-16 DQF2 Coverage (2019-05-12)"
+)
+
+goesaodc_plotScanRaster(
+  raster = scanRasterG162019dqf1,
+  naColor = "transparent",
+  legendLimits = c(-0.5, 5.5),
+  stateCodes = datasets::state.abb,
+  title = "GOES-16 DQF1 Coverage (2019-05-12)"
+)
+
+goesaodc_plotScanRaster(
+  raster = scanRasterG162019dqf0,
+  naColor = "transparent",
+  legendLimits = c(-0.5, 5.5),
+  stateCodes = datasets::state.abb,
+  title = "GOES-16 DQF0 Coverage (2019-05-12)"
+)
+```
+
+Yup, looks like GOES-16's coverage has stayed consistent -- for these two 
+instances at least.
+
+## GOES-17 Coverage
+
+The GOES-17 satellite operates at the GOES West position of 137.2°W. Again, 
+let's plot one of its recent scans from 2021 with DQF levels of 3, 2, 1, 0 
+(highest to lowest quality).
+
+```{r goes17_2021_coverage, echo=FALSE, fig.width=7, fig.height=5, fig.align="center"}
+goesaodc_downloadScanFiles(
+  satID = "G17",
+  datetime = "2021-05-12 09:00",
+  timezone = "America/Chicago",
+  verbose = TRUE
+)
+
+scanFileG17 <- goesaodc_listScanFiles(
+  satID = "G17",
+  datetime = "2021-05-12 09:00",
+  timezone = "America/Chicago"
+)
+
+# Create G17 scan rasters
+
+scanRasterG172021dqf3 <- goesaodc_createScanRaster(
+  filename = scanFileG17,
+  cellSize = cellSize,
+  dqfLevel = 3
+)
+
+scanRasterG172021dqf2 <- goesaodc_createScanRaster(
+  filename = scanFileG17,
+  cellSize = cellSize,
+  dqfLevel = 2
+)
+
+scanRasterG172021dqf1 <- goesaodc_createScanRaster(
+  filename = scanFileG17,
+  cellSize = cellSize,
+  dqfLevel = 1
+)
+
+scanRasterG172021dqf0 <- goesaodc_createScanRaster(
+  filename = scanFileG17,
+  cellSize = cellSize,
+  dqfLevel = 0
+)
+
+# Plot G17 scan rasters
+
+goesaodc_plotScanRaster(
+  raster = scanRasterG172021dqf3,
+  naColor = "transparent",
+  legendLimits = c(-0.5, 5.5),
+  stateCodes = datasets::state.abb,
+  title = "GOES-17 DQF3 Coverage (2021-05-12)"
+)
+
+goesaodc_plotScanRaster(
+  raster = scanRasterG172021dqf2,
+  naColor = "transparent",
+  legendLimits = c(-0.5, 5.5),
+  stateCodes = datasets::state.abb,
+  title = "GOES-17 DQF2 Coverage (2021-05-12)"
+)
+
+goesaodc_plotScanRaster(
+  raster = scanRasterG172021dqf1,
+  naColor = "transparent",
+  legendLimits = c(-0.5, 5.5),
+  stateCodes = datasets::state.abb,
+  title = "GOES-17 DQF1 Coverage (2021-05-12)"
+)
+
+goesaodc_plotScanRaster(
+  raster = scanRasterG172021dqf0,
+  naColor = "transparent",
+  legendLimits = c(-0.5, 5.5),
+  stateCodes = datasets::state.abb,
+  title = "GOES-17 DQF0 Coverage (2021-05-12)"
+)
+```
+
+GOES-17 only covers the western portion of the CONUS even when the requested DQF
+level is 3. A DQF set to 1 or lower restricts the satellite's range so that
+portions of Montana and Wyoming are cut off and the Dakotas are removed entirely.
+
+MazamaSatelliteUtils only has GOES-17 scans going back to September 2019, so we 
+can't look quite as far back to check for consistent coverage.
+
+```{r goes17_2019_coverage, echo=FALSE, fig.width=7, fig.height=5, fig.align="center"}
+goesaodc_downloadScanFiles(
+  satID = "G17",
+  datetime = "2019-09-12 09:00",
+  timezone = "America/Chicago",
+  verbose = TRUE
+)
+
+scanFileG17 <- goesaodc_listScanFiles(
+  satID = "G17",
+  datetime = "2019-09-12 09:00",
+  timezone = "America/Chicago"
+)
+
+# Create G17 scan rasters
+
+scanRasterG172019dqf3 <- goesaodc_createScanRaster(
+  filename = scanFileG17,
+  cellSize = cellSize,
+  dqfLevel = 3
+)
+
+scanRasterG172019dqf2 <- goesaodc_createScanRaster(
+  filename = scanFileG17,
+  cellSize = cellSize,
+  dqfLevel = 2
+)
+
+scanRasterG172019dqf1 <- goesaodc_createScanRaster(
+  filename = scanFileG17,
+  cellSize = cellSize,
+  dqfLevel = 1
+)
+
+scanRasterG172019dqf0 <- goesaodc_createScanRaster(
+  filename = scanFileG17,
+  cellSize = cellSize,
+  dqfLevel = 0
+)
+
+# Plot G17 scan rasters
+
+goesaodc_plotScanRaster(
+  raster = scanRasterG172019dqf3,
+  naColor = "transparent",
+  legendLimits = c(-0.5, 5.5),
+  stateCodes = datasets::state.abb,
+  title = "GOES-17 DQF3 Coverage (2019-09-12)"
+)
+
+goesaodc_plotScanRaster(
+  raster = scanRasterG172019dqf2,
+  naColor = "transparent",
+  legendLimits = c(-0.5, 5.5),
+  stateCodes = datasets::state.abb,
+  title = "GOES-17 DQF2 Coverage (2019-09-12)"
+)
+
+goesaodc_plotScanRaster(
+  raster = scanRasterG172019dqf1,
+  naColor = "transparent",
+  legendLimits = c(-0.5, 5.5),
+  stateCodes = datasets::state.abb,
+  title = "GOES-17 DQF1 Coverage (2019-09-12)"
+)
+
+goesaodc_plotScanRaster(
+  raster = scanRasterG172019dqf0,
+  naColor = "transparent",
+  legendLimits = c(-0.5, 5.5),
+  stateCodes = datasets::state.abb,
+  title = "GOES-17 DQF0 Coverage (2019-09-12)"
+)
+```
+
+GOES-17's coverage was even more restricted back in 2019. For DQF 3 and 2, the
+only difference is that some of the Pacific Ocean was cut off. However, for DQFs
+lower than 2, every state on the west coast is completely removed and only some
+of Arizona, Utah, Idaho, and Montana were in range.
+
+## Combined GOES Coverage
+
+Let's overlay the GOES satellites' ranges on top of each other to see if there 
+are any regions that aren't covered at all. Since the views appear to only 
+shrink when DQF < 2, we only need to take a look at DQF 3 and 1.
+
+```{r 2021_combined_coverage, echo=FALSE, fig.width=7, fig.height=5, fig.align="center"}
+# 2021 DQF3 combined coverage
+AirFirePlots::plot_base(
+  title = "GOES-16/17 2021 DQF3"
+) +
+  AirFirePlots::layer_raster(
+    raster = scanRasterG162021dqf3,
+    varName = "AOD",
+    naRemove = TRUE,
+    alpha = 0.3
+  ) +
+  AirFirePlots::layer_raster(
+    raster = scanRasterG172021dqf3,
+    varName = "AOD",
+    naRemove = TRUE,
+    alpha = 0.3
+  ) +
+  AirFirePlots::layer_states(
+    stateCodes = datasets::state.abb
+  ) +
+  ggplot2::scale_fill_gradient(
+    low = rgb(0, 0, 1),
+    high = rgb(0, 0, 1),
+    guide = FALSE
+  )
+
+# 2021 DQF1 combined coverage
+AirFirePlots::plot_base(
+  title = "GOES-16/17 2021 DQF1"
+) +
+  AirFirePlots::layer_raster(
+    raster = scanRasterG162021dqf1,
+    varName = "AOD",
+    naRemove = TRUE,
+    alpha = 0.3
+  ) +
+  AirFirePlots::layer_raster(
+    raster = scanRasterG172021dqf1,
+    varName = "AOD",
+    naRemove = TRUE,
+    alpha = 0.3
+  ) +
+  AirFirePlots::layer_states(
+    stateCodes = datasets::state.abb
+  ) +
+  ggplot2::scale_fill_gradient(
+    low = rgb(0, 0, 1),
+    high = rgb(0, 0, 1),
+    guide = FALSE
+  )
+```
+
+In 2021, the combined range of the GOES satellites covers the entire CONUS for 
+DQF 3. When DQF is lower than 2, a gap in their coverage appears over eastern 
+Montana and western North Dakota.
+
+```{r 2019_combined_coverage, echo=FALSE, fig.width=7, fig.height=5, fig.align="center"}
+# 2019 DQF3 combined coverage
+AirFirePlots::plot_base(
+  title = "GOES-16/17 2019 DQF3"
+) +
+  AirFirePlots::layer_raster(
+    raster = scanRasterG162019dqf3,
+    varName = "AOD",
+    naRemove = TRUE,
+    alpha = 0.3
+  ) +
+  AirFirePlots::layer_raster(
+    raster = scanRasterG172019dqf3,
+    varName = "AOD",
+    naRemove = TRUE,
+    alpha = 0.3
+  ) +
+  AirFirePlots::layer_states(
+    stateCodes = datasets::state.abb
+  ) +
+  ggplot2::scale_fill_gradient(
+    low = rgb(0, 0, 1),
+    high = rgb(0, 0, 1),
+    guide = FALSE
+  )
+
+# 2019 DQF1 combined coverage
+AirFirePlots::plot_base(
+  title = "GOES-16/17 2019 DQF1"
+) +
+  AirFirePlots::layer_raster(
+    raster = scanRasterG162019dqf1,
+    varName = "AOD",
+    naRemove = TRUE,
+    alpha = 0.3
+  ) +
+  AirFirePlots::layer_raster(
+    raster = scanRasterG172019dqf1,
+    varName = "AOD",
+    naRemove = TRUE,
+    alpha = 0.3
+  ) +
+  AirFirePlots::layer_states(
+    stateCodes = datasets::state.abb
+  ) +
+  ggplot2::scale_fill_gradient(
+    low = rgb(0, 0, 1),
+    high = rgb(0, 0, 1),
+    guide = FALSE
+  )
+```
+
+Like 2021, in 2019 the combined range of the GOES satellites covered the entire 
+CONUS for DQF 3. When DQF is lower than 2, however, there is much less coverage.
+Washington and Oregon are cut off completely, and only portions are available 
+for: California, Nevada, Idaho, Montana, Wyoming, Utah, and North Dakota.
+
+## Conclusion
+
+It appears that over the course of their operation, the combined ranges of the 
+GOES satellites cover the entire CONUS when DQF is 2 or 3. However, when the
+requested DQF drops below these values, no AOD readings will be available for 
+eastern Montana or western North Dakota. Earlier scans will also be missing data
+for many of the western states.
