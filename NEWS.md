@@ -7,6 +7,7 @@ timestamp.
 * Added the following articles:
   * GOES Coverage
   * GOES Scan Distortion
+  * Comparing GOES and BlueSky
 
 # MazamaSatelliteUtils 0.4.15
 
