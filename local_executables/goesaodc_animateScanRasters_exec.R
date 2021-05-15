@@ -362,7 +362,13 @@ for ( scanFilename in scanFilenames ) {
     tz = attr(localScanTime, "tzone")
   )
   
-  title <- paste0("AOD for ", timeString)
+  title <- paste0(
+    ifelse(tolower(opt$satID) == "g16", "GOES-16", "GOES-17"),
+    " AOD (DQF<=", opt$dqfLevel, ")",
+    " for ", timeString
+  )
+  
+  "GOES-16 AOD (DQF<=3) for ..."
   
   if (opt$verbose)
     logger.trace("Rendering frame for %s", timeString)
