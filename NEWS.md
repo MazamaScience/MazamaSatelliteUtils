@@ -3,6 +3,7 @@
 * Added `naColor` parameter to `goesaodc_plotScan...()` functions.
 * `goesaodc_animateScan...()` functions now display proper timezone in 
 timestamp.
+* Updated format of animation file names.
 * Added the following articles:
   * GOES Coverage
   * GOES Scan Distortion

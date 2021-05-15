@@ -413,7 +413,15 @@ for ( scanFilename in scanFilenames ) {
   
 # ----- Create video from frames -----------------------------------------------
 
-videoFilename <- paste0(videoTimeStamp, "_DQF", opt$dqfLevel, ".mp4")
+videoFilename <- paste0(
+  "aod_",
+  tolower(opt$satID), "_",
+  "s", strftime(starttime, "%Y%m%d%H%M%S", "UTC"), "_",
+  "e", strftime(endtime, "%Y%m%d%H%M%S", "UTC"), "_",
+  "dqf", opt$dqfLevel,
+  ".mp4"
+)
+
 videoFilePath <- file.path(opt$outputDir, videoFilename)
 
 # Define system calls to ffmpeg to create video from frames
