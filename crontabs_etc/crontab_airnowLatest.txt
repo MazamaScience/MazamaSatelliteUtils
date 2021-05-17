@@ -1,0 +1,44 @@
+###############################################################################
+#                                                                             #
+# 2018-08-24                                                                  #
+# Example crontab for the 'monitoring' user on 'haze'                         #
+#                                                                             #
+# Note that arguments to the  ~_exec script will be run inside the docker     #
+# container and refer to the absolute path of directories in that container.  #
+# The '-v' command mounts host machine directories to container directories.  #
+#                                                                             #
+# Note that /home/mazama is found inside the docker image.                    #
+###############################################################################
+
+# NOTE:  The PWFSLSmoke package v1.0.26 airsis_loadLatest() function assumes
+# NOTE:  latest data will be found at:
+# NOTE:    https://haze.airfire.org/monitoring/AirNow/RData/latest/~.RData
+# NOTE:
+# NOTE:  We specify --outputDir=/monitoring/v4/data/AirNow/latest so that
+# NOTE:  the .csv and .geojson files ended up there rather than below the RData
+# NOTE:  directory.
+# NOTE:
+# NOTE:  That's why we have to copy .RData files from /data/monitoring/AirNow/latest/
+# NOTE:  to /data/monitoring/AirNow/RData/latest/ and /data/monitoring/latest/RData/.
+
+# AirNow 'update' runs once every 2 minutes ____________________________________
+
+*/2 * * * *    docker run --rm -v /home/monitoring/Projects/monitoring-data-ingest-v4:/monitoring/v4 -v /data/monitoring:/monitoring/v4/data -w /monitoring/v4 monitoring-data-ingest-v4 /monitoring/v4/airnow_updateLatestMonitorObjects_exec.R --latestDir=/monitoring/v4/data/latest
+
+# AirNow 'latest' runs once every 20 minutes ___________________________________
+
+# First, copy data files from the previous run and generate a geojson file
+3,23,43 * * * *    cp -f /data/monitoring/AirNow/latest/csv/*.csv /data/monitoring/latest/csv
+4,24,44 * * * *    cp -f /data/monitoring/AirNow/latest/*.RData /data/monitoring/AirNow/RData/latest
+4,24,44 * * * *    cp -f /data/monitoring/AirNow/latest/*.RData /data/monitoring/latest/RData
+5,25,45 * * * *    docker run --rm -v /home/monitoring/Projects/monitoring-data-ingest-v4:/monitoring/v4 -v /data/monitoring:/monitoring/v4/data -w /monitoring/v4 monitoring-data-ingest-v4 /monitoring/v4/createGeoJSON_exec.R --inputDir=/monitoring/v4/data/latest/RData --outputDir=/monitoring/v4/data/latest/geojson --logDir=/monitoring/v4/data/latest/geojson --dataSource=airnow
+
+# Now, generate new data files
+5,25,45 * * * *    docker run --rm -v /home/monitoring/Projects/monitoring-data-ingest-v4:/monitoring/v4 -v /data/monitoring:/monitoring/v4/data -w /monitoring/v4 monitoring-data-ingest-v4 /monitoring/v4/airnow_createLatestMonitorObjects_exec.R --outputDir=/monitoring/v4/data/AirNow/latest --logDir=/monitoring/v4/data/AirNow/latest
+
+# AirNow 'daily' runs once daily in the wee hours _____________________________
+
+29 02 * * *    cp -f /data/monitoring/AirNow/latest/*.RData /data/monitoring/AirNow/RData/latest
+30 02 * * *    docker run --rm -v /home/monitoring/Projects/monitoring-data-ingest-v4:/monitoring/v4 -v /data/monitoring:/monitoring/v4/data -w /monitoring/v4 monitoring-data-ingest-v4 /monitoring/v4/airnow_createDailyMonitorObjects_exec.R --outputDir=/monitoring/v4/data/AirNow/latest --logDir=/monitoring/v4/data/AirNow/latest
+
+
