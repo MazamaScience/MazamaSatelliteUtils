@@ -10,5 +10,5 @@
 # NOTE:  usfs.airsis.com
 
 production_build:
-	docker build --no-cache -t monitoring-data-ingest-v4:1.3.6 -t monitoring-data-ingest-v4:latest -f Dockerfile .
+	docker build --no-cache -t mazamascience/mazamasatelliteutils:0.4.16 -t mazamascience/mazamasatelliteutils:latest -f Dockerfile .
 
