@@ -9,8 +9,6 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-
-
 ```{r setup}
 library(MazamaSatelliteUtils)
 library(MazamaSpatialUtils)
@@ -19,35 +17,35 @@ setSatelliteDataDir("~/Data/Satellite")
 setSpatialDataDir("~/Data/Spatial")
 
 loadSpatialData("NaturalEarthAdm1")
-
-bbox <- c(-89, -78, 24.5, 32)
 ```
 
 ```{r}
 goesaodc_downloadScanFiles(
   satID = "G16",
-  datetime = "2021-05-11 08:00",
-  endtime = "2021-05-11 19:00",
-  timezone = "America/New_York"
+  datetime = "2021-05-17 07:00",
+  endtime = "2021-05-17 14:00",
+  timezone = "America/Los_Angeles"
 )
 
 scanFile <- goesaodc_listScanFiles(
   satID = "G16",
-  datetime = "2021-05-13 13:00",
-  timezone = "America/New_York"
+  datetime = "2021-05-17 13:50",
+  timezone = "America/Los_Angeles"
 )
 
 scanRaster <- goesaodc_createScanRaster(
   filename = scanFile,
-  bbox = bbox,
-  cellSize = 0.1
+  bbox = c(-109.5, -107.5, 26.5, 28),
+  cellSize = 0.03
 )
 
 goesaodc_plotScanRaster(
   raster = scanRaster,
-  bbox = bbox,
-  #paletteBreaks = c(-Inf, 0, 1, 2, 3, 4, 5, Inf),
-  stateCodes = "FL"
+  bbox = c(-109.5, -107.5, 26.5, 28),
+  rasterAlpha = 0.7,
+  includeMap = TRUE,
+  zoom = 8,
+  title = scanFile %>% goesaodc_convertFilenameToDatetime()
 )
 ```
 
@@ -55,13 +53,16 @@ goesaodc_plotScanRaster(
 ```
 ./goesaodc_animateScanRasters_exec.R \
 --satID="G16" \
---starttime="2021-05-11 14:00" \
---endtime="2021-05-11 15:00" \
---timezone="America/Chicago" \
---bbox="-105, -88, 42, 49.5" \
---cellSize=0.1 \
+--starttime="2021-05-17 09:00" \
+--endtime="2021-05-17 14:00" \
+--timezone="America/Los_Angeles" \
+--bbox="-109.5, -107.5, 26.5, 28" \
+--cellSize=0.03 \
+--rasterAlpha=0.7 \
 --legendLimits="-0.5, 5.5" \
---stateCodes="ND, SD, MN" \
+--includeMap=TRUE \
+--zoom=8 \
+--stateCodes="CA" \
 --satelliteDataDir="~/Data/Satellite" \
 --spatialDataDir="~/Data/Spatial" \
 --frameRate=10 \
