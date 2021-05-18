@@ -13,10 +13,13 @@ goesaodc_createEmptyScanSpdf(satID = NULL, filename = NULL, bbox = bbox_CONUS)
 
 \item{bbox}{Bounding box for the region of interest. Defaults to CONUS.}
 }
+\value{
+A \code{SpatialPointsDataFrame} filled with \code{NA} AOD values.
+}
 \description{
-Creates a \code{SpatialPointsDataFrame} of NA AOD readings for a
-GOES satellite. This is useful when trying to create an SPDF for a faulty
-scan file.
+Creates a \code{SpatialPointsDataFrame} of \code{NA} AOD 
+readings for a GOES satellite. This is useful when trying to create an SPDF 
+for a faulty scan file.
 }
 \examples{
 \donttest{

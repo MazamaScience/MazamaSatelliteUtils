@@ -7,8 +7,7 @@
 goesaodc_installGoesGrids()
 }
 \value{
-Invisibly returns a vector of local GOES 16 and 17 grid files.
-\code{datetime}.
+Invisible vector of local GOES 16 and 17 grid filepaths.
 }
 \description{
 Creates data files with geolocation information for GOES-16 

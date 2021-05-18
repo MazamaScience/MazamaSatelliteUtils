@@ -14,6 +14,8 @@
 #' @param fun Function used to summarize point values within a single cell. 
 #' Defaults to \code{mean}.
 #' 
+#' @return \code{RasterLayer} or \code{RasterBrick} of AOD values.
+#' 
 #' @examples
 #' \donttest{
 #' library(MazamaSatelliteUtils)

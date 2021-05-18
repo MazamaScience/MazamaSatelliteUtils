@@ -7,9 +7,12 @@
 #' by taking the difference between it's average value in the first half of the 
 #' scan series and it's average value in the second half.
 #' 
-#' @param rasterBrick A \code{RasterBrick} of GOES scan \code{RasterLayers}s.
+#' @param rasterBrick \code{RasterBrick} of GOES scan \code{RasterLayers}s.
 #' @param na.rm Logical flag whether to remove NA values before calculating the
 #' trend. Defaults to \code{FALSE}.
+#' 
+#' @return \code{RasterLayer} that is the trend of all the \code{RasterLayers}
+#' in a \code{RasterBrick}.
 #' 
 #' @examples
 #' \donttest{

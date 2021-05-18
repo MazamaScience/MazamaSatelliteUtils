@@ -24,6 +24,8 @@
 #' @param baseUrl URL of remote database. Defaults to 
 #' "https://tools-1.airfire.org/Satellite/".
 #' 
+#' @return Vector of scan filenames.
+#' 
 #' @examples
 #' \donttest{
 #' library(MazamaSatelliteUtils)

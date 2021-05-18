@@ -5,9 +5,12 @@
 #' @description Creates a \code{SpatialPointsDataFrame} of averaged AOD 
 #' readings from a \code{list} of GOES scan \code{SpatialPointsDataFrame}s.
 #' 
-#' @param spdfList A \code{list} of GOES scan \code{SpatialPointsDataFrame}s.
+#' @param spdfList \code{list} of GOES scan \code{SpatialPointsDataFrame}s.
 #' @param na.rm Logical flag determining whether to remove NA values before 
 #' calculating the average. Defaults to \code{FALSE}.
+#' 
+#' @return \code{SpatialPointsDataFrame} that is the average of all the
+#' \code{SpatialPointsDataFrames} in a \code{list}.
 #' 
 #' @examples
 #' \donttest{

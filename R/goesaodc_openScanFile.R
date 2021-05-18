@@ -14,7 +14,7 @@
 #' @param dataDir Data directory containing \code{filename}. Defaults to 
 #' \code{getSatelliteDataDir()}.
 #' 
-#' @return nc handle
+#' @return NetCDF \code{ncdf4} handle.
 #' 
 #' @seealso \code{\link{getSatelliteDataDir}}
 #' 

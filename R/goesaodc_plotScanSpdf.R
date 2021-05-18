@@ -28,6 +28,8 @@
 #' @param title Title of the plot.
 #' @param legendTitle Title of the plot legend.
 #' 
+#' @return \code{ggplot} of a \code{SpatialPointsDataFrame}.
+#' 
 #' @examples 
 #' \donttest{
 #' library(MazamaSatelliteUtils)

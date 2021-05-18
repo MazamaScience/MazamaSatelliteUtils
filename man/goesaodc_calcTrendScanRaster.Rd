@@ -7,10 +7,14 @@
 goesaodc_calcTrendScanRaster(rasterBrick = NULL, na.rm = FALSE)
 }
 \arguments{
-\item{rasterBrick}{A \code{RasterBrick} of GOES scan \code{RasterLayers}s.}
+\item{rasterBrick}{\code{RasterBrick} of GOES scan \code{RasterLayers}s.}
 
 \item{na.rm}{Logical flag whether to remove NA values before calculating the
 trend. Defaults to \code{FALSE}.}
+}
+\value{
+\code{RasterLayer} that is the trend of all the \code{RasterLayers}
+in a \code{RasterBrick}.
 }
 \description{
 Creates a \code{SpatialPointsDataFrame} of AOD trend values 

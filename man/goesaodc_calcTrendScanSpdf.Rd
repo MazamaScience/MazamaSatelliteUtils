@@ -12,6 +12,10 @@ goesaodc_calcTrendScanSpdf(spdfList = NULL, na.rm = FALSE)
 \item{na.rm}{Logical flag determining whether to remove NA values before 
 calculating the trend. Defaults to \code{FALSE}.}
 }
+\value{
+A \code{SpatialPointsDataFrame} that is the trend of all the 
+\code{SpatialPointsDataFrames} in a \code{list}.
+}
 \description{
 Creates a \code{SpatialPointsDataFrame} of AOD trend values 
 from a \code{list} of GOES scan \code{SpatialPointsDataFrame}s. A trend value

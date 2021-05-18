@@ -12,8 +12,7 @@
 #' 
 #' @seealso \code{\link{goesaodc_createGoesGrid}}
 #' 
-#' @return Invisibly returns a vector of local GOES 16 and 17 grid files.
-#' \code{datetime}.
+#' @return Invisible vector of local GOES 16 and 17 grid filepaths.
 #' 
 #' @examples
 #' \donttest{

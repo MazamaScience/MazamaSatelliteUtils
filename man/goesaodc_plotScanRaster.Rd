@@ -61,6 +61,9 @@ integer from 1 to 15.}
 
 \item{legendTitle}{Title of the plot legend.}
 }
+\value{
+\code{ggplot} of a \code{RasterLayer}.
+}
 \description{
 Plot a GOES scan raster
 }

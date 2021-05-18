@@ -1,12 +1,14 @@
 #' @title Create an empty SPDF for a GOES satellite
 #' 
-#' @description Creates a \code{SpatialPointsDataFrame} of NA AOD readings for a
-#' GOES satellite. This is useful when trying to create an SPDF for a faulty
-#' scan file.
+#' @description Creates a \code{SpatialPointsDataFrame} of \code{NA} AOD 
+#' readings for a GOES satellite. This is useful when trying to create an SPDF 
+#' for a faulty scan file.
 #' 
 #' @param satID ID of the source GOES satellite ('G16' or 'G17').
 #' @param filename Name of a scan file.
 #' @param bbox Bounding box for the region of interest. Defaults to CONUS.
+#' 
+#' @return A \code{SpatialPointsDataFrame} filled with \code{NA} AOD values.
 #' 
 #' @examples
 #' \donttest{

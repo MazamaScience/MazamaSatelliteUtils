@@ -13,7 +13,7 @@ goesaodc_openScanFile(filename = NULL, dataDir = getSatelliteDataDir())
 \code{getSatelliteDataDir()}.}
 }
 \value{
-nc handle
+NetCDF \code{ncdf4} handle.
 }
 \description{
 Opens a NetCDF file and returns the \code{nc} handle. By 

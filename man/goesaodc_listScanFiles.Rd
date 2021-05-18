@@ -36,6 +36,9 @@ optionally \code{endtime}) should be interpreted as a Julian date with day of
 \item{baseUrl}{URL of remote database. Defaults to 
 "https://tools-1.airfire.org/Satellite/".}
 }
+\value{
+Vector of scan filenames.
+}
 \description{
 Lists GOES AOD scan files for a given datetime or time range. If
 just \code{datetime} is given, then only the scan file closest to that time

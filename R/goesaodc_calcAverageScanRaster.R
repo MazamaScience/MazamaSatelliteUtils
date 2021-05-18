@@ -5,9 +5,12 @@
 #' @description Creates a \code{RasterLayer} of averaged AOD readings from a 
 #' \code{RasterBrick} of GOES scan \code{RasterLayers}s.
 #' 
-#' @param rasterBrick A \code{RasterBrick} of GOES scan \code{RasterLayers}s.
+#' @param rasterBrick \code{RasterBrick} of GOES scan \code{RasterLayers}s.
 #' @param na.rm Logical flag whether to remove NA values before calculating the 
 #' average. Defaults to \code{FALSE}.
+#' 
+#' @return \code{RasterLayer} that is the average of all the 
+#' \code{RasterLayers} in a \code{RasterBrick}.
 #' 
 #' @examples
 #' \donttest{

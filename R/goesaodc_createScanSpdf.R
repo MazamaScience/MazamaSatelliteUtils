@@ -13,6 +13,8 @@
 #' above this level will have their AOD values set to NA. Must be either 0, 1, 
 #' 2, or 3, with 0 being the highest quality. Defaults to 3.
 #' 
+#' @return \code{SpatialPointsDataFrame} of AOD values.
+#' 
 #' @examples
 #' \donttest{
 #' library(MazamaSatelliteUtils)

@@ -14,7 +14,7 @@
 #' above this level will have their AOD values set to NA. Must be either 0, 1, 
 #' 2, or 3, with 0 being the highest quality. Defaults to 3.
 #' 
-#' @return Tibble (dataframe) with NetCDF variables and associated locations.
+#' @return \code{tibble} with netCDF variables and associated locations.
 #
 #' @examples
 #' \donttest{

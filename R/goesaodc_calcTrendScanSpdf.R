@@ -12,6 +12,9 @@
 #' @param na.rm Logical flag determining whether to remove NA values before 
 #' calculating the trend. Defaults to \code{FALSE}.
 #' 
+#' @return A \code{SpatialPointsDataFrame} that is the trend of all the 
+#' \code{SpatialPointsDataFrames} in a \code{list}.
+#' 
 #' @examples
 #' \donttest{
 #' library(MazamaSatelliteUtils)

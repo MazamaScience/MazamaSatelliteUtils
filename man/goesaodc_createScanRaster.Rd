@@ -26,6 +26,9 @@ CONUS.}
 \item{fun}{Function used to summarize point values within a single cell. 
 Defaults to \code{mean}.}
 }
+\value{
+\code{RasterLayer} or \code{RasterBrick} of AOD values.
+}
 \description{
 Creates a \code{RasterLayer} of AOD readings from a GOES scan, 
 file or a \code{RasterBrick} of \code{RasterLayer}s from a series of files.

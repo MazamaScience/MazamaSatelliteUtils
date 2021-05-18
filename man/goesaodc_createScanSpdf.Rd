@@ -16,6 +16,9 @@ this area will be removed. Defaults to CONUS.}
 above this level will have their AOD values set to NA. Must be either 0, 1, 
 2, or 3, with 0 being the highest quality. Defaults to 3.}
 }
+\value{
+\code{SpatialPointsDataFrame} of AOD values.
+}
 \description{
 Creates a \code{SpatialPointsDataFrame} of AOD readings from a 
 GOES scan file, or a list of \code{SpatialPointsDataFrame}s from a series of 
