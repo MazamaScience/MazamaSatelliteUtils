@@ -10,7 +10,6 @@
 
 # Ignore all directories beginning with "local"
 ^local*
-^executables
 
 # Ignore pkgdown input and output files
 ^docs$
@@ -19,7 +18,9 @@
 
 # Ignore other directories
 ^app$
+^crontabs_etc
 ^docker$
+^executables
 
 # Ignore configuration files for other tools
 ^\.travis\.yml$
