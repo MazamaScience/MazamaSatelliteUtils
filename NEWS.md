@@ -1,3 +1,7 @@
+# MazamaSatelliteUtils 0.4.17
+
+* Added Docker capabilities.
+
 # MazamaSatelliteUtils 0.4.16
 
 * Added `naColor` parameter to `goesaodc_plotScan...()` functions.
