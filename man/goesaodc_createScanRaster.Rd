@@ -9,7 +9,8 @@ goesaodc_createScanRaster(
   bbox = bbox_CONUS,
   dqfLevel = 3,
   cellSize = NULL,
-  fun = mean
+  fun = mean,
+  na.rm = FALSE
 )
 }
 \arguments{
@@ -25,6 +26,9 @@ CONUS.}
 
 \item{fun}{Function used to summarize point values within a single cell. 
 Defaults to \code{mean}.}
+
+\item{na.rm}{Logical flag determining whether to remove \code{NA} values 
+before summarizing them with `fun`. Defaults to \code{FALSE}.}
 }
 \value{
 \code{RasterLayer} or \code{RasterBrick} of AOD values.

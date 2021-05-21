@@ -13,6 +13,8 @@
 #' @param cellSize Size of Raster cells measured in degrees lon/lat.
 #' @param fun Function used to summarize point values within a single cell. 
 #' Defaults to \code{mean}.
+#' @param na.rm Logical flag determining whether to remove \code{NA} values 
+#' before summarizing them with `fun`. Defaults to \code{FALSE}.
 #' 
 #' @return \code{RasterLayer} or \code{RasterBrick} of AOD values.
 #' 
@@ -58,7 +60,8 @@ goesaodc_createScanRaster <- function(
   bbox = bbox_CONUS,
   dqfLevel = 3,
   cellSize = NULL,
-  fun = mean
+  fun = mean,
+  na.rm = FALSE
 ) {
   
   # ----- Validate parameters --------------------------------------------------
@@ -147,12 +150,21 @@ goesaodc_createScanRaster <- function(
         spdfList[[i]],
         scanRaster,
         field = "AOD",
-        fun = fun
+        fun = fun,
+        na.rm = na.rm
       )
       rasterList[[scanLabel]] <- raster
     }
     
     rasterBrick <- raster::brick(rasterList)
+    
+    layerNames <- paste0("t_",
+      filename %>%
+      goesaodc_convertFilenameToDatetime() %>%
+      MazamaCoreUtils::timeStamp(timezone = "UTC")
+    )
+
+    names(rasterBrick) <- layerNames
     
     return(rasterBrick)
     
@@ -162,7 +174,8 @@ goesaodc_createScanRaster <- function(
       spdf,
       scanRaster,
       field = "AOD",
-      fun = fun
+      fun = fun,
+      na.rm = na.rm
     )
     
     names(raster) <- "AOD"
