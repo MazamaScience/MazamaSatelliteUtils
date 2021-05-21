@@ -306,18 +306,21 @@ bbox <- as.numeric(unlist(strsplit(opt$bbox, ",")))
 bbox <- bboxToVector(bbox)
 
 # Parse the palette breaks
-if ( !is.null(opt$paletteBreaks) ) {
-  paletteBreaks <- as.numeric(unlist(strsplit(opt$paletteBreaks, ",")))
+paletteBreaks <- if ( is.null(opt$paletteBreaks) ) {
+  opt$paletteBreaks
 } else {
-  paletteBreaks <- NULL
+  as.numeric(unlist(strsplit(opt$paletteBreaks, ",")))
 }
 
 # Parse the palette limits
 legendLimits <- as.numeric(unlist(strsplit(opt$legendLimits, ",")))
 
 # Parse the state codes
-if ( !is.null(opt$stateCodes) )
-  stateCodes <- trimws(unlist(strsplit(opt$stateCodes, ",")))
+stateCodes <- if ( is.null(opt$stateCodes) ) {
+  opt$stateCodes
+} else {
+  trimws(unlist(strsplit(opt$stateCodes, ",")))
+}
 
 if ( opt$verbose ) {
   logger.trace(

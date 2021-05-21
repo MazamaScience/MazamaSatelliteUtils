@@ -1,6 +1,9 @@
 # MazamaSatelliteUtils 0.4.17
 
 * Added Docker capabilities.
+* Added `outputFilename` parameter to `goesaodc_animateScan...exec` scripts.
+* `goesaodc_animateScan...exec` scripts no longer require you to supply the
+`stateCodes` parameter.
 
 # MazamaSatelliteUtils 0.4.16
 
