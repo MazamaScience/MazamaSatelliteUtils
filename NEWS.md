@@ -4,6 +4,7 @@
 * Added `outputFilename` parameter to `goesaodc_animateScan...exec` scripts.
 * `goesaodc_animateScan...exec` scripts no longer require you to supply the
 `stateCodes` parameter.
+* Added `goesaodc_sampleScanRaster()` function.
 * Added 'Comparing G16 and G17' article.
 
 # MazamaSatelliteUtils 0.4.16
