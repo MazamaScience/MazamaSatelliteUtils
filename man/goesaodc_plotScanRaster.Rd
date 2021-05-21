@@ -22,7 +22,7 @@ goesaodc_plotScanRaster(
 )
 }
 \arguments{
-\item{raster}{A RasterLayer with an AOD variable.}
+\item{raster}{\code{RasterLayer} with an AOD variable.}
 
 \item{bbox}{Bounding box for the visible region. Defaults to CONUS.}
 

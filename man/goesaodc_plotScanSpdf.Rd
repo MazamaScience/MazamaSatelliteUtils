@@ -23,7 +23,7 @@ goesaodc_plotScanSpdf(
 )
 }
 \arguments{
-\item{spdf}{SpatialPointsDataFrame with an AOD variable.}
+\item{spdf}{\code{SpatialPointsDataFrame} with an AOD variable.}
 
 \item{bbox}{Bounding box for the visible region. Defaults to CONUS.}
 
