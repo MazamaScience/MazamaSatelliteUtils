@@ -4,6 +4,7 @@
 * Added `goesaodc_sampleScanRaster()` function.
 * `goesaodc_createScanSpdf()` function no longer returns a single 
 `SpatialPointsDataFrame` if one of many passed in scan files can't be read.
+* Added `na.rm` parameter to `goesaodc_createScanRaster()` function.
 * Added `outputFilename` parameter to `goesaodc_animateScan...exec` scripts.
 * `goesaodc_animateScan...exec` scripts no longer require you to supply the
 `stateCodes` parameter.
