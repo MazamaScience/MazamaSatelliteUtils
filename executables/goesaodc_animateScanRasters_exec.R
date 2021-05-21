@@ -54,6 +54,7 @@ if ( interactive() ) {
     spatialDataDir = "~/Data/Spatial",
     outputDir = "~/Desktop",
     logDir = getwd(),
+    outputFilename = NULL,
     frameRate = 6,
     verbose = TRUE,
     version = FALSE
@@ -172,6 +173,12 @@ if ( interactive() ) {
       c("--logDir"),
       type = "character",
       default = getwd(),
+      help = ""
+    ),
+    make_option(
+      c("--outputFilename"),
+      type = "character",
+      default = NULL,
       help = ""
     ),
     make_option(
@@ -410,14 +417,22 @@ for ( scanFilename in scanFilenames ) {
 
 # ----- Create video from frames -----------------------------------------------
 
-videoFilename <- paste0(
-  "aod_",
-  tolower(opt$satID), "_",
-  "s", strftime(starttime, "%Y%m%d%H%M%S", "UTC"), "_",
-  "e", strftime(endtime, "%Y%m%d%H%M%S", "UTC"), "_",
-  "dqf", opt$dqfLevel,
-  ".mp4"
-)
+videoFilename <- if ( is.null(opt$outputFilename) ) {
+  paste0(
+    "aod_",
+    tolower(opt$satID), "_",
+    "s", strftime(starttime, "%Y%m%d%H%M%S", "UTC"), "_",
+    "e", strftime(endtime, "%Y%m%d%H%M%S", "UTC"), "_",
+    "dqf", opt$dqfLevel,
+    ".mp4"
+  )
+} else {
+  ifelse(
+    endsWith(".mp4", opt$outputFilename),
+    opt$outputFilename,
+    paste0(opt$outputFilename, ".mp4")
+  )
+}
 
 videoFilePath <- file.path(opt$outputDir, videoFilename)
 
