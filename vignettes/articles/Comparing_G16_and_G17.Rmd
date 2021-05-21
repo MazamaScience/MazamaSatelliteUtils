@@ -1,0 +1,80 @@
+---
+title: "Comparing G16 and G17"
+author: "Mazama Science"
+date: "5/20/2021"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Comparing G16 and G17}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+Although parts of the GOES-16/17 satellite scan ranges overlap (See 
+'GOES Coverage' article), the scans they produce can turn out quite different.
+For example, take a look at their scans for the same moment over the Cherrywood
+Fire in Nevada (about (37, -116)).
+
+```{r, echo=FALSE, fig.width=7, fig.height=5, fig.align="center"}
+library(MazamaSatelliteUtils)
+library(MazamaSpatialUtils)
+
+setSatelliteDataDir("~/Data/Satellite")
+setSpatialDataDir("~/Data/Spatial")
+
+loadSpatialData("NaturalEarthAdm1")
+
+bbox <- c(-122.5, -111.5, 34.5, 42.5)
+
+scanFileG16 <- goesaodc_downloadScanFiles(
+  satID = "G16",
+  datetime = "2021-05-20 00:30",
+  timezone = "UTC"
+)
+
+scanRasterG16 <- goesaodc_createScanRaster(
+  filename = scanFileG16,
+  bbox = bbox,
+  dqfLevel = 3,
+  cellSize = 0.05
+)
+
+goesaodc_plotScanRaster(
+  raster = scanRasterG16,
+  bbox = bbox,
+  legendLimits = c(-0.1, 5.1),
+  stateCodes = c("OR", "ID", "NV", "CA", "AZ", "UT"),
+  title = "G16 at 2021-05-20 00:30 UTC"
+)
+```
+
+```{r, echo=FALSE, fig.width=7, fig.height=5, fig.align="center"}
+scanFileG17 <- goesaodc_downloadScanFiles(
+  satID = "G17",
+  datetime = "2021-05-20 00:30",
+  timezone = "UTC"
+)
+
+scanRasterG17 <- goesaodc_createScanRaster(
+  filename = scanFileG17,
+  bbox = bbox,
+  dqfLevel = 3,
+  cellSize = 0.05
+)
+
+goesaodc_plotScanRaster(
+  raster = scanRasterG17,
+  bbox = bbox,
+  legendLimits = c(-0.1, 5.1),
+  stateCodes = c("OR", "ID", "NV", "CA", "AZ", "UT"),
+  title = "G17 at 2021-05-20 00:30 UTC"
+)
+```
+
+There are several differences between these two images. For instance, GOES-17 
+appears to record more cloud cover than GOES-16. Additionally, GOES-16 reads AOD
+values over the ocean (maybe all bodies of water?) as ~0, while GOES-17 reads 
+them as ~5.
+
+Even though GOES-17 is positioned closer to Nevada, from these two plots we can
+see that the clearest images we'd get of the Cherrywood fire would come from
+GOES-16 scans. A bit counterintuitive, isn't it?
