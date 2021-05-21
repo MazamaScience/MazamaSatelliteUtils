@@ -2,7 +2,7 @@
 #' 
 #' @title Plot a GOES scan SPDF
 #' 
-#' @param spdf SpatialPointsDataFrame with an AOD variable.
+#' @param spdf \code{SpatialPointsDataFrame} with an AOD variable.
 #' @param bbox Bounding box for the visible region. Defaults to CONUS.
 #' @param pointSize Size of plot points. Defaults to 0.5.
 #' @param pointShape Shape of the plot points (index). Defaults to 15 (filled 

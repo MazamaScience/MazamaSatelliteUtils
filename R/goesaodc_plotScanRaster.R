@@ -2,7 +2,7 @@
 #' 
 #' @title Plot a GOES scan raster 
 #' 
-#' @param raster A RasterLayer with an AOD variable.
+#' @param raster \code{RasterLayer} with an AOD variable.
 #' @param bbox Bounding box for the visible region. Defaults to CONUS.
 #' @param fun Function used to summarize multiple point values within a single 
 #' cell. Defaults to \code{mean}.
