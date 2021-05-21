@@ -64,54 +64,42 @@ goesaodc_createScanSpdf <- function(
   
   # ----- Create SpatialPointsDataFrame ----------------------------------------
   
-  result <- try({
+  if ( length(filename) == 1 ) {
     
-    if ( length(filename) == 1 ) {
+    # Create a single SPDF
+    spdf <- goesaodc_createSingleScanSpdf(
+      filename = filename,
+      bbox = bbox,
+      dqfLevel = dqfLevel
+    )
+    
+    return(spdf)
+    
+  } else {
+    
+    filenames <- filename
+    
+    # Create a list of SPDFs
+    spdfList <- list()
+    for ( filename in filenames ) {
       
-      # Create a single SPDF
+      scanLabel <- 
+        filename %>%
+        goesaodc_convertFilenameToDatetime() %>%
+        MazamaCoreUtils::timeStamp(unit = "sec", timezone = "UTC")
+      
       spdf <- goesaodc_createSingleScanSpdf(
         filename = filename,
         bbox = bbox,
         dqfLevel = dqfLevel
       )
       
-      return(spdf)
-      
-    } else {
-      
-      filenames <- filename
-      
-      # Create a list of SPDFs
-      spdfList <- list()
-      for ( filename in filenames ) {
-        
-        scanLabel <- 
-          filename %>%
-          goesaodc_convertFilenameToDatetime() %>%
-          MazamaCoreUtils::timeStamp(unit = "sec", timezone = "UTC")
-        
-        spdf <- goesaodc_createSingleScanSpdf(
-          filename = filename,
-          bbox = bbox,
-          dqfLevel = dqfLevel
-        )
-        
-        spdfList[[scanLabel]] <- spdf
-        
-      }
-      
-      return(spdfList)
+      spdfList[[scanLabel]] <- spdf
       
     }
     
-  }, silent = TRUE)
-  
-  # If there was an error reading the scan file, create an SPDF filled with NA 
-  # AOD and DQF values for the requested satellite
-  if ( "try-error" %in% class(result) ) {
-    warning(result, immediate. = TRUE)
-    spdf <- goesaodc_createEmptyScanSpdf(filename = filename, bbox = bbox)
-    return(spdf)
+    return(spdfList)
+    
   }
   
 }
@@ -167,14 +155,26 @@ goesaodc_createSingleScanSpdf <- function(
     goesaodc_downloadScanFiles(filenames = filename)
   }
   
-  nc <- goesaodc_openScanFile(filename)
+  result <- try({
   
-  tbl <- goesaodc_createScanTibble(nc, bbox, dqfLevel)
+    nc <- goesaodc_openScanFile(filename)
+    
+    tbl <- goesaodc_createScanTibble(nc, bbox, dqfLevel)
+    
+    spdf <- sp::SpatialPointsDataFrame(
+      coords = dplyr::select(tbl, c(.data$lon, .data$lat)),
+      data = dplyr::select(tbl, .data$AOD)
+    )
   
-  spdf <- sp::SpatialPointsDataFrame(
-    coords = dplyr::select(tbl, c(.data$lon, .data$lat)),
-    data = dplyr::select(tbl, .data$AOD)
-  )
+  }, silent = TRUE)
+  
+  # If there was an error reading the scan file, create an SPDF filled with NA 
+  # AOD values for the requested satellite
+  if ( "try-error" %in% class(result) ) {
+    warning(result, immediate. = TRUE)
+    spdf <- goesaodc_createEmptyScanSpdf(filename = filename, bbox = bbox)
+    return(spdf)
+  }
   
   # ----- Return ---------------------------------------------------------------
   

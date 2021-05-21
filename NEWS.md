@@ -1,10 +1,12 @@
 # MazamaSatelliteUtils 0.4.17
 
 * Added Docker capabilities.
+* Added `goesaodc_sampleScanRaster()` function.
+* `goesaodc_createScanSpdf()` function no longer returns a single 
+`SpatialPointsDataFrame` if one of many passed in scan files can't be read.
 * Added `outputFilename` parameter to `goesaodc_animateScan...exec` scripts.
 * `goesaodc_animateScan...exec` scripts no longer require you to supply the
 `stateCodes` parameter.
-* Added `goesaodc_sampleScanRaster()` function.
 * Added 'Comparing G16 and G17' article.
 
 # MazamaSatelliteUtils 0.4.16
