@@ -13,8 +13,6 @@ RUN apt-get update \
 RUN install2.r --error \
     -r "https://cran.rstudio.com" \
     ggimage
-#    ncdf4 \
-#    magick
     
 ################################################################################
 
