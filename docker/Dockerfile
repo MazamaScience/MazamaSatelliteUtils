@@ -1,19 +1,5 @@
-FROM mazamascience/pwfslsmoke:1.2.113
+FROM mazamascience/mazamasatelliteutils-base:1.0.0
 MAINTAINER "Jonathan Callahan" jonathan@mazamascience.com
-
-# Install Linux packages
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-        libmagick++-dev \
-        ffmpeg
-
-################################################################################
-
-# Install R packages required for ...
-RUN install2.r --error \
-    -r "https://cran.rstudio.com" \
-    ggimage
-
 
 ################################################################################
 
