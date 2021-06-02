@@ -1,0 +1,48 @@
+# Docker Instructions
+Make sure you `cd` into the `docker/` directory!
+
+## Build the Docker image
+```
+make production_build
+```
+
+## Run Container and Open a Console
+Change the volume paths accordingly.
+```
+docker run \
+  --rm \
+  -it \
+  --volume="/Users/jonathancallahan/Projects/MazamaScience/MazamaSatelliteUtils/executables:/app" \
+  --volume="/Users/jonathancallahan/Data/Satellite:/home/mazama/data/Satellite" \
+  mazamascience/mazamasatelliteutils \
+  /bin/bash
+```
+
+# Run Animation Script Through the Container
+Change the volume paths accordingly.
+```
+docker run \
+  --rm \
+  --volume="/Users/jonathancallahan/Projects/MazamaScience/MazamaSatelliteUtils/executables:/app" \
+  --volume="/Users/jonathancallahan/Data/Satellite:/home/mazama/data/Satellite" \
+  --volume="/Users/jonathancallahan/Data/Movies:/home/mazama/data/Movies" \
+  mazamascience/mazamasatelliteutils \
+  /app/goesaodc_animateScanRasters_exec.R \
+    --satID="G16" \
+    --starttime="2021-06-01 08:00" \
+    --endtime="2021-06-01 12:00" \
+    --timezone="America/Los_Angeles" \
+    --bbox="-119.5, -117.5, 35.5, 37.5" \
+    --cellSize=0.1 \
+    --rasterAlpha=0.5 \
+    --legendLimits="-0.5, 5.5" \
+    --includeMap=TRUE \
+    --zoom=8 \
+    --stateCodes="CA" \
+    --satelliteDataDir="/home/mazama/data/Satellite" \
+    --spatialDataDir="/home/mazama/data/Spatial" \
+    --frameRate=5 \
+    --outputDir="/home/mazama/data/Movies" \
+    --logDir="/app" \
+    --verbose=FALSE
+```
