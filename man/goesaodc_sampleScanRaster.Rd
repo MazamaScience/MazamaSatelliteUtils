@@ -21,19 +21,19 @@ goesaodc_sampleScanRaster(
 
 \item{lat}{Latitude position.}
 
-\item{radius}{Radius of a buffer around each point (in meters) from which to 
-extract cell values. If the distance between the sampling point and the 
+\item{radius}{Radius of a buffer around each point (in meters) from which to
+extract cell values. If the distance between the sampling point and the
 center of a cell is less than or equal to the buffer, the cell is included.}
 
-\item{method}{Method of extracting cell values. If 'simple' values for the 
-cell a point falls in are returned. If 'bilinear' the returned values are 
-interpolated from the values of the four nearest raster cells. Defaults to 
+\item{method}{Method of extracting cell values. If 'simple' values for the
+cell a point falls in are returned. If 'bilinear' the returned values are
+interpolated from the values of the four nearest raster cells. Defaults to
 'simple'.}
 
 \item{fun}{Function used to summarize cell values if multiple cells fall
 within the given radius. Defaults to `mean`.}
 
-\item{na.rm}{Logical flag determining whether to remove \code{NA} values 
+\item{na.rm}{Logical flag determining whether to remove \code{NA} values
 before summarizing them with `fun`. Defaults to \code{FALSE}.}
 }
 \value{

@@ -1,3 +1,8 @@
+# MazamaSatelliteUtils 0.4.18
+
+* Minor fix to `goesaodc_sampleScanRaster()`.
+* Updated `docker/Dockerfile`.
+
 # MazamaSatelliteUtils 0.4.17
 
 * Added Docker capabilities.

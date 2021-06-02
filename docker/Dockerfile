@@ -1,4 +1,4 @@
-FROM mazamascience/pwfslsmoke:1.2.112
+FROM mazamascience/pwfslsmoke:1.2.113
 MAINTAINER "Jonathan Callahan" jonathan@mazamascience.com
 
 # Install Linux packages
@@ -13,7 +13,8 @@ RUN apt-get update \
 RUN install2.r --error \
     -r "https://cran.rstudio.com" \
     ggimage
-    
+
+
 ################################################################################
 
 # Install AirFirePlots R package (while the Github repo is private)
@@ -25,6 +26,4 @@ RUN R CMD INSTALL AirFirePlots_0.2.2.tar.gz
 
 # Install latest development versions of R packages
 RUN installGithub.r \
-    MazamaScience/MazamaCoreUtils \
-    MazamaScience/MazamaSatelliteUtils \
-    MazamaScience/PWFSLSmoke
+    MazamaScience/MazamaSatelliteUtils
